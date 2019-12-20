@@ -1,0 +1,167 @@
+<template>
+  <view class="managerAIDiscount_wrapper">
+    <view class="AIDiscount_list">
+      <scroll-view scroll-y scroll-with-animation style="height:{{winHeight}}rpx">
+        <radio-group @change="checkboxGiftAct">
+          <repeat for="{{integralGiftList}}" key="index" index="index" item="item">
+            <label class="checkbox" class="label_wrapper">
+                        <radio color="#FFBA00" value="{{item.goods.id}}" class="checkbox"/>
+                        <view class="list_item">
+                          <view class="list_item_left">
+                            <image class="itemPic" src="{{item.goods.image}}" mode="scaleToFill"
+                              lazy-load="false">
+                            </image>
+                          </view>
+                          <view class="list_item_right">
+                            <text class="item">{{item.goods.name}}</text>
+                            <text class="item">{{item.goods.limit}}</text>
+                            <text class="item">{{item.goods.subtopic}}</text>
+                            <text class="item">原价:{{item.goods.discountPrice}}  积分：{{item.goods.integral}}</text>
+                          </view>
+                        </view>
+                      </label>
+          </repeat>
+          <view wx:if="{{!integralGiftList.length}}" class="noData">暂无活动数据</view>
+        </radio-group>
+      </scroll-view>
+    </view>
+    <view class="handle_box">
+      <button class="btn" @tap="edit">编辑</button>
+      <button class="btn" @tap="del">删除</button>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  import util from '../../../utils/utils.js'
+  export default class managerGift extends wepy.page {
+    config = {
+      navigationBarTitleText: '管理积分换礼品'
+    };
+    data = {
+      AIIDs: [],
+      winHeight: "",
+      integralGiftList: [],
+      giftId: "",
+      integralGiftInfo: [],
+    };
+    methods = {
+      checkboxGiftAct(e) {
+        this.giftId = e.detail.value
+        this.integralGiftInfo = this.integralGiftList.filter(item => {
+          return item.goods.id === this.giftId
+        })
+        this.integralGiftInfo[0].goods["type"] = this.integralGiftInfo[0].coupInfo.type
+        this.integralGiftInfo[0].goods["value"] = this.integralGiftInfo[0].coupInfo.value
+        this.integralGiftInfo[0].goods["content"] = this.integralGiftInfo[0].coupInfo.content
+        console.log(this.integralGiftInfo[0].goods)
+      },
+      edit() {
+        if (!this.giftId) {
+          wx.showToast({
+            title: '请选择项目',
+            icon: 'none',
+            duration: 2000
+          })
+          return
+        }
+        this.$parent.globalData.recommendPrize = this.integralGiftInfo[0].goods
+        this.$parent.globalData.editInfo = this.integralGiftInfo[0].goods
+        wx.navigateTo({
+          url: '/pages/marketing/jiFenHuanLiPin/jiFenHuanLiPin',
+        })
+      },
+      del() {
+        if (!this.giftId) {
+          wx.showToast({
+            title: '请选择项目',
+            icon: 'none',
+            duration: 2000
+          })
+          return
+        }
+        let url = `${this.$parent.globalData.commonUrl}/api/delIntegralGift?tk=${this.$parent.globalData.tk}&giftId=${this.giftId}`
+        util.interface_get(url).then(res => {
+          if (res.errCode === 0) {
+            console.log("del result-----", res)
+            wx.showToast({
+              title: '删除成功',
+              icon: 'success',
+              duration: 2000
+            })
+            this._loadIntegralGift()
+          }
+        })
+      }
+    };
+    _loadIntegralGift() {
+       wx.showLoading({
+          title: "加载中",
+          mask: true
+      })
+      let url = `${this.$parent.globalData.commonUrl}/api/loadGoods?tk=${this.$parent.globalData.tk}`
+      util.interface_get(url).then(res => {
+         wx.hideLoading()
+        console.log("_loadIntegralGift----------", res)
+        this.integralGiftList = res
+        this.integralGiftList.forEach(item=>{
+         item["checked"] = false
+        })
+        this.$apply()
+      })
+    }
+    events = {};
+    onLoad() {
+      this.winHeight = util.getScrollHeight(110);
+      this._loadIntegralGift()
+    }
+    // Other properties
+  }
+</script>
+
+<style lang="less">
+  .managerAIDiscount_wrapper {
+    .AIDiscount_list {
+      .label_wrapper {
+        display: flex;
+        .checkbox {
+          padding-top: 60rpx;
+          padding-left: 6rpx
+        }
+        .list_item {
+          width: 90%;
+          background-color: #fff;
+          margin: 20rpx auto;
+          box-sizing: border-box;
+          padding: 10rpx 20rpx;
+          display: flex;
+          justify-content: space-around;
+          .list_item_left {
+            .itemPic {
+              width: 210rpx;
+              height: 160rpx;
+            }
+          }
+          .list_item_right {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            .item {
+              color: #333;
+            }
+          }
+        }
+      }
+    }
+    .handle_box {
+      height: 100rpx;
+      line-height: 100rpx;
+      display: flex;
+      justify-content: space-around;
+      .btn {
+        width: 200rpx;
+      }
+    }
+  }
+</style>

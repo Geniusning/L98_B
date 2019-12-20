@@ -1,0 +1,43 @@
+<template>
+    <view class='qrCodeSetting_wrapper'>
+        <navigator url='/pages/mine/QRcode/deskQrCode' hover-class="none" class='qrCodeBtn'>
+            桌贴二维码
+        </navigator>
+        <navigator url='/pages/mine/QRcode/checkQrCode' hover-class="none" class='qrCodeBtn'>
+            核销二维码
+        </navigator>
+        <navigator url='/pages/mine/QRcode/weChatQrCode' hover-class="none" class='qrCodeBtn'>
+            公众号二维码
+        </navigator>
+    </view>
+</template>
+
+<script>
+    import wepy from 'wepy';
+    export default class qrCodeList extends wepy.page {
+        config = {
+            navigationBarTitleText: '二维码种类列表'
+        };
+        data = {};
+        methods = {};
+        events = {};
+        onLoad() {}
+        // Other properties
+    }
+</script>
+
+<style lang="less">
+.qrCodeSetting_wrapper{
+    height: 100%;
+    padding: 10rpx 20rpx;
+    .qrCodeBtn{
+        width: 100%;
+        height: 80rpx;
+        line-height: 80rpx;
+        text-align: center;
+        border-radius: 10rpx;
+        background-color: #fff;
+        margin-bottom: 20rpx;
+    }
+}
+</style>

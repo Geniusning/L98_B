@@ -1,0 +1,168 @@
+<template>
+  <view class="friendBusiness-wrapper">
+    <view class='main'>
+      <!-- 店长推荐 -->
+      <view class='recommend-container'>
+        <view class='title'>友商互推</view>
+        <view class='itemBox'>
+          <text class='name'>第一步：在友商推图</text>
+          <image src='{{imgUrl}}' class='addPic' catchtap='chooseImage'></image>
+        </view>
+        <form>
+          <view class='itemBox'>
+            <view class='itemname'>第二步：主题描述</view>
+            <input class='input_Area' name='originPrice' placeholder='请输入主题描述'></input>
+          </view>
+          <view class='itemBox'>
+            <view class='itemname'>第三步：内容说明</view>
+            <input class='input_Area' name='originPrice' placeholder='请输入内容说明'></input>
+          </view>
+          <view class='itemBox'>
+            <view class='itemname'>第四步：优惠券内容摘要</view>
+            <input class='input_Area' name='limit' placeholder='请输入优惠券内容摘要'></input>
+          </view>
+          <view class='itemBox'>
+            <view class='itemname'>第五步：赠送友商客户优惠券</view>
+            <navigator open-type="redirect" url="/pages/marketing/cardList/cardList?type=leagle"  class="chooseDiscount">{{isShowDiscountContent?leaglePrize.content:"选择优惠券"}}</navigator>
+          </view>
+          <button form-type="submit">提交</button>
+        </form>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  export default class friendBusiness extends wepy.page {
+    config = {
+      navigationBarTitleText: '友商互推'
+    };
+    data = {
+      picArr: [],
+      isShowDiscountContent:false,
+      show: true,
+      imgUrl: '../../../images/add_pic.png',
+      leaglePrize:{},
+    };
+    methods = {
+      //选择照片
+      chooseImage: function() {
+        let that = this;
+        wx.chooseImage({
+          count: 1, // 默认9
+          sizeType: ['compressed'], // 可以指定是原图还是压缩图，默认二者都有
+          sourceType: ['album', 'camera'], // 可以指定来源是相册还是相机，默认二者都有
+          success: function(res) {
+            // 返回选定照片的本地文件路径列表，tempFilePath可以作为img标签的src属性显示图片
+            var tempFilePaths = res.tempFilePaths;
+            that.imgUrl = tempFilePaths[0];
+            that.$apply();
+          }
+        });
+      }
+    };
+    events = {};
+    onLoad() {
+      console.log(this.$parent.globalData.leaglePrize)
+      let tempObj = this.$parent.globalData.leaglePrize;
+      if(Object.keys(this.$parent.globalData.leaglePrize).length>0){
+        this.isShowDiscountContent = true;
+      }
+      if(tempObj.type===0){
+        tempObj.content = '现金券' + tempObj.value + '元';
+        this.leaglePrize = tempObj
+      }else{
+        this.leaglePrize = tempObj;
+      }
+      
+    }
+    // Other properties
+  }
+</script>
+
+<style lang="less">
+  .friendBusiness-wrapper {
+    height: 100%;
+    background-color: #fff;
+  }
+  .main {
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: 10rpx;
+  }
+  .ShopLogo-container {
+    margin: 22rpx 30rpx;
+  }
+  .ShopLogo-container .title {
+    font-size: 30rpx;
+    color: #333;
+    margin-bottom: 20rpx;
+    font-weight: 700;
+  }
+  .ShopLogo-container .pic-box {
+    width: 100%;
+  }
+  .ShopLogo-container .logoShop {
+    width: 200rpx;
+    height: 200rpx;
+    margin-right: 10rpx;
+    /* border: 1px solid #ccc; */
+  }
+  .recommend-container {
+    margin: 30rpx 30rpx;
+  }
+  .recommend-container .title {
+    margin: 20rpx 0;
+    font-size: 30rpx;
+    color: #333;
+    font-weight: 700;
+  }
+  .recommend-container .itemBox {
+    display: flex;
+    justify-content: space-between;
+  }
+  .itemBox {
+    padding-bottom: 30rpx;
+    padding-top: 30rpx;
+    border-bottom: 1px solid #efeef3;
+    position: relative;
+  }
+  .itemBox .name {
+    font-size: 14px;
+    margin-top: 50rpx;
+  }
+  .itemBox .addPic {
+    width: 130rpx;
+    height: 130rpx;
+  }
+  .itemBox .itemname {
+    font-size: 14px;
+    margin-top: 10rpx;
+  }
+  .itemBox .input_Area {
+    width: 350rpx;
+    font-size: 14px;
+    padding-left: 6rpx;
+    text-align: right;
+  }
+  .picker {
+    width: 190rpx;
+    font-size: 14px;
+    color: #999;
+    text-align: right;
+  }
+  .desc .itemname {
+    font-size: 14px;
+  }
+  .desc .textarea {
+    font-size: 14px;
+    width: 100%;
+    height: 100rpx;
+  }
+  .chooseDiscount{
+    margin-top: 10rpx;
+    // position:absolute;
+    color: #666;
+  }
+</style>

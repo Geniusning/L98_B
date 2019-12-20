@@ -1,0 +1,140 @@
+<template>
+  <view class="consultGame-wrapper">
+    <view class='time-box'>
+      <view class='time-box-left'>
+        <picker mode="date" value="{{date}}" start="2018-09-01" end="2029-09-01" @change="bindStartDateChange">
+          <view class="picker">
+            {{startDate}}
+          </view>
+        </picker>
+      </view>
+      <view class='line'></view>
+      <view class='time-box-right'>
+        <picker mode="date" value="{{date}}" start="2018-09-01" end="2029-09-01" @change="bindEndDateChange">
+          <view class="picker">
+            {{endDate}}
+          </view>
+        </picker>
+      </view>
+      <view class='time-box-btn' @tap='loadGameDayStat'>
+        <text class='btn'>确定</text>
+      </view>
+    </view>
+    <!-- 累计 -->
+    <scroll-view scroll-x scroll-y style="height:{{winHeight}}rpx;">
+      <!-- <view class='detail-box'> -->
+      <view class='item-box'>
+        <text class='name'>名称</text>
+        <repeat for="{{titleList}}" item="item" key="index">
+          <text class='name'>{{item}}</text>
+        </repeat>
+      </view>
+      <!-- <view class='item-box'>
+          <text class='name'>累计</text>
+          <text class='name'>500</text>
+          <text class='name'>100</text>
+          <text class='name'>22564</text>
+        </view> -->
+      <repeat for="{{dataList}}" key="index" item="item">
+        <view class='item-box'>
+          <text class='name'>{{item.date}}</text>
+          <repeat for="{{item.counts}}" key='index' item='item'>
+            <text class='name'>{{item}}</text>
+          </repeat>
+        </view>
+      </repeat>
+      <!-- </view> -->
+    </scroll-view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  const util = require('../../../utils/utils.js')
+  export default class consultGameRecord extends wepy.page {
+    config = {
+      navigationBarTitleText: '店员与客游戏记录'
+    };
+    data = {
+      winHeight: '',
+      titleList: [],
+      startDate: '2018-12-01',
+      endDate: '2018-12-29',
+      dataList: [],
+    };
+    methods = {
+      // 选择开始时间
+      bindStartDateChange(e) {
+        console.log(e.detail.value);
+        this.startDate = e.detail.value
+      },
+      //选择结束时间
+      bindEndDateChange(e) {
+        console.log(e.detail);
+        this.endDate = e.detail.value
+      },
+      loadGameDayStat() {
+        this._loadClerkGameDayStat();
+      }
+    };
+    _loadClerkGameDayStat() {
+      util.interface_get(`${this.$parent.globalData.commonUrl}/api/loadClerkGameDayStat?startDay=${this.startDate}&endDay=${this.endDate}&tk=${this.$parent.globalData.tk}`)
+        .then(res => {
+          if (res.errCode === 0) {
+            this.titleList = res.clerkDaystat[0].clerkInfo.map(item => {
+              return item.name
+            }).reverse()
+            this.dataList = res.clerkDaystat.map(item => {
+              item.date = util.timestampToTime(item.date).slice(0, 10);
+              return item
+            }).reverse()
+            console.log(this.dataList);
+            console.log(this.titleList);
+          }
+          this.$apply()
+          console.log('游戏数据---------------', res);
+        })
+    }
+    events = {};
+    onLoad() {
+     this.winHeight = util.getScrollHeight(114)
+      this.endDate = util.nowDate();
+      this.startDate = util.someDayLater(util.nowDate(), -30, '-')
+      this._loadClerkGameDayStat();
+    }
+    // Other properties
+  }
+</script>
+
+<style lang="less">
+  .consultGame-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background-color: #fff;
+  }
+  .detail-box {
+    /* width: 100%; */
+    border-top: 1px dashed #ccc;
+    padding-top: 20rpx;
+    flex: 1;
+    font-size: 26rpx;
+    background-color: #fff;
+    white-space: nowrap;
+    /* overflow: hidden; */
+  }
+  .item-box {
+    white-space: nowrap;
+    background-color: #fff;
+    /* padding: 10rpx 0; */
+  }
+  .item-box .name {
+    padding: 10rpx;
+    background-color: #fff;
+    width: 180rpx;
+    text-align: center;
+    display: inline-table;
+    border-top: 0.5px solid #ccc;
+    border-right: 0.5px solid #ccc;
+  }
+</style>

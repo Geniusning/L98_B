@@ -1,0 +1,772 @@
+<template>
+  <view class="statCardList_wrapper">
+    <view class="statCard_top">
+      <scroll-view wx:if="{{pageType==='cardList'}}" scroll-y class="scrollView" style="height:{{winHeight}}rpx;">
+        <radio-group @change="checkboxCoupon">
+          <repeat for="{{cardList}}" key="index">
+            <label data-test="{{item.content}}" class="checkbox">
+                  <radio color="#FFBA00" checked="{{item.checked}}" value="{{item.couponID}}"/>
+                   <cardListCom :item="item" ></cardListCom>
+                    <!-- <view class="discountItem">
+                      <view class="discountItem-left">
+                        <text decode="{{true}}" space="{{true}}"  class="title" wx:if="{{item.type==0}}">({{item.theme}})--{{item.value+"元"}}</text>
+                        <text decode="{{true}}" space="{{true}}"  class="title" wx:elif="{{item.type==1}}">({{item.theme}})--{{item.content}}</text>
+                        <text decode="{{true}}" space="{{true}}"  class="title" wx:elif="{{item.type==2}}">({{item.theme}})--{{item.value+"折"}}</text>
+                        <text decode="{{true}}" space="{{true}}"  class="title" wx:elif="{{item.type==3}}">({{item.theme}})--{{item.content}}</text>
+                        <text decode="{{true}}" space="{{true}}"  class="title" wx:elif="{{item.type==4}}">({{item.theme}})--{{item.content}}</text>
+                        <text decode="{{true}}" space="{{true}}"  class="title" wx:elif="{{item.type==5}}">({{item.theme}})--{{item.content}}</text>
+                        <text decode="{{true}}" space="{{true}}"  class="title" wx:elif="{{item.type==6}}">({{item.theme}})--{{item.content}}</text>
+                        <view style="display:flex;justify-content:space-between;">
+                          <text class="limit">{{item.limit}}--</text>
+                          <text class="limit">剩余{{item.number}}张</text>
+                        </view>
+                      </view>
+                      <view class="discountItem-right" wx:if="{{item.type==0}}">
+                        <text>现金券</text>
+                        <text>{{item.endTime}}</text>
+                      </view>
+                      <view class="discountItem-right" wx:if="{{item.type==1}}">
+                        <text>实物券</text>
+                         <text>{{item.endTime}}</text>
+                      </view>
+                      <view class="discountItem-right" wx:if="{{item.type==2}}">
+                        <text>折扣券</text>
+                        <text>{{item.endTime}}</text>
+                      </view>
+                      <view class="discountItem-right" wx:if="{{item.type==3}}">
+                        <text>兑换券</text>
+                        <text>{{item.endTime}}</text>
+                      </view>
+                      <view class="discountItem-right" wx:if="{{item.type==4}}">
+                        <text>满减券</text>
+                        <text>{{item.endTime}}</text>
+                      </view>
+                      <view class="discountItem-right" wx:if="{{item.type==5}}">
+                        <text>月卡券</text>
+                        <text>{{item.endTime}}</text>
+                      </view>
+                      <view class="discountItem-right" wx:if="{{item.type==6}}">
+                        <text>次卡券</text>
+                        <text>{{item.endTime}}</text>
+                      </view>
+                    </view> -->
+                  </label>
+          </repeat>
+        </radio-group>
+      </scroll-view>
+      <scroll-view wx:elif="{{pageType==='AIdiscount'}}" scroll-y scroll-with-animation style="height:{{winHeight}}rpx">
+        <radio-group  @change="checkboxAIAct">
+          <repeat for="{{AIdiscountList}}" key="index" index="index" item="item">
+            <label class="checkbox" class="label_wrapper">
+                <radio color="#FFBA00" value="{{item.id}}"  class="checkbox"/>
+                <view class="list_item">
+                  <view class="list_item_top">
+                    <!-- <view class='isFinishTrue' wx:if="{{item.isFinish}}">已结束</view>
+                    <view class='isFinishFalse' wx:else>进行中</view> -->
+                    <view class="theme">主题：{{item.theme}}</view>
+                    <view class="clientTag">客户：新客、低频</view>
+                  </view>
+                  <view class="list_item_middle">
+                    <view class="discount_content">{{item.couponInfo.content}}</view>
+                    <view class="conditon">条件：{{item.Condition}}</view>
+                  </view>
+                  <view class="list_item_bottom">
+                    <view class="time">
+                      有效时间：{{item.startTime}}至{{item.endTime}}
+                    </view>
+                  </view>
+                </view>
+              </label>
+          </repeat>
+        </radio-group>
+      </scroll-view>
+      <scroll-view wx:elif="{{pageType==='inviteDiscount'}}" scroll-y scroll-with-animation style="height:{{winHeight}}rpx">
+        <radio-group  @change="checkboxInviteAct">
+          <repeat for="{{inviteAIdiscountList}}" key="index" index="index" item="item">
+            <label class="checkbox" class="label_wrapper">
+              <radio color="#FFBA00" value="{{item.InviteActivityID}}"   class="checkbox"/>
+              <view class="list_item">
+                <view class="list_item_top">
+                  <!-- <view class='isFinishTrue' wx:if="{{item.isFinish}}">已结束</view>
+                  <view class='isFinishFalse' wx:else>进行中</view> -->
+                  <view class="theme">A券(赠送新人优惠券)：{{item.ACoupon.content}}</view>
+                  <!-- <view class="clientTag">客户：新客、低频</view> -->
+                </view>
+                <!-- <view class="list_item_middle">
+                  <view class="discount_content">{{item.couponInfo.content}}</view>
+                  <view class="conditon">条件：{{item.Condition}}</view>
+                </view> -->
+                <view class="list_item_bottom">
+                  <view class="time">
+                    B券(赠予分享者优惠券)：{{item.BCoupon.content}}
+                  </view>
+                </view>
+              </view>
+            </label>
+          </repeat>
+        </radio-group>
+      </scroll-view>
+      <scroll-view wx:elif="{{pageType==='game'}}" scroll-y class='scrollView' style="max-height:{{winHeight}}rpx">
+        <checkbox-group @change="checkboxGame">
+            <repeat for="{{gameList}}" key='index'>
+              <label data-test="{{item.content}}" class="label_wrapper">
+                        <checkbox style="padding-top:60rpx" checked='{{item.checked}}' value="{{item.arenaID}}" />
+                        <view class='gameList'>
+                            <view class='gameItem'>
+                                <view class='isFinishTrue' wx:if="{{item.isFinish}}">已结束</view>
+                                <view class='isFinishFalse' wx:else>进行中</view>
+                                <view class='title'>{{item.name}}</view>
+                                <view class='gameInfo'>
+                                    <view class='gameInfo-left'>
+                                        <view class='time'>开始时间：{{item.publishTime}}</view>
+                                        <view class='time'>结束时间：{{item.endTime}}</view>
+                                    </view>
+                                    <view class='gameInfo-right'>
+                                        <view class='num'>人数：{{item.maxNumberOfPlayer}}</view>
+                                        <view class='num'>局数：{{item.maxRoundNumber}}</view>
+                                    </view>
+                                </view>
+                            </view>
+                        </view>
+                    </label>
+            </repeat>
+          </checkbox-group>
+      </scroll-view>
+    </view>
+    <view class="statCard_bottom">
+      <view class="total_discountNum">
+        <view style="display:flex;justify-content: space-around;width:100%" wx:if="{{pageType==='cardList'}}">
+          <view class="dispatch_num">该券累计发放：{{accumulatedDispatchTimes}}张</view>
+          <view class="checkOut_num">该券累计核销：{{accumulatedCheckoutTimes}}张</view>
+        </view>
+        <view wx:elif="{{pageType==='AIdiscount'}}">
+          <view class="checkOut_num">累计参与本项活动人数: {{totalTimes}}人</view>
+        </view>
+        <view wx:elif="{{pageType==='inviteDiscount'}}">
+          <view class="checkOut_num">累计参与邀新活动人数: {{totalTimes}}人</view>
+        </view>
+        <view wx:elif="{{pageType==='game'}}">
+          <view class="checkOut_num">累计参与大话骰人数: {{totalTimes}}人</view>
+        </view>
+      </view>
+      <view class="time-box">
+        <view class="time-box-left">
+          <picker mode="date" value="{{date}}" start="2015-09-01" end="2029-09-01" @change="bindStartDateChange">
+            <view class="picker">{{startDate}}</view>
+          </picker>
+        </view>
+        <view class="line"></view>
+        <view class="time-box-right">
+          <picker mode="date" value="{{date}}" start="2015-09-01" end="2029-09-01" @change="bindEndDateChange">
+            <view class="picker">{{endDate}}</view>
+          </picker>
+        </view>
+        <view class="time-box-btn" @tap="selectData">
+          <text class="btn">确定</text>
+        </view>
+        <view class="total" style="padding-top: 8rpx;padding-left: 50rpx">
+          合计：{{dateOfTotalTimes}}
+        </view>
+      </view>
+      <view class="detail_box">
+        <scroll-view wx:if="{{pageType==='cardList'}}" scroll-y scroll-with-animation style="height:{{detailHeight}}rpx">
+          <view class="discountItemBox">
+            <text class="item">日期</text>
+            <text class="item">发放</text>
+            <text class="item">核销</text>
+          </view>
+          <repeat for="{{used_discountList}}" key="index" index="index" item="item">
+            <view class="discountItemBox">
+              <text class="item">{{item.date}}</text>
+              <text class="item">{{item.dispatchTimes}}</text>
+              <text class="item">{{item.checkoutTimes}}</text>
+            </view>
+          </repeat>
+          <view wx:if="{{!used_discountList.length}}" class="noDataText">请选择需要查看的数据项</view>
+        </scroll-view>
+        <scroll-view wx:elif="{{pageType==='AIdiscount'}}" scroll-y scroll-with-animation style="height:{{detailHeight}}rpx">
+          <view class="discountItemBox">
+            <text class="item">日期</text>
+            <text class="item">参与活动人数</text>
+          </view>
+          <repeat for="{{used_AIdiscountList}}" key="index" index="index" item="item">
+            <view class="discountItemBox">
+              <text class="item">{{item.date}}</text>
+              <text class="item">{{item.joinTimes}}</text>
+            </view>
+          </repeat>
+          <view wx:if="{{!used_AIdiscountList.length}}" class="noDataText">请选择需要查看的数据项</view>
+        </scroll-view>
+        <scroll-view wx:elif="{{pageType==='inviteDiscount'}}" scroll-y scroll-with-animation style="height:{{detailHeight}}rpx">
+          <view class="discountItemBox">
+            <text class="item">日期</text>
+            <text class="item">参与分享人数</text>
+          </view>
+          <repeat for="{{used_inviteActList}}" key="index" index="index" item="item">
+            <view class="discountItemBox">
+              <text class="item">{{item.date}}</text>
+              <text class="item">{{item.joinTimes}}</text>
+            </view>
+          </repeat>
+           <view wx:if="{{!used_inviteActList.length}}" class="noDataText">请选择需要查看的数据项</view>
+        </scroll-view>
+        <scroll-view wx:elif="{{pageType==='game'}}" scroll-y scroll-with-animation style="height:{{detailHeight}}rpx">
+          <view class="discountItemBox">
+            <text class="item">日期</text>
+            <text class="item">参与本期游戏人数</text>
+          </view>
+          <repeat for="{{used_AIdiscountList}}" key="index" index="index" item="item">
+            <view class="discountItemBox">
+              <text class="item">{{item.date}}</text>
+              <text class="item">{{item.dispatch}}</text>
+            </view>
+          </repeat>
+           <view wx:if="{{!used_AIdiscountList.length}}" class="noDataText">请选择需要查看的数据项</view>
+        </scroll-view>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  import util from '../../../utils/utils.js'
+  import cardListCom from '../../../components/cardList'
+  export default class statCardList extends wepy.page {
+    config = {
+      navigationBarTitleText: '统计优惠券'
+    };
+    data = {
+      endDate: "",
+      startDate: "",
+      cardList: [],
+      pageType:"",
+      AIdiscountList:[],
+      gameList:[],
+      winHeight: 600,
+      detailHeight: 100,
+      couponId:"",
+      activityId:"",
+      AIactivityId:"",
+      accumulatedDispatchTimes:0,
+      accumulatedCheckoutTimes:0,
+      totalTimes:0,
+      dateOfTotalTimes:0,
+      used_discountList: [],
+      used_AIdiscountList: [],
+      used_inviteActList:[],
+      inviteAIdiscountList:[
+        {
+          theme:"测试活动"
+        },
+        {
+          theme:"搞搞活动"
+        },
+        {
+          theme:"测试活动"
+        },
+        {
+          theme:"搞搞活动"
+        },
+        {
+          theme:"测试活动"
+        },
+        {
+          theme:"搞搞活动"
+        },
+        {
+          theme:"测试活动"
+        },
+        {
+          theme:"搞搞活动"
+        }
+      ],
+    };
+    components = {
+      cardListCom:cardListCom
+    };
+    methods = {
+      bindStartDateChange(e) {
+        this.startDate = e.detail.value
+        let flag = util.compareDate(this.startDate, this.endDate)
+        if (!flag) {
+          wx.showToast({
+            title: "不能大于结束日期",
+            icon: 'none',
+            duration: 2000
+          })
+          this.startDate = util.someDayLater(util.nowDate(), -30, '-');
+        }
+      },
+      bindEndDateChange(e) {
+        this.endDate = e.detail.value
+        let flag = util.compareDate(this.startDate, this.endDate)
+        if (!flag) {
+          wx.showToast({
+            title: "不能小于开始日期",
+            icon: 'none',
+            duration: 2000
+          })
+          this.endDate = util.nowDate();
+        }
+      },
+      checkboxCoupon(e) {
+        console.log(e.detail.value)
+        this.couponId = e.detail.value
+        this._getCardDispatchAndChecoutTimes()
+      },
+      selectData(){
+        if(this.pageType==="cardList"){
+          this._getCardDispatchAndChecoutTimes()
+        }else if (this.pageType==="inviteDiscount"){
+          this._getUserJoinInviteActTimes(this.activityId)
+        }else if (this.pageType==="AIdiscount"){
+           this._getUserJoinAIActTimes(this.AIactivityId)
+        }
+      },
+      checkboxInviteAct(e){
+        
+        this.activityId = e.detail.value
+        this._getUserJoinInviteActTimes(this.activityId)
+      },
+      checkboxAIAct(e){
+        console.log(e.detail.value)
+        this.AIactivityId = e.detail.value
+        this._getUserJoinAIActTimes(this.AIactivityId)
+      }
+    };
+    //获取每天参与AI活动的人数
+    _getUserJoinAIActTimes(AIactivityId){
+       this.dateOfTotalTimes = 0 //重置
+      this.used_AIdiscountList = [] 
+      let url = `${this.$parent.globalData.commonUrl}/api/loadUserJoinAIcouponAct?tk=${this.$parent.globalData.tk}&AIactivityId=${AIactivityId}&startDate=${this.startDate}&endDate=${this.endDate}`
+      util.interface_get(url).then(res=>{
+        console.log(res)
+        if(res.errCode===0){
+          this.used_AIdiscountList = res.userJoinAIAct.DateUserJoin
+          this.totalTimes = res.userJoinAIAct.allJoinTimes
+          this.used_AIdiscountList.forEach(item=>{
+            this.dateOfTotalTimes += item.joinTimes,
+            item.date = util.timestampToTime(item.date).slice(0,11)
+          })
+        }
+        this.$apply()
+      })
+    };
+    //获取每天参与邀新活动的人数 used_inviteActList
+    _getUserJoinInviteActTimes(){
+      this.dateOfTotalTimes = 0 //重置
+      this.used_inviteActList = [] //重置
+      let url = `${this.$parent.globalData.commonUrl}/api/loadUserJoinInviteAct?tk=${this.$parent.globalData.tk}&activityId=${this.activityId}&startDate=${this.startDate}&endDate=${this.endDate}`
+      util.interface_get(url).then(res=>{
+        console.log(res)
+        if(res.errCode===0){
+          this.used_inviteActList = res.userJoinInviteAct.DateUserJoin
+          this.totalTimes = res.userJoinInviteAct.allJoinTimes
+          this.used_inviteActList.forEach(item=>{
+            this.dateOfTotalTimes += item.joinTimes,
+            item.date = util.timestampToTime(item.date).slice(0,11)
+          })
+        }
+        this.$apply()
+      })
+    }
+    //拉取邀新活动列表
+    _getInviteActivityList(){
+      let url = `${this.$parent.globalData.commonUrl}/api/loadInviteAcitity?tk=${this.$parent.globalData.tk}`
+      util.interface_get(url).then(res=>{
+       if(res.errCode===0){
+         this.inviteAIdiscountList = res.abCouponList;
+         this.inviteAIdiscountList.forEach(item=>{
+           item.ACoupon.content = util.returnDiscountContent(item.ACoupon)
+           item.BCoupon.content = util.returnDiscountContent(item.BCoupon)
+         })
+         console.log("this.inviteAIdiscountList------",this.inviteAIdiscountList)
+         this.$apply()
+       }
+     })
+    }
+    //获取优惠券每日发放次数和核销次数
+    _getCardDispatchAndChecoutTimes(){
+      this.dateOfTotalTimes = 0 //重置
+      this.used_discountList = [] //重置
+      let url = `${this.$parent.globalData.commonUrl}/api/loadCouponDipAndChcout?tk=${this.$parent.globalData.tk}&couponId=${this.couponId}&startDate=${this.startDate}&endDate=${this.endDate}`
+      util.interface_get(url).then(res=>{
+        console.log(res)
+        if(res.errCode===0){
+          this.accumulatedDispatchTimes = res.flowCouponstatus.allDispatchTimes
+          this.accumulatedCheckoutTimes = res.flowCouponstatus.allCheckoutTimes
+          this.used_discountList = res.flowCouponstatus.flowCouponDayStatus
+          this.used_discountList.forEach(item=>{
+            item.date = util.timestampToTime(item.date).slice(0,11)
+            this.dateOfTotalTimes += item.checkoutTimes
+            this.dateOfTotalTimes += item.dispatchTimes
+          })
+        this.$apply()
+        }
+      })
+    }
+    getHandledGameList(gameListData) {
+      let nowTime = new Date().getTime();
+      let tempgameListData = gameListData.map(item => {
+        if (Number(item.endTime) < Math.round(nowTime / 1000)) {
+          item['isFinish'] = true;
+        } else {
+          item['isFinish'] = false;
+        }
+        item.publishTime = util.timestampToTime(item.publishTime);
+        item.endTime = util.timestampToTime(item.endTime);
+        return item
+      });
+      this.gameList = tempgameListData;
+      this.$apply();
+    };
+    //获取游戏列表
+    getGameList() {
+      return new Promise((resolve, reject) => {
+        let _this = this;
+        wx.request({
+          url: `${_this.$parent.globalData.commonUrl}/api/loadArenas?tk=${_this.$parent.globalData.tk}`,
+          success: function(res) {
+            console.log(res)
+            if (res.statusCode === 200) {
+              resolve(res.data.arenaInfos);
+            } else {
+              reject(err);
+            }
+          }
+        });
+      });
+    };
+    //获取优惠券列表
+    getCardList() {
+      return new Promise((resolve, reject) => {
+        wx.showLoading({
+          title: '加载中',
+          mask: true
+        })
+        wx.request({
+          url: `${this.$parent.globalData.commonUrl}/api/loadCoupons?tk=${this.$parent.globalData.tk}`,
+          success: function(res) {
+            if (res.statusCode === 200) {
+              wx.hideLoading()
+              resolve(res.data);
+            }
+          }
+        });
+      });
+    };
+    //获取发布AI优惠券活动列表
+    getAICardList() {
+      let url = `${this.$parent.globalData.commonUrl}/api/loadDispatchCouponList?tk=${this.$parent.globalData.tk}`
+      util.interface_get(url).then(res => {
+        this.AIdiscountList = res.coupon
+        this.AIdiscountList.forEach(item => {
+          let nowDateStamp = new Date(util.nowDate()).getTime();
+          let itemDateStamp = new Date(item.endTime).getTime();
+          if (nowDateStamp > itemDateStamp) {
+            item['isFinish'] = true;
+          } else {
+            item['isFinish'] = false;
+          }
+          item.Condition = this.judgeCondition(item.Condition);
+          item.couponInfo.content = util.returnDiscountContent(item.couponInfo);
+        })
+        console.log("ai优惠券列表---------", this.AIdiscountList)
+        this.$apply();
+      })
+    };
+    judgeCondition(type) {
+      let conditionType = ""
+      switch (type) {
+        case 0:
+          conditionType = "访问首页，人人有礼"
+          break;
+        case 1:
+          conditionType = "扫核销码，核销有礼"
+          break;
+        case 2:
+          conditionType = "访问游戏大厅，参赛有礼"
+          break;
+        case 3:
+          conditionType = "比赛完成页，参赛安慰奖"
+          break;
+        case 4:
+          conditionType = "非访问状态，系统通知(即用微信订单通知)"
+          break;
+        default:
+          break;
+      }
+      return conditionType
+    };
+    events = {};
+    async onLoad(e) {
+      this.pageType = e.type
+      this.detailHeight = util.getScrollHeight(850)
+      this.endDate = util.nowDate();
+      this.startDate = util.someDayLater(util.nowDate(), -30, '-');
+      if (this.pageType === "cardList") {
+        wx.setNavigationBarTitle({
+          title: "统计优惠券"
+        })
+        this.cardList = await this.getCardList();
+        console.log("this.cardList------",this.cardList)
+        this.$apply();
+      } else if (this.pageType === "AIdiscount") {
+        this.getAICardList()
+        wx.setNavigationBarTitle({
+          title: "AI优惠券统计"
+        })
+        this.$apply();
+      }else if(this.pageType==="inviteDiscount"){
+         wx.setNavigationBarTitle({
+          title: "邀新优惠券统计"
+        })
+        this._getInviteActivityList()
+      }else if(this.pageType==="game"){
+        let gameListData = await this.getGameList();
+        this.getHandledGameList(gameListData);
+         wx.setNavigationBarTitle({
+          title: "大话赛统计"
+        })
+      }
+    }
+    // Other properties
+  }
+</script>
+
+<style lang="less">
+  .statCardList_wrapper {
+    .statCard_top {
+      margin: 10rpx 20rpx;
+      background-color: #fff;
+      .scrollView {
+        padding: 10rpx 10rpx;
+      }
+      .checkbox {
+        display: flex;
+        margin-bottom: 20rpx;
+      }
+      .discountItem {
+        /* width: 400rpx; */
+        flex: 1;
+        height: 150rpx;
+        padding: 0 20rpx;
+        border: 1px solid #ccc;
+        display: flex;
+        justify-content: space-between;
+      }
+      .discountItem-left {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+      }
+      .discountItem-left .title {
+        font-size: 38rpx;
+        color: #ffba00;
+      }
+      .discountItem-left .time {
+        font-size: 32rpx;
+        color: #333;
+      }
+      .discountItem-right {
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+      }
+      .label_wrapper {
+        display: flex;
+        background-color: #fff;
+        .gameList {
+          background-color: #fff;
+          width: 100%;
+          box-sizing: border-box;
+          padding: 10rpx 20rpx;
+          border: 1px solid #ccc;
+          margin-bottom: 8rpx;
+          .gameItem {
+            width: 100%;
+            position: relative;
+            .isFinishTrue,
+            .isFinishFalse {
+              padding: 6rpx 10rpx;
+              position: absolute;
+              top: 10rpx;
+              right: 120rpx;
+              transform: rotate(-20deg);
+            }
+            .isFinishTrue {
+              border: 1px solid #333;
+            }
+            .isFinishFalse {
+              border: 1px solid red;
+            }
+            .title {
+              font-size: 30rpx;
+              font-weight: bold;
+              color: #333;
+              margin-bottom: 20rpx;
+            }
+            .gameInfo {
+              display: flex;
+              justify-content: space-between;
+              .gameInfo-left {
+                .time {
+                  margin-bottom: 10rpx;
+                }
+              }
+              .gameInfo-right {
+                .num {
+                  margin-bottom: 10rpx;
+                }
+              }
+            }
+          }
+        }
+        .AIdiscountItem {
+          padding: 10rpx 10rpx;
+          height: 150rpx;
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+          position: relative;
+           .isFinishTrue,
+            .isFinishFalse {
+              padding: 6rpx 10rpx;
+              position: absolute;
+              top: 10rpx;
+              right: 120rpx;
+              transform: rotate(-20deg);
+            }
+            .isFinishTrue {
+              border: 1px solid #333;
+            }
+            .isFinishFalse {
+              border: 1px solid red;
+            }
+          .themeTitle {
+            color: #333;
+            font-size: 32rpx;
+            font-weight: 800;
+            text-align: left;
+            height: 60rpx;
+          }
+          .discountContent {
+            flex: 1;
+            display: flex;
+            justify-content: space-between;
+            .discountContentLeft,
+            .discountContentRight {
+              display: flex;
+              flex-direction: column;
+              justify-content: space-between;
+              .lineOne {
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                width: 300rpx;
+              }
+              .lineTwo {
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                width: 300rpx;
+              }
+            } // .discountContentRight{
+            //   display: flex;
+            //   flex-direction: column;
+            //   justify-content: space-between;
+            //   .lineOne{}
+            //   .lineTwo{}
+            // }
+          }
+        }
+        .checkbox {
+          padding-top: 60rpx;
+          padding-left: 6rpx
+        }
+        .list_item {
+          width: 90%;
+          height: 200rpx;
+          background-color: #fff;
+          margin: 20rpx auto;
+          box-sizing: border-box;
+          padding: 10rpx 20rpx;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          border: 1px solid #ccc;
+          .list_item_top {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 12px;
+            position: relative;
+            .isFinishTrue,
+            .isFinishFalse {
+              padding: 6rpx 10rpx;
+              position: absolute;
+              top: 10rpx;
+              right: 120rpx;
+              transform: rotate(-20deg);
+            }
+            .isFinishTrue {
+              border: 1px solid #333;
+            }
+            .isFinishFalse {
+              border: 1px solid red;
+            }
+            .theme {
+              color: #333;
+              font-size: 12px;
+            }
+            .clientTag {}
+          }
+          .list_item_middle {
+            display: flex;
+            justify-content: space-between;
+            .conditon {}
+            .discount_content {
+              font-size: 12px;
+            }
+          }
+          .list_item_bottom {
+            width: 100%;
+            text-align: left;
+          }
+        }
+      }
+    }
+    .statCard_bottom {
+      .total_discountNum {
+        height: 80rpx;
+        background-color: #fff;
+        display: flex;
+        justify-content: space-around;
+        line-height: 80rpx;
+        margin-bottom: 10rpx;
+      }
+      .detail_box {
+        margin-top: 10rpx;
+        background-color: #fff;
+        .discountItemBox {
+          display: flex;
+          justify-content: space-between;
+          .item {
+            width: 33.333%;
+            height: 60rpx;
+            line-height: 60rpx;
+            text-align: center;
+          }
+        }
+        .noDataText{
+          margin-top: 12%;
+          width: 100%;
+          text-align: center;
+          font-size: 16px;
+          color: #ccc;
+        }
+      }
+    }
+  }
+</style>

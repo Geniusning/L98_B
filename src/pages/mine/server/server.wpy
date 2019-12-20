@@ -1,0 +1,73 @@
+<template>
+<view class='server-container'>
+  <view class='serverItem'>
+    <view>
+      <image src='../../../images/AI.png' class='pic'></image>
+      <text class='text'>服务有效期至：2018-12-30</text>
+    </view>
+  </view>
+  <navigator url='/pages/mine/server/serverDetail/serverDetail' hover-class='none' class='serverItem'>
+    <view>
+      <image src='../../../images/AI.png' class='pic'></image>
+      <text class='text'>服务费查询</text>
+    </view>
+    <view>
+      <image class='arrow' src='../../../images/arrow_right.png'></image>
+    </view>
+  </navigator>
+  <navigator url='/pages/mine/server/payServer/payServer' hover-class='none' class='serverItem'>
+    <view>
+      <image src='../../../images/AI.png' class='pic'></image>
+      <text class='text'>充值</text>
+    </view>
+    <view>
+      <image class='arrow' src='../../../images/arrow_right.png'></image>
+    </view>
+  </navigator>
+</view> 
+</template>
+
+<script>
+import wepy from 'wepy';
+
+export default class server extends wepy.page {
+  config = {
+    navigationBarTitleText: '服务查询'
+  };
+
+  data = {};
+  methods = {};
+
+  events = {};
+  onLoad() {}
+  // Other properties
+}
+</script>
+
+<style lang="less">
+.server-container {
+  padding: 20rpx 30rpx;
+}
+.serverItem {
+  background: #fff;
+  padding: 20rpx 30rpx;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 30rpx;
+}
+.serverItem .pic {
+  width: 100rpx;
+  height: 100rpx;
+}
+.text {
+  margin-left: 20rpx;
+  vertical-align: 40rpx;
+}
+
+.arrow {
+  width: 18rpx;
+  height: 25rpx;
+  margin-top: 42rpx;
+}
+</style>

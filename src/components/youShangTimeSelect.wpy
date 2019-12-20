@@ -1,0 +1,67 @@
+<template>
+    <!-- <view class="setting-wrapper"> -->
+        <view class='time-box'>
+            <view class='time-box-left'>
+                <picker mode="date" value="{{date}}" start="2015-09-01" end="2019-09-01" @change="bindStartDateChange">
+                    <view class="picker">
+                    {{startDate}}
+                    </view>
+                </picker>
+            </view>
+            <view class='line'></view>
+            <view class='time-box-right'>
+                <picker mode="date" value="{{date}}" start="2015-09-01" end="2019-09-01" @change="bindEndDateChange">
+                    <view class="picker">
+                    {{endDate}}
+                    </view>
+                </picker>
+            </view>
+            <view class='time-box-btn'>
+                <text class='btn'>确定</text>
+            </view>
+        </view>
+    <!-- </view> -->
+</template>
+
+<script>
+import wepy from 'wepy';
+
+export default class setting extends wepy.component {
+  data = {
+    startDate: '2018-07-06',
+    endDate: '2019-08-08'
+  };
+  props = {
+    prop_startDate: {
+      type: String,
+      default: 'nothing',
+      twoWay: true
+    },
+    prop_endDate: {
+      type: String,
+      default: 'nothing',
+      twoWay: true
+    }
+  };
+  methods = {
+    bindStartDateChange: function(e) {
+      console.log('picker发送选择改变，携带值为', e.detail.value);
+      this.startDate = e.detail.value;
+      this.prop_startDate = e.detail.value;
+    },
+    bindEndDateChange: function(e) {
+      console.log('picker发送选择改变，携带值为', e.detail.value);
+      this.endDate = e.detail.value;
+      this.prop_endDate = e.detail.value;
+    }
+  };
+
+  events = {};
+  onLoad() {}
+  // Other properties
+}
+</script>
+
+<style lang="less">
+/** less **/
+</style>

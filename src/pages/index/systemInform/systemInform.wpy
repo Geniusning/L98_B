@@ -1,0 +1,109 @@
+<template>
+  <view class="recommend-wrapper">
+    <view class='time-box'>
+      <view class='time-box-left'>
+        <picker mode="date" value="{{date}}" start="2015-09-01" end="2019-09-01" @change="bindStartDateChange">
+          <view class="picker">
+            {{startDate}}
+          </view>
+        </picker>
+      </view>
+      <view class='line'></view>
+      <view class='time-box-right'>
+        <picker mode="date" value="{{date}}" start="2015-09-01" end="2019-09-01" @change="bindEndDateChange">
+          <view class="picker">
+            {{endDate}}
+          </view>
+        </picker>
+      </view>
+      <view class='time-box-btn' @tap="selectSpecifyData">
+        <text class='btn'>确定</text>
+      </view>
+    </view>
+    <view class='date-box'>
+      <scroll-view scroll-y style="height:{{winHeight}}rpx">
+        <view class='dateTitle-wrapper'>
+          <text class='item'>日期</text>
+          <text class='item'>自动发券</text>
+          <text class='item'>邀新有礼</text>
+          <text class='item'>发布活动</text>
+          <text class='item'>发布游戏</text>
+        </view>
+        <repeat for="{{sysInformList}}" key="index">
+          <view class='dateTitle-wrapper'>
+            <text class='item'>{{item.date}}</text>
+            <text class='item'>0次</text>
+            <text class='item'>{{item.dayInviteStat}}次</text>
+            <text class='item'>{{item.dayNoticeStat}}次</text>
+            <text class='item'>{{item.dayArenaStat}}次</text>
+          </view>
+        </repeat>
+      </scroll-view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  const util = require("../../../utils/utils.js")
+  export default class systemInform extends wepy.page {
+    config = {
+      navigationBarTitleText: '系统通知'
+    };
+    data = {
+      winHeight: '',
+      startDate: '2018-07-06',
+      endDate: '2019-08-08',
+      sysInformList: []
+    };
+    methods = {
+      selectSpecifyData() {
+        this._getSystemInfoList()
+      },
+      bindStartDateChange: function(e) {
+        console.log('picker发送选择改变，携带值为', e.detail.value);
+        this.startDate = e.detail.value;
+      },
+      bindEndDateChange: function(e) {
+        console.log('picker发送选择改变，携带值为', e.detail.value);
+        this.endDate = e.detail.value;
+      }
+    };
+    _getSystemInfoList() {
+      var url = `${this.$parent.globalData.commonUrl}/api/loadReleaseActivityDayStat?startDay=${this.startDate}&endDay=${this.endDate}&tk=${this.$parent.globalData.tk}`
+      util.interface_get(url).then(res => {
+        console.log("系统通知data-----------", res)
+        this.sysInformList = res.activityDayStat.map(item => {
+          item.date = util.timestampToTime(item.date).slice(0, 10);
+          // item.totalData = item.dayArenaStat + item.dayInviteStat + item.dayNoticeStat;
+          return item
+        }).reverse();
+        this.$apply()
+      })
+    }
+    events = {};
+    onLoad() {
+      this.startDate = util.someDayLater(util.nowDate(), -30, '-');
+      this.endDate = util.nowDate();
+      this._getSystemInfoList()
+      this.winHeight = util.getScrollHeight(200)
+    }
+    // Other properties
+  }
+</script>
+
+<style lang="less">
+  .recommend-wrapper {
+    height: 100%;
+    background-color: #fff;
+    .dateTitle-wrapper {
+      width: 100%;
+      font-size: 26rpx;
+      text-align: center;
+      padding: 20rpx 0;
+      .item {
+        width: 20%;
+      }
+    }
+  }
+</style>

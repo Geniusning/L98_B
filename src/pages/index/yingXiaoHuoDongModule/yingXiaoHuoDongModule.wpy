@@ -1,0 +1,267 @@
+<template>
+  <view class="consultChat-wrapper">
+    <view class="time-box">
+      <view class="time-box-left">
+        <picker mode="date" value="{{date}}" start="2015-09-01" end="2019-09-01" @change="bindStartDateChange">
+          <view class="picker">{{startDate}}</view>
+        </picker>
+      </view>
+      <view class="line"></view>
+      <view class="time-box-right">
+        <picker mode="date" value="{{date}}" start="2015-09-01" end="2019-09-01" @change="bindEndDateChange">
+          <view class="picker">{{endDate}}</view>
+        </picker>
+      </view>
+      <view class="time-box-btn">
+        <text class="btn" @tap='selecData'>确定</text>
+      </view>
+    </view>
+    <!-- 累计 -->
+    <scroll-view scroll-x scroll-y style="height:{{winHeight}}rpx;border-top:1px solid #ccc;">
+      <!-- <view class='detail-box'> -->
+      <view class="item-box">
+        <text class="name">日期</text>
+        <text class="name">合计</text>
+        <repeat for="{{titleTypeList}}" item="item" key="index">
+          <text class="name">{{item}}</text>
+        </repeat>
+      </view>
+      <repeat for="{{dateList}}" key="index">
+        <view class="item-box" wx:if="{{type_data==='clerkDaystat'}}">
+          <text class="name">{{item.date}}</text>
+          <text class="name">{{item.totalData}}</text>
+          <text class="name">{{item.dayCashTypeStat}}</text>
+          <text class="name">{{item.dayDiscountTypeStat}}</text>
+          <text class="name">{{item.dayRealthingTypeStat}}</text>
+          <text class="name">{{item.dayExchangeTypeStat}}</text>
+        </view>
+        <view class="item-box" wx:elif="{{type_data ==='activityDayStat'}}">
+          <text class="name">{{item.date}}</text>
+          <text class="name">{{item.totalData}}</text>
+          <text class="name">{{item.dayArenaStat}}</text>
+          <text class="name">{{item.dayInviteStat}}</text>
+          <text class="name">{{item.dayNoticeStat}}</text>
+        </view>
+        <view class="item-box" wx:elif="{{type_data==='sysSendInteDayStat'}}">
+          <text class="name">{{item.date}}</text>
+          <text class="name">{{item.totalData}}</text>
+          <text class="name">{{item.dayCheckIn}}</text>
+          <text class="name">{{item.dayActivityShare}}</text>
+          <text class="name">{{item.dayGameShare}}</text>
+        </view>
+        <view class="item-box" wx:elif="{{type_data==='giftSendStats'}}">
+          <text class="name">{{item.date}}</text>
+          <text class="name">{{item.totalData}}</text>
+          <text class="name">{{item.dayGiftSend}}</text>
+          <text class="name">{{item.dayRecommendSend}}</text>
+          <text class="name">{{item.dayGoodsSend}}</text>
+        </view>
+        <view class="item-box" wx:elif="{{type_data==='payDayStat'}}">
+          <text class="name">{{item.date}}</text>
+          <text class="name">{{item.totalData}}</text>
+          <text class="name">{{item.dayIntegral}}</text>
+          <text class="name">{{item.dayCash}}</text>
+        </view>
+        <view class="item-box" wx:elif="{{type_data==='giftConvertStats'}}">
+          <text class="name">{{item.date}}</text>
+          <text class="name">{{item.totalData}}</text>
+          <text class="name">{{item.dayRecommendConvert}}</text>
+          <text class="name">{{item.dayGoodsConvert}}</text>
+        </view>
+        <view class="item-box" wx:elif="{{type_data==='null'}}"></view>
+      </repeat>
+      <!-- </view> -->
+    </scroll-view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  const util = require('../../../utils/utils.js')
+  export default class yingXiaoHuoDongModule extends wepy.page {
+    config = {
+      navigationBarTitleText: '发券数量记录'
+    };
+    data = {
+      titleTypeList: [],
+      winHeight: '',
+      startDate: '2018-07-06',
+      endDate: '2019-08-08',
+      dateList: [],
+      type_data: 'null',
+      pageType: "" //判断进入的是哪个页面
+    };
+    methods = {
+      bindStartDateChange: function(e) {
+        this.startDate = e.detail.value;
+      },
+      bindEndDateChange: function(e) {
+        this.endDate = e.detail.value;
+      },
+      //查询数据
+      selecData: function() {
+        this.judegePageType(this.pageType);
+      }
+    };
+    events = {};
+    _getMarketingStat(url) {
+      util.interface_get(url).then(res => {
+        if (res.errCode === 0) {
+          console.log('返回的数据-------------------------', res)
+          if (res.activityDayStat) {
+            this.type_data = 'activityDayStat';
+            this.dateList = res.activityDayStat.map(item => {
+              item.date = util.timestampToTime(item.date).slice(0, 10);
+              item.totalData = item.dayArenaStat + item.dayInviteStat + item.dayNoticeStat;
+              return item
+            }).reverse();
+          } else if (res.clerkDaystat) {
+            this.type_data = 'clerkDaystat';
+            this.dateList = res.clerkDaystat.map(item => {
+              item.date = util.timestampToTime(item.date).slice(0, 10);
+              item.totalData = item.dayCashTypeStat + item.dayDiscountTypeStat + item.dayExchangeTypeStat + item.dayRealthingTypeStat;
+              return item
+            }).reverse();
+          } else if (res.sysSendInteDayStat) {
+            this.type_data = 'sysSendInteDayStat';
+            this.dateList = res.sysSendInteDayStat.map(item => {
+              item.date = util.timestampToTime(item.date);
+              item.makeFiendData = 0;
+              item.totalData = item.dayCheckIn+item.dayActivityShare+item.dayGameShare;
+              return item
+            }).reverse();
+          } else if (res.payDayStat) {
+            this.type_data = 'payDayStat';
+            this.dateList = res.payDayStat.map(item => {
+              item.date = util.timestampToTime(item.date).slice(0, 10);
+              item.totalData = item.dayIntegral;
+              return item
+            }).reverse();
+          } else if (res.giftSendStats) {
+            this.type_data = 'giftSendStats';
+            this.dateList = res.giftSendStats.map(item => {
+              item.date = util.timestampToTime(item.date).slice(0, 10);
+              item.totalData = item.dayAmount;
+              return item
+            }).reverse();
+          } else if (res.giftConvertStats) {
+            this.type_data = 'giftConvertStats';
+            this.dateList = res.giftConvertStats.map(item => {
+              item.date = util.timestampToTime(item.date).slice(0, 10);
+              item.totalData = item.dayAmount;
+              return item
+            }).reverse();
+          }
+          this.$apply()
+        }
+      })
+    };
+    judegePageType(type) {
+      switch (type) {
+        case '0':
+          this.titleTypeList = ['现金券', '折扣券', '实物券', '兑换券','满减券']
+          //发放优惠券数量
+          var url = `${this.$parent.globalData.commonUrl}/api/loadIssuedCouponDayStat?startDay=${this.startDate}&endDay=${this.endDate}&tk=${this.$parent.globalData.tk}`
+          this._getMarketingStat(url);
+          break;
+        case '1':
+          wx.setNavigationBarTitle({
+            title: '到店核销记录'
+          });
+          this.titleTypeList = ['现金券', '折扣券', '实物券', '兑换券','满减券']
+          var url = `${this.$parent.globalData.commonUrl}/api/loadSetOffCouponDayStat?startDay=${this.startDate}&endDay=${this.endDate}&tk=${this.$parent.globalData.tk}`
+          this._getMarketingStat(url);
+          break;
+        case '2':
+          wx.setNavigationBarTitle({
+            title: '在线活动记录'
+          });
+          this.titleTypeList = ['大话排名赛', '邀新有礼', '活动通知','自动发券'];
+          var url = `${this.$parent.globalData.commonUrl}/api/loadReleaseActivityDayStat?startDay=${this.startDate}&endDay=${this.endDate}&tk=${this.$parent.globalData.tk}`
+          this._getMarketingStat(url);
+          break;
+        case '3':
+          wx.setNavigationBarTitle({
+            title: '糸统赠送记录'
+          });
+          this.titleTypeList = ['签到积分', '活动分享', '游戏分享'];
+          var url = `${this.$parent.globalData.commonUrl}/api/loadIntegralSystemDayStat?startDay=${this.startDate}&endDay=${this.endDate}&tk=${this.$parent.globalData.tk}`
+          this._getMarketingStat(url);
+          break;
+        case '4':
+          wx.setNavigationBarTitle({
+            title: '积分充值记录'
+          });
+          var url = `${this.$parent.globalData.commonUrl}/api/loadIntegralPayDayStat?startDay=${this.startDate}&endDay=${this.endDate}&tk=${this.$parent.globalData.tk}`
+          this._getMarketingStat(url);
+          this.titleTypeList = ['积分数量', '金额数量(元)'];
+          break;
+        case '5':
+          wx.setNavigationBarTitle({
+            title: '积分转赠记录'
+          });
+          var url = `${this.$parent.globalData.commonUrl}/api/loadIntegralTransferDayStat?startDay=${this.startDate}&endDay=${this.endDate}&tk=${this.$parent.globalData.tk}`
+          this._getMarketingStat(url);
+          this.titleTypeList = ['虚拟礼物送礼', '店长项目送礼', '礼品商城送礼'];
+          break;
+        case '6':
+          wx.setNavigationBarTitle({
+            title: '积分兑换记录'
+          });
+          var url = `${this.$parent.globalData.commonUrl}/api/loadIntegralConvertDayStat?startDay=${this.startDate}&endDay=${this.endDate}&tk=${this.$parent.globalData.tk}`
+          this._getMarketingStat(url);
+          this.titleTypeList = ['店长项目兑换', '积分换礼品'];
+          break;
+        default:
+          break;
+      }
+    }
+    onLoad(e) {
+      this.endDate = util.nowDate();
+      this.startDate = util.someDayLater(util.nowDate(), -30, '-');
+      this.pageType = e.type;
+      this.judegePageType(this.pageType); //判断哪个数据集
+      this.winHeight = util.getScrollHeight(114)
+    }
+    // Other properties
+  }
+</script>
+
+<style lang="less">
+  .consultChat-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background-color: #fff;
+  }
+  .detail-box {
+    /* width: 100%; */
+    border-top: 1px dashed #ccc;
+    padding-top: 20rpx;
+    flex: 1;
+    font-size: 26rpx;
+    background-color: #fff;
+    white-space: nowrap;
+    /* overflow: hidden; */
+  }
+  .item-box {
+    white-space: nowrap;
+    background-color: #fff;
+    /* padding: 10rpx 0; */
+    .noData-desc {
+      font-weight: 700;
+      font-size: 40rpx;
+      margin: 0 auto;
+      margin-top: 50%;
+    }
+  }
+  .item-box .name {
+    padding: 10rpx;
+    background-color: #fff;
+    width: 180rpx;
+    text-align: center;
+    display: inline-table;
+    border-bottom: 0.5px solid #ccc;
+    border-right: 0.5px solid #ccc;
+  }
+</style>

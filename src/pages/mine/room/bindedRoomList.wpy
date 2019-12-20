@@ -1,0 +1,145 @@
+<template>
+    <view class="roomList_wrapper">
+        <scroll-view scroll-y style="height:{{winHeight}}rpx">
+            <checkbox-group wx:if="{{roomList.length}}" class="radio-group" @change="unBindChange">
+                <repeat for="{{roomList}}" key="index" item="item">
+                    <label class="radio">
+                                <checkbox  color="orange" value="{{item.id}}" checked="{{item.isSelect}}"/>
+                                <view class="room_name">{{item.name}}-{{item.code}}号桌</view>
+                            </label>
+                </repeat>
+            </checkbox-group>
+            <view @tap.stop="goBack" wx:else class="noData">暂无数据</view>
+        </scroll-view>
+        <view wx:if="{{roomList.length}}" class="bindBox">
+            <button class='btn' type="default" @tap='unBindDeskId'>解绑</button>
+        </view>
+    </view>
+</template>
+
+<script>
+    import wepy from 'wepy';
+    const util = require('../../../utils/utils.js')
+    export default class bindedRoomList extends wepy.page {
+        config = {
+            navigationBarTitleText: '已绑定房间列表'
+        };
+        data = {
+            winHeight: "",
+            roomList: [],
+            unBindDeskIds: []
+        };
+        methods = {
+            //返回上一级
+            goBack() {
+                wx.navigateBack({
+                    delta: 1
+                })
+            },
+            // 选择解绑的房间
+            unBindChange(e) {
+                console.log("选择删除的房间------------", e.detail.value)
+                this.unBindDeskIds = e.detail.value
+            },
+            //解绑
+            unBindDeskId() {
+                console.log("解绑id----------", this.unBindDeskIds)
+                if (!this.unBindDeskIds) {
+                    wx.showToast({
+                        title: '请选定房间号',
+                        icon: 'none',
+                        duration: 2000
+                    })
+                    return false;
+                }
+                let url = `${this.$parent.globalData.commonUrl}/api/untiedDeskHolder?tk=${this.$parent.globalData.tk}`;
+                let deskIdObj = {
+                    phone: this.$parent.globalData.userInfo.phone,
+                    deskIDs: {
+                        id: this.unBindDeskIds
+                    }
+                }
+                console.log("解绑参数----------", deskIdObj)
+                util.interface_post(url, deskIdObj).then(res => {
+                    console.log(res);
+                    if (res.errCode === 0) {
+                        wx.showToast({
+                            title: '解绑成功',
+                            icon: 'none',
+                            duration: 2000
+                        })
+                        this._loadRoomList()
+                    }else{
+                         wx.showToast({
+                            title: '解绑失败',
+                            icon: 'none',
+                            duration: 2000
+                        })
+                    }
+                })
+            }
+        };
+        _loadRoomList() {
+            let url = `${this.$parent.globalData.commonUrl}/api/loadDesks?tk=${this.$parent.globalData.tk}`;
+            util.interface_get(url).then(res => {
+                console.log(res);
+                if (res.errCode === 0) {
+                    this.roomList = res.desks.filter(room => {
+                        if (room.holderID === this.$parent.globalData.userInfo.phone) {
+                            room["isSelect"] = false;
+                            return room
+                        }
+                    });
+                }
+                console.log(this.roomList)
+                this.$apply();
+            })
+        }
+        events = {};
+        onLoad() {
+            console.log(this.listOrBindType)
+            this.winHeight = util.getScrollHeight(230)
+            this._loadRoomList();
+        }
+        // Other properties
+    }
+</script>
+
+<style lang="less">
+    .roomList_wrapper {
+        padding: 10rpx;
+        .radio-group {
+            .radio {
+                display: flex;
+                background-color: #fff;
+                margin-bottom: 10rpx;
+                padding: 50rpx 0;
+                .alreadyBind {
+                    font-size: 24rpx;
+                    color: green;
+                    padding-top: 10rpx;
+                    margin-left: 10rpx;
+                }
+                .remarks {
+                    font-size: 26rpx;
+                    color: red;
+                    text-decoration: underline;
+                    margin-left: 270rpx;
+                    margin-top: 4rpx;
+                }
+            }
+            .room_name {
+                margin-left: 30rpx;
+                padding-top: 6rpx;
+            }
+        }
+        .btn {
+            margin-top: 10rpx;
+            width: 270rpx
+        }
+        .bindBox {
+            display: flex;
+            justify-content: space-around;
+        }
+    }
+</style>

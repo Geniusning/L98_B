@@ -1,0 +1,303 @@
+<template>
+  <view class="captainRecommend-wrapper">
+    <view class='main'>
+      <view class='recommend-container'>
+        <view class='title'>积分换礼品</view>
+        <form bindsubmit='formSubmit'>
+          <view class='itemBox'>
+            <text class='name'>第一步：项目图片</text>
+            <image src='{{imgUrl}}' class='addPic' @tap.stop='chooseImage'></image>
+          </view>
+          <view class='itemBox'>
+            <text class='itemname'>第二步：项目名称</text>
+            <input class='input_Area' name='name' value="{{name}}" @blur='bindBlurName' placeholder='请输活动标题'></input>
+          </view>
+          <view class='itemBox'>
+            <text class='itemname'>第三步：特惠价</text>
+            <input type='number' class='input_Area' value="{{preferentialPrice}}" @blur='bindBlurPreferentialPrice' name='discountPrice' placeholder='请输入优惠价'></input>
+          </view>
+          <view class='itemBox'>
+            <text class='itemname'>第四步：消耗积分</text>
+            <input type='number' class='input_Area' value="{{originPrice}}" @blur='bindBlurOrigin' name='originalPrice' placeholder='输入兑换需消耗积分'></input>
+          </view>
+          <view class='itemBox'>
+            <view class='itemname'>第五步：积分兑换券</view>
+            <navigator url="/pages/marketing/cardList/cardList?type=recommend" class="chooseDiscount">{{isShowRecommendContent?recommendPrize.content:"选择优惠券"}}</navigator>
+          </view>
+          <!-- <view class='itemBox'>
+                      <view class='itemname'>第六步：开通"现场送"</view>
+                      <switch @change="switch1Change" />
+                    </view> -->
+          <!-- <button @tap='submit'> 提交 </button> -->
+          <button formType='submit'> 提交 </button>
+        </form>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  import util from '../../../utils/utils.js'
+  export default class jiFenHuanLiPin extends wepy.page {
+    config = {
+      navigationBarTitleText: '积分换礼品'
+    };
+    data = {
+      picArr: [],
+      show: true,
+      isShowRecommendContent: false,
+      recommendPrize: {},
+      imgUrl: '../../../images/add_pic.png',
+      name: "",
+      content: "",
+      limit: "",
+      originPrice: "",
+      preferentialPrice: "",
+      uploadImgUrl: "",
+      id: ""
+    };
+    methods = {
+      switch1Change() {},
+      //选择照片
+      chooseImage() {
+        let _this = this;
+        wx.chooseImage({
+          count: 1, // 默认9
+          sizeType: ['compressed'], //可以指定是原图还是压缩图，默认二者都有
+          sourceType: ['album', 'camera'], // 可以指定来源是相册还是相机，默认二者都有
+          success: function(res) {
+            var tempFilePaths = res.tempFilePaths;
+            _this.imgUrl = tempFilePaths[0];
+            _this.$apply();
+            wx.uploadFile({
+              url: `${_this.$parent.globalData.commonUrl}/api/photoUpload?tk=${_this.$parent.globalData.tk}`,
+              filePath: _this.imgUrl,
+              name: "file",
+              header: {
+                'content-type': 'multipart/form-data'
+              },
+              success: res => {
+                if (res.statusCode === 200) {
+                  _this.uploadImgUrl = JSON.parse(res.data).photoURL;
+                  console.log("_this.uploadImgUrl---------", _this.uploadImgUrl);
+                }
+              }
+            })
+          }
+        });
+      },
+      //活动标题
+      bindBlurName(e) {
+        this.name = e.detail.value;
+        console.log(this.name);
+      },
+      //活动内容
+      bindBlurContent(e) {
+        this.content = e.detail.value;
+      },
+      //积分
+      bindBlurOrigin(e) {
+        this.originPrice = e.detail.value;
+      },
+      //特惠价
+      bindBlurPreferentialPrice(e) {
+        this.preferentialPrice = e.detail.value;
+      },
+      //提交
+      formSubmit(e) {
+        let _this = this;
+        let url = `${this.$parent.globalData.commonUrl}/api/createGoods?tk=${this.$parent.globalData.tk}`
+        let formData = e.detail.value;
+        let data = {
+          name: formData.name,
+          integral: Number(formData.originalPrice),
+          discountPrice: Number(formData.discountPrice),
+          image: this.uploadImgUrl ? this.uploadImgUrl : this.imgUrl,
+          couponID: this.$parent.globalData.recommendPrize.couponID,
+          id: this.id
+        }
+        util.interface_post(url, data).then(res => {
+          console.log('店长推荐成功-----------------------', res);
+          if (res.errCode === 0) {
+            wx.showToast({
+              title: '保存成功',
+              icon: 'success',
+              duration: 2000
+            })
+            _this.name = "";
+            _this.content = "";
+            _this.limit = "";
+            _this.originPrice = "";
+            _this.preferentialPrice = "";
+            _this.imgUrl = "../../../images/add_pic.png";
+            _this.$apply();
+          } else {
+            wx.showToast({
+              title: '参数错误',
+              icon: 'success',
+              duration: 2000
+            })
+          }
+        })
+        // wx.request({
+        //   url: `${this.$parent.globalData.commonUrl}/api/createGoods?tk=${this.$parent.globalData.tk}`,
+        //   data: {
+        //     name: formData.name,
+        //     integral: Number(formData.originalPrice),
+        //     discountPrice: Number(formData.discountPrice),
+        //     image: this.uploadImgUrl,
+        //     couponID: this.$parent.globalData.recommendPrize.couponID
+        //   },
+        //   header: {
+        //     'content-type': 'application/json'
+        //   },
+        //   method: 'POST',
+        //   success: res => {
+        //   }
+        // })
+      }
+    };
+    events = {};
+    onShow() {
+      console.log(this.$parent.globalData);
+      let tempObj = this.$parent.globalData.recommendPrize;
+      let editInfo = this.$parent.globalData.editInfo;
+      if (editInfo.name) {
+        this.name = editInfo.name
+        this.originPrice = editInfo.integral
+        this.preferentialPrice = editInfo.discountPrice
+        this.imgUrl = editInfo.image
+        this.uploadImgUrl = editInfo.image
+        this.id = editInfo.id
+      }
+      this.couponID = tempObj.couponID
+      if (Object.keys(this.$parent.globalData.recommendPrize).length > 0) {
+        this.isShowRecommendContent = true;
+      }
+      console.log(this.isShowRecommendContent)
+      if (tempObj.type === 0) {
+        tempObj.content = '现金券' + tempObj.value + '元';
+        this.recommendPrize = tempObj;
+        this.$apply();
+      } else if (tempObj.type === 1) {
+        this.recommendPrize = tempObj;
+        this.$apply();
+      } else if (tempObj.type === 2) {
+        tempObj.content = '折扣券' + tempObj.value + '折';
+        this.recommendPrize = tempObj;
+        this.$apply();
+      } else if (tempObj.type === 3) {
+        this.recommendPrize = tempObj;
+        this.$apply();
+      } else if (tempObj.type === 4) {
+        this.recommendPrize = tempObj;
+        this.$apply();
+      }
+      console.log(this.recommendPrize)
+    };
+    onLoad() {
+      //   console.log(this.$parent.globalData);
+      //   let tempObj = this.$parent.globalData.recommendPrize;
+      //   if (Object.keys(this.$parent.globalData.recommendPrize).length > 0) {
+      //     this.isShowRecommendContent = true;
+      //   }
+      //   console.log(this.isShowRecommendContent)
+      //   if (tempObj.type === 0) {
+      //     tempObj.content = '现金券' + tempObj.value + '元';
+      //     this.recommendPrize = tempObj;
+      //     this.$apply();
+      //   } else {
+      //     this.recommendPrize = tempObj;
+      //     this.$apply();
+      //   }
+      //   console.log(this.recommendPrize)
+    }
+  }
+</script>
+
+<style lang="less">
+  .captainRecommend-wrapper {
+    height: 100%;
+    background-color: #fff;
+  }
+  .main {
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: 10rpx;
+  }
+  .ShopLogo-container {
+    margin: 22rpx 30rpx;
+  }
+  .ShopLogo-container .title {
+    font-size: 30rpx;
+    color: #333;
+    margin-bottom: 20rpx;
+    font-weight: 700;
+  }
+  .ShopLogo-container .pic-box {
+    width: 100%;
+  }
+  .ShopLogo-container .logoShop {
+    width: 200rpx;
+    height: 200rpx;
+    margin-right: 10rpx;
+    /* border: 1px solid #ccc; */
+  }
+  .recommend-container {
+    margin: 30rpx 30rpx;
+  }
+  .recommend-container .title {
+    margin: 20rpx 0;
+    font-size: 30rpx;
+    color: #333;
+    font-weight: 700;
+  }
+  .recommend-container .itemBox {
+    display: flex;
+    justify-content: space-between;
+  }
+  .itemBox {
+    padding-bottom: 30rpx;
+    padding-top: 30rpx;
+    border-bottom: 1px solid #efeef3;
+  }
+  .itemBox .name {
+    font-size: 30rpx;
+    margin-top: 50rpx;
+  }
+  .itemBox .addPic {
+    width: 130rpx;
+    height: 130rpx;
+  }
+  .itemBox .itemname {
+    font-size: 30rpx;
+    margin-top: 10rpx;
+  }
+  .itemBox .input_Area {
+    width: 200rpx;
+    font-size: 14px;
+    padding-left: 6rpx;
+    text-align: right;
+  }
+  .picker {
+    width: 190rpx;
+    font-size: 14px;
+    color: #999;
+    text-align: right;
+  }
+  .desc .itemname {
+    font-size: 14px;
+  }
+  .desc .textarea {
+    /* padding-top: 10rpx; */
+    font-size: 14px;
+    width: 100%;
+    height: 100rpx;
+  }
+  .chooseDiscount {
+    margin-top: 10rpx;
+    min-width: 100rpx; // position:absolute;
+    color: #666;
+  }
+</style>

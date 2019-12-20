@@ -1,0 +1,593 @@
+<template>
+    <view class="myStall_wrapper">
+        <view class="add_staff_content">
+            <view class="add_staff_title">新增下属</view>
+            <view class="add_staff_info">
+                <text class="info_desc">工号:</text>
+                <input @input="getWorkNum" placeholder="请输入下属工号" class="inputArea" />
+            </view>
+            <view class="add_staff_info">
+                <text class="info_desc">姓名:</text>
+                <input @input="getName" placeholder="请输入下属姓名" class="inputArea" />
+            </view>
+            <view class="add_staff_info">
+                <text class="info_desc">手机号:</text>
+                <input type="number" @input="getPhoneNumr" placeholder="请输入手机号码" class="inputArea" />
+            </view>
+            <view class="add_staff_info">
+                <text class="info_desc">密码:</text>
+                <input type="number" disabled placeholder="默认手机号码后六位，不用输入" class="inputArea" />
+            </view>
+            <view class="add_staff_info">
+                <text class="info_desc">角色:</text>
+                <picker @change="bindRoleChange" value="{{roleIndex}}" range="{{arrayRole}}" range-key="name">
+                    <view style="color:#808080;padding-top:4rpx">
+                        {{arrayRole[roleIndex].name}}
+                    </view>
+                </picker>
+            </view>
+            <view class="add_staff" @tap="showAuthorModal">
+                <view class="info_desc">允许查询哪些下属的门店></view>
+            </view>
+            <button class="addBtn" @tap="addStaff">新增</button>
+        </view>
+        <view class="add_staff_list">
+            <view class="add_staff_title">下属列表</view>
+            <scroll-view scroll-y style="height:{{winHeight}}rpx">
+                <view class="staffList">
+                    <repeat for="{{staffList}}" key="index" index="index" item="item">
+                        <view class="infoItem">
+                            <text class="name">{{item.number}}</text>
+                            <text class="name">{{item.name}}</text>
+                            <text class="name">{{item.phone}}</text>
+                            <text class="name">{{item.role_cn}}</text>
+                            <view class="handleBox">
+                                <!-- <text class="handle" @tap="show">改绑</text> -->
+                                <text class="handle" @tap="deleteStaff({{item.phone}})">删除</text>
+                            </view>
+                        </view>
+                    </repeat>
+                </view>
+            </scroll-view>
+        </view>
+        <!-- 改绑模态框 -->
+        <view class="bind_modal" wx:if="{{showBindModal}}">
+            <view class="modal_content">
+                <view class="add_staff_info">
+                    <text class="info_desc">手机号:</text>
+                    <input value="12345678954" type="number" placeholder="请输入手机号码" class="inputArea" />
+                </view>
+                <view class="add_staff_info">
+                    <text class="info_desc">姓名:</text>
+                    <input value="damao" placeholder="请输入下属姓名" class="inputArea" />
+                </view>
+                <view class="btn_content">
+                    <button class="addBtn" @tap="closeModal">取消</button>
+                    <button class="addBtn">改绑</button>
+                </view>
+            </view>
+        </view>
+        <!-- 高级查询模态框 -->
+        <view wx:if="{{showAuthorModal}}" class="author_modal">
+            <checkbox-group class="checkBox_groupAll" @change="selectAll">
+                <label class="checkBox">
+                                                    <checkbox class="top_checkbox_item" value="all" checked="{{allCheck}}"  color="orange"/>
+                                                    <view class="allSelect">
+                                                        全选
+                                                    </view>
+                                                </label>
+            </checkbox-group>
+            <checkbox-group wx:if="{{userList.length}}" class="checkBox_group" @change="changeUser">
+                <repeat for="{{userList}}" key="index" item="item">
+                    <label class="checkBox" @tap="selectAuthor" data-id="{{item.phone}}">
+                                                        <checkbox class="checkbox_item"  color="orange" value="{{item.id}}" checked="{{item.checked}}" />
+                                                        <view class="username">
+                                                            <text>{{item.name}}</text>
+                                                        </view>
+                                                    </label>
+                </repeat>
+            </checkbox-group>
+            <view wx:else class="noUserList">暂无下属</view>
+            <image @tap="closeAuthorMldal" src="../../../images/close2.png" lazy-load="false" class="close"></image>
+            <!-- <image @tap="closeAuthorMldal" src="../../../images/gou.png" lazy-load="false" class="gou"></image> -->
+        </view>
+    </view>
+</template>
+
+<script>
+    import wepy from 'wepy';
+    import util from '../../../utils/utils.js'
+    export default class myStaff extends wepy.page {
+        config = {
+            navigationBarTitleText: '我的下属列表'
+        };
+        data = {
+            allCheck: false,
+            // arrayRole: ['糸统管理0', '运营主管1',  '运营后台2', '运营中台3','运营前台4'],
+            arrayRole: [{
+                name: "运营主管",
+                id: "YunYZG"
+            }],
+            userList: [{
+                    phone: 13323456321,
+                    name: 'hotDot',
+                    value: '不许可',
+                    checked: false
+                },
+                {
+                    phone: 13323456322,
+                    name: 'CHN',
+                    value: '我的所有下属',
+                    checked: false,
+                },
+                {
+                    phone: 13323456323,
+                    name: '大毛',
+                    value: '大毛',
+                    checked: false
+                }
+            ],
+            roleIndex: 0,
+            phone: "",
+            password: "",
+            role: "",
+            pessmisson: [],
+            workNumber: "",
+            winHeight: "",
+            phone: "",
+            name: "",
+            showBindModal: false,
+            showAuthorModal: false,
+            staffList: []
+        };
+        onUnload() {
+            wx.removeStorage({
+                key: 'userList',
+                success(res) {
+                    console.log(res)
+                }
+            })
+        };
+        methods = {
+            //删除员工
+            deleteStaff(phoneId) {
+                let url = `${this.$parent.globalData.commonUrl}/api/deleteStaff?tk=${this.$parent.globalData.tk}&phone=${phoneId}`
+                util.interface_get(url).then(res => {
+                    if (res.errCode === 0) {
+                        wx.showToast({
+                            title: '删除成功',
+                            icon: 'success',
+                            duration: 2000
+                        })
+                        this._loadAllStaff();
+                    } else {
+                        wx.showToast({
+                            title: '删除失败',
+                            icon: 'none',
+                            duration: 2000
+                        })
+                    }
+                    console.log('删除结果---------------------------：', res);
+                })
+            },
+            //允许权限
+            selectAuthor(e) {
+                console.log("自定义属性---", e.currentTarget.dataset.id)
+                let index = e.currentTarget.dataset.id;
+                this.userList = this.userList.map(user => {
+                    if (index == user.phone) {
+                        user["checked"] = !user["checked"]
+                    }
+                    if (user["checked"] && this.pessmisson.indexOf(user.phone) == -1) {
+                        this.pessmisson.push(user.phone)
+                    } else if (!user["checked"] && this.pessmisson.indexOf(user.phone) >= 0) {
+                        this.pessmisson.splice(this.pessmisson.indexOf(user.phone), 1)
+                    }
+                    return user
+                })
+                wx.setStorage({
+                    key: "userList",
+                    data: JSON.stringify(this.userList)
+                })
+            },
+            //全选
+            selectAll(e) {
+                let isAll = e.detail.value[0]
+                this.pessmisson = [];
+                console.log("isAll----------", isAll)
+                if (isAll === "all") {
+                    this.userList = this.userList.map(user => {
+                        user["checked"] = true;
+                        this.allCheck = true;
+                        this.pessmisson.push(user.phone)
+                        return user
+                    })
+                } else {
+                    this.userList = this.userList.map(user => {
+                        user["checked"] = false;
+                        this.allCheck = false;
+                        return user
+                    })
+                }
+                wx.setStorage({
+                    key: "userList",
+                    data: JSON.stringify(this.userList)
+                })
+                this.$apply()
+            },
+            changeUser(e) {
+                let ids = e.detail.value;
+                if (ids.length == this.userList.length) {
+                    this.allCheck = true;
+                    this.$apply()
+                    return
+                }
+                this.allCheck = false;
+            },
+            showAuthorModal() {
+                this.showAuthorModal = true;
+                let _this = this;
+                wx.getStorage({
+                    key: 'userList',
+                    success(res) {
+                        console.log("getStorage_this.userList---", res.data)
+                        _this.userList = JSON.parse(res.data)
+                    }
+                })
+                this.$apply()
+                console.log("showAuthorModal-------", this.userList)
+            },
+            closeAuthorMldal() {
+                this.showAuthorModal = false;
+                //数组去重
+                let newPessmisson = [this.pessmisson[0]]
+                for (let i = 0; i < this.pessmisson.length; i++) {
+                    const element = this.pessmisson[i];
+                    // for (let j = 0; j < newPessmisson.length; j++) {
+                    if (newPessmisson.indexOf(element) == -1) {
+                        newPessmisson.push(element)
+                    }
+                    // }
+                }
+                this.pessmisson = newPessmisson;
+                console.log("pessmisson-------", this.pessmisson)
+            },
+            bindRoleChange(e) {
+                console.log('bindRoleChange', e.detail.value);
+                this.roleIndex = e.detail.value;
+                this.role = this.arrayRole[Number(e.detail.value)].id;
+            },
+            getPhoneNumr(e) {
+                this.phone = e.detail.value;
+            },
+            getName(e) {
+                this.name = e.detail.value
+            },
+            getWorkNum(e) {
+                this.workNumber = e.detail.value;
+            },
+            addStaff() {
+                this.password = this.phone.slice(5, 11);
+                let url = `${this.$parent.globalData.commonUrl}/api/addStaff?tk=${this.$parent.globalData.tk}`;
+                var params = {
+                    name: this.name || "liuning",
+                    number: this.workNumber || "001",
+                    phone: this.phone,
+                    password: this.password,
+                    parent: this.$parent.globalData.userInfo.number,
+                    // phone: '8888',
+                    // password: '8888',
+                    role: this.role,
+                    permission: 1
+                };
+                if (this.phone.length != 11) {
+                    wx.showToast({
+                        title: '手机号格式错误',
+                        icon: "none",
+                        duration: 2000
+                    })
+                    return
+                }
+                console.log(params)
+                for (let key in params) {
+                    if (!params[key]) {
+                        wx.showToast({
+                            title: '请输入完整信息',
+                            icon: "none",
+                            duration: 2000
+                        })
+                        return
+                    }
+                }
+                util.interface_post(url, params).then(res => {
+                    if (res.errCode == 0) {
+                        wx.showToast({
+                            title: '新增成功',
+                            icon: 'success',
+                            duration: 2000
+                        })
+                        this._loadAllStaff();
+                    } else if (res.errCode == 1091) {
+                        wx.showToast({
+                            title: '工号已存在',
+                            icon: 'none',
+                            duration: 2000
+                        })
+                    } else if (res.errCode == 1092) {
+                        wx.showToast({
+                            title: '手机号已存在',
+                            icon: 'none',
+                            duration: 2000
+                        })
+                    }
+                })
+                this.$apply()
+            },
+            show() {
+                this.showBindModal = !this.showBindModal;
+            },
+            closeModal() {
+                this.showBindModal = !this.showBindModal;
+            }
+        };
+        _judgeRole(role) {
+            if (role == "YunYZG") {
+                return "运营主管"
+            } else if (role == "YunYHT") {
+                return "运营后台"
+            } else if (role == "YunYZT") {
+                return "运营中台"
+            } else if (role == "YunYQT") {
+                return "运营前台"
+            } else if (role == "ZongBYG") {
+                return "本部员工"
+            } else if (role == "CityBoss") {
+                return "城市合伙老板"
+            } else if (role == "ShopBoss") {
+                return "门店老板"
+            } else if (role == "ShopManager") {
+                return "店长"
+            } else if (role == "shopStaff") {
+                return "店员"
+            }else if(role == "superMan"){
+                 return "系统管理员"
+            } else {
+                return "运营主管"
+            }
+        };
+        _handleArrayRole(role) {
+            if (role == "YunYZG") {
+                return [{
+                    name: "本部员工",
+                    id: "ZongBYG"
+                }, {
+                    name: "运营后台",
+                    id: "YunYHT"
+                }]
+            } else if (role == "YunYHT") {
+                return [{
+                    name: "城市合伙老板",
+                    id: "CityBoss"
+                }, {
+                    name: "运营中台",
+                    id: "YunYZT"
+                }]
+            } else if (role == "YunYZT") {
+                return [{
+                    name: "运营前台",
+                    id: "YunYQT"
+                }, {
+                    name: "门店老板",
+                    id: "ShopBoss"
+                }]
+            } else if (role == "YunYQT") {
+                return [{
+                    name: "店长",
+                    id: "ShopManager"
+                }, {
+                    name: "店员",
+                    id: "shopStaff"
+                }]
+            } else {
+                return [{
+                    name: "运营主管",
+                    id: "YunYZG"
+                }]
+            }
+        };
+        _loadAllStaff() {
+            let _this = this;
+            wx.request({
+                url: `${this.$parent.globalData.commonUrl}/api/loadAllStaff?tk=${this.$parent.globalData.tk}`,
+                success: res => {
+                    console.log('拉取的员工------------------------', res);
+                    if (res.data.errCode === 0) {
+                        let staff = res.data.staff;
+                        staff.forEach(item => {
+                            item.role_cn = _this._judgeRole(item.role)
+                        })
+                        _this.staffList = staff.sort(util.sortByKey("number"));
+                        console.log("员工列表", _this.staffList)
+                        _this.$apply();
+                    }
+                }
+            })
+        };
+        events = {};
+        onLoad() {
+            this.arrayRole = this._handleArrayRole(this.$parent.globalData.userInfo.role)
+            this.role = this.arrayRole[0].id
+            this.winHeight = util.getScrollHeight(730);
+            this._loadAllStaff();
+        }
+        // Other properties
+    }
+</script>
+
+<style lang="less">
+    .myStall_wrapper {
+        background: #f1f1f1;
+        padding: 10rpx 8rpx;
+        height: 100%;
+        box-sizing: border-box;
+        .add_staff_content {
+            margin-bottom: 30rpx;
+            background-color: #fff;
+            padding: 10rpx 10rpx;
+            .add_staff_title {
+                font-size: 20px;
+                color: #333;
+                font-weight: 800;
+                text-align: center;
+            }
+            .add_staff_info {
+                padding: 10rpx 0;
+                display: flex;
+                .info_desc {
+                    box-sizing: border-box;
+                    display: inline-block;
+                    width: 124rpx;
+                    padding-top: 7rpx;
+                    margin-left: 10rpx;
+                    margin-right: 20rpx;
+                    text-align: right;
+                }
+                .mypicker {
+                    padding-top: 4rpx;
+                }
+                .inputArea {
+                    border-bottom: 1rpx solid #f1f1f1;
+                    flex: 1;
+                }
+            }
+            .add_staff {
+                margin-bottom: 20rpx;
+                .info_desc {
+                    margin: 20rpx 0 20rpx 40rpx
+                }
+            }
+            .addBtn {}
+        }
+        .add_staff_list {
+            background: #fff;
+            padding: 10rpx 6rpx;
+            .add_staff_title {
+                font-size: 20px;
+                color: #333;
+                font-weight: 800;
+                text-align: center;
+            }
+            .staffList {
+                .infoItem {
+                    display: flex;
+                    justify-content: space-between;
+                    margin-bottom: 20rpx;
+                    height: 96rpx;
+                    .name {
+                        width: 134rpx;
+                        height: 90;
+                        padding-top: 38rpx;
+                        word-break: break-word;
+                    }
+                    .handleBox {
+                        // display: flex;
+                        // justify-content: space-between;
+                        height: 90rpx;
+                        text-align: right;
+                        width: 132rpx;
+                        padding-top: 32rpx;
+                    }
+                    .handle {
+                        color: red;
+                        text-decoration: underline;
+                    }
+                }
+            }
+        }
+        .bind_modal {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, .6);
+            z-index: 1;
+            .modal_content {
+                position: absolute;
+                margin-left: -250rpx;
+                width: 500rpx;
+                height: 240rpx;
+                top: 25%;
+                left: 50%;
+                background: #fff;
+                .add_staff_info {
+                    padding: 10rpx 0;
+                    display: flex;
+                    .info_desc {
+                        box-sizing: border-box;
+                        display: inline-block;
+                        width: 100rpx;
+                        padding-top: 7rpx;
+                        margin-right: 20rpx;
+                        text-align: right;
+                    }
+                    .inputArea {
+                        border-bottom: 1rpx solid #f1f1f1;
+                        flex: 1;
+                    }
+                }
+                .btn_content {
+                    display: flex;
+                    justify-content: space-around;
+                    .addBtn {
+                        width: 200rpx;
+                        height: 70rpx;
+                        font-size: 28rpx
+                    }
+                }
+            }
+        }
+        .author_modal {
+            position: fixed;
+            z-index: 1;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            background-color: rgba(0, 0, 0, .8);
+            overflow: auto;
+            display: flex;
+            flex-direction: column;
+            .close {
+                width: 56rpx;
+                height: 56rpx;
+                position: absolute;
+                right: 20rpx;
+                top: 20rpx;
+            }
+            .checkBox_groupAll {
+                .checkBox {
+                    display: flex;
+                    margin: 40rpx 40rpx 0 40rpx;
+                    .allSelect {
+                        color: #fff;
+                    }
+                }
+            }
+            .checkBox_group {
+                flex: 1;
+                .checkBox {
+                    display: flex;
+                    margin: 40rpx;
+                    .username {
+                        color: #fff;
+                    }
+                }
+            }
+            .noUserList {
+                color: #fff;
+                margin: 40% auto;
+            }
+        }
+    }
+</style>

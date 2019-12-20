@@ -1,0 +1,41 @@
+<template>
+    <view class='roomSetting_wrapper'>
+        <navigator url='/pages/mine/room/createRoom' hover-class="none" class='RommBtn'>
+            创建房号/台号
+        </navigator>
+        <navigator url='/pages/mine/room/bindRoomList?type=list' hover-class="none" class='RommBtn'>
+            房号/台号列表
+        </navigator>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+export default class room extends wepy.page {
+  config = {
+    navigationBarTitleText: '房号/台号设置'
+  };
+  data = {};
+  methods = {};
+
+  events = {};
+  onLoad() {}
+  // Other properties
+}
+</script>
+
+<style lang="less">
+.roomSetting_wrapper{
+    height: 100%;
+    padding: 10rpx 20rpx;
+    .RommBtn{
+        width: 100%;
+        height: 80rpx;
+        line-height: 80rpx;
+        text-align: center;
+        border-radius: 10rpx;
+        background-color: #fff;
+        margin-bottom: 20rpx;
+    }
+}
+</style>

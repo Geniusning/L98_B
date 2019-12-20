@@ -1,0 +1,95 @@
+<template>
+  <view class="checkQrCode_wrapper">
+    <image class="canvas" style="width: 200px; height: 200px;" src="{{checkQrCode}}"></image>
+    <button @tap="savePic">下载到本机相册</button>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+// import drawQrcode from 'weapp-qrcode'
+const util = require('../../../utils/utils.js')
+export default class checkQrCode extends wepy.page {
+  config = {
+    navigationBarTitleText: '核销二维码下载'
+  };
+  data = {
+    checkQrCode:""
+  };
+  methods = {
+    savePic() { 
+        this.downLoadImages()
+    }
+  };
+  downLoadImages() {
+    var _this = this;
+    console.log(_this.$parent.globalData.commonUrl)
+    util.writePhotosAlbum(
+      function success() {
+        wx.showLoading({
+          title: "下载中",
+          mask: true
+        })
+        _this.downLoad(_this.checkQrCode).then(res => {
+          wx.hideLoading()
+          wx.showToast({
+            title: "下载完成"
+          })
+        }).catch(err => {
+          wx.hideLoading()
+          console.log(err)
+        })
+      },
+      function fail() {
+        wx.showToast({
+          title: '您拒绝了保存到相册'
+        })
+      }
+    )
+  }
+  downLoad(url) {
+    return new Promise((resolve, reject) => {
+      wx.downloadFile({
+        url: url,
+        success: function (res) {
+          console.log(res)
+          var temp = res.tempFilePath
+          wx.saveImageToPhotosAlbum({
+            filePath: temp,
+            success: function (res) {
+              resolve(res)
+            },
+            fail: function (err) {
+              reject(res)
+            }
+          })
+        },
+        fail: function (err) {
+          reject(err)
+        }
+      })
+    })
+  }
+  onLoad() {
+    var _this = this
+    let url = `${this.$parent.globalData.commonUrl}/api/loadCouponPageQrcode?tk=${this.$parent.globalData.tk}`
+    let param = {
+      url:`${this.$parent.globalData.commonUrl}/k98/card?visitType=1&isScan=true`
+    }
+    util.interface_post(url,param).then(res=>{
+      console.log("二维码-------------",res)
+      this.checkQrCode = res;
+      this.$apply()
+    })
+  }
+}
+</script>
+
+<style lang="less">
+.checkQrCode_wrapper {
+  text-align: center;
+  .canvas {
+    margin: 30rpx auto;
+  }
+}
+</style>

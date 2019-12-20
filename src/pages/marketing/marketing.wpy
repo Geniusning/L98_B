@@ -1,0 +1,246 @@
+<template>
+<!-- wx:if='{{show}}' -->
+  <view  class="marketing-container">
+    <view class='item'>
+      <view class='item-left'>
+        <image class='pic' src='../../images/ticket.png'></image>
+        <view class='desc-box'>
+          <text class='name'>制作卡券</text>
+        </view>
+      </view>
+      <view class='item-right'>
+        <!-- <image class='arrow' src='../../images/arrow_right.png'></image> -->
+        <navigator hover-class="none" url='/pages/marketing/cardList/cardList?type=showList' class='setting'>管理</navigator>
+        <navigator hover-class="none" url='/pages/marketing/cardList/statCardList?type=cardList' class='setting'>统计</navigator>
+        <navigator hover-class='none' url='/pages/marketing/makeDiscount/makeDiscount' class='setting'>设置</navigator>
+      </view>
+    </view>
+    <!-- AI优惠券 -->
+    <view class='item'>
+      <view class='item-left'>
+        <image class='pic' src='../../images/game.png'></image>
+        <view class='desc-box'>
+          <text class='name'>自动发券</text>
+        </view>
+      </view>
+      <view class='item-right'>
+        <navigator hover-class="none" url='/pages/marketing/AIdiscount/managerAIdiscount' class='setting'>管理</navigator>
+        <navigator hover-class="none" url='/pages/marketing/cardList/statCardList?type=AIdiscount' class='setting'>统计</navigator>
+        <navigator hover-class="none" url='/pages/marketing/AIdiscount/AIdiscount?type=0' class='setting'>设置</navigator>
+      </view>
+    </view>
+    <!-- 邀请有礼 -->
+    <view class='item'>
+      <view class='item-left'>
+        <image class='pic' src='../../images/game.png'></image>
+        <view class='desc-box'>
+          <text class='name'>邀请有礼</text>
+        </view>
+      </view>
+      <view class='item-right'>
+        <navigator hover-class="none" url='/pages/marketing/inviteDiscount/managerInviteDiscount' class='setting'>管理</navigator>
+        <navigator hover-class="none" url='/pages/marketing/cardList/statCardList?type=inviteDiscount' class='setting'>统计</navigator>
+        <navigator hover-class="none" url='/pages/marketing/inviteDiscount/inviteDiscount' class='setting'>设置</navigator>
+      </view>
+    </view>
+    <!-- 精准推送 -->
+    <view class='item'>
+      <view class='item-left'>
+        <image class='pic' src='../../images/game.png'></image>
+        <view class='desc-box'>
+          <text class='name'>精准推送</text>
+        </view>
+      </view>
+      <view class='item-right'>
+        <navigator hover-class="none" url='/pages/index/yingXiaoHuoDongModule/yingXiaoHuoDongModule?type=0' class='setting'>统计</navigator>
+        <navigator hover-class="none" url='/pages/marketing/AIdiscount/AIdiscount?type=1' class='setting'>设置</navigator>
+      </view>
+    </view>
+    <!-- 游戏统计 -->
+    <view class='item'>
+      <view class='item-left'>
+        <image class='pic' src='../../images/game.png'></image>
+        <view class='desc-box'>
+          <text class='name'>大话比赛</text>
+        </view>
+      </view>
+      <view class='item-right'>
+        <navigator hover-class="none" url='/pages/marketing/game/singleGameList?type=game' class='setting'>管理</navigator>
+        <navigator hover-class="none" url='/pages/marketing/cardList/statCardList?type=game' class='setting'>统计</navigator>
+        <navigator hover-class="none" url='/pages/marketing/game/game' class='setting'>设置</navigator>
+      </view>
+    </view>
+    <!-- 友商互推 -->
+    <view class='item'>
+      <view class='item-left'>
+        <image class='pic' src='../../images/AI.png'></image>
+        <view class='desc-box'>
+          <text class='name'>友商互推</text>
+        </view>
+      </view>
+      <view class='item-right'>
+        <navigator hover-class="none" url='/pages/marketing/businessLeagle/businessLeagle' class='setting'>结盟</navigator>
+        <navigator hover-class="none" url='/pages/marketing/friendBusiness/friendBusiness' class='setting'>设置</navigator>
+      </view>
+    </view>
+    <!-- 活动管理 -->
+    <!-- <view class='item'>
+      <view class='item-left'>
+        <image class='pic' src='../../images/AI.png'></image>
+        <view class='desc-box'>
+          <text class='name'>活动管理</text>
+        </view>
+      </view>
+      <view class='item-right'>
+        <navigator hover-class="none" url='/pages/marketing/activityManager/activityManager' class='setting'>设置</navigator>
+      </view>
+    </view> -->
+    <!-- 店长推荐 -->
+    <view class='item'>
+      <view class='item-left'>
+        <image class='pic' src='../../images/AI.png'></image>
+        <view class='desc-box'>
+          <text class='name'>店长推荐</text>
+        </view>
+      </view>
+      <view class='item-right'>
+        <navigator hover-class="none" url='/pages/marketing/shopmanRecommend/managerShopRec' class='setting'>管理</navigator>
+        <navigator hover-class="none" url='/pages/marketing/recommendAndGiftStat/recommendAndGiftStat?type=recommend' class='setting'>统计</navigator>
+        <navigator hover-class='none' url='/pages/marketing/shopmanRecommend/shopmanRecommend' class='setting'>设置</navigator>
+      </view>
+    </view>
+     <!-- 礼品换积分 -->
+    <view class='item'>
+      <view class='item-left'>
+        <image class='pic' src='../../images/AI.png'></image>
+        <view class='desc-box'>
+          <text class='name'>积分换礼品</text>
+        </view>
+      </view>
+      <view class='item-right'>
+         <navigator hover-class="none" url='/pages/marketing/jiFenHuanLiPin/managerGift' class='setting'>管理</navigator>
+         <navigator hover-class="none" url='/pages/marketing/recommendAndGiftStat/recommendAndGiftStat?type=gift' class='setting'>统计</navigator>
+        <navigator hover-class='none' url='/pages/marketing/jiFenHuanLiPin/jiFenHuanLiPin' class='setting'>设置</navigator>
+      </view>
+    </view>
+     <view class='item'>
+      <view class='item-left'>
+        <image class='pic' src='../../images/AI.png'></image>
+        <view class='desc-box'>
+          <text class='name'>积分换VIP卡券</text>
+        </view>
+      </view>
+      <view class='item-right'>
+         <!-- <navigator hover-class="none" url='/pages/marketing/jiFenHuanLiPin/managerGift' class='setting'>管理</navigator>
+         <navigator hover-class="none" url='/pages/marketing/recommendAndGiftStat/recommendAndGiftStat?type=gift' class='setting'>统计</navigator> -->
+        <navigator hover-class='none' url='/pages/marketing/integral2Vip/integral2VipSet' class='setting'>设置</navigator>
+      </view>
+    </view>
+    <!-- 活动通知 -->
+    <view class='item'>
+      <view class='item-left'>
+        <image class='pic' src='../../images/AI.png'></image>
+        <view class='desc-box'>
+          <text class='name'>活动通知</text>
+        </view>
+      </view>
+      <view class='item-right'>
+        <navigator hover-class='none' url='/pages/marketing/activityNotice/activityNotice' class='setting'>设置</navigator>
+      </view>
+    </view>
+    <!-- 短信营销 -->
+    <view class='item'>
+      <view class='item-left'>
+        <image class='pic' src='../../images/game.png'></image>
+        <view class='desc-box'>
+          <text class='name'>短信营销</text>
+        </view>
+      </view>
+      <view class='item-right' @tap="intoTable">
+        <navigator hover-class="none" url='/pages/marketing/shortMessage/shortMessage' class='setting'>设置</navigator>
+        <!-- <image class='arrow' src='../../images/arrow_right.png'></image> -->
+      </view>
+    </view>
+  </view>
+  <!-- <view wx:else class='noPermission'>
+    <text class='text'>暂无权限</text>
+  </view> -->
+</template>
+
+<script>
+import wepy from 'wepy';
+export default class marketing extends wepy.page {
+  config = {
+    navigationBarTitleText: '营销'
+  };
+  data={
+    show:false
+  };
+  methods =  {
+      intoTable() {
+        wx.showToast({
+          title: '功能暂未开放',
+          icon: 'none',
+          duration: 2000
+        })
+      }
+  };
+  onLoad(){
+    // this.show = !!(this.$parent.globalData.userInfo.permission&8)
+  }
+}
+</script>
+<style lang="less">
+.noPermission {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  .text {
+    font-weight: 900;
+    font-size: 40rpx;
+    color: #ccc;
+  }
+}
+.marketing-container {
+  padding: 10rpx 30rpx;
+  font-size: 28rpx;
+}
+.marketing-container .item {
+  background: #fff;
+  box-sizing: border-box;
+  padding: 20rpx;
+  margin-top: 20rpx;
+  display: flex;
+  justify-content: space-between;
+}
+.item .item-left {
+  display: flex;
+}
+.item-left .pic {
+  width: 100rpx;
+  height: 100rpx;
+}
+.item-left .desc-box {
+  margin-left: 20rpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+.desc-box .name {
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #333;
+}
+.desc-box .content {
+  font-size: 30rpx;
+  color: #888;
+}
+.item .item-right {
+  display: flex;
+  padding-top: 26rpx;
+}
+.item-right .setting {
+  margin-left: 40rpx;
+}
+</style>

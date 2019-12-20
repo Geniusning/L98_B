@@ -1,0 +1,581 @@
+<template>
+  <!-- wx:if='{{show}}' -->
+  <view class="member-container">
+    <!-- 搜索栏 -->
+    <view class="shopInfo-wrapper1">
+      <Header :sonShopInfo.sync="shopInfo" :superior.sync="staff"></Header>
+    </view>
+    <view class='main'>
+      <view class='selectCustom_panel' wx:if="{{selectCustomFlag}}">
+        <repeat for="{{customTypeList}}" key="index" item="item">
+          <view class="customType {{customTypeIndex == index ?'active':''}}" @tap='chooseCustomType({{item.id}})'>{{item.name}}</view>
+        </repeat>
+      </view>
+      <view class='selectBar'>
+        <view class='item' data-current="1" @tap="swichNav(0)">
+          <image data-current="1" class='pic' src='../../images/eye.png'></image>
+          <text data-current="1" class="users {{currentTab=='0'?' active ':' '}}">最近访客</text>
+        </view>
+        <view class='item' data-current="0" @tap="swichNav(1)">
+          <image data-current="0" class='pic' src='../../images/friend.png'></image>
+          <text data-current="0" class="users {{currentTab=='1'?' active ':' '}}">全部客户</text>
+        </view>
+        <view class='item' data-current="2" @tap="swichNav(2)">
+          <image data-current="2" class='pic' src='../../images/tuoke.png'></image>
+          <text data-current="2" class="users {{currentTab=='2'?' active ':' '}}">我的拓客</text>
+        </view>
+      </view>
+      <!-- <view class='search_box' wx:if="{{searchFlag}}">
+                                      <image src='../../images/search.png' class='searchIcon'></image>
+                                      <input value="" type="text" placeholder="手机号/姓名" maxlength="20" class='search_area' />
+                                      <image src='../../images/shaixuan.png' class='selectIcon' @tap='showSelectCustomPanel'></image>
+                                    </view> -->
+      <swiper class="tab-content" current="{{currentTab}}" duration="300" style="height:{{winHeight}}rpx" @change="changeSwiper">
+        <!-- 最近访客 -->
+        <swiper-item>
+          <scroll-view scroll-with-animation="true" scroll-y="true" class="scoll-h" @scrolltolower='loadMoreUserData'>
+            <view class='contact-list'>
+              <repeat for='{{recentUsers}}' item='item'>
+                <view class='memberItem'>
+                  <image class="avatar" wx:if="{{item.headimgurl}}" src='{{item.headimgurl}}'></image>
+                  <image class="avatar" wx:else src='../../images/avatar.jpg'></image>
+                  <view class='contactInfo'>
+                    <view class="userInfo">
+                      <text class='name'>{{item.nickname?item.nickname:'匿名用户'}}</text>
+                      <text class="tag">{{item.soreType}}</text>
+                    </view>
+                    <text class='content' space="ensp" decode="{{true}}">来源:{{item.visitType}} 拓客:{{item.waiter?item.waiter:"自来客"}}</text>
+                  </view>
+                  <view class='contactInfo_times'>
+                    <text class='times' space="ensp" decode="{{true}}">到店:{{item.visitInsideStore}}  网店:{{item.visitOutsideStore}}</text>
+                    <view class='times'>{{item.visitTime}}</view>
+                  </view>
+                </view>
+              </repeat>
+            </view>
+          </scroll-view>
+        </swiper-item>
+        <!-- 全部用户 -->
+        <swiper-item>
+          <scroll-view scroll-with-animation scroll-y="true" class="scoll-h" @scrolltolower='loadMoreUserData'>
+            <view class='contact-list'>
+              <repeat for='{{allUsers}}' item='item'>
+                <view class='memberItem'>
+                  <image class="avatar" wx:if="{{item.headimgurl}}" src='{{item.headimgurl}}'></image>
+                  <image class="avatar" wx:else src='../../images/avatar.jpg'></image>
+                  <view class='contactInfo'>
+                    <view class="userInfo">
+                      <text class='name'>{{item.nickname?item.nickname:'匿名用户'}}</text>
+                      <text class="tag">{{item.soreType}}</text>
+                    </view>
+                    <text class='content' space="ensp" decode="{{true}}">来源:{{item.visitType}} 拓客:{{item.waiter?item.waiter:"自来客"}}</text>
+                    <!-- <view class='tags_list'>
+                                  <text class="tag_item">{{item.soreType}}</text>
+                                </view> -->
+                  </view>
+                  <view class='contactInfo_times'>
+                    <text space="ensp" decode="{{true}}" class='times'>到店:{{item.visitInsideStore}}  网店:{{item.visitOutsideStore}}</text>
+                    <view class='times'>{{item.visitTime}}</view>
+                  </view>
+                </view>
+              </repeat>
+            </view>
+          </scroll-view>
+        </swiper-item>
+        <!-- 我的客人 -->
+        <swiper-item>
+          <scroll-view scroll-with-animation scroll-y="true" class="scoll-h" @scrolltolower='loadMoreUserData'>
+            <view class='contact-list'>
+              <repeat for='{{myUsers}}' item='item'>
+                <view class='memberItem'>
+                  <image class="avatar" wx:if="{{item.headimgurl}}" src='{{item.headimgurl}}'></image>
+                  <image class="avatar" wx:else src='../../images/avatar.jpg'></image>
+                  <view class='contactInfo'>
+                    <view class="userInfo">
+                      <text class='name'>{{item.nickname?item.nickname:'匿名用户'}}</text>
+                      <text class="tag">{{item.soreType}}</text>
+                    </view>
+                    <text class='content' space="ensp" decode="{{true}}">来源:{{item.visitType}} 拓客:{{item.waiter?item.waiter:"自来客"}}</text>
+                  </view>
+                  <view class='contactInfo_times'>
+                    <text space="ensp" decode="{{true}}" class='times'>到店:{{item.visitInsideStore}}  网店:{{item.visitOutsideStore}}</text>
+                    <view class='times'>{{item.visitTime}}</view>
+                  </view>
+                </view>
+              </repeat>
+            </view>
+          </scroll-view>
+        </swiper-item>
+      </swiper>
+    </view>
+  </view>
+  <!-- <view wx:else class='noPermission'>
+                                                                        <text class='text'>暂无权限</text>
+                                                                      </view> -->
+</template>
+
+<script>
+  import wepy from 'wepy';
+  import Header from '../../components/headPart'
+  const util = require('../../utils/utils.js')
+  export default class member extends wepy.page {
+    config = {
+      "navigationBarTitleText": '会员',
+    };
+    components = {
+      Header: Header
+    };
+    data = {
+      shopInfo: {},
+      tagsList: ['低频', '新客'],
+      customTypeIndex: null,
+      winHeight: '',
+      currentTab: 0,
+      staff: {},
+      show: false,
+      searchFlag: false,
+      selectCustomFlag: false,
+      cursor: 0,
+      loadType: 1,
+      isAllUsersFirstLoad: false,
+      isRecentUsersFirstLoad: true,
+      allUsersCursor: 0,
+      recentUsersCursor: 0,
+      myUsersCursor:0,
+      allUserSwitch: true,
+      recentUserSwitch: true,
+      tuokeUserSwitch: true,
+      isAllUserFinish: false,
+      isrecentUsersFinish: false,
+      ismyUsersFinish: false,
+      allUsers: [],
+      recentUsers: [],
+      myUsers:[],
+      last30Days: '',
+      customTypeList: [{
+          id: 1,
+          name: "新客"
+        },
+        {
+          id: 2,
+          name: "低频"
+        },
+        {
+          id: 4,
+          name: "中频"
+        },
+        {
+          id: 8,
+          name: "高频"
+        },
+        {
+          id: 16,
+          name: "30天不到"
+        },
+        {
+          id: 32,
+          name: "60天不到"
+        },
+        {
+          id: 0,
+          name: "从未到店"
+        }
+      ]
+    };
+    onShow() {
+      //  高度自适应
+      this.winHeight = util.getScrollHeight(300)
+      this.recentUsersCursor = 0
+      this.allUsersCursor = 0
+      this.myUsersCursor = 0
+      this.recentUsers = [];
+      this.allUsers = [];
+      this.myUsers = [];
+      this.shopInfo = this.$parent.globalData.shopInfo;
+      this.staff = this.$parent.globalData.userInfo;
+      this._getMemberList(this.recentUsersCursor); //拉取成员数据
+      // this.show = !!(this.$parent.globalData.userInfo.permission & 4);
+    };
+    onload(){
+      this.loadStoreSetting()
+    };
+    methods = {
+      loadStoreSetting(){
+        let shopUrl = `${this.$parent.globalData.commonUrl}/api/loadStoreSetting?tk=${this.$parent.globalData.tk}`;
+        util.interface_get(shopUrl).then(res => {
+          console.log(res)
+          this.$parent.globalData.shopInfo = res;
+          this.$apply()
+          console.log("店铺信息---------", this.$parent.globalData.shopInfo)
+        })
+      },
+      //模块滑动时触发事件
+      changeSwiper(e) {
+        console.log("滑动触发--------", e.detail);
+        var that = this;
+        var index = e.detail.current
+        if (this.currentTab == index) {
+          return false;
+        } else {
+          this.currentTab = index;
+        }
+        var loadMemberType = parseInt(index);
+        this._getDataByMove(loadMemberType)
+      },
+      //选择用户类型
+      chooseCustomType(id) {
+        this.customTypeIndex = id;
+      },
+      //显示隐藏选择用户类型面板
+      showSelectCustomPanel() {},
+      swichNav(index) {
+        if (this.currentTab == index) {
+          return false;
+        } else {
+          this.currentTab = index;
+        }
+        var loadMemberType = parseInt(index);
+        this._getDataByMove(loadMemberType)
+      },
+      loadMoreUserData() {
+        console.log('拉到底啦---')
+        if (this.loadType === 0) { //全部用户
+          this._getMemberList(this.allUsersCursor);
+        } else if (this.loadType === 1) {
+          this._getMemberList(this.recentUsersCursor);
+        }else if (this.loadType === 2){
+           this._getMemberList(this.myUsersCursor);
+        }
+      }
+    };
+    _getMemberList(startCursor) { //获取成员列表
+    console.log("获取成员列表---------this.$parent.globalData.commonUrl--------",this.$parent.globalData.commonUrl)
+      let userCount = 10 //一次性加载多少条信息
+      if(this.loadType === 2){
+        var url = `${this.$parent.globalData.commonUrl}/api/loadUsers?tk=${this.$parent.globalData.tk}&phone=${this.$parent.globalData.userInfo.phone}&userCount=${userCount}&startCursor=${startCursor}&loadType=${this.loadType}`;
+      }else{
+        var url = `${this.$parent.globalData.commonUrl}/api/loadUsers?tk=${this.$parent.globalData.tk}&userCount=${userCount}&startCursor=${startCursor}&loadType=${this.loadType}`;
+      }
+      console.log("url--------",url)
+      util.interface_get(url).then(res => {
+        console.log('返回用户数-----------------', res)
+        var usersArr = res.Users;
+        if (!usersArr) {
+          wx.showToast({
+            title: '没有啦',
+            icon: 'none',
+            duration: 1000
+          })
+          return
+        }
+        usersArr.forEach(element => {
+          element.visitTime = util.timestampToTime2(element.visitTime);
+          this._judgeVisitType(element) //判断访问类型
+        });
+        switch (this.loadType) {
+          case 0: //全部成员
+            this.allUsers = this.allUsers.concat(usersArr).map(item => {
+              return this._judgeSortType(item) //判断访问频次类型
+            });
+            this.allUsersCursor = res.endCursor;
+            this.isAllUserFinish = res.isFinishLoad;
+            this.$apply();
+            console.log('全部客户-------------------', this.allUsers);
+            break;
+          case 1: //最近成员
+            this.recentUsers = this.recentUsers.concat(usersArr).map(item => {
+              return this._judgeSortType(item)
+            });
+            this.recentUsersCursor = res.endCursor;
+            this.isrecentUsersFinish = res.isFinishLoad;
+            this.$apply();
+            console.log('最近访客-------------------', this.recentUsers);
+            break;
+          case 2 : //我的客人
+            this.myUsers = this.myUsers.concat(usersArr).map(item => {
+              return this._judgeSortType(item)
+            });
+            this.myUsersCursor = res.endCursor;
+            this.ismyUsersFinish = res.isFinishLoad;
+            this.$apply();
+            console.log('我的客人-------------------', this.myUsers);
+          default:
+            break;
+        }
+      })
+      // this.$apply();
+    };
+    //触摸、滑动获取用户列表数据
+    _getDataByMove(loadMemberType) {
+      var _this = this;
+      switch (loadMemberType) {
+        case 0: //加载最近成员recentUsersCursor
+          this.searchFlag = false;
+          wx.getSystemInfo({
+            success: function(res) {
+              _this.winHeight = util.getScrollHeight(300)
+              _this.$apply();
+            }
+          });
+          console.log('加载最近成员');
+          this.loadType = 1;
+          if (!this.isrecentUsersFinish) { //加载完最近访客就不加载了
+            this._getMemberList(this.recentUsersCursor);
+            // this.recentUserSwitch = !this.recentUserSwitch;
+          }
+          break;
+        case 1: //加载全部成员 
+          this.searchFlag = true;
+          this.loadType = 0;
+          if (!this.isAllUserFinish) { //加载完全部用户就不再调接口
+            this._getMemberList(this.allUsersCursor);
+          console.log('加载全部成员')
+          }
+          break;
+        case 2: //加载我的拓客信息
+          this.searchFlag = false;
+          wx.getSystemInfo({
+            success: function(res) {
+              console.log(res);
+              _this.winHeight = util.getScrollHeight(300)
+              _this.$apply();
+            }
+          });
+          this.loadType = 2;
+          if (!this.ismyUsersFinish) {
+            this._getMemberList(this.myUsersCursor);
+            console.log('加载最近成员');
+            //   this.tuokeUserSwitch = !this.tuokeUserSwitch;
+          }
+          break
+      }
+    };
+    _judgeVisitType(element) {
+      switch (element.visitType) {
+        case 0:
+          element.visitType = "公众号进入"
+          break;
+        case 1:
+          element.visitType = "扫核销码"
+          break;
+        case 2:
+          element.visitType = "扫桌贴-"+element.deskCode
+          break;
+        case 3:
+          element.visitType = "首页分享"
+          break;
+        case 4:
+          element.visitType = "邀请有礼分享"
+          break;
+        case 5:
+          element.visitType = "活动通知分享"
+          break;
+        case 6:
+          element.visitType = "邻桌局分享"
+          break;
+        case 7:
+          element.visitType = "比赛局分享"
+          break;
+        case 8:
+          element.visitType = "好友局分享"
+          break
+        case 9:
+          element.visitType = "游戏大厅分享"
+          break;
+        default:
+          element.visitType = "其他"
+          break;
+      }
+    };
+    _judgeSortType(item) {
+      switch (item.soreType) {
+        case 0:
+          item.soreType = '从未到店'
+          break;
+        case 64:
+          item.soreType = '未到店'
+          break;
+        case 16:
+          item.soreType = '60天未到店'
+          break;
+        case 1:
+          item.soreType = '新客'
+          break;
+        case 2:
+          item.soreType = '低频'
+          break;
+        case 4:
+          item.soreType = '中频'
+          break;
+        case 8:
+          item.soreType = '高频'
+          break;
+        default:
+          break;
+      }
+      return item
+    }
+  }
+</script>
+
+<style lang="less">
+  .noPermission {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    .text {
+      font-weight: 900;
+      font-size: 40rpx;
+      color: #ccc;
+    }
+  }
+  .member-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  .main {
+    flex: 1;
+    position: relative;
+    .selectCustom_panel {
+      position: absolute;
+      top: 184rpx;
+      right: 0rpx;
+      width: 200rpx;
+      height: 400rpx;
+      background-color: #fff;
+      z-index: 100;
+      text-align: center;
+      .customType {
+        // display: inline-block;
+        text-align: center;
+        height: 58rpx;
+        line-height: 58rpx;
+        background-color: #ffba00;
+        color: #fff;
+      }
+      .active {
+        background-color: #ccc;
+      }
+    }
+  }
+  /* bat */
+  .selectBar {
+    border-bottom: 1px solid #f1f1f1;
+    height: 100rpx;
+    background: #fff;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    padding-top: 10rpx;
+  }
+  .search_box {
+    height: 50rpx;
+    box-sizing: border-box;
+    margin: 10rpx 20rpx;
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    .searchIcon {
+      width: 40rpx;
+      height: 40rpx;
+      position: absolute;
+      left: 10rpx;
+      top: 6rpx;
+      z-index: 10;
+    }
+    .search_area {
+      flex: 1;
+      padding: 10rpx;
+      box-sizing: border-box;
+      background-color: #fff;
+      text-indent: 50rpx;
+      height: 30rpx;
+      line-height: 30rpx;
+    }
+    .selectIcon {
+      width: 40rpx;
+      height: 40rpx;
+      margin-top: 6rpx;
+      margin-left: 6rpx;
+    }
+  }
+  .selectBar .item {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    position: relative;
+    z-index: 10;
+  }
+  .selectBar .item .pic {
+    display: inline-block;
+    width: 50rpx;
+    height: 50rpx;
+    margin-left: 26rpx;
+  }
+  .selectBar .item .users {
+    font-size: 26rpx;
+    margin-top: 10rpx;
+  }
+  .selectBar .item .users.active {
+    color: red;
+  }
+  .scoll-h {
+    height: 100%;
+    overflow-y: auto;
+    box-sizing: border-box;
+  }
+  /* 联系人 */
+  .contact-list {
+    flex: 1;
+    background-color: #fff;
+    .memberItem {
+      display: flex;
+      justify-content: space-between;
+      padding: 10rpx;
+      border-bottom: 1rpx solid #f4f4f4;
+      height: 94rpx;
+      .avatar {
+        width: 90rpx;
+        height: 90rpx;
+        border-radius: 50%;
+      }
+      .contactInfo {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        font-size: 13px;
+        position: relative;
+        width: 55%;
+        padding-left: 6rpx;
+        .userInfo {
+          display: flex;
+          .name {
+            display: inline-block;
+            width: 150rpx;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+          .tag {
+            display: inline-block;
+            background-color: rgb(79, 129, 4);
+            color: #fff;
+            font-size: 22rpx;
+            text-align: center;
+            padding: 4rpx 2rpx;
+          }
+        }
+      }
+      .contactInfo_times {
+        width: 35%;
+        font-size: 24rpx; // width: 266rpx;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        .times {}
+      }
+    }
+  }
+</style>

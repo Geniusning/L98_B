@@ -1,0 +1,822 @@
+
+<template>
+  <!-- <view wx:if='{{show}}' class="check-container"> -->
+  <view  class="check-container">
+    <view class='top-wrapper'>
+      <view class='home_bg'></view>
+      <view class='QR-wrapper'>
+        <view class='QR_left' @tap='scanQR'>
+          <image src='../../images/scan.png' class='scan'></image>
+          <text class='text'>扫码核销</text>
+        </view>
+        <view class='QR_center'>
+          <input class='input_area' type='text' placeholder='输入手机号或者核销码进行核销'></input>
+        </view>
+        <view class='QR_right'>
+          <text class='check'>核销</text>
+        </view>
+      </view>
+    </view>
+    <view class='subTab-wrapper'>
+      <view class="subTab-item line {{currentTab==0?'active':''}}" data-current="0" @tap="swichNav(0)">申请核销</view>
+      <view class="subTab-item line {{currentTab==1?'active':''}}" data-current="1" @tap="swichNav(1)">记录统计</view>
+    </view>
+    <swiper current="{{currentTab}}" duration="300" style="height:{{winHeight}}rpx">
+      <!-- 申请核销 -->
+      <swiper-item class="tab-content">
+        <scroll-view scroll-with-animation="true" bindscrolltoupper="refresh" scroll-y="true" class="scoll-h" style="height:{{winHeight}}rpx">
+          <view wx:if='{{!waitCheckOutList.length}}' class='noContent'>暂无数据</view>
+          <repeat for='{{waitCheckOutList}}' key="index" index="index" item="item">
+            <image src='../../images/discount_bg.png' class='apply_check_bg'></image>
+            <view class='check_people_handleInfo'>
+              <view class='avatar_and_name'>
+                <image src="{{item.userInfo.userHeadURI}}" class='avatar'></image>
+                <text class="name">{{item.userInfo.userNick}} 收</text>
+              </view>
+              <view class='desk_number'></view>
+              <view class='launchTime'>{{item.launchTime}}</view>
+            </view>
+            <view class='apply_check'>
+              <view class='apply_check_left'>
+                <text class='discount_type'>{{item.userCoupon.coupon.typeName}}</text>
+              </view>
+              <view class='apply_check_center'>
+                <view class='check_center_top'>
+                  <view class='check_theme'>{{item.userCoupon.coupon.theme?item.userCoupon.coupon.theme:"梨花浅唱新人包"}}</view>
+                  <view wx:if="{{item.userCoupon.coupon.senderName}}" class='receiver_info clearfix'>
+                    <image class="avatar fl" src='{{item.userCoupon.coupon.senderHeadImage}}'></image>
+                    <view class="name fl">{{item.userCoupon.coupon.senderName}}</view>
+                    <view class="get fl">送</view>
+                  </view>
+                  <view class='discount_code'>{{item.userCoupon.coupon.codeNum}}</view>
+                </view>
+                <view class='check_center_middle'>
+                  <view class='discount_content'>{{item.userCoupon.coupon.content}}</view>
+                </view>
+                <view class='check_center_bottom'>
+                  <!-- <view class='integral_box'></view> -->
+                  <view class='limit_box'>积分:{{item.userCoupon.coupon.integral}} {{item.userCoupon.coupon.limit}}</view>
+                  <view class='date'>有效期至：{{item.userCoupon.coupon.endTime}}</view>
+                </view>
+                <image class="giftPic" wx:if='{{item.userCoupon.coupon.image}}' src='{{item.userCoupon.coupon.image}}'></image>
+              </view>
+              <view class='apply_check_right'>
+                <view class='reject' @tap="check({{item.userCoupon.id}},{{item.userInfo.userID}},false)">拒绝</view>
+                <view class='agree'  @tap="check({{item.userCoupon.id}},{{item.userInfo.userID}},true)">同意</view>
+              </view>
+            </view>
+          </repeat>
+        </scroll-view>
+      </swiper-item>
+      <!-- 记录统计1 -->
+      <swiper-item class="tab-content">
+        <view class='select-wrapper'>
+          <view class='select-box'>
+            <picker @change="bindPickerChange" range-key="name" value="{{index}}" range="{{cardArray}}">
+              <view class="picker">
+                选择类型：{{cardArray[index].name}}
+              </view>
+            </picker>
+          </view>
+          <view class='time-box'>
+            <picker mode="date" value="{{startDate}}" start="2015-09-01" end="2017-09-01" @change="bindStartDateChange">
+              <view class="timepicker">
+                {{startDate}}
+              </view>
+            </picker>
+            <view class='line'></view>
+            <picker mode="date" value="{{endDate}}" start="2015-09-01" end="2017-09-01" @change="bindEndDateChange">
+              <view class="timepicker">
+                {{endDate}}
+              </view>
+            </picker>
+            <text class='comfirm'>确定</text>
+          </view>
+        </view>
+        <scroll-view scroll-y="true" class="scoll-Record" style="height:{{winHeight-86}}rpx">
+          <view class='checkList'>
+            <view wx:if='{{!CheckOutListRecord.length}}' class='noContent'>暂无数据</view>
+            <repeat for="{{CheckOutListRecord}}" item="item">
+              <image src='../../images/songli_discount_bg.png' class='apply_check_bg'></image>
+              <view class='check_people_handleInfo'>
+                <view class='avatar_and_name'>
+                  <image src="{{item.CouponUser.userHeadURI}}" class='avatar'></image>
+                  <text class="name">{{item.CouponUser.userNick}} 收</text>
+                </view>
+                <view class='desk_number'></view>
+                <view class='launchTime'>{{item.OperationTime}}</view>
+              </view>
+              <view class='apply_check'>
+                <view class='apply_check_left'>
+                  <text class='discount_type'>{{item.UserCoupon.coupon.typeName}}</text>
+                </view>
+                <view class='apply_check_center'>
+                  <view class='check_center_top'>
+                    <view class='check_theme'>{{item.UserCoupon.coupon.theme?item.UserCoupon.coupon.theme:"梨花浅唱新人包"}}</view>
+                    <view wx:if="{{item.UserCoupon.coupon.senderName}}" class='receiver_info clearfix'>
+                      <image class="avatar fl" src='{{item.UserCoupon.coupon.senderHeadImage}}'></image>
+                      <view class="name fl">{{item.UserCoupon.coupon.senderName}}</view>
+                      <view class="get fl">送</view>
+                    </view>
+                    <view class='discount_code'>{{item.UserCoupon.coupon.codeNum}}</view>
+                  </view>
+                  <view class='check_center_middle'>
+                    <view class='discount_content'>{{item.UserCoupon.coupon.content}}</view>
+                  </view>
+                  <view class='check_center_bottom'>
+                    <!-- <view class='integral_box'></view> -->
+                    <view class='limit_box'>积分:{{item.UserCoupon.coupon.integral}} {{item.UserCoupon.coupon.limit}}</view>
+                    <view class='date'>有效期至：{{item.UserCoupon.coupon.endTime}}</view>
+                  </view>
+                  <image class="giftPic" wx:if='{{item.UserCoupon.coupon.image}}' src='{{item.UserCoupon.coupon.image}}'></image>
+                </view>
+                <view class='apply_check_right'>
+                  <text class='check_people'>核销人</text>
+                  <image class="check_people_avatar" src="../../images/avatar.jpg" lazy-load="true"></image>
+                </view>
+              </view>
+            </repeat>
+          </view>
+        </scroll-view>
+      </swiper-item>
+    </swiper>
+  </view>
+  <!-- <view wx:else class='noPermission'>
+    <text class='text'>暂无权限</text>
+  </view> -->
+</template>
+
+<script>
+  import wepy from 'wepy';
+  const util = require('../../utils/utils.js')
+  export default class check extends wepy.page {
+    config = {
+      navigationBarTitleText: '核销'
+    };
+    data = {
+      show: false,
+      waitCheckOutList: [],
+      CheckOutListRecord: [],
+      winHeight: '',
+      currentTab: 0,
+      index: 0,
+      startDate: '2016-09-01',
+      endDate: '2018-09-01',
+      tk: "",
+      cardArray: [{
+          id: 0,
+          name: '实物券'
+        },
+        {
+          id: 1,
+          name: '现金券'
+        }
+      ]
+    };
+    _loadChenkedCouponList() {
+      //拉取核销列表
+      wx.request({
+        url: `${this.$parent.globalData.commonUrl}/api/loadLaunchSetOffUserCoupon?tk=${this.$parent.globalData.tk}`,
+        success: res => {
+          console.log('拉取待核销列表----------------------------------', res)
+          if (res.data.launchSetOffUserCoupons.length === 0) {
+            this.waitCheckOutList = [];
+            return false;
+          }
+          this.waitCheckOutList = res.data.launchSetOffUserCoupons;
+          // this.waitCheckOutList[0].launchTime = util.timestampToTime(this.waitCheckOutList[0].launchTime)
+          this.waitCheckOutList.forEach(item => {
+            item.launchTime = util.timestampToTime(item.launchTime)
+            let tempItem = item.userCoupon.coupon;
+            this.handleCard(tempItem)
+          })
+          this.$apply();
+        }
+      })
+      //拉取核销记录
+      wx.request({
+        url: `${this.$parent.globalData.commonUrl}/api/loadSetOffRecord?tk=${this.$parent.globalData.tk}`,
+        success: res => {
+          console.log('已核销记录--------------------------------', res)
+          if (res.data.loadSetOffRecord.length === 0) {
+            return false;
+          }
+          if (res.data.errCode === 0) {
+            this.CheckOutListRecord = res.data.loadSetOffRecord;
+            this.CheckOutListRecord.forEach(item => {
+              let tempItem = item.UserCoupon.coupon;
+              // tempItem["codeNum"] =
+              //   util.prefixZero(tempItem.type, 1) + "-" +
+              //   util.prefixZero(tempItem.batch, 3) + "-" +
+              //   util.prefixZero(tempItem.acquireNum, 7)
+              item.OperationTime = util.timestampToTime(item.OperationTime);
+              this.handleCard(tempItem)
+            })
+            this.$apply();
+          }
+        }
+      })
+    };
+    onShow() {
+      this._loadChenkedCouponList()
+    };
+    handleCard(tempItem) {
+      tempItem["codeNum"] =
+        util.prefixZero(tempItem.type, 1) + "-" +
+        util.prefixZero(tempItem.batch, 3) + "-" +
+        util.prefixZero(tempItem.acquireNum, 7)
+      switch (tempItem.type) {
+        case 0:
+          tempItem.content = tempItem.value + "元代金券";
+          tempItem['typeName'] = '现金券';
+          break;
+        case 1:
+          tempItem.content = tempItem.content;
+          tempItem['typeName'] = '实物券';
+          break;
+        case 2:
+          tempItem.content = tempItem.value + "折";
+          tempItem['typeName'] = '折扣券';
+          break;
+        case 3:
+          tempItem.content = tempItem.content;
+          tempItem['typeName'] = '兑换券';
+          break;
+        case 4:
+          tempItem.content = tempItem.content;
+          tempItem['typeName'] = '满减券';
+          break;
+        default:
+          break;
+      }
+    };
+    methods = {
+      //下拉刷新
+      refresh() {
+        console.log("下拉刷新")
+        wx.showLoading({
+          title: '加载中',
+        })
+        setTimeout(() => {
+          wx.hideLoading()
+        }, 2000);
+      },
+      // 二维码
+      scanQR: function() {
+        let _this = this;
+        wx.scanCode({
+          success: res => {
+            console.log(res);
+            wx.request({
+              url: res.result + '&tk=' + _this.$parent.globalData.tk,
+              success: res => {
+                if (res.data.errCode === 0) {
+                  wx.showToast({
+                    title: '核销成功',
+                    icon: 'success',
+                    duration: 2000
+                  })
+                  //刷新当前页面的数据
+                  if (getCurrentPages().length != 0) {
+                    getCurrentPages()[getCurrentPages().length - 1].onShow()
+                  }
+                }
+              }
+            })
+          }
+        });
+      },
+      //核销
+      check(userCouponID, userID,flag) {
+        let _this = this;
+        console.log(Boolean(flag))
+        var text = flag === "true" ?"核销成功":"拒绝成功"
+        wx.request({
+          url: `${this.$parent.globalData.commonUrl}/api/setOffUserCoupon?tk=${this.$parent.globalData.tk}&userCouponID=${userCouponID}&userID=${userID}&agree=${flag}&setOffWay=2`,
+          success: res => {
+            console.log('核销成功-----------------------------', res)
+            if (res.data.errCode === 0) {
+              wx.showToast({
+                title: text,
+                icon: 'none',
+                duration: 2000
+              })
+              //刷新当前页面的数据
+              if (getCurrentPages().length != 0) {
+                console.log('准备重新核销')
+                getCurrentPages()[getCurrentPages().length - 1].onShow()
+              }
+            } else {
+              wx.showToast({
+                title: '核销失败',
+                icon: 'success',
+                duration: 2000
+              })
+            }
+          }
+        })
+        this.$apply()
+      },
+      
+      swichNav(index) {
+        //   var cur = e.target.dataset.current;
+        if (this.currentTab == index) {
+          return false;
+        } else {
+          this.currentTab = index;
+        }
+      },
+      bindPickerChange(e) {
+        console.log('picker发送选择改变，携带值为', e.detail.value);
+        this.index = e.detail.value;
+      },
+      bindStartDateChange(e) {
+        console.log('picker发送选择改变，携带值为', e.detail.value);
+        this.startDate = e.detail.value;
+      },
+      bindEndDateChange(e) {
+        this.endDate = e.detail.value;
+        let flag = util.compareDate(this.startDate, this.endDate)
+        if (!flag) {
+          wx.showToast({
+            title: "不能小于开始日期",
+            icon: 'none',
+            duration: 2000
+          })
+          this.endDay = util.nowDate();
+        }
+      }
+    };
+    //下拉刷新
+    onPullDownRefresh() {
+      wx.request({
+        url: `${this.$parent.globalData.commonUrl}/api/loadLaunchSetOffUserCoupon?tk=${this.$parent.globalData.tk}`,
+        success: res => {
+          console.log('拉取待核销列表----------------------------------', res)
+          if (res.data.launchSetOffUserCoupons.length === 0) {
+            this.waitCheckOutList = [];
+            return false;
+          }
+          wx.stopPullDownRefresh()
+          this.waitCheckOutList = res.data.launchSetOffUserCoupons;
+          // this.waitCheckOutList[0].launchTime = util.timestampToTime(this.waitCheckOutList[0].launchTime)
+          this.waitCheckOutList.forEach(item => {
+            item.launchTime = util.timestampToTime(item.launchTime)
+            let tempItem = item.userCoupon.coupon;
+            this.handleCard(tempItem)
+          })
+          this.$apply();
+        }
+      })
+    }
+    onLoad() {
+      this.startDate = util.someDayLater(util.nowDate(), -30, '-');
+      this.endDate = util.nowDate();
+      //  高度自适应
+      this.winHeight = util.getScrollHeight(280)
+      console.log("this.winHeight-------------", this.winHeight)
+      this.show = !!(this.$parent.globalData.userInfo.permission & 2)
+    }
+  }
+</script>
+
+<style lang="less">
+  .noPermission {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    .text {
+      font-weight: 900;
+      font-size: 40rpx;
+      color: #ccc;
+    }
+  }
+  .check-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%；;
+    overflow: hidden;
+    font-size: 26rpx;
+    .top-wrapper {
+      position: relative;
+      height: 200rpx;
+      .home_bg {
+        width: 100%;
+        height: 200rpx;
+        box-sizing: border-box;
+        background-color: #ffba00;
+        position: absolute;
+        z-index: -1;
+        image {
+          width: 100%;
+          height: 100%;
+        }
+      }
+      .QR-wrapper {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 50rpx 18rpx 70rpx;
+        display: flex;
+        justify-content: space-between;
+        .QR_left {
+          width: 94rpx;
+          display: flex;
+          flex-direction: column;
+          .scan {
+            width: 44rpx;
+            height: 42rpx;
+            margin-left: 20rpx;
+            margin-bottom: 10rpx;
+          }
+          .text {
+            font-size: 22rpx;
+            color: #fff;
+            width: 100rpx;
+          }
+        }
+        .QR_center {
+          width: 490rpx;
+          .input_area {
+            background: #fff;
+            height: 60rpx;
+            border-radius: 30rpx;
+            color: #bbb;
+            font-size: 26rpx;
+            box-sizing: border-box;
+            padding-left: 20rpx;
+          }
+        }
+        .QR_right {
+          width: 100rpx;
+          margin-top: 10rpx;
+          text {
+            padding: 6rpx 16rpx;
+            font-size: 30rpx;
+            border: 1px solid #fff;
+            color: #fff;
+            border-radius: 8rpx;
+          }
+        }
+      }
+    }
+    .tab-wrapper,
+    .subTab-wrapper {
+      display: flex;
+      justify-content: space-around;
+      background-color: #fff;
+      height: 80rpx;
+      box-sizing: border-box;
+      border-bottom: 1px solid #f4f4f4;
+      .tab-item {
+        width: 50%;
+        padding: 20rpx;
+        text-align: center;
+        &.line {
+          border-right: 1px solid #f4f4f4;
+        }
+      }
+      .subTab-item {
+        width: 25%;
+        padding: 20rpx;
+        text-align: center;
+        &.active {
+          color: #ffba00;
+        }
+      }
+    }
+    .tab-content {
+      flex: 1;
+      background-color: #f4f4f4;
+      position: relative;
+    }
+  }
+  .scoll-h {
+    height: 100%;
+    overflow-y: auto;
+    box-sizing: border-box;
+    position: relative;
+    .noContent {
+      width: 100%;
+      text-align: center;
+      font-size: 40rpx;
+      font-weight: 800;
+      padding-top: 50%;
+      color: #ccc;
+    }
+    /* 申请系列 */
+    .apply_check_bg {
+      position: absolute;
+      z-index: -1;
+      width: 100%;
+      height: 240rpx;
+      margin-bottom: 10rpx;
+    }
+    .check_people_handleInfo {
+      height: 40rpx;
+      display: flex;
+      justify-content: space-between;
+      background-color: red;
+      color: #fff;
+      .avatar_and_name {
+        display: flex;
+        .avatar {
+          width: 40rpx;
+          height: 40rpx;
+          border-radius: 50%;
+        }
+        .name {}
+      }
+      .desk_number {}
+      .launchTime {}
+    }
+    .apply_check {
+      height: 200rpx;
+      margin-bottom: 10rpx;
+      display: flex;
+      .apply_check_left {
+        width: 100rpx;
+        padding: 26rpx 30rpx;
+        box-sizing: border-box;
+        .discount_type {
+          display: inline-block;
+          width: 40rpx;
+          color: red;
+          font-size: 36rpx;
+          font-weight: 800;
+        }
+      }
+      .apply_check_center {
+        flex: 1;
+        color: #fff;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 8rpx 8rpx;
+        position: relative;
+        .giftPic {
+          position: absolute;
+          width: 100rpx;
+          height: 80rpx;
+          top: 62rpx;
+          right: 20rpx;
+        }
+        .check_center_top {
+          display: flex;
+          justify-content: space-between;
+          .check_theme {}
+          .receiver_info {
+            .avatar {
+              width: 1rem;
+              height: 1rem;
+              border-radius: 50%;
+            }
+            .get {
+              width: 16rpx;
+            }
+            .name {
+              width: 74rpx;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+            }
+          }
+          .discount_code {
+            font-size: 22rpx;
+          }
+        }
+        .check_center_middle {
+          .discount_content {
+            font-size: 36rpx;
+            text-align: center
+          }
+        }
+        .check_center_bottom {
+          display: flex;
+          justify-content: space-between;
+          .limit_box{
+            font-size: 11px;
+          }
+          .date{ 
+            font-size: 11px;
+          }
+        }
+      }
+      .apply_check_right {
+        padding: 26rpx 10rpx;
+        box-sizing: border-box;
+        width: 100rpx;
+        .reject {
+          width: 60rpx;
+          padding: 6rpx 10rpx;
+          background: -webkit-linear-gradient(top, #FD8D53, #D63907);
+          color: #fff;
+        }
+        .agree {
+          margin-top: 60rpx;
+          width: 60rpx;
+          padding: 6rpx 10rpx;
+          background: -webkit-linear-gradient(top, #FEDC00, #E69900);
+          color: #fff;
+        }
+      }
+    }
+  }
+  .scoll-Record {
+    height: 90%;
+    overflow-y: auto;
+    box-sizing: border-box;
+    .noContent {
+      width: 100%;
+      text-align: center;
+      font-size: 40rpx;
+      font-weight: 800;
+      padding-top: 50%;
+      color: #ccc;
+    }
+  }
+  /* 记录统计系列 */
+  .search-wrapper {
+    display: flex;
+    position: relative;
+  }
+  .searchInput {
+    height: 60rpx;
+    background-color: #fff;
+    border-radius: 10rpx;
+    padding-left: 10rpx;
+    width: 100%;
+  }
+  .search {
+    width: 40rpx;
+    height: 40rpx;
+    position: absolute;
+    top: 8rpx;
+    right: 20rpx;
+    z-index: 2;
+  }
+  .apply_check_bg {
+    position: absolute;
+    z-index: -1;
+    width: 100%;
+    height: 240rpx;
+    margin-bottom: 10rpx;
+  }
+  .check_people_handleInfo {
+    height: 40rpx;
+    display: flex;
+    justify-content: space-between;
+    background-color: red;
+    color: #fff;
+    .avatar_and_name {
+      display: flex;
+      .avatar {
+        width: 40rpx;
+        height: 40rpx;
+        border-radius: 50%;
+      }
+      .name {}
+    }
+    .desk_number {}
+    .launchTime {}
+  }
+  .apply_check {
+    height: 200rpx;
+    margin-bottom: 10rpx;
+    display: flex;
+    .apply_check_left {
+      width: 100rpx;
+      padding: 26rpx 30rpx;
+      box-sizing: border-box;
+      .discount_type {
+        display: inline-block;
+        width: 40rpx;
+        color: red;
+        font-size: 36rpx;
+        font-weight: 800;
+      }
+    }
+    .apply_check_center {
+      flex: 1;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 8rpx 8rpx;
+      position: relative;
+      .giftPic {
+        position: absolute;
+        width: 100rpx;
+        height: 80rpx;
+        top: 62rpx;
+        right: 20rpx;
+      }
+      .check_center_top {
+        display: flex;
+        justify-content: space-between;
+        .check_theme {}
+        .receiver_info {
+          .avatar {
+            width: 1rem;
+            height: 1rem;
+            border-radius: 50%;
+          }
+          .get {
+            width: 16rpx;
+          }
+          .name {
+            width: 74rpx;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+        }
+        .discount_code {
+          font-size: 22rpx;
+        }
+      }
+      .check_center_middle {
+        .discount_content {
+          font-size: 36rpx;
+          text-align: center
+        }
+      }
+      .check_center_bottom {
+        display: flex;
+        justify-content: space-between;
+         .limit_box{
+            font-size: 11px;
+          }
+          .date{ 
+            font-size: 11px;
+          }
+      }
+    }
+    .apply_check_right {
+      padding: 6rpx 30rpx;
+      box-sizing: border-box;
+      width: 100rpx;
+      .check_people {
+        display: inline-block;
+        width: 40rpx;
+        color: red;
+        font-size: 36rpx;
+        font-weight: 800;
+      }
+      .check_people_avatar{
+        width: 40rpx;
+        height: 40rpx;
+        border-radius: 50%;
+      }
+    }
+  }
+  /* 筛选框 */
+  .select-wrapper {
+    background-color: #fff;
+    padding: 20rpx 10rpx;
+    box-sizing: border-box;
+    font-size: 28rpx;
+    display: flex;
+    /*    position: absolute;
+              z-index: 1;
+              top: 0; */
+  }
+  .select-wrapper .line {
+    height: 1rpx;
+    background: #ccc;
+    width: 20rpx;
+    margin: 20rpx 10rpx 0 0;
+  }
+  .select-wrapper .select-box {
+    // padding: 5rpx;
+  }
+  .select-wrapper .time-box {
+    margin-left: 10rpx;
+    display: flex;
+    padding: 0;
+  }
+  .timepicker {
+    margin-right: 10rpx;
+    padding: 5rpx;
+    background-color: #ccc;
+    color: #fff;
+  }
+  .picker {
+    background-color: #ccc;
+    color: #fff;
+    padding: 5rpx;
+  }
+  .comfirm {
+    padding: 3rpx;
+    margin-left: 10rpx;
+    border: 1px solid #ccc;
+  }
+  /* 总金额和总核销数区域 */
+  .total-wrapper {
+    border-top: 1px dashed #ccc;
+    padding: 20rpx 10rpx;
+    background-color: #fff;
+    display: flex;
+    justify-content: space-between;
+  }
+</style>

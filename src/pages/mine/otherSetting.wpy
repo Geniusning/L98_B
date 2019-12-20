@@ -1,0 +1,114 @@
+<template>
+  <view class="otherSetting_wrapper">
+    <view class="setting_item">
+      <text class="setting_left">开通游戏积分换重摇功能</text>
+      <switch checked="{{renewOpen}}" color="#ffba00" @change="change_game_integral"/>
+    </view>
+     <view class="setting_item">
+      <text class="setting_left">开通积分换门店项目</text>
+      <switch checked="{{shopItemConvertOpen}}" color="#ffba00" @change="change_shopRecommend"/>
+    </view>
+     <view class="setting_item">
+      <text class="setting_left">开通积分换礼品功能</text>
+      <switch checked="{{giftItemConvertOpen}}" color="#ffba00" @change="change_giftIntegral"/>
+    </view>
+    <view class="setting_item">
+      <text class="setting_left">开通积分充值功能</text>
+      <switch checked="{{integralConvertOpen}}" color="#ffba00" @change="change_topUp"/>
+    </view>
+    <!-- <button>保存</button> -->
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+const util = require('../../utils/utils.js')
+export default class otherSetting extends wepy.page {
+  config = {
+    navigationBarTitleText: '其他功能开通设置'
+  };
+
+  data = {
+    renewOpen:null,
+    shopItemConvertOpen:false,
+    giftItemConvertOpen:false,
+    integralConvertOpen:false,
+  };
+  methods = {
+    //重摇积分
+    change_game_integral(e){
+      console.log('switch1 发生 change 事件，携带值为', e.detail.value)
+      let isOpen = e.detail.value
+      let url = `${this.$parent.globalData.commonUrl}/api/gameSetting?tk=${this.$parent.globalData.tk}&renewCost=5&renewOpen=${isOpen}`  
+      util.interface_get(url).then(res=>{
+        console.log("重摇积分---------",res)
+      })
+    },
+    //开通积分换门店项目
+    change_shopRecommend(e){
+      console.log('开通积分换门店项目，携带值为', e.detail.value)
+      this.shopItemConvertOpen = e.detail.value
+      this._L98OtherSetting(this.shopItemConvertOpen,this.giftItemConvertOpen,this.integralConvertOpen)
+    },
+    //开通积分换礼品项目
+    change_giftIntegral(e){
+       console.log('开通积分换礼品项目，携带值为', e.detail.value)
+      this.giftItemConvertOpen = e.detail.value
+      this._L98OtherSetting(this.shopItemConvertOpen,this.giftItemConvertOpen,this.integralConvertOpen)
+    },
+    //开通积分充值功能
+    change_topUp(e){
+       console.log('开通积分充值功能，携带值为', e.detail.value)
+      this.integralConvertOpen = e.detail.value
+      this._L98OtherSetting(this.shopItemConvertOpen,this.giftItemConvertOpen,this.integralConvertOpen)
+    }
+  };
+  _L98OtherSetting(shopflag,giftflag,integralfalg){
+     let url = `${this.$parent.globalData.commonUrl}/api/L98otherSetting?tk=${this.$parent.globalData.tk}&shopItemFlag=${shopflag}&giftItemFlag=${giftflag}&integralItemFlag=${integralfalg}`  
+      util.interface_get(url).then(res=>{
+        console.log("设置结果-------",res)
+      })
+  }
+  _loadL98OtherSetting(){
+     let url = `${this.$parent.globalData.commonUrl}/api/loadL98otherSetting?tk=${this.$parent.globalData.tk}`  
+     util.interface_get(url).then(res=>{
+        console.log("其他设置---------",res)
+        this.integralConvertOpen = res.integralConvertOpen
+        this.giftItemConvertOpen = res.giftItemConvertOpen
+        this.shopItemConvertOpen = res.shopItemConvertOpen
+        this.$apply()
+     })
+  }
+  _loadGameSetting(){
+     let url = `${this.$parent.globalData.commonUrl}/api/loadGameSetting?tk=${this.$parent.globalData.tk}`  
+     util.interface_get(url).then(res=>{
+        console.log("拉取重摇积分---------",res)
+        this.renewOpen = res.renewOpen
+        this.$apply()
+     })
+  };
+  events = {};
+  onLoad() {
+    this._loadGameSetting()
+    this._loadL98OtherSetting()
+  }
+  // Other properties
+}
+</script>
+
+<style lang="less">
+.otherSetting_wrapper{
+  .setting_item{
+    padding: 30rpx 20rpx;
+    display: flex;
+    justify-content: space-between;
+    background-color: #fff;
+    margin-bottom: 20rpx;
+    .setting_left{
+      line-height: 1;
+      padding-top:20rpx;
+
+    }
+  }
+}
+</style>

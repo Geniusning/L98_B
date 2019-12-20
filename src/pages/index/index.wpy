@@ -1,0 +1,700 @@
+<template>
+  <view class="data_wrapper">
+    <!-- <view wx:if='{{show}}' class="home-container"> -->
+    <view class="home-container">
+      <view wx:if="{{userStat}}">
+      <!-- 门店信息 -->
+        <view class="shopInfo-wrapper">
+           <Header :sonShopInfo.sync="shopInfo" :superior.sync="userInfo"></Header>
+        </view>
+        <!-- 锁客拓客 -->
+        <view class="lockAndExpand-wrapper">
+          <view class="title-box">
+            <view class="title-box-left">
+              <image src="../../images/client.png" class="title-icon"></image>
+              <text class="subTitle">拓客分析</text>
+              <text @tap='selectYestodayUserStat' class="yestoday {{clientFlag?'active':''}}">(昨日)</text>
+            </view>
+            <view class="title-box-right" @tap='selectTodayUserStat'>
+              <text class="today {{!clientFlag?'active':''}}">今日</text>
+            </view>
+          </view>
+          <!-- top -->
+          <view class="lockAndExpand-Part">
+            <navigator url="/pages/index/visitorRecord/visitorRecord?type=visitor" hover-class="none" class="lockAndExpand-Part-item">
+              <view class="item">
+                <text class="name">网店访客：</text><text class="content big">{{userStat.dayStat.dayTotalUser}}</text>
+              </view>
+              <view class="accumulated">
+                <text class="name"><text class='letterSpace'>累</text>计：</text>
+                <text class="content">{{userStat.totalUser}}次</text>
+              </view>
+            </navigator>
+            <view class="line"></view>
+            <!-- url="/pages/index/dianNeiShangXian/dianNeiShangXian" -->
+            <navigator url="/pages/index/visitorRecord/visitorRecord?type=customer"  hover-class="none" class="lockAndExpand-Part-item">
+              <view class="item">
+                <text class="name">店内上线：</text><text class="content big">{{userStat.dayStat.dayQrcodeUser}}</text>
+              </view>
+              <view class="accumulated">
+                <text class="name"><text class='letterSpace'>累</text>计：</text>
+                <text class="content">{{userStat.qrcodeUser}}人</text>
+              </view>
+            </navigator>
+          </view>
+          <!-- bottom -->
+          <view class="lockAndExpand-Part bottomPart">
+            <navigator url="/pages/index/registerRecord/registerRecord" hover-class="none" class="lockAndExpand-Part-item">
+              <view class="item">
+                <text class="name">新增注册：</text><text class="content big">{{userStat.dayStat.dayNewUser}}</text>
+              </view>
+              <view class="accumulated">
+                <text class="name"><text class='letterSpace'>累</text>计：</text>
+                <text class="content">{{userStat.totalRegister}}人</text>
+              </view>
+            </navigator>
+            <view class="line"></view>
+            <navigator url="/pages/index/dianWaiShangXian/dianWaiShangXian" hover-class="none" class="lockAndExpand-Part-item">
+              <view class="item">
+                <text class="name">店外上线：</text><text class="content big">{{userStat.dayStat.dayOtherUser}}</text>
+              </view>
+              <view class="accumulated">
+                <text class="name"><text class='letterSpace'>累</text>计：</text>
+                <text class="content">{{userStat.otherUser}}人</text>
+              </view>
+            </navigator>
+          </view>
+        </view>
+        <!-- 营销活动 -->
+        <view class="lockAndExpand-wrapper">
+          <view class="title-box">
+            <view class="title-box-left">
+              <image src="../../images/activity.png" class="title-icon"></image>
+              <text class="subTitle">营销活动</text>
+              <text @tap='selectYestodayCouponStat' class="yestoday {{couponFlag?'active':''}}">(昨日)</text>
+            </view>
+            <view class="title-box-right" @tap='selectTodayCouponStat'>
+              <text class="today {{!couponFlag?'active':''}}">今日</text>
+            </view>
+          </view>
+          <!-- top -->
+          <view class="lockAndExpand-Part">
+            <navigator url="/pages/index/yingXiaoHuoDongModule/yingXiaoHuoDongModule?type=0" hover-class="none" class="lockAndExpand-Part-item">
+              <view class="item">
+                <text class="name">发券数量：</text><text class="content big">{{marketingStat.marketingDayStat.dayIssuedCoupon}}</text>
+              </view>
+              <view class="accumulated">
+                <text class="name"><text class='letterSpace'>累</text>计：</text>
+                <text class="content">{{marketingStat.issuedCoupon}}张</text>
+              </view>
+            </navigator>
+            <view class="line"></view>
+            <navigator url="/pages/index/yingXiaoHuoDongModule/yingXiaoHuoDongModule?type=1" hover-class="none" class="lockAndExpand-Part-item">
+              <view class="item">
+                <text class="name">到店核销：</text><text class="content big">{{marketingStat.marketingDayStat.daySetOffCoupon}}</text>
+              </view>
+              <view class="accumulated">
+                <text class="name"><text class='letterSpace'>累</text>计：</text>
+                <text class="content">{{marketingStat.setOffCoupon}}张</text>
+              </view>
+            </navigator>
+          </view>
+          <!-- bottom -->
+          <view class="lockAndExpand-Part bottomPart">
+            <navigator url="/pages/index/yingXiaoHuoDongModule/yingXiaoHuoDongModule?type=2" hover-class="none" class="lockAndExpand-Part-item">
+              <view class="item">
+                <text class="name">在线活动：</text><text class="content big">{{marketingStat.marketingDayStat.dayReleaseActivity}}</text>
+              </view>
+              <view class="accumulated">
+                <text class="name"><text class='letterSpace'>累</text>计：</text>
+                <text class="content">{{marketingStat.releaseActivity}}个</text>
+              </view>
+            </navigator>
+            <view class="line"></view>
+            <navigator url="/pages/index/takeInPartRecord/takeInPartRecord" hover-class="none" class="lockAndExpand-Part-item">
+              <view class="item">
+                <text class="name">参与活动：</text><text class="content big">{{marketingStat.marketingDayStat.dayJoinActivity}}</text>
+              </view>
+              <view class="accumulated">
+                <text class="name"><text class='letterSpace'>累</text>计：</text>
+                <text class="content">{{marketingStat.joinActivity}}人次</text>
+              </view>
+            </navigator>
+          </view>
+        </view>
+        <!-- 社群活跃度communityStat -->
+        <view class="lockAndExpand-wrapper">
+          <view class="title-box">
+            <view class="title-box-left">
+              <image src="../../images/communityF.png" class="title-icon"></image>
+              <text class="subTitle">社群活跃度</text>
+              <text @tap='selectYestodayCommunityStat' class="yestoday {{communityFlag?'active':''}}">(昨日)</text>
+            </view>
+            <view class="title-box-right" @tap='selectTodayCommunityStat'>
+              <text class="today {{!communityFlag?'active':''}}">今日</text>
+            </view>
+          </view>
+          <!-- top -->
+          <navigator url="/pages/index/communityRecord/communityRecord" hover-class="none">
+            <view class="lockAndExpand-Part">
+              <view class="lockAndExpand-Part-item">
+                <view class="item">
+                  <text class="name">群友点赞：</text><text class="content big">{{communityStat.communityDayStat.dayMakeFriendStat}}</text>
+                </view>
+                <view class="accumulated">
+                  <text class="name"><text class='letterSpace'>累</text>计：</text>
+                  <text class="content">{{communityStat.mekeFriendStat}}人</text>
+                </view>
+              </view>
+              <view class="line"></view>
+              <view class="lockAndExpand-Part-item">
+                <view class="item">
+                  <text class="name">互赠礼物：</text><text class="content big">{{communityStat.communityDayStat.daySentGiftStat}}</text>
+                </view>
+                <view class="accumulated">
+                  <text class="name"><text class='letterSpace'>累</text>计：</text>
+                  <text class="content">{{communityStat.sentGiftStat}}人</text>
+                </view>
+              </view>
+            </view>
+            <!-- bottom -->
+            <view class="lockAndExpand-Part bottomPart">
+              <view class="lockAndExpand-Part-item">
+                <view class="item">
+                  <text class="name">群友对话：</text><text class="content big">{{communityStat.communityDayStat.dayChatStat}}</text>
+                </view>
+                <view class="accumulated">
+                  <text class="name"><text class='letterSpace'>累</text>计：</text>
+                  <text class="content">{{communityStat.chatStat}}次</text>
+                </view>
+              </view>
+              <view class="line"></view>
+              <view class="lockAndExpand-Part-item">
+                <view class="item">
+                  <text class="name">游戏互动：</text><text class="content big">{{communityStat.communityDayStat.daygameStat}}</text>
+                </view>
+                <view class="accumulated">
+                  <text class="name"><text class='letterSpace'>累</text>计：</text>
+                  <text class="content">{{communityStat.gameStat}}局</text>
+                </view>
+              </view>
+            </view>
+          </navigator>
+        </view>
+        <!-- 门店与客人 -->
+        <view class="lockAndExpand-wrapper">
+          <view class="title-box">
+            <view class="title-box-left">
+              <image src="../../images/book.png" class="title-icon"></image>
+              <text class="subTitle">服务监控</text>
+              <text @tap='selectYestodayBookingStat' class="yestoday {{bookingFlag?'active':''}}">(昨日)</text>
+            </view>
+            <view class="title-box-right" @tap='selectTodayBookingStat'>
+              <text class="today {{!bookingFlag?'active':''}}">今日</text>
+            </view>
+          </view>
+          <!-- top -->
+          <view class="lockAndExpand-Part">
+            <navigator url="/pages/index/systemInform/systemInform" hover-class="none" class="lockAndExpand-Part-item">
+              <view class="item">
+                <text class="name">系统通知：</text><text class="content big">{{mutualStat.MutualDayStat.dayBooking}}</text>
+              </view>
+              <view class="accumulated">
+                <text class="name"><text class='letterSpace'>累</text>计：</text>
+                <text class="content">{{mutualStat.ConvertStat}}次</text>
+              </view>
+            </navigator>
+            <view class="line"></view>
+            <navigator url="/pages/index/staffTalkWidthClient/staffTalkWidthClient" hover-class="none" class="lockAndExpand-Part-item">
+              <view class="item">
+                <text class="name">客服对话：</text><text class="content big">{{mutualStat.MutualDayStat.dayClerkShareStat}}</text>
+              </view>
+              <view class="accumulated">
+                <text class="name"><text class='letterSpace'>累</text>计：</text>
+                <text class="content">{{mutualStat.clerkShareStat}}次</text>
+              </view>
+            </navigator>
+          </view>
+          <!-- bottom -->
+          <view class="lockAndExpand-Part bottomPart">
+            <navigator url="/pages/index/dianYuanYuKeTalk/dianYuanYuKeTalk" hover-class="none" class="lockAndExpand-Part-item">
+              <view class="item">
+                <text class="name">店员与客对话：</text><text class="content big">{{mutualStat.MutualDayStat.dayClerkChatStat}}</text>
+              </view>
+              <view class="accumulated">
+                <text class="name"><text class='letterSpace'>累</text>计：</text>
+                <text class="content">{{mutualStat.clerkChatStat}}次</text>
+              </view>
+            </navigator>
+            <view class="line"></view>
+            <navigator url="/pages/index/consultGameRecord/consultGameRecord" hover-class="none" class="lockAndExpand-Part-item">
+              <view class="item">
+                <text class="name">店员与客游戏：</text><text class="content big">{{mutualStat.MutualDayStat.dayClerkGameStat}}</text>
+              </view>
+              <view class="accumulated">
+                <text class="name"><text class='letterSpace'>累</text>计：</text>
+                <text class="content">{{mutualStat.clerkGameStat}}局</text>
+              </view>
+            </navigator>
+          </view>
+        </view>
+        <!-- 积分系统 -->
+        <view class="lockAndExpand-wrapper">
+          <!-- <view class="title-box">
+                    <view class="title-box-left">
+                      <image src="../../images/jifen.png" class="title-icon"></image>
+                      <text class="subTitle">积分统计</text>
+                      <text class="yestoday">(昨日)</text>
+                    </view>
+                    <view class="title-box-right">
+                      <text class="today">今日</text>
+                    </view>
+                  </view> -->
+          <view class="title-box">
+            <view class="title-box-left">
+              <image src="../../images/jifen.png" class="title-icon"></image>
+              <text class="subTitle">积分统计</text>
+              <text @tap='selectYestodayJiFen' class="yestoday {{jiFenFlag?'active':''}}">(昨日)</text>
+            </view>
+            <view class="title-box-right" @tap='selectTodayJiFen'>
+              <text class="today {{!jiFenFlag?'active':''}}">今日</text>
+            </view>
+          </view>
+          <!-- top -->
+          <view class="lockAndExpand-Part">
+            <navigator url="/pages/marketing/allTypeIntegraRec?type=sys" hover-class="none" class="lockAndExpand-Part-item">
+              <view class="item">
+                <text class="name">糸统赠送：</text><text class="content big">{{integralStat.integralDayStat.daySystemSendStat}}</text>
+              </view>
+              <view class="accumulated">
+                <text class="name"><text class='letterSpace'>累</text>计：</text>
+                <text class="content">{{integralStat.systemSendStat}}分</text>
+              </view>
+            </navigator>
+            <view class="line"></view>
+            <navigator url="/pages/index/yingXiaoHuoDongModule/yingXiaoHuoDongModule?type=4" hover-class="none" class="lockAndExpand-Part-item">
+              <view class="item">
+                <text class="name">积分充值：</text><text class="content big">{{integralStat.integralDayStat.dayPayStat}}</text>
+              </view>
+              <view class="accumulated">
+                <text class="name"><text class='letterSpace'>累</text>计：</text>
+                <text class="content">{{integralStat.payStat}}分</text>
+              </view>
+            </navigator>
+          </view>
+          <!-- bottom -->
+          <view class="lockAndExpand-Part bottomPart">
+            <navigator url="/pages/marketing/allTypeIntegraRec?type=givenGift" hover-class="none" class="lockAndExpand-Part-item">
+              <view class="item">
+                <text class="name">积分转赠：</text><text class="content big">{{integralStat.integralDayStat.dayTransferStat}}</text>
+              </view>
+              <view class="accumulated">
+                <text class="name"><text class='letterSpace'>累</text>计：</text>
+                <text class="content">{{integralStat.transferStat}}分</text>
+              </view>
+            </navigator>
+            <view class="line"></view>
+            <navigator url="/pages/marketing/allTypeIntegraRec?type=exchangeGift" hover-class="none" class="lockAndExpand-Part-item">
+              <view class="item">
+                <text class="name">消耗兑换：</text><text class="content big">{{integralStat.integralDayStat.dayconvertStat}}</text>
+              </view>
+              <view class="accumulated">
+                <text class="name"><text class='letterSpace'>累</text>计：</text>
+                <text class="content">{{integralStat.convertStat}}分</text>
+              </view>
+            </navigator>
+          </view>
+        </view>
+        <!-- 友商引流 -->
+        <view class="lockAndExpand-wrapper">
+          <view class="title-box">
+            <view class="title-box-left">
+              <image src="../../images/yinliu.png" class="title-icon"></image>
+              <text class="subTitle">友商互推</text>
+              <text class="yestoday">(昨日)</text>
+            </view>
+            <view class="title-box-right">
+              <text class="today">今日</text>
+            </view>
+          </view>
+          <!-- top -->
+          <view class="lockAndExpand-Part">
+            <navigator url="/pages/index/youShangXuanChuan/youShangXuanChuan" hover-class="none" class="lockAndExpand-Part-item">
+              <view class="item">
+                <text class="name">友商宣传我：</text><text class="content big">8</text>
+              </view>
+              <view class="accumulated">
+                <text class="name"><text class='letterSpace'>累</text>计：</text>
+                <text class="content">999次</text>
+              </view>
+            </navigator>
+            <view class="line"></view>
+            <navigator url="/pages/index/youKeLingQuan/youKeLingQuan" hover-class="none" class="lockAndExpand-Part-item">
+              <view class="item">
+                <text class="name">友客领我券：</text><text class="content big">8</text>
+              </view>
+              <view class="accumulated">
+                <text class="name"><text class='letterSpace'>累</text>计：</text>
+                <text class="content">88人</text>
+              </view>
+            </navigator>
+          </view>
+          <!-- bottom -->
+          <view class="lockAndExpand-Part bottomPart">
+            <navigator url="/pages/index/yinLiuBenHao/yinLiuBenHao" hover-class="none" class="lockAndExpand-Part-item">
+              <view class="item">
+                <text class="name">引流到本号：</text><text class="content big">8</text>
+              </view>
+              <view class="accumulated">
+                <text class="name"><text class='letterSpace'>累</text>计：</text>
+                <text class="content">88次</text>
+              </view>
+            </navigator>
+            <view class="line"></view>
+            <navigator url="/pages/index/yinLiuYouShang/yinLiuYouShang" hover-class="none" class="lockAndExpand-Part-item">
+              <view class="item">
+                <text class="name">引流给友商：</text><text class="content big">8</text>
+              </view>
+              <view class="accumulated">
+                <text class="name"><text class='letterSpace'>累</text>计：</text>
+                <text class="content">88次</text>
+              </view>
+            </navigator>
+          </view>
+        </view>
+      </view>
+      <!-- loading -->
+      <view wx:else class="image_box" style="text-align:center">
+        <image class="loading_icon" src="../../images/loading.gif" mode="scaleToFill"></image>
+      </view>
+    </view>
+    <!-- <view wx:else class='noPermission'>
+      <text class='text'>暂无权限</text>
+    </view> -->
+
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  import Header from '../../components/headPart'
+  const util = require('../../utils/utils.js')
+  export default class index extends wepy.page {
+    config = {
+      navigationBarTitleText: '商家后台管理'
+    };
+    components = {
+      Header:Header
+    };
+    data = {
+      clientFlag: true,
+      couponFlag: true,
+      communityFlag: true,
+      bookingFlag: true,
+      jiFenFlag: true,
+      userStat: {},
+      marketingStat: {}, //营销活动数据
+      communityStat: {}, //社群活动
+      mutualStat: {}, //门店与客人
+      integralStat: {}, //积分统计
+      show: false,
+      userInfo: {},
+      shopInfo: {},
+      staff:{}
+    };
+    methods = {
+      //锁客拓客今日用户
+      selectTodayUserStat() {
+        let startDate = util.nowDate();
+        let endDate = util.nowDate();
+        let url = `${this.$parent.globalData.commonUrl}/api/loadUserDayStats?tk=${this.$parent.globalData.tk}&startDay=${startDate}&endDay=${endDate}`;
+        util.interface_get(url).then(res => {
+          console.log('今日访客数据---------------', res);
+          this.userStat.dayStat = res.userDayStats[0];
+          this.clientFlag = false;
+          this.$apply();
+        });
+      },
+      //锁客拓客昨日用户
+      selectYestodayUserStat() {
+        let yestoday = this.getYestoday();
+        let startDate = yestoday;
+        let endDate = yestoday;
+        let url = `${this.$parent.globalData.commonUrl}/api/loadUserDayStats?tk=${this.$parent.globalData.tk}&startDay=${startDate}&endDay=${endDate}`;
+        util.interface_get(url).then(res => {
+          this.userStat.dayStat = res.userDayStats[0];
+          this.clientFlag = true;
+          this.$apply();
+        });
+      },
+      //活动营销今日用户
+      selectTodayCouponStat() {
+        let today = util.nowDate();
+        let url = `${this.$parent.globalData.commonUrl}/api/loadMarketingDaySummary?tk=${this.$parent.globalData.tk}&day=${today}`;
+        util.interface_get(url).then(res => {
+          console.log('今日营销数据---------------', res);
+          this.marketingStat.marketingDayStat = res.dataStat;
+          this.couponFlag = false;
+          this.$apply();
+        });
+      },
+      //活动营销昨日用户
+      selectYestodayCouponStat() {
+        let yestoday = this.getYestoday();
+        let url = `${this.$parent.globalData.commonUrl}/api/loadMarketingDaySummary?tk=${this.$parent.globalData.tk}&day=${yestoday}`;
+        util.interface_get(url).then(res => {
+          console.log('昨日营销数据---------------', res);
+          this.marketingStat.marketingDayStat = res.dataStat;
+          this.couponFlag = true;
+          this.$apply();
+        });
+      },
+      //社区活跃度今日用户
+      selectTodayCommunityStat() {
+        let startDate = util.nowDate();
+        let endDate = util.nowDate();
+        let url = `${this.$parent.globalData.commonUrl}/api/loadCommunityDayStats?tk=${this.$parent.globalData.tk}&startDay=${startDate}&endDay=${endDate}`;
+        util.interface_get(url).then(res => {
+          console.log('今日社区数据---------------', res);
+          this.communityStat.communityDayStat = res.coumnityDayStats.communityDayStats[0];
+          this.communityFlag = false;
+          this.$apply();
+        });
+      },
+      //社区活跃度昨日用户
+      selectYestodayCommunityStat() {
+        let yestoday = this.getYestoday();
+        let startDate = yestoday;
+        let endDate = yestoday;
+        let url = `${this.$parent.globalData.commonUrl}/api/loadCommunityDayStats?tk=${this.$parent.globalData.tk}&startDay=${startDate}&endDay=${endDate}`;
+        util.interface_get(url).then(res => {
+          console.log('昨日社区数据---------------', res);
+          this.communityStat.communityDayStat = res.coumnityDayStats.communityDayStats[0];
+          this.communityFlag = true;
+          this.$apply();
+        });
+      },
+      //门店与客人昨日用户 
+      selectYestodayBookingStat() {
+        let yestoday = this.getYestoday();
+        let startDate = yestoday;
+        let endDate = yestoday;
+        let url = `${this.$parent.globalData.commonUrl}/api/loadMutualDaySummary?tk=${this.$parent.globalData.tk}&startDay=${startDate}&endDay=${endDate}`;
+        util.interface_get(url).then(res => {
+          console.log('昨日预定与交互数据---------------', res);
+          this.mutualStat.MutualDayStat = res.dataStat;
+          console.log('yestoday-----', this.mutualStat.MutualDayStat)
+          this.bookingFlag = true;
+          this.$apply();
+        });
+      },
+      //门店与客人今日用户
+      selectTodayBookingStat() {
+        let startDate = util.nowDate();
+        let endDate = util.nowDate();
+        let url = `${this.$parent.globalData.commonUrl}/api/loadMutualDaySummary?tk=${this.$parent.globalData.tk}&startDay=${startDate}&endDay=${endDate}`;
+        util.interface_get(url).then(res => {
+          console.log('今日预定与交互数据---------------', res);
+          this.mutualStat.MutualDayStat = res.dataStat;
+          console.log('today-----', this.mutualStat.MutualDayStat)
+          this.bookingFlag = false;
+          this.$apply();
+        });
+      },
+      //积分统计昨天用户
+      selectYestodayJiFen() {
+        let yestoday = this.getYestoday();
+        let url = `${this.$parent.globalData.commonUrl}/api/loadIntegralDaySummary?tk=${this.$parent.globalData.tk}&day=${yestoday}`;
+        util.interface_get(url).then(res => {
+          console.log('昨日积分统计---------------', res);
+          this.integralStat.integralDayStat = res.dataStat;
+          this.jiFenFlag = true;
+          this.$apply();
+        });
+      },
+      //今日积分统计
+      selectTodayJiFen() {
+        let today = util.nowDate();
+        let url = `${this.$parent.globalData.commonUrl}/api/loadIntegralDaySummary?tk=${this.$parent.globalData.tk}&day=${today}`;
+        util.interface_get(url).then(res => {
+          console.log('今日积分统计---------------', res);
+          this.integralStat.integralDayStat = res.dataStat;
+          this.jiFenFlag = false;
+          this.$apply();
+        });
+      },
+    };
+    //获取昨天日期
+    getYestoday() {
+      let day = new Date();
+      day.setTime(day.getTime() - 24 * 60 * 60 * 1000);
+      console.log(day.getMonth() + 1);
+      let year = day.getFullYear();
+      let month = day.getMonth() + 1 >= 10 ? day.getMonth() + 1 : "0" + (day.getMonth() + 1)
+      let date = day.getDate() >= 10 ? day.getDate() : "0" + day.getDate()
+      console.log(year + "-" + month + "-" + date)
+      return year + "-" + month + "-" + date;
+    };
+    // 获取全部数据
+    getDataStat(res) {
+      let _this = this;
+      return new Promise((resolve, reject) => {
+        wx.request({
+          url: `${this.$parent.globalData.commonUrl}/api/dataStat?tk=${this.$parent.globalData.tk}`,
+          success: function(res) {
+            if (res.statusCode === 200) {
+              _this.show = !!(_this.$parent.globalData.userInfo.permission & 1);
+              resolve(res.data);
+            } else {
+              reject(err)
+            }
+          }
+        });
+      })
+    }
+    async onShow() {
+      this.clientFlag = true;
+      this.couponFlag = true;
+      this.communityFlag = true;
+      this.bookingFlag = true;
+      this.jiFenFlag = true;
+      this.shopInfo = this.$parent.globalData.shopInfo;
+      this.userInfo = this.$parent.globalData.userInfo;
+      let resultData = await this.getDataStat();
+      console.log('resultData------------------------------:', resultData)
+      this.$parent.globalData.dataStat = resultData.dataStat;
+      this.userStat = resultData.dataStat.userStat;
+      this.marketingStat = resultData.dataStat.MarketingStat; //营销活动数据
+      this.communityStat = resultData.dataStat.communityStat; //社群活跃度
+      this.mutualStat = resultData.dataStat.MutualStat //门店与客人
+      this.integralStat = resultData.dataStat.integralStat //积分统计
+      this.$apply();
+    };
+  }
+</script>
+
+<style lang="less">
+  .data_wrapper {
+    .noPermission {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      .text {
+        font-weight: 900;
+        font-size: 40rpx;
+        color: #ccc;
+      }
+    }
+    .home-container {
+      .image_box {
+        width: 100%;
+        .loading_icon {
+          position: fixed;
+          margin: 40% 0;
+          width: 60rpx;
+          height: 60rpx;
+        }
+      }
+      background-color: #f4f4f4; // 门店信息
+       // 锁客拓客
+      .lockAndExpand-wrapper {
+        width: 702rpx;
+        margin: 30rpx 24rpx 30rpx;
+        padding: 10rpx 0;
+        border-radius: 8rpx;
+        background: #fff;
+        font-size: 28rpx;
+        .title-box {
+          width: 100%;
+          box-sizing: border-box;
+          display: flex;
+          justify-content: space-between;
+          padding: 12rpx 20rpx;
+          border-bottom: 1px dashed #efeef3;
+          .title-box-left {
+            display: flex;
+            .title-icon {
+              width: 48rpx;
+              height: 48rpx;
+            }
+            .subTitle {
+              color: #333;
+              margin-top: 6rpx;
+              margin-left: 15rpx;
+              font-size: 30rpx;
+              font-weight: 700;
+            }
+          }
+          .title-box-right {
+            padding-top: 8rpx; // .today {
+            //   color: #333;
+            //   font-weight: 900;
+            // }
+          }
+        }
+        .lockAndExpand-Part {
+          width: 100%;
+          display: flex;
+          justify-content: space-around;
+          &.bottomPart {
+            margin-top: 10rpx;
+            padding-top: 10rpx;
+            border-top: 1px dashed #ccc;
+          }
+          .lockAndExpand-Part-item {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            .item {
+              width: 250rpx;
+              .name {
+                font-size: 28rpx;
+                color: #666;
+              }
+              .content {
+                color: #8b0000;
+                font-size: 24rpx;
+                &.big {
+                  font-size: 32rpx !important;
+                  font-weight: 600;
+                }
+              }
+            }
+            .accumulated {
+              width: 250rpx;
+              .name {
+                font-size: 28rpx;
+                color: #666;
+                .letterSpace {
+                  letter-spacing: 55rpx;
+                }
+              }
+              .content {
+                color: #333;
+                font-size: 24rpx;
+              }
+            }
+          }
+          .line {
+            margin-top: 10rpx;
+            height: 90rpx;
+            border: 1px dashed #ccc;
+          }
+        }
+      }
+      .yestoday {
+        margin-top: 6rpx;
+        font-weight: 800;
+        margin-left: 15rpx;
+        color: #333;
+      }
+      .active {
+        margin-top: 6rpx;
+        margin-left: 15rpx;
+        font-weight: 800;
+        color: #ffba00;
+      }
+    }
+  }
+</style>

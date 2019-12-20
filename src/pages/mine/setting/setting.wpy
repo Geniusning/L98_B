@@ -1,0 +1,85 @@
+<template>
+  <view class='setting-container'>
+    <!-- 门店设置 -->
+    <navigator url='/pages/mine/setting/shopInfo/shopInfo' class='item'>
+      <view class='name-box'>
+        <image class='icon' src='../../../images/shop1.png' style='width:30rpx;height:29rpx;'></image>
+        <text class='settingName'>门店基本信息设置</text>
+      </view>
+      <image src='../../../images/arrow_right.png'></image>
+    </navigator>
+    <!-- 门店宣传图pages/mine/setting/slideShow/slideShow -->
+    <navigator hover-class='none' url='/pages/mine/setting/slideShow/slideShow' class='item'>
+      <view class='name-box'>
+        <image class='icon' src='../../../images/shop1.png' style='width:30rpx;height:29rpx;'></image>
+        <text class='settingName'>门店宣传图设置</text>
+      </view>
+      <image src='../../../images/arrow_right.png'></image>
+    </navigator>
+    <!-- 员工权限设置 -->
+    <!-- <navigator url='/pages/mine/setting/account/account' class='item'>
+      <view class='name-box'>
+        <image class='icon' src='../../../images/account.png' style='width:32rpx;height:28rpx;'></image>
+        <text class='settingName'>新增账户设置</text>
+      </view>
+      <image src='../../../images/arrow_right.png'></image>
+    </navigator> -->
+    <!-- 密码修改 -->
+    <!-- <navigator url='/pages/mine/setting/passwordUpdate/passwordUpdate' class='item'>
+      <view class='name-box'>
+        <image class='icon' src='../../../images/setting.png' style='width:32rpx;height:28rpx;'></image>
+        <text class='settingName'>密码修改</text>
+      </view>
+      <image src='../../../images/arrow_right.png'></image>
+    </navigator> -->
+    <!-- 本店二维码 -->
+    <!-- <navigator url='/pages/mine/setting/QRcode/QRcode' class='item'>
+      <view class='name-box'>
+        <image class='icon' src='../../../images/about.png' style='width:34rpx;height:34rpx;'></image>
+        <text class='settingName'>本店二维码</text>
+      </view>
+      <image src='../../../images/arrow_right.png'></image>
+    </navigator> -->
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  export default class setting extends wepy.page {
+    config = {
+      navigationBarTitleText: '设置'
+    };
+    data = {};
+    methods = {};
+    events = {};
+    onLoad() {}
+    // Other properties
+  }
+</script>
+
+<style lang="less">
+  .setting-container {
+    background: #fff;
+    height: 100%;
+  }
+  .setting-container .item {
+    padding: 20rpx;
+    border-bottom: 1px solid #f4f3f6;
+    display: flex;
+    justify-content: space-between;
+  }
+  .setting-container .item .settingName {
+    margin-top: 10rpx;
+    font-size: 28rpx;
+    color: #333;
+  }
+  .setting-container .item image {
+    width: 14rpx;
+    height: 26rpx;
+    margin-right: 8rpx;
+    margin-top: 16rpx;
+  }
+  .setting-container .item .icon {
+    vertical-align: -4rpx;
+  }
+</style>

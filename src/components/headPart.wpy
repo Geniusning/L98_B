@@ -1,0 +1,90 @@
+<template>
+    <view class="header">
+        <view class="shopInfo-left">
+            <image src="{{sonShopInfo.image}}" class="logo"></image>
+            <view class="shopInfo">
+                <text class="shopName">{{sonShopInfo.name}}</text>
+                <text class="Number">门店编号:2314499</text>
+            </view>
+        </view>
+        <view class="shopInfo-right">
+            <view class="shopInfo">
+                <text class="shopName">行业：{{sonShopInfo.industryType}}</text>
+                <text class="staffName">上级：{{superior.name}}13129177665</text>
+            </view>
+        </view>
+    </view>
+</template>
+
+<script>
+    import wepy from 'wepy';
+    export default class header extends wepy.component {
+        // Other properties
+        data = {
+            // shopInfo:{},
+            // staffName:{}
+        };
+        props = {
+            sonShopInfo:{
+                type:Object,
+                default:""
+            },
+            superior:{
+                type:Object,
+                default:""
+            }
+        };
+        onLoad() {
+            console.log("this.sonShopInfo--------",this.sonShopInfo)
+            console.log("this.superior--------",this.superior)
+            // this.shopInfo = this.$parent.globalData.shopInfo;
+            // this.staffName = this.$parent.globalData.userInfo;
+        }
+    }
+</script>
+
+<style lang="less">
+    .header {
+        background-color: #ffba00;
+        display: flex;
+        justify-content: space-between;
+        padding: 20rpx 20rpx;
+        box-sizing: border-box;
+        color: #fff;
+        font-size: 24rpx;
+        .shopInfo-left {
+            display: flex;
+            .logo {
+                width: 140rpx;
+                height: 140rpx;
+                margin-top: 24rpx;
+            }
+            .shopInfo {
+                display: flex;
+                flex-direction: column;
+                justify-content: space-around;
+                margin-left: 20rpx;
+                height: 200rpx;
+                .shopName {
+                    font-weight: 700;
+                    font-size: 30rpx;
+                    text-align: right;
+                }
+            }
+        }
+        .shopInfo-right {
+            .shopInfo {
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-around;
+                font-size: 24rpx;
+                 height: 200rpx;
+                .shopName {
+                    text-align: right;
+                }
+                .staffName {}
+            }
+        }
+    }
+</style>

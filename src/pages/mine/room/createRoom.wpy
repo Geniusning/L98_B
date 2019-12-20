@@ -1,0 +1,82 @@
+<template>
+  <view class="createRoom_wrapper">
+    <view class="create_area">
+      <text class="createRoomText">创建房间数量：</text>
+      <input class="createRommWrite" @input="inputRoomNumber" placeholder="请输入房间数量" type="number" />
+    </view>
+    <button class="createBtn" @tap="createRoom">创建</button>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  const util = require('../../../utils/utils.js')
+  export default class createRoom extends wepy.page {
+    config = {
+      navigationBarTitleText: '创建房间/台号'
+    };
+    methods = {
+    }
+    data = {
+      roomCounts: 1,
+      loadFlag:true
+    };
+    methods = {
+      inputRoomNumber(e) {
+        console.log(e.detail.value);
+        this.roomCounts = Number(e.detail.value);
+      },
+      createRoom() {
+        if(this.loadFlag){
+          this.loadFlag = !this.loadFlag
+        }
+        let url = `${this.$parent.globalData.commonUrl}/api/createDesk?tk=${this.$parent.globalData.tk}&count=${this.roomCounts}&phone=${this.$parent.globalData.userInfo.phone}`;
+        util.interface_get(url).then(res => {
+          console.log(res);
+          if (res.errCode === 0) {
+             this.loadFlag = !this.loadFlag
+            wx.showToast({
+              title: '创建房间成功',
+              icon: 'none',
+              duration: 1000
+            })
+            this.roomCounts = ""
+            setTimeout(() => {
+              wx.redirectTo({
+                url: '/pages/mine/room/bindRoomList'
+              })
+            }, 17);
+          }
+        })
+      }
+    };
+    events = {};
+    onLoad() {}
+    // Other properties
+  }
+</script>
+
+<style lang="less">
+  .createRoom_wrapper {
+    height: 100%;
+    padding: 10rpx 20rpx;
+    .create_area {
+      background-color: #fff;
+      border-radius: 10rpx;
+      width: 100%;
+      height: 80rpx;
+      line-height: 80rpx;
+      text-align: center;
+      display: flex;
+      padding-left: 30rpx;
+      .createRommWrite {
+        text-align: left;
+        height: 80rpx;
+        line-height: 80rpx;
+      }
+    }
+    .createBtn {
+      margin-top: 20rpx;
+    }
+  }
+</style>

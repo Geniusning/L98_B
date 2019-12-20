@@ -1,0 +1,150 @@
+<template>
+    <view class="yinLiuYouShang-wrapper">
+        <selectTime :prop_startDate='startDate' :prop_endDate='endDate'></selectTime>
+  <!-- 累计 -->
+  <scroll-view scroll-x scroll-y style=" height:{{winHeight}}rpx;width: 100%;border-top:1px solid #ccc;">
+    <!-- <view class='detail-box'> -->
+    <view class='item-box'>
+      <text class='name'>日期</text>
+      <text class='name'>友商1</text>
+      <text class='name'>友商2</text>
+      <text class='name'>友商3</text>
+      <text class='name'>友商4</text>
+      <text class='name'>友商5</text>
+      <text class='name'>友商6</text>
+    </view>
+    <view class='item-box'>
+      <text class='name'>累计引流友商</text>
+      <text class='name'>500</text>
+      <text class='name'>100</text>
+      <text class='name'>22564</text>
+      <text class='name'>264</text>
+      <text class='name'>22564</text>
+      <text class='name'>264</text>
+    </view>
+    <block wx:for="{{dateRange}}" wx:key>
+      <view class='item-box'>
+        <text class='name'>{{item.date}}</text>
+        <text class='name'>{{item.num1}}</text>
+        <text class='name'>{{item.num2}}</text>
+        <text class='name'>{{item.num3}}</text>
+        <text class='name'>{{item.num3}}</text>
+        <text class='name'>{{item.num3}}</text>
+        <text class='name'>{{item.num3}}</text>
+      </view>
+    </block>
+    <!-- </view> -->
+  </scroll-view>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+import timeBox from '../../../components/youShangTimeSelect';
+export default class yinLiuYouShang extends wepy.page {
+  config = {
+    navigationBarTitleText: '引流友商记录'
+  };
+  components = { selectTime: timeBox };
+  data = {
+    winHeight: '',
+    startDate: '',
+    endDate: '',
+    dateRange: [
+      {
+        date: '2017-08-07',
+        num1: '20',
+        num2: '20',
+        num3: '20',
+        num4: '0'
+      },
+      {
+        date: '2017-08-06',
+        num1: '20',
+        num2: '20',
+        num3: '0',
+        num4: '20'
+      },
+      {
+        date: '2017-08-05',
+        num1: '20',
+        num2: '0',
+        num3: '20',
+        num4: '20'
+      },
+      {
+        date: '2017-08-07',
+        num1: '0',
+        num2: '20',
+        num3: '20',
+        num4: '20'
+      },
+      {
+        date: '2017-08-06',
+        num1: '20',
+        num2: '20',
+        num3: '20',
+        num4: '20'
+      },
+      {
+        date: '2017-08-05',
+        num1: '20',
+        num2: '20',
+        num3: '20',
+        num4: '20'
+      }
+    ]
+  };
+  methods = {};
+  watch = {
+    startDate(newValue) {
+      console.log('newValue:', newValue);
+    }
+  };
+  events = {};
+  onLoad() {
+    let that = this;
+    wx.getSystemInfo({
+      success: function(res) {
+        console.log(res);
+        var clientHeight = res.windowHeight,
+          clientWidth = res.windowWidth,
+          rpxR = 750 / clientWidth;
+        var calc = clientHeight * rpxR - 300;
+        that.winHeight = calc;
+      }
+    });
+  }
+  // Other properties
+}
+</script>
+
+<style lang="less">
+.yinLiuYouShang-wrapper {
+  height: 100%;
+  background-color: #fff;
+}
+.detail-box {
+  border-top: 1px dashed #ccc;
+  padding-top: 20rpx;
+  flex: 1;
+  font-size: 26rpx;
+  background-color: #fff;
+  white-space: nowrap;
+}
+
+.item-box {
+  white-space: nowrap;
+  background-color: #fff;
+}
+
+.item-box .name {
+  padding: 10rpx;
+  background-color: #fff;
+  width: 180rpx;
+  text-align: center;
+  display: inline-table;
+  border-bottom: 0.5px solid #ccc;
+  border-right: 0.5px solid #ccc;
+}
+</style>

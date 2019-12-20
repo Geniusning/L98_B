@@ -1,0 +1,95 @@
+<template>
+  <view class='DNSX_wrapper'>
+    <view class='DNSX_title_wrapper'>
+      <text class='title'>台/房号</text>
+      <text class='title'>上线人数</text>
+      <text class='title'>详情</text>
+    </view>
+    <view class='DNSX_content'>
+      <scroll-view scroll-y scroll-with-animation style="height:{{winHeight}}rpx">
+        <repeat for="{{onLineDeskList}}" key="index" index="index" item="item">
+          <view class="onLineDeskItem">
+            <text class='title'>{{item.deskInfo.code}}号桌</text>
+            <text class='title'>{{item.num}}</text>
+            <text @tap.stop="gotoDetailOnline({{item.deskInfo.id}},{{item.deskInfo.name}},{{item.deskInfo.code}})" class='title underline' decode="{{true}}">&gt;&gt;</text>
+          </view>
+        </repeat>
+      </scroll-view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  const util = require('../../../utils/utils.js')
+  export default class dianNeiShangXian extends wepy.page {
+    config = {
+      navigationBarTitleText: '店内上线记录'
+    };
+    data = {
+      winHeight:"",
+      today:"",
+      onLineDeskList: []
+    };
+    methods = {
+      gotoDetailOnline(deskId,deskName,deskCode){
+        wx.navigateTo({
+          url: `/pages/index/visitorRecord/visitorRecord-detail/visitorRecord-detail?type=OnlineVisitor&deskId=${deskId}&Date=${this.today}&deskInfo=${deskCode}`,
+        })
+      }
+    };
+    _loadDeskUserNum(dayStr){
+      let _this = this;
+      let url = `${this.$parent.globalData.commonUrl}/api/loadDeskUserNum?tk=${this.$parent.globalData.tk}&dayStr=${dayStr}`
+      util.interface_get(url).then(res => {
+        console.log("loadDeskUserNum------------",res)
+        if (res.errCode === 0) {
+         _this.onLineDeskList = res.deskUserNum
+        }
+        _this.$apply();
+      })
+    }
+    events = {};
+    onLoad(e) {
+      this.today = e.Date.trim();
+      console.log(this.today)
+      this._loadDeskUserNum(this.today)
+      this.winHeight = util.getScrollHeight(60)
+    };
+    onReady() {}
+    // Other properties
+  }
+</script>
+
+<style lang="less">
+  .DNSX_wrapper {
+    .DNSX_title_wrapper {
+      height: 60rpx;
+      width: 100%;
+      .title {
+        display: inline-block;
+        height: 60rpx;
+        line-height: 60rpx;
+        width: 33.333%;
+        text-align: center;
+      }
+    }
+    .onLineDeskItem {
+       display: flex;
+       align-items: center;
+       justify-content: center;
+      .title {
+        display: inline-block;
+        height: 60rpx;
+        margin-top:30rpx;
+        width: 33.333%;
+        text-align: center;
+        &.underline{
+          text-decoration: underline;
+          color: red;
+          text-align: center;
+        }
+      }
+    }
+  }
+</style>

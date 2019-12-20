@@ -1,0 +1,35 @@
+<template>
+  <view class='feedBack-container'>
+    <textarea class='feedBackContent' placeholder="请输入反馈内容" auto-focus ></textarea>
+    <button class='saveBtn'>保存</button>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+
+export default class feedBack extends wepy.page {
+  config = {
+    navigationBarTitleText: '问题反馈'
+  };
+
+  data = {};
+  methods = {
+  };
+
+  events = {};
+  onLoad() {}
+  // Other properties
+}
+</script>
+
+<style lang="less">
+.feedBack-container .feedBackContent{
+  width: 100%;
+  background: #fff;
+  padding: 16rpx;
+}
+.feedBack-container .saveBtn{
+  margin: 10rpx 30rpx;
+}
+</style>

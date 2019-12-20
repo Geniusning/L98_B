@@ -1,0 +1,54 @@
+<template>
+<view class='aboutUs-container'>
+  <view class='shopInfo'>
+    <image class='logo' src='../../../images/mine_logo.png'></image>
+    <text>K98_v1.0.0</text>
+  </view>
+  <view class='copy'>
+    <view>Copyright@2018 k98咨询有限公司</view>
+    <view>k98咨询有限公司 版权所有</view>
+  </view>
+</view>
+</template>
+
+<script>
+import wepy from 'wepy';
+
+export default class aboutUs extends wepy.page {
+  config = {
+    navigationBarTitleText: '关于我们'
+  };
+
+  data = {};
+  methods = {
+  };
+
+  events = {};
+  onLoad() {}
+  // Other properties
+}
+</script>
+
+<style lang="less">
+.aboutUs-container{
+  width: 100%;
+  height: 100%;
+  background: #fff;
+  padding-top: 50rpx
+}
+.shopInfo{
+  display:block;
+  width: 150rpx;
+  margin: 0rpx auto;
+}
+.shopInfo .logo{
+  width: 150rpx;
+  height: 150rpx;
+  display: block;
+}
+
+.copy{
+  margin-top: 200rpx;
+  text-align: center;
+}
+</style>

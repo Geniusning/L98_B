@@ -1,0 +1,509 @@
+<template>
+<view class='modifyShopInfo-container'>
+
+  <view class='group '>
+    <text class='name '>商家名称：</text>
+    <input class='account' maxlength="8" @blur='selectShopName'  value='{{shopName}}' placeholder='请输入商家名称'></input>
+  </view>
+  <view class='group '>
+    <text class='name '>商家简称：</text>
+    <input class='account' maxlength="6" @blur='selectShopShopName'  value='{{aliasName}}' placeholder='请输入6位商家简称'></input>
+  </view>
+  <view class='group'>
+    <text class='name' >商家地址：</text>
+    <input class='account' @tap='selectAdr'  @blur='selectShopAdr' value='{{shopAdr}}' disabled placeholder='请输入商家地址'></input>
+  </view>
+  <view class='group'>
+    <text class='name'>商家电话：</text>
+    <input type='number' class='account' @blur='selectShopTel' value='{{shopTel}}' placeholder='请输入商家电话'></input>
+  </view>
+  <view class='group'>
+    <text class='name'>wifi名称：</text>
+    <input class='account' @blur='selectShopWiFiName' value='{{shopWifiName}}' placeholder='请输入wifi名称'></input>
+  </view>
+  <view class='group'>
+    <text class='name'>wifi密码：</text>
+    <input class='account' @blur='selectShopWiFiPsw' value='{{shopWifiPwd}}' placeholder='请输入wifi密码'></input>
+  </view>
+  <view class='group'>
+    <text class='name'>所属业态：</text>
+    <picker @change="bindPickerTypeChange" value="{{index}}" range="{{arrayType}}">
+      <view class="picker">
+        {{arrayType[indexType]}}
+      </view>
+    </picker>
+  </view>
+  <view class='group'>
+    <text class='name'>经营面积(平方米)：</text>
+    <picker @change="bindPickerAreaChange" value="{{arrayArea.id}}" range-key="{{arrayArea.area}}" range="{{arrayArea}}">
+      <view class="picker">
+        {{arrayArea[indexArea]}}
+      </view>
+    </picker>
+  </view>
+  <view class='group'>
+    <text class='name'>日均客人：</text>
+    <picker @change="bindPickerCustomChange" value="{{index}}" range="{{arrayCustom}}">
+      <view class="picker">
+        {{arrayCustom[indexCustom]}}
+      </view>
+    </picker>
+  </view>
+  <view class='group'>
+    <text class='namePic'>商家logo：</text>
+    <image src='{{uploadImgUrl}}' @tap='chooseLogoPic' class='pic'></image>
+  </view>
+  <!-- <view class='ShopLogo-container'>
+    <view class='title'>店铺宣传图：</view>
+    <view class='pic-box'>
+      <repeat for="{{picArr}}" key='index' item="item">
+        <view class='logoShopBox'>
+          <image src="{{item.imgurl}}" class='logoShop'></image>
+          <image src='../../../../images/close.png' class='close' data-index='{{index}}' @tap.stop='close'></image>
+        </view>
+      </repeat>
+      <image wx:if="{{show}}" @tap.stop='chooseOnePic' src="../../../../images/add_pic.png" class='logoShop'></image>
+    </view>
+  </view> wx:if="{{show}}" -->
+  <button @tap='save' >保存</button>
+</view>
+</template>
+
+<script>
+import wepy from 'wepy';
+
+export default class shopInfo extends wepy.page {
+  config = {
+    navigationBarTitleText: '设置'
+  };
+
+  data = {
+    city:"",
+    show: false,
+    indexType: 0,
+    indexArea: 0,
+    indexCustom: 0,
+    picArr: [],
+    shopName: "",
+    shopAdr: "",
+    shopTel: "",
+    shopWifiName: "",
+    shopWifiPwd: "",
+    shopType: "",
+    shopArea: "",
+    shopCustomNum: "",
+    aliasName:"",
+    lat: "",
+    lng: "",
+    storeId:"",
+    uploadImgUrl: '../../../../images/add_pic.png',
+    // uploadImgUrl: "",
+    arrayType: ['KTV', '酒吧', '餐吧', '茶咖', '酒店', '休闲', '其他'],
+    arrayArea: [
+      '<100',
+      '100~300',
+      '300~800',
+      '800~1500',
+      '1500~3000',
+      '3000~1万',
+      '>1万'
+    ],
+    arrayCustom: [
+      '<50',
+      '50~100',
+      '100~200',
+      '200~400',
+      '400~700',
+      '700~1200',
+      '>1200'
+    ]
+  };
+  normalizePickerChangeData() { };
+  methods = {
+    selectAdr() {
+      wx.navigateTo({
+        url: '/pages/mine/setting/map/map'
+      })
+    },
+    //简称
+    selectShopShopName(e){
+      this.aliasName = e.detail.value;
+    },
+    // 所属业态
+    bindPickerTypeChange(e) {
+      this.indexType = e.detail.value
+      switch (Number(e.detail.value)) {
+        case 0:
+          this.shopType = this.arrayType[Number(e.detail.value)];
+          break;
+        case 1:
+          this.shopType = this.arrayType[Number(e.detail.value)];
+          break;
+        case 2:
+          this.shopType = this.arrayType[Number(e.detail.value)];
+          break;
+        case 3:
+          this.shopType = this.arrayType[Number(e.detail.value)];
+          break;
+        case 4:
+          this.shopType = this.arrayType[Number(e.detail.value)];
+          break;
+        case 5:
+          this.shopType = this.arrayType[Number(e.detail.value)];
+          break;
+        case 6:
+          this.shopType = this.arrayType[Number(e.detail.value)];
+          break;
+        case 7:
+          this.shopType = this.arrayType[Number(e.detail.value)];
+          break;
+        default:
+          break;
+      }
+      console.log('所属行业----------------', this.shopType)
+    },
+    // 经营面积
+    bindPickerAreaChange(e) {
+      this.indexArea = e.detail.value;
+      switch (Number(e.detail.value)) {
+        case 0:
+          this.shopArea = this.arrayArea[Number(e.detail.value)];
+          break;
+        case 1:
+          this.shopArea = this.arrayArea[Number(e.detail.value)];
+          break;
+        case 2:
+          this.shopArea = this.arrayArea[Number(e.detail.value)];
+          break;
+        case 3:
+          this.shopArea = this.arrayArea[Number(e.detail.value)];
+          break;
+        case 4:
+          this.shopArea = this.arrayArea[Number(e.detail.value)];
+          break;
+        case 5:
+          this.shopArea = this.arrayArea[Number(e.detail.value)];
+          break;
+        case 6:
+          this.shopArea = this.arrayArea[Number(e.detail.value)];
+          break;
+        case 7:
+          this.shopArea = this.arrayArea[Number(e.detail.value)];
+          break;
+        default:
+          break;
+      }
+      console.log('面积大小----------------', this.shopArea)
+    },
+    // 日均客人
+    bindPickerCustomChange(e) {
+      this.indexCustom = e.detail.value;
+      switch (Number(e.detail.value)) {
+        case 0:
+          this.shopCustomNum = this.arrayCustom[Number(e.detail.value)];
+          break;
+        case 1:
+          this.shopCustomNum = this.arrayCustom[Number(e.detail.value)];
+          break;
+        case 2:
+          this.shopCustomNum = this.arrayCustom[Number(e.detail.value)];
+          break;
+        case 3:
+          this.shopCustomNum = this.arrayCustom[Number(e.detail.value)];
+          break;
+        case 4:
+          this.shopCustomNum = this.arrayCustom[Number(e.detail.value)];
+          break;
+        case 5:
+          this.shopCustomNum = this.arrayCustom[Number(e.detail.value)];
+          break;
+        case 6:
+          this.shopCustomNum = this.arrayCustom[Number(e.detail.value)];
+          break;
+        case 7:
+          this.shopCustomNum = this.arrayCustom[Number(e.detail.value)];
+          break;
+        default:
+          break;
+      }
+      console.log('所属行业----------------', this.shopCustomNum)
+    },
+    //商家名称
+    selectShopName(e) {
+      this.shopName = e.detail.value;
+    },
+    //商家地址
+    // selectShopAdr(e) {
+    //   this.shopAdr = e.detail.value;
+    // },
+    //商家电话
+    selectShopTel(e) {
+      this.shopTel = e.detail.value;
+    },
+    //wifi名称
+    selectShopWiFiName(e) {
+      this.shopWifiName = e.detail.value;
+    },
+    //wifi密码
+    selectShopWiFiPsw(e) {
+      this.shopWifiPwd = e.detail.value;
+    },
+    //保存
+    save() {
+      let _this = this;
+      wx.clearStorage();
+      var params = {
+        storeId:this.storeId,
+        name: this.shopName,
+        city:this.city,
+        address: this.shopAdr,
+        phone: this.shopTel,
+        aliasName:this.aliasName,
+        wifiAccount: this.shopWifiName,
+        wifiPassword: this.shopWifiPwd,
+        industryType: this.shopType,
+        storeArea: this.shopArea,
+        lat: this.lat,
+        lng: this.lng,
+        dailyPassengerFlow: this.shopCustomNum,
+        image: this.uploadImgUrl
+      }
+      for(let key in params){
+        if(!params[key]){
+           wx.showToast({
+              title: '请填写完整数据',
+              icon: 'none',
+              duration: 2000
+            })
+            return
+        }
+      }
+      console.log(params)
+      wx.request({
+        url: `${this.$parent.globalData.commonUrl}/api/storeSetting?tk=${this.$parent.globalData.tk}`,
+        data: params,
+        header: {
+          'content-type': 'application/json'
+        },
+        method: 'POST',
+        success: res => {
+          console.log(res)
+          if (res.data.errCode === 0) {
+            wx.showToast({
+              title: '保存成功',
+              icon: 'success',
+              duration: 2000
+            })
+            // this.shopName = "";
+            // this.shopAdr = "";
+            // this.shopTel = "";
+            // this.shopWifiName = "";
+            // this.shopWifiPwd = "";
+            // _this.logoPic = "../../../../images/add_pic.png";
+            // _this.$apply();
+          }
+        }
+      })
+    },
+    chooseLogoPic: function () {
+      let _this = this;
+      wx.chooseImage({
+        count: 1, // 默认9
+        sizeType: ['original', 'compressed'], // 可以指定是原图还是压缩图，默认二者都有
+        sourceType: ['album', 'camera'], // 可以指定来源是相册还是相机，默认二者都有
+        success: function (res) {
+          // 返回选定照片的本地文件路径列表，tempFilePath可以作为img标签的src属性显示图片
+          let tempFilePaths = res.tempFilePaths;
+          console.log(tempFilePaths);
+          _this.uploadImgUrl = tempFilePaths[0];
+          _this.$apply();
+          wx.uploadFile({
+            url: `${_this.$parent.globalData.commonUrl}/api/photoUpload?tk=${_this.$parent.globalData.tk}`,
+            filePath: _this.uploadImgUrl,
+            name: "file",
+            header: {
+              'content-type': 'multipart/form-data'
+            },
+            success: res => {
+              if (res.statusCode == 200) {
+                _this.uploadImgUrl = JSON.parse(res.data).photoURL;
+                console.log('返回的图片：----------------------------', _this.uploadImgUrl);
+              }
+            }
+          })
+        }
+      });
+    },
+  };
+  watch = {
+    logoPic(newvalue) {
+      // console.log(newvalue);
+    }
+  };
+  events = {};
+  onShow() {
+    let _this = this;
+    this.city = this.$parent.globalData.city?this.$parent.globalData.city:"~"
+    try {
+      wx.getStorage({
+        key: 'addr',
+        success(res) {
+          console.log('shopAdr----------', res.data)
+          _this.shopAdr = res.data;
+          _this.$apply();
+        }
+      })
+      wx.getStorage({
+        key: 'latitude',
+        success(res) {
+          console.log('latValue----------', res.data);
+          _this.lat = res.data
+        }
+      })
+      wx.getStorage({
+        key: 'longitude',
+        success(res) {
+          console.log('latValue----------', res.data);
+          _this.lng = res.data
+        }
+      })
+
+    } catch (e) {
+      // Do something when catch error
+    }
+    // console.log(this.$parent.globalData.shopAddr);
+    // this.lat = this.$parent.globalData.shopAddr.latitude;
+    // this.lng = this.$parent.globalData.shopAddr.longitude;
+    console.log('纬度---------------', this.lat)
+  };
+  onLoad() {
+    this.show = !!(this.$parent.globalData.userInfo.permission & 32);
+    let _this = this;
+    wx.request({
+      url: `${this.$parent.globalData.commonUrl}/api/loadStoreSetting?tk=${this.$parent.globalData.tk}&storeId=${this.storeId}`,
+      success: res => {
+        console.log(res)
+        if (res.statusCode === 200) {
+          let resultData = res.data;
+          _this.storeId = resultData.resultData;
+          _this.shopName = resultData.name;
+          _this.aliasName = resultData.AliasName;
+          _this.city = resultData.city?resultData.city:"~";
+          _this.shopAdr = resultData.address;
+          _this.shopTel = resultData.phone;
+          _this.shopWifiName = resultData.wifiAccount;
+          _this.shopWifiPwd = resultData.wifiPassword;
+          _this.shopType = resultData.industryType ? resultData.industryType : _this.arrayType[0];
+          _this.shopArea = resultData.storeArea ? resultData.storeArea : _this.arrayArea[0];
+          _this.shopCustomNum = resultData.dailyPassengerFlow ? resultData.dailyPassengerFlow : _this.arrayCustom[0];
+          _this.lat = resultData.lat ? resultData.lat : 0;
+          _this.lng = resultData.lng ? resultData.lng : 0;
+          if (resultData.industryType) {
+            _this.indexType = _this.arrayType.indexOf(resultData.industryType);
+          } else {
+            _this.indexType = 0
+          }
+          if (resultData.storeArea) {
+            _this.indexArea = _this.arrayArea.indexOf(resultData.storeArea);
+          } else {
+            _this.indexArea = 0;
+          }
+          if (resultData.dailyPassengerFlow) {
+            _this.indexCustom = _this.arrayCustom.indexOf(resultData.dailyPassengerFlow);
+          } else {
+            _this.indexCustom = 0;
+          }
+          if (resultData.image) {
+            _this.uploadImgUrl = resultData.image;
+          } else {
+            _this.uploadImgUrl = '../../../../images/add_pic.png';
+          }
+          _this.$apply();
+        }
+      }
+    })
+  }
+  // Other properties
+}
+</script>
+
+<style lang="less">
+.modifyShopInfo-container {
+  padding: 20rpx;
+}
+
+.modifyShopInfo-container .group {
+  display: flex;
+  justify-content: space-between;
+  background: #fff;
+  padding: 24rpx 16rpx;
+  margin-bottom: 10rpx;
+}
+
+.modifyShopInfo-container .group .name {
+  font-size: 16px;
+  width: 200px;
+}
+
+.modifyShopInfo-container .group .account {
+  font-size: 16px;
+  text-align: right;
+  color: #333;
+}
+
+.namePic {
+  font-size: 16px;
+  margin-top: 50rpx;
+}
+
+.pic {
+  width: 150rpx;
+  height: 150rpx;
+}
+
+.ShopLogo-container {
+  /* margin: 22rpx 30rpx; */
+  background-color: #fff;
+  padding-bottom: 10rpx;
+}
+
+.ShopLogo-container .title {
+  font-size: 30rpx;
+  color: #333;
+  margin-bottom: 20rpx;
+  /* font-weight: 700; */
+  padding: 10rpx;
+}
+
+.ShopLogo-container .pic-box {
+  width: 100%;
+  display: flex;
+}
+.ShopLogo-container .logoShop {
+  width: 200rpx;
+  height: 200rpx;
+  margin-right: 10rpx;
+  padding: 0 10rpx;
+}
+.logoShopBox {
+  position: relative;
+}
+.logoShopBox .close {
+  position: absolute;
+  width: 40rpx;
+  height: 40rpx;
+  top: -16rpx;
+  right: 10rpx;
+}
+
+button {
+  margin-top: 20rpx;
+}
+
+.picker {
+  text-align: left;
+  display: inline-block;
+  background-color: #ccc;
+  color: #fff;
+}
+</style>

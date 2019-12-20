@@ -1,0 +1,23 @@
+<template>
+    <view class="image_box" style="text-align:center">
+        <image class="loading_icon" src="../images/loading.gif" mode="scaleToFill"></image>
+    </view>
+</template>
+
+<script>
+    import wepy from 'wepy';
+    export default class setting extends wepy.component {
+        // Other properties
+    }
+</script>
+
+<style lang="less">
+    .image_box {
+        width: 100%;
+        .loading_icon {
+            margin: 50% 0;
+            width: 60rpx;
+            height: 60rpx;
+        }
+    }
+</style>

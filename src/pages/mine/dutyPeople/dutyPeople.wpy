@@ -1,0 +1,46 @@
+<template>
+<view class='duty-people'>
+  <view class='list'>
+    <text class='name'>社群专员小李</text>
+    <text class='tel' @tap='call'>15812564879</text>
+  </view>
+</view>
+</template>
+
+<script>
+import wepy from 'wepy';
+
+export default class dutyPeople extends wepy.page {
+  config = {
+    navigationBarTitleText: '联系专员'
+  };
+
+  data = {};
+  methods = {
+    call: function() {
+      wx.makePhoneCall({
+        phoneNumber: '15764271136',
+        success: function(res) {},
+        fail: function(res) {},
+        complete: function(res) {}
+      });
+    }
+  };
+  events = {};
+  onLoad() {}
+  // Other properties
+}
+</script>
+
+<style lang="less">
+.duty-people {
+  padding: 20rpx 30rpx;
+}
+.list {
+  background-color: #fff;
+  padding: 30rpx;
+  display: flex;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+</style>

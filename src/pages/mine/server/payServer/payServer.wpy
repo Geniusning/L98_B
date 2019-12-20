@@ -1,0 +1,91 @@
+<template>
+<view class='pay-container'>
+  <view class='group'>
+    <text class='groupName'>购买天数</text>
+    <picker @change="bindPickerChange" range-key="name" value="{{num}}" range="{{dateArray}}">
+      <view class="picker">
+        {{dateArray[index].name}}
+      </view>
+    </picker>
+  </view>
+  <view class='group'>
+    <text class='groupName'>金额</text>
+    <text>{{totalMoney}}元</text>
+  </view>
+  <button>确认支付</button>
+</view>
+</template>
+
+<script>
+import wepy from 'wepy';
+
+export default class payServer extends wepy.page {
+  config = {
+    navigationBarTitleText: '充值'
+  };
+
+  data = {
+    index: 0,
+    totalMoney: 1000,
+    dateArray: [
+      {
+        name: '30天',
+        num: 30
+      },
+      {
+        name: '60天',
+        num: 60
+      },
+      {
+        name: '90天',
+        num: 90
+      },
+      {
+        name: '180天',
+        num: 180
+      },
+      {
+        name: '365天',
+        num: 365
+      }
+    ]
+  };
+  methods = {
+    bindPickerChange: function(e) {
+      console.log('picker发送选择改变，携带值为', e.detail.value);
+      var allmonry =
+        (parseInt(e.detail.value) === 0 ? 1 : parseInt(e.detail.value) + 1) *
+        1000;
+      console.log(allmonry);
+      var _this = this;
+      this.index = e.detail.value;
+      this.totalMoney = allmonry;
+    }
+  };
+
+  events = {};
+  onLoad() {}
+  // Other properties
+}
+</script>
+
+<style lang="less">
+.pay-container {
+  padding: 20rpx 30rpx;
+}
+.group {
+  background-color: #fff;
+  padding: 20rpx 30rpx;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 30rpx;
+}
+.picker{
+  display: inline-block;
+  background-color: #ccc;
+  color: #fff;
+}
+button {
+  background-color: #fff;
+}
+</style>

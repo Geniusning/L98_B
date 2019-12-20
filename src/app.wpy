@@ -1,0 +1,310 @@
+
+<script>
+import wepy from 'wepy';
+const util = require('./utils/utils.js');
+import 'wepy-async-function';
+import Promise from 'promise-polyfill';
+export default class extends wepy.app {
+  config = {
+    pages: [
+      'pages/log/log',
+      'pages/log/shopList',
+      'pages/member/member',
+      'pages/mine/mine',
+      'pages/check/check',
+      'pages/index/index',
+      'pages/rank/rank',
+      'pages/mine/setting/setting',
+      'pages/mine/setting/shopInfo/shopInfo',
+      'pages/marketing/marketing',
+      'pages/marketing/integral2Vip/integral2VipSet',
+      'pages/marketing/makeDiscount/makeDiscount',
+      'pages/mine/setting/account/account',
+      'pages/mine/setting/slideShow/slideShow',
+      'pages/mine/setting/map/map',
+      'pages/marketing/game/singleGameList',
+      'pages/marketing/game/game',
+      'pages/marketing/AIdiscount/AIdiscount',
+      'pages/marketing/AIdiscount/managerAIdiscount',
+      'pages/marketing/inviteDiscount/inviteDiscount',
+      'pages/marketing/inviteDiscount/managerInviteDiscount',
+      'pages/marketing/friendBusiness/friendBusiness',
+      'pages/marketing/businessLeagle/businessLeagle',
+      'pages/marketing/shopmanRecommend/shopmanRecommend',
+      'pages/marketing/shopmanRecommend/managerShopRec',
+      'pages/marketing/allTypeIntegraRec',
+      'pages/marketing/allTypeIntegraRecDetail',
+      'pages/marketing/jiFenHuanLiPin/jiFenHuanLiPin',
+      'pages/marketing/jiFenHuanLiPin/managerGift',
+      'pages/marketing/activityNotice/activityNotice',
+      'pages/marketing/recommendAndGiftStat/recommendAndGiftStat',
+      'pages/index/dianNeiShangXian/dianNeiShangXian',
+      'pages/index/takeInPartRecord/takeInPartRecord',
+      'pages/index/communityRecord/communityRecord',
+      'pages/index/systemInform/systemInform',
+      'pages/index/staffTalkWidthClient/staffTalkWidthClient',
+      'pages/index/dianYuanYuKeTalk/dianYuanYuKeTalk',
+      'pages/index/consultGameRecord/consultGameRecord',
+      'pages/index/yinLiuBenHao/yinLiuBenHao',
+      'pages/index/yinLiuYouShang/yinLiuYouShang',
+      'pages/index/youKeLingQuan/youKeLingQuan',
+      'pages/index/youShangXuanChuan/youShangXuanChuan',
+      'pages/index/dianWaiShangXian/dianWaiShangXian',
+      'pages/index/yingXiaoHuoDongModule/yingXiaoHuoDongModule',
+      'pages/index/visitorRecord/visitorRecord',
+      'pages/index/registerRecord/registerRecord',
+      'pages/index/visitorRecord/visitorRecord-detail/visitorRecord-detail',
+      'pages/marketing/cardList/cardList',
+      'pages/marketing/cardList/statCardList',
+      'pages/mine/setting/passwordUpdate/passwordUpdate',
+      'pages/mine/QRcode/deskQrCode',
+      'pages/mine/QRcode/qrCodeList',
+      'pages/mine/QRcode/checkQrCode',
+      'pages/mine/QRcode/weChatQrCode',
+      'pages/mine/room/room',
+      'pages/mine/room/createRoom',
+      'pages/mine/room/bindRoomList',
+      'pages/mine/room/bindedRoomList',
+      'pages/mine/myStaff/myStaff',
+      'pages/mine/newShop/newShop',
+      'pages/mine/server/server',
+      'pages/mine/server/payServer/payServer',
+      'pages/mine/server/serverDetail/serverDetail',
+      'pages/mine/feedBack/feedBack',
+      'pages/mine/aboutUs/aboutUs',
+      'pages/mine/dutyPeople/dutyPeople',
+      'pages/mine/addServicer',
+      'pages/mine/otherSetting'
+    ],
+    permission: {
+      'scope.userLocation': {
+        desc: '将获取你的位置'
+      }
+    },
+    window: {
+      backgroundTextStyle: 'dark',
+      navigationBarBackgroundColor: '#FFBA00',
+      navigationBarTitleText: 'WeChat',
+      navigationBarTextStyle: 'black',
+      enablePullDownRefresh: true
+    },
+    tabBar: {
+      selectedColor: '#999',
+      color: '#999',
+      list: [
+        {
+          pagePath: 'pages/member/member',
+          text: '会员',
+          iconPath: 'images/vip.png',
+          selectedIconPath: 'images/vip_active.png'
+        },
+        {
+          pagePath: 'pages/check/check',
+          text: '核销',
+          iconPath: 'images/check.png',
+          selectedIconPath: 'images/check_active.png'
+        },
+        {
+          pagePath: 'pages/rank/rank',
+          text: '排行榜',
+          iconPath: 'images/bar_data.png',
+          selectedIconPath: 'images/bar_data_active.png'
+        },
+        {
+          pagePath: 'pages/index/index',
+          text: '数据',
+          iconPath: 'images/statistics.png',
+          selectedIconPath: 'images/statistics_active.png'
+        },
+        {
+          pagePath: 'pages/mine/mine',
+          text: '我的',
+          iconPath: 'images/bar_mine.png',
+          selectedIconPath: 'images/bar_mine_active.png'
+        }
+      ]
+    }
+  };
+  //wx6941bdd8a5cf6814   老友
+  //wx9b0a84128a900004   中新
+  globalData = {
+    userInfo: null,
+    shopAddr: {},
+    shopInfo: null,
+    commonUrl: 'https://llwant1.qianz.com', //老友
+    // commonUrl: 'https://singledog.qianz.com', // 中新
+    // commonUrl: 'https://mingshao.llwant.qianz.com', // 总
+    singleGameFirstPrize: {},
+    singleGameSecondPrize: {},
+    singleGameThirdPrize: {},
+    CouponA: {},
+    CouponB: {},
+    leaglePrize: {},
+    recommendPrize: {},
+    editInfo: {},
+    tk: '',
+    dataStat: {},
+    city: ''
+  };
+  constructor() {
+    super();
+    this.use('requestfix');
+    this.use('promisify');
+  }
+  // onLaunch() {
+  //   var _this = this;
+  //   wx.login({
+  //     success: function(res) {
+  //       if (res.code) {
+  //         //发起网络请求
+  //         // console.log(res)
+  //         wx.request({
+  //           url: `${_this.globalData.commonUrl}/wechatAppLogin`,
+  //           data: {
+  //             phone: '8888',
+  //             password: '8888'
+  //           },
+  //           header: {
+  //             'content-type': 'application/json'
+  //           },
+  //           method: 'POST',
+  //           success: function(res) {
+  //             console.log(res);
+  //             if (res.data.errCode === 0) {
+  //               let loginWechatAppletReply = res.data.loginWechatAppletReply;
+  //               _this.globalData.tk = loginWechatAppletReply.tk;
+  //               _this.globalData.userInfo = loginWechatAppletReply.staff;
+  //               setTimeout(() => {
+  //                 console.log('coming');
+  //                 // wx.switchTab({
+  //                 //   url: '/pages/log/shopList'
+  //                 // });
+  //                 wx.switchTab({
+  //                   url: '/pages/index/index'
+  //                 });
+  //               }, 3000);
+  //             } else {
+  //               wx.showToast({
+  //                 title: '账号或密码错误',
+  //                 icon: 'none',
+  //                 duration: 2000
+  //               });
+  //             }
+  //           }
+  //         });
+  //       } else {
+  //         console.log('登录失败！' + res.errMsg);
+  //       }
+  //     }
+  //   });
+  // }
+  sleep(s) {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        resolve('promise resolved');
+      }, s * 1000);
+    });
+  }
+  async testAsync() {
+    const data = await this.sleep(3);
+    console.log(data);
+  }
+}
+</script>
+
+<style lang="less">
+radio .wx-radio-input {
+  /* 自定义样式.... */
+  height: 40rpx;
+  width: 40rpx; // margin-top: 40rpx;
+  border-radius: 3rpx;
+  border: 2rpx solid #ccc;
+}
+page {
+  background-color: #f4f4f4;
+  height: 100%;
+  font-size: 26rpx;
+} // 记录时间-------------begin
+.time-box {
+  display: flex;
+  padding: 30rpx 10rpx;
+  background-color: #fff;
+}
+.time-box .line {
+  width: 20rpx;
+  height: 2rpx;
+  margin-top: 30rpx;
+  margin-right: 10rpx;
+  background: #ccc;
+  /* border: 1px solid #ccc; */
+}
+.time-box .picker {
+  padding: 10rpx;
+  color: #fff;
+  background-color: #ccc;
+  margin-right: 10rpx;
+}
+.time-box .time-box-btn {
+  padding-top: 10rpx;
+}
+.time-box-btn .btn {
+  padding: 10rpx 10rpx;
+  border: 1px solid #ccc;
+}
+/* 累计 */
+.total-box {
+  border-top: 1px dashed #ccc;
+  background-color: #fff;
+  padding: 30rpx 40rpx;
+  display: flex;
+  justify-content: space-between;
+  font-size: 30rpx;
+}
+/* 日期 */
+.date-box {
+  border-top: 1px dashed #ccc;
+  background-color: #fff;
+  flex: 1;
+}
+.date-box .dateTitle-wrapper {
+  display: flex;
+  justify-content: space-between;
+  padding: 30rpx 40rpx;
+  font-size: 30rpx;
+}
+.date-box .specific-wrapper {
+  display: flex;
+  justify-content: space-between;
+  padding: 20rpx 40rpx 20rpx;
+  font-size: 30rpx;
+}
+.totalNum-box {
+  padding-top: 10rpx;
+  margin-left: 20rpx;
+}
+.clearfix::after {
+  content: '';
+  display: block;
+  visibility: hidden;
+  height: 0;
+  line-height: 0;
+  clear: both;
+}
+.fl {
+  float: left;
+}
+.fr {
+  float: right;
+}
+.right {
+  float: right;
+}
+.noData {
+  font-weight: 700;
+  font-size: 30rpx;
+  color: #ccc;
+  text-decoration: underline;
+  margin: 40% auto;
+  text-align: center;
+} // 记录时间-------------end
+</style>

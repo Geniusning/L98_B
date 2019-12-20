@@ -1,0 +1,123 @@
+<template>
+  <view class="shopList_wrapper">
+    <repeat for="{{shopList}}" key="index" index="index" item="item">
+      <view class="shop" @tap="intoShop({{item.port}})">
+        <view class="shop_left">
+          <image src="../../images/shopListIcon.png" class="shopIcon"></image>
+          <text class="name">{{item.name}}</text>
+        </view>
+      </view>
+    </repeat>
+    <repeat for="{{peopleList}}" key="index" index="index" item="item">
+      <view class="shop" @tap="intoShop">
+        <view class="shop_left">
+          <image src="../../images/avatar2.jpg" class="shopIcon"></image>
+          <text class="name">{{item.name}}</text>
+        </view>
+        <view class="shop_right">
+          <text class="author">{{item.author}}</text>
+        </view>
+      </view>
+    </repeat>
+  </view>
+</template>
+<script>
+  import wepy from 'wepy';
+  const util = require('../../utils/utils.js')
+  export default class shopList extends wepy.page {
+    config = {
+      navigationBarTitleText: '管辖商家及下属'
+    };
+    data = {
+      shopList: [{
+          name: "深圳南山魅力四射",
+          id: 1,
+          author: "Mr.Right"
+        },
+        {
+          name: "深圳福田魅力四射",
+          id: 2,
+          author: "Mr.Left"
+        },
+        {
+          name: "深圳宝安魅力四射",
+          id: 2,
+          author: "韦小宝"
+        },
+      ],
+      peopleList: [{
+          id: 0,
+          name: "大毛"
+        },
+        {
+          id: 1,
+          name: "二毛"
+        }
+      ]
+    };
+    methods = {
+      intoShop(port) {
+        console.log("port-----------", port)
+        let storeSettingUrl = `${this.$parent.globalData.commonUrl}/api/loadStoreSetting?tk=${this.$parent.globalData.tk}`;
+        let setGrpcPortUrl = `${this.$parent.globalData.commonUrl}/api/setGrpcPort?tk=${this.$parent.globalData.tk}&port=${port}`;
+        // util.interface_get(setGrpcPortUrl).then(res => {
+        //   util.interface_get(storeSettingUrl).then(res => {
+        //     this.$parent.globalData.shopInfo = res;
+        //     console.log("店铺信息---------", this.$parent.globalData)
+        //     wx.switchTab({
+        //       url: '/pages/member/member'
+        //     })
+        //   })
+        // })
+        util.interface_get(storeSettingUrl).then(res => {
+          this.$parent.globalData.shopInfo = res;
+          console.log("店铺信息---------", this.$parent.globalData)
+          wx.switchTab({
+            url: '/pages/member/member'
+          })
+        })
+      }
+    };
+    _loadShopList() {
+      let url = `${this.$parent.globalData.commonUrl}/api/loadShopList?tk=${this.$parent.globalData.tk}`
+      util.interface_get(url).then(res => {
+        console.log("店铺列表信息-----", res)
+        // this.shopList = res
+        // this.$apply()
+      })
+    };
+    events = {};
+    onLoad() {
+      this._loadShopList()
+    }
+    // Other properties
+  }
+</script>
+
+<style lang="less">
+  .shopList_wrapper {
+    .shop {
+      margin: 20rpx auto;
+      padding: 20rpx 30rpx;
+      background-color: #fff;
+      font-size: 16px;
+      display: flex; // justify-content: space-between;
+      .shop_left {
+        display: flex;
+        .shopIcon {
+          width: 80rpx;
+          height: 80rpx;
+        }
+        .name {
+          line-height: 80rpx;
+          margin-left: 10rpx;
+        }
+      }
+      .shop_right {
+        .author {
+          line-height: 80rpx;
+        }
+      }
+    }
+  }
+</style>

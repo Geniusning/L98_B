@@ -1,0 +1,66 @@
+<template>
+  <view class='newShop-container'>
+    <view class='setting-item'>
+      <text class='originPassName'>店名:</text>
+      <input  @input='selectName' class='input-originPass' placeholder='请输入店名'></input>
+    </view>
+    <button @tap='add'>新增</button>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  const util = require('../../../utils/utils.js')
+  export default class newShop extends wepy.page {
+    config = {
+      navigationBarTitleText: '新增门店'
+    };
+    data = {
+      name: "",
+    };
+    methods = {
+      selectName(e) {
+        this.name = e.detail.value;
+      },
+      add() {
+        if (this.name === "") {
+          wx.showToast({
+            title: '请填写店名',
+            icon: 'none',
+            duration: 2000
+          })
+          return
+        }
+        let url = `${this.$parent.globalData.commonUrl}/api/addShopList?tk=${this.$parent.globalData.tk}&shopName=${this.name}`
+        util.interface_get(url).then(res => {
+          console.log("添加结果-----", res)
+        })
+      }
+    };
+    events = {};
+    onLoad() {}
+    // Other properties
+  }
+</script>
+
+<style lang="less">
+  .newShop-container {
+    padding: 20rpx;
+  }
+  .setting-item {
+    display: flex;
+    justify-content: space-between;
+    background: #fff;
+    margin-bottom: 10rpx;
+  }
+  .setting-item .originPassName {
+    box-sizing: border-box;
+    padding: 6rpx;
+    padding-left: 10rpx;
+    font-size: 14px;
+    width: 200rpx;
+  }
+  .setting-item .input-originPass {
+    font-size: 14px;
+  }
+</style>

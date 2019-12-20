@@ -1,0 +1,398 @@
+<template>
+  <view class="visitorDetail-wrapper">
+    <view wx:if="{{visitorList.length || onLineDeskList.length || tuoKeClientList.length}}">
+      <view wx:if="{{visitorList.length || onLineDeskList.length || tuoKeClientList.length}}" class="content">
+        <view class='visitorDetail-list' wx:if="{{visitorList.length&&pageType=='visitorRecord'}}">
+          <view class='contact-list'>
+            <repeat for='{{visitorList}}' item='item'>
+              <view class='memberItem'>
+                <image class="avatar" wx:if="{{item.headimgurl}}" src='{{item.headimgurl}}'></image>
+                <image class="avatar" wx:else src='../../../../images/avatar.jpg'></image>
+                <view class='contactInfo'>
+                  <view class="userInfo">
+                    <text class='name'>{{item.nickname?item.nickname:'匿名用户'}}</text>
+                    <text class="tag">{{item.soreType?item.soreType:'低频'}}</text>
+                  </view>
+                  <text class='content' space="ensp" decode="{{true}}">来源:{{item.visitType}}  拓客:{{item.waiter?item.waiter:"自来客"}} </text>
+                </view>
+                <view class='contactInfo_times'>
+                  <text class='times' space="ensp" decode="{{true}}">到店:{{item.visitInsideStore}}  网店:{{item.visitOutsideStore}}</text>
+                  <view class='times'>{{item.visitTime}}</view>
+                </view>
+              </view>
+            </repeat>
+          </view>
+        </view>
+        <!-- 店内上线 -->
+        <view class='visitorDetail-list' wx:elif="{{pageType=='OnlineVisitor'}}">
+          <view class='contact-list'>
+            <repeat for='{{onLineDeskList}}' item='item'>
+              <view class='memberItem'>
+                <image class="avatar" wx:if="{{item.headimgurl}}" src='{{item.headimgurl}}'></image>
+                <image class="avatar" wx:else src='../../../../images/avatar.jpg'></image>
+                <view class='contactInfo'>
+                  <view class="userInfo">
+                    <text class='name'>{{item.nickname?item.nickname:'匿名用户'}}</text>
+                    <text class="tag">{{item.soreType?item.soreType:'低频'}}</text>
+                  </view>
+                  <text class='content' space="ensp" decode="{{true}}">来源:{{deskInfo}}号  拓客:{{item.waiter?item.waiter:"自来客"}}</text>
+                </view>
+                <view class='contactInfo_times'>
+                  <text class='times' space="ensp" decode="{{true}}">到店:{{item.visitInsideStore}}次  网店:{{item.visitOutsideStore}}次</text>
+                  <view class='times'>{{onLineTime}}</view>
+                </view>
+              </view>
+            </repeat>
+          </view>
+          <!-- <repeat for='{{onLineDeskList}}' key="index" item="item">
+                    <view class='visitor-item'>
+                      <view class='line-one'>
+                        <view class='line-one-left'>
+                          <image class='avatar' src='{{item.userInfo.headimgurl}}'></image>
+                          <text class='name'>{{item.userInfo.nickname}}</text>
+                        </view>
+                        <view class='line-one-right'>
+                          <text class='time'>{{onLineTime}}</text>
+                        </view>
+                      </view>
+                      <view class='line-two'>
+                        <text class='origin'>来源:源：{{deskInfo}}号桌</text>
+                        <text class="warterName">拓客:{{item.waiterName?item.waiterName:"自来客"}}</text>
+                      </view>
+                    </view>
+                  </repeat> -->
+        </view>
+        <!-- 拓客排行-->
+        <view class='visitorDetail-list' wx:elif="{{pageType=='tuoKeRank'}}">
+          <view class='contact-list'>
+            <repeat for='{{tuoKeClientList}}' item='item'>
+              <view class='memberItem'>
+                <image class="avatar" wx:if="{{item.headimgurl}}" src='{{item.headimgurl}}'></image>
+                <image class="avatar" wx:else src='../../../../images/avatar.jpg'></image>
+                <view class='contactInfo'>
+                  <view class="userInfo">
+                    <text class='name'>{{item.nickname?item.nickname:'匿名用户'}}</text>
+                    <text class="tag">{{item.soreType?item.soreType:'低频'}}</text>
+                  </view>
+                  <text style="font-size:12px" class='content' space="ensp" decode="{{true}}">来源:{{item.visitType}}  拓客:{{item.waiter?item.waiter:"自来客"}}</text>
+                </view>
+                <view class='contactInfo_times'>
+                  <text class='times' space="ensp" decode="{{true}}">到店:{{item.visitInsideStore}}次  网店:{{item.visitOutsideStore}}次</text>
+                  <view class='times'>{{item.date}}</view>
+                </view>
+                <text class="tuokeOrigin">{{item.isIndoor?"店内拓客":"线上拓客"}}</text>
+              </view>
+            </repeat>
+          </view>
+          <!-- ---------------- -->
+          <!-- <repeat for='{{tuoKeClientList}}' key="index" item="item">
+                  <view class='visitor-item'>
+                    <view class='line-one'>
+                      <view class='line-one-left'>
+                        <image class='avatar' src='{{item.headimgurl}}'></image>
+                        <text class='name'>{{item.nickname}}</text>
+                      </view>
+                      <view class='line-one-right'>
+                        <text class='time'>{{item.date}}</text>
+                      </view>
+                    </view>
+                  </view>
+                </repeat> -->
+        </view>
+      </view>
+      <view wx:elif="{{(!visitorList.length || !onLineDeskList.length || !tuoKeClientList.length) && isLoadend}}">
+        <Loading></Loading>
+      </view>
+    </view>
+    <view wx:else class="noVisitor">暂无数据</view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  import Loading from '../../../../components/loading'
+  const util = require('../../../../utils/utils.js')
+  export default class visitorRecordDetail extends wepy.page {
+    config = {
+      navigationBarTitleText: '访客详情'
+    };
+    components = {
+      Loading: Loading
+    };
+    data = {
+      visitorList: [],
+      onLineDeskList: [],
+      tuoKeClientList: [],
+      pageType: "",
+      onLineTime: "",
+      tuoKeTime: "",
+      deskInfo: {},
+      paramPhone:"",
+      isLoadend: true
+    }
+    methods = {};
+    _dealArr(arr) {
+      this.isLoadend = false;
+      arr.forEach(element => {
+        if(element.visitTime){
+          element.visitTime = util.timestampToTime2(element.visitTime);
+        }
+        switch (element.visitType) {
+        case 0:
+          element.visitType = "公众号进入"
+          break;
+        case 1:
+          element.visitType = "扫核销码"
+          break;
+        case 2:
+          element.visitType = "扫桌贴-"+element.deskCode
+          break;
+        case 3:
+          element.visitType = "首页分享"
+          break;
+        case 4:
+          element.visitType = "邀请有礼分享"
+          break;
+        case 5:
+          element.visitType = "活动通知分享"
+          break;
+        case 6:
+          element.visitType = "邻桌局分享"
+          break;
+        case 7:
+          element.visitType = "比赛局分享"
+          break;
+        case 8:
+          element.visitType = "好友局分享"
+          break
+        case 9:
+          element.visitType = "游戏大厅分享"
+          break;
+        default:
+          element.visitType = "其他"
+          break;
+        }
+        switch (element.soreType) {
+          case 0:
+            element.soreType = '从未到店'
+            break;
+          case 16:
+            element.soreType = '60天未到店'
+            break;
+          case 1:
+            element.soreType = '新客'
+            break;
+          case 2:
+            element.soreType = '低频'
+            break;
+          case 4:
+            element.soreType = '中频'
+            break;
+          case 8:
+            element.soreType = '高频'
+            break;
+          default:
+            break;
+        }
+      })
+    };
+    //访客列表
+    _getVisitorRecord(date) {
+      let url = `${this.$parent.globalData.commonUrl}/api/loadDayVisitSysUser?tk=${this.$parent.globalData.tk}&Date=${date}`
+      util.interface_get(url).then(res => {
+        console.log("loadDayVisitSysUser--------", res)
+        if (res.errCode == 0) {
+          this.visitorList = res.users
+          this._dealArr(this.visitorList)
+          this.$apply();
+          console.log(this.visitorList)
+        }
+      })
+    };
+    //店内上线
+    _getOnlineVisitor(date, deskID) {
+      let url = `${this.$parent.globalData.commonUrl}/api/loadDeskUser?tk=${this.$parent.globalData.tk}&dayStr=${date}&deskID=${deskID}`
+      util.interface_get(url).then(res => {
+        console.log("loadDeskUser---------", res)
+        if (res.errCode == 0) {
+          this.onLineDeskList = res.deskUsers;
+          this._dealArr(this.onLineDeskList)
+          this.$apply();
+          console.log(this.onLineDeskList)
+        }
+      })
+    }
+    //拓客排行
+    _getTuoKeRankList(startDay, endDay) {
+      let _this = this;
+      let url = `${this.$parent.globalData.commonUrl}/api/loadClerkDayClient?tk=${this.$parent.globalData.tk}&startDay=${startDay}&endDay=${endDay}&phone=${this.paramPhone}`
+      util.interface_get(url).then(res => {
+        console.log("loadClerkDayClient-----------", res)
+        if (res.errCode == 0) {
+          this.isLoadend = false;
+          res.interface.forEach(item => {
+            if (item) {
+              item.date = util.timestampToTime2(item.date).slice(0, 10)
+              item.userInfo.forEach(user => {
+                user["date"] = item.date;
+                _this.tuoKeClientList.push(user)
+              })
+            }
+          })
+          this._dealArr(this.tuoKeClientList)
+        }
+        console.log(this.tuoKeClientList)
+        _this.$apply();
+      })
+    };
+    events = {};
+    onLoad(e) {
+      console.log(e)
+      let deskId = e.deskId;
+      this.paramPhone = e.phone
+      if (e.Date) {
+        this.onLineTime = e.Date.trim();
+      }
+      this.deskInfo = e.deskInfo
+      this.pageType = e.type
+      let startDay = e.startDay;
+      let endDay = e.endDay;
+      switch (this.pageType) {
+        case "OnlineVisitor":
+          wx.setNavigationBarTitle({
+            title: "详情"
+          })
+          this._getOnlineVisitor(this.onLineTime, deskId)
+          console.log("店内上线请求")
+          break;
+        case "visitorRecord":
+          wx.setNavigationBarTitle({
+            title: "访客详情"
+          })
+          this._getVisitorRecord(this.onLineTime)
+          break;
+        case "tuoKeRank":
+          wx.setNavigationBarTitle({
+            title: "拓客详情"
+          })
+          this._getTuoKeRankList(startDay, endDay)
+        default:
+          break;
+      }
+    }
+    // Other properties
+  }
+</script>
+
+<style lang="less">
+  .visitorDetail-wrapper {
+    font-size: 28rpx;
+    background: #fff;
+    height: 100%;
+  }
+  .time-box .picker,
+  .time-box .line {
+    margin-right: 10rpx;
+  }
+  .visitorDetail-list {
+    .contact-list {
+      background-color: #fff;
+      .memberItem {
+        display: flex;
+        justify-content: space-between;
+        padding: 10rpx;
+        border-bottom: 1rpx solid #f4f4f4;
+        margin-bottom: 20rpx;
+        position: relative;
+        .tuokeOrigin {
+          display: inline-block;
+          position: absolute;
+          padding: 5rpx 4rpx;
+          border: 1px solid red;
+          transform: rotate(-30deg);
+          color: red;
+          left: 320rpx;
+          top: 18rpx;
+        }
+        .avatar {
+          width: 90rpx;
+          height: 90rpx;
+          border-radius: 50%;
+        }
+        .contactInfo {
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          font-size: 13px;
+          position: relative;
+          margin-left: 10rpx;
+          width: 55%;
+          .userInfo {
+            display: flex;
+            .name {
+              display: inline-block;
+              width: 150rpx;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+            }
+            .tag {
+              display: inline-block;
+              background-color: rgb(79, 129, 4);
+              color: #fff;
+              font-size: 22rpx;
+              text-align: center;
+              padding: 4rpx 2rpx;
+            }
+          }
+        }
+        .contactInfo_times {
+          font-size: 24rpx;
+          width: 37%;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          .times {}
+        }
+      }
+    }
+  }
+  .noVisitor {
+    text-align: center;
+    margin: 0 auto;
+    padding-top: 40%;
+    font-size: 20px;
+    color: #ccc;
+  }
+  .visitor-item {
+    margin-top: 20rpx;
+    padding: 20rpx 30rpx;
+    background-color: #fff;
+    font-size: 28rpx;
+  }
+  .line-one {
+    display: flex;
+    justify-content: space-between;
+  }
+  .line-two {
+    margin-top: 20rpx;
+    display: flex;
+    justify-content: space-between;
+    .times {}
+  }
+  .line-one-left {
+    display: flex;
+  }
+  .line-one-left .avatar {
+    width: 80rpx;
+    height: 80rpx;
+    border-radius: 50%;
+  }
+  .line-one-left .name {
+    margin-left: 20rpx;
+    padding-top: 18rpx;
+  }
+  .line-one-right {
+    margin-top: 18rpx;
+  }
+</style>

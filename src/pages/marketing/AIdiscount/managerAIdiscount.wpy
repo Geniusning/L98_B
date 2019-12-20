@@ -1,0 +1,276 @@
+<template>
+  <view class="managerAIDiscount_wrapper">
+    <view class="AIDiscount_list">
+      <scroll-view scroll-y scroll-with-animation style="height:{{winHeight}}rpx">
+        <radio-group @change="checkboxAICard">
+          <repeat for="{{AIdiscountList}}" key="index" index="index" item="item">
+            <label class="checkbox" class="label_wrapper">
+                  <radio color="#FFBA00" value="{{item.id}}" checked="{{item.checked}}"  class="checkbox"/>
+                  <view class="list_item">
+                    <view class="list_item_top">
+                      <view class='isFinishTrue' wx:if="{{item.isPutAway}}">上架中</view>
+                      <view class='isFinishFalse' wx:else>已下架</view>
+                      <view class="theme">主题：{{item.theme}}</view>
+                      <view class="clientTag">客户：新客、低频</view>
+                    </view>
+                    <view class="list_item_middle">
+                      <view class="discount_content">{{item.couponInfo.content}}</view>
+                      <view class="conditon">条件：{{item.Condition}}</view>
+                    </view>
+                    <view class="list_item_bottom">
+                      <view class="time">
+                        有效时间：{{item.startTime}}至{{item.endTime}}
+                      </view>
+                    </view>
+                  </view>
+                </label>
+          </repeat>
+          <view wx:if="{{!AIdiscountList.length}}" class="noData">暂无数据</view>
+        </radio-group>
+      </scroll-view>
+    </view>
+    <view class="handle_box">
+      <button class="btn" @tap="up">上架</button>
+      <button class="btn" @tap="down">下架</button>
+      <button class="btn" @tap="deleteAICard">删除</button>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  import util from '../../../utils/utils.js'
+  export default class managerAIdiscount extends wepy.page {
+    config = {
+      navigationBarTitleText: '管理自动发券活动'
+    };
+    data = {
+      AIIDs: [],
+      winHeight: "",
+      AIdiscountList: [],
+      AIactivityId: "",
+      couponInfo: []
+    };
+    methods = {
+      checkboxAICard(e) {
+        this.AIactivityId = e.detail.value;
+        this.AIIDs[0] = e.detail.value
+        this.couponInfo = this.AIdiscountList.filter(item => {
+          return item.id === this.AIactivityId
+        })
+        console.log(this.AIactivityId)
+      },
+      //上架
+      up() {
+        // let upFlag
+        // this.inviteAIdiscountList.forEach(item => {
+        //   if (item.isPutAway) {
+        //     upFlag = true
+        //   }
+        // })
+        // if (upFlag) {
+        //   wx.showToast({
+        //     title: '请下架当前活动',
+        //     icon: 'none',
+        //     duration: 2000
+        //   })
+        //   return
+        // }
+        if (!this.AIactivityId) {
+          wx.showToast({
+            title: '请选择活动',
+            icon: 'none',
+            duration: 2000
+          })
+          return
+        }
+        let url = `${this.$parent.globalData.commonUrl}/api/putAwayOrRemoveAIAct?tk=${this.$parent.globalData.tk}&AIactivityId=${this.AIactivityId}&isPutAway=${true}`
+        util.interface_get(url).then(res => {
+          if (res.errCode === 0) {
+            wx.showToast({
+              title: '上架成功',
+              icon: 'none',
+              duration: 2000
+            })
+            this.getAICardList()
+          }
+        })
+      },
+      down() {
+        if (!this.AIactivityId) {
+          wx.showToast({
+            title: '请选择活动',
+            icon: 'none',
+            duration: 2000
+          })
+          return
+        }
+        let url = `${this.$parent.globalData.commonUrl}/api/putAwayOrRemoveAIAct?tk=${this.$parent.globalData.tk}&AIactivityId=${this.AIactivityId}&isPutAway=${false}`
+        util.interface_get(url).then(res => {
+          if (res.errCode === 0) {
+            wx.showToast({
+              title: '下架成功',
+              icon: 'none',
+              duration: 2000
+            })
+            this.getAICardList()
+          }
+        })
+      },
+      deleteAICard() {
+        if (!this.AIactivityId) {
+          wx.showToast({
+            title: '请选择活动',
+            icon: 'none',
+            duration: 2000
+          })
+          return
+        }
+        if (this.couponInfo[0].isPutAway) {
+          wx.showToast({
+            title: '请下架后删除',
+            icon: 'none',
+            duration: 2000
+          })
+          return
+        }
+        let data = {
+          IDS: this.AIIDs
+        }
+        let url = `${this.$parent.globalData.commonUrl}/api/deleDispatchCoupon?tk=${this.$parent.globalData.tk}`
+        util.interface_post(url, data).then(res => {
+          console.log("删除ai优惠券--------", res)
+          wx.showToast({
+            title: '删除成功',
+            icon: 'none',
+            duration: 2000
+          })
+          this.getAICardList()
+        })
+      }
+    };
+    getAICardList() {
+      let url = `${this.$parent.globalData.commonUrl}/api/loadDispatchCouponList?tk=${this.$parent.globalData.tk}`
+      util.interface_get(url).then(res => {
+        console.log(res)
+        this.AIdiscountList = res.coupon
+        this.AIdiscountList.forEach(item => {
+          let nowDateStamp = new Date(util.nowDate()).getTime();
+          let itemDateStamp = new Date(item.endTime).getTime();
+          if (nowDateStamp > itemDateStamp) {
+            item['isFinish'] = true;
+          } else {
+            item['isFinish'] = false;
+          }
+          item["checked"] = false
+          item.Condition = this.judgeCondition(item.Condition);
+          item.couponInfo.content = util.returnDiscountContent(item.couponInfo);
+        })
+        console.log("ai优惠券列表---------", this.AIdiscountList)
+        this.AIactivityId = ""
+        this.$apply();
+      })
+    };
+    judgeCondition(type) {
+      let conditionType = ""
+      switch (type) {
+        case 0:
+          conditionType = "访问首页，人人有礼"
+          break;
+        case 1:
+          conditionType = "扫核销码，核销有礼"
+          break;
+        case 2:
+          conditionType = "访问游戏大厅，参赛有礼"
+          break;
+        case 3:
+          conditionType = "比赛完成页，参赛安慰奖"
+          break;
+        case 4:
+          conditionType = "非访问状态，系统通知(即用微信订单通知)"
+          break;
+        default:
+          break;
+      }
+      return conditionType
+    };
+    events = {};
+    onLoad() {
+      this.winHeight = util.getScrollHeight(110);
+      this.getAICardList()
+    }
+    // Other properties
+  }
+</script>
+
+<style lang="less">
+  .managerAIDiscount_wrapper {
+    .AIDiscount_list {
+      .label_wrapper {
+        display: flex;
+        .checkbox {
+          padding-top: 60rpx;
+          padding-left: 6rpx
+        }
+        .list_item {
+          width: 90%;
+          height: 200rpx;
+          background-color: #fff;
+          margin: 20rpx auto;
+          box-sizing: border-box;
+          padding: 10rpx 20rpx;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          .list_item_top {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 12px;
+            position: relative;
+            .isFinishTrue,
+            .isFinishFalse {
+              padding: 6rpx 10rpx;
+              position: absolute;
+              top: 10rpx;
+              right: 290rpx;
+              transform: rotate(-20deg);
+              border: 1px solid red;
+              color: red;
+            } // .isFinishTrue {
+            //   border: 1px solid #333;
+            // }
+            // .isFinishFalse {
+            //   border: 1px solid red;
+            // }
+            .theme {
+              color: #333;
+              font-size: 12px;
+            }
+            .clientTag {}
+          }
+          .list_item_middle {
+            display: flex;
+            justify-content: space-between;
+            .conditon {}
+            .discount_content {
+              font-size: 12px;
+            }
+          }
+          .list_item_bottom {
+            width: 100%;
+            text-align: left;
+          }
+        }
+      }
+    }
+    .handle_box {
+      height: 100rpx;
+      line-height: 100rpx;
+      display: flex;
+      justify-content: space-around;
+      .btn {
+        width: 200rpx;
+      }
+    }
+  }
+</style>

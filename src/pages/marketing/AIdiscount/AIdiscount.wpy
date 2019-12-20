@@ -1,0 +1,512 @@
+<template>
+  <view class="AI-wrapper">
+    <!-- 第一步 -->
+    <view class="stepOne-wrapper">
+      <view class="title">第一步：活动主题</view>
+      <input type="text" placeholder="请输入活动主题" maxlength="6" @change="selectTheme" class="themeInput"></input>
+    </view>
+    <!-- 第二步 -->
+    <view class="stepOne-wrapper" style="margin-top:30rpx">
+      <view class="title">第二步：发布条件</view>
+      <view class="select-channel">
+        <picker @change="bindPickerCondition" range-key="{{'name'}}" range="{{dispatchConditionList}}">
+          <view class="picker" style="background:#ccc;color:#fff;display:inline-block;padding:0 6rpx">当前选择：{{dispatchConditionList[conditionIndex].name}}</view>
+        </picker>
+      </view>
+    </view>
+    <!-- 第三步 -->
+    <view class="stepOne-wrapper">
+      <view class="title">第三步：选择客户</view>
+      <view class="select-box">
+        <repeat for="{{usersTypeList}}" key="index" item="item">
+          <view class="select-item" @tap="bindCheckbox" data-index="{{index}}" data-usersTypeId="{{item.id}}">
+            <icon wx:if="{{item.checked}}" type="success_circle" size="20" class="my-check" />
+            <icon wx:else type="circle" size="20" class="my-check" />
+            <view class="userType-Name">{{item.value}}</view>
+          </view>
+        </repeat>
+      </view>
+    </view>
+     <!-- 第二步 -->
+    <view class="stepOne-wrapper" style="margin-top:30rpx">
+      <view class="title">第四步：选择性别</view>
+      <view class="select-channel">
+        <picker @change="bindPickerSex"  range="{{sexList}}">
+          <view class="picker" style="background:#ccc;color:#fff;display:inline-block;padding:0 6rpx">当前选择：{{sexList[sexListIndex]}}</view>
+        </picker>
+      </view>
+    </view>
+    <!-- 第四步 -->
+    <view class="stepTwo-wrapper">
+      <view class="title">第五步：选择优惠券</view>
+      <scroll-view scroll-y class="scrollView">
+        <radio-group @change="checkboxCoupon">
+          <repeat for="{{cardList}}" key="index">
+            <label class="label_tag">
+                <radio color="#FFBA00"   checked="{{item.checked}}" value="{{item.couponID}}"/>
+                <view class="discountItem">
+                  <view class="discountItem-left">
+                    <text class="title" wx:if="{{item.type==0}}">({{item.theme}})--{{item.value+"元"}}</text>
+                    <text class="title" wx:if="{{item.type==1}}">({{item.theme}})--{{item.content}}</text>
+                    <text class="title" wx:if="{{item.type==2}}">({{item.theme}})--{{item.value+"折"}}</text>
+                    <text class="title" wx:if="{{item.type==3}}">({{item.theme}})--{{item.content}}</text>
+                    <text class="title" wx:if="{{item.type==4}}">({{item.theme}})--{{item.content}}</text>
+                    <view style="display:flex;justify-content:space-between;">
+                      <text class="limit">{{item.limit}}</text>
+                      <text class="limit">剩余{{item.number}}张</text>
+                    </view>
+                  </view>
+                  <view class="discountItem-right" wx:if="{{item.type==0}}">
+                    <text>现金券</text>
+                    <text>{{item.endTime}}</text>
+                  </view>
+                  <view class="discountItem-right" wx:if="{{item.type==1}}">
+                    <text>实物券</text>
+                    <text>{{item.endTime}}</text>
+                  </view>
+                  <view class="discountItem-right" wx:if="{{item.type==2}}">
+                    <text>折扣券</text>
+                    <text>{{item.endTime}}</text>
+                  </view>
+                  <view class="discountItem-right" wx:if="{{item.type==3}}">
+                    <text>兑换券</text>
+                    <text>{{item.endTime}}</text>
+                  </view>
+                  <view class="discountItem-right" wx:if="{{item.type==4}}">
+                    <text>满减券</text>
+                    <text>{{item.endTime}}</text>
+                  </view>
+              </view>
+            </label>
+          </repeat>
+        </radio-group>
+      </scroll-view>
+    </view>
+    <!-- 第五步 -->
+    <view class="stepFour-wrapper">
+      <view class="title">第六步：发布时间</view>
+      <view class="customTime-box">
+        <picker mode="date" value="{{date}}" start="2019-02-01" end="2030-09-01" @change="bindStartDateChange">
+          <view class="picker">开始时间: {{startDate}}</view>
+        </picker>
+      </view>
+      <view class="customTime-box">
+        <picker mode="date" value="{{date}}" start="2019-02-01" end="2030-09-01" @change="bindEndDateChange">
+          <view class="picker">结束时间: {{endDate}}</view>
+        </picker>
+      </view>
+    </view>
+    <!-- 按钮 -->
+    <view class="btn-wrapper">
+      <!-- <button >保存</button>
+      <button >申请发布</button> -->
+      <button @tap="dispatchDiscount">发布</button>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  const util = require('../../../utils/utils.js');
+  export default class AIdiscount extends wepy.page {
+    config = {
+      navigationBarTitleText: '发布优惠券'
+    };
+    data = {
+      sexList:["男","女"],
+      sexListIndex:0,
+      dispatchConditionList: [{
+          id: 0,
+          name: "访问首页，人人有礼"
+        },
+        {
+          id: 1,
+          name: "扫核销码，核销有礼"
+        }, {
+          id: 2,
+          name: "访问游戏大厅，参赛有礼"
+        }, {
+          id: 3,
+          name: "比赛完成页，参赛安慰奖"
+        },
+        {
+          id: 4,
+          name: "系统通知(即用微信订单通知)"
+        },
+        {
+          id: 5,
+          name: "访问好友、邻桌局小结页"
+        }
+      ],
+      usersTypeList: [{
+          id: '1',
+          value: '新客',
+          checked: false
+        },
+        {
+          id: '2',
+          value: '低频',
+          checked: false
+        },
+        {
+          id: '4',
+          value: '中频',
+          checked: false
+        },
+        {
+          id: '8',
+          value: '高频',
+          checked: false
+        },
+        {
+          id: '16',
+          value: '60天未到店',
+          checked: false
+        },
+        {
+          id: '0',
+          value: '未到店',
+          checked: false
+        },
+        {
+          id: '32',
+          value: '全部',
+          checked: false
+        }
+      ],
+      modelList: [{
+          id: 'instant',
+          name: '即时',
+          checked: 'true'
+        },
+        {
+          id: 'custom',
+          name: '自定义'
+        }
+      ],
+      cardList: [],
+      cardId: "",
+      conditionIndex: 0, //发布条件的索引
+      // timeModel:'instant',
+      startDate:'2019-01-01',
+      endDate:"2022-01-21",
+      isTrue: true,
+      isFalse: false,
+      channel: 1, //发布模式,AI
+      selectedCouponIds: [],
+      selectedAllStatus: false,
+      userTypeNumList: [],
+      userIDs: [],
+      conditonType: "",
+      AItheme:""
+    };
+    methods = {
+      bindPickerSex(e){
+        console.log(e.detail.value)
+        this.sexListIndex = Number(e.detail.value)
+      },
+      //发布优惠券
+      dispatchDiscount() {
+        let url = `${this.$parent.globalData.commonUrl}/api/dispatchCoupon?tk=${this.$parent.globalData.tk}`;
+        if (this.userIDs.length == 7) {
+          this.userIDs = [32];
+        }
+        var data = {
+          userGroupType: this.userIDs.length > 0 ? this.userIDs : [32],
+          couponID: this.cardId,
+          theme:this.AItheme,
+          Condition:Number(this.conditionIndex)||0,
+          startTime:this.startDate,
+          endTime:this.endDate
+        }
+        console.log("data----------",data)
+        for (var key in data) {
+          console.log(key,data[key])
+          if (!data[key] && data[key]!=0) {
+            wx.showToast({
+              title: '请信息填写完整',
+              icon: 'none',
+              duration: 2000
+            });
+            return;
+          }
+        }
+        util.interface_post(url, data).then(res => {
+          console.log('发布AI优惠券结果--------', res);
+          if (res.errCode == 0) {
+            wx.showToast({
+              title: '发布成功',
+              icon: 'none',
+              duration: 1500
+            });
+          } else if (res.errCode == 1) {
+            wx.showToast({
+              title: '卡券不足',
+              icon: 'none',
+              duration: 1500
+            });
+          }
+        }).catch(err => {
+          console.log(err)
+        })
+      },
+      //输入活动主题
+      selectTheme(e) {
+        this.AItheme = e.detail.value
+        console.log(e.detail.value)
+      },
+      // 选择客户
+      bindCheckbox: function(e) { //这段代码因为前期数据设计的不合理，只能学成shi一样的逻辑
+        console.log(e)
+        var index = parseInt(e.currentTarget.dataset.index);
+        this.usersTypeList[index].checked = !this.usersTypeList[index].checked;
+        if (index == 6) { //全选
+          this.selectedAllStatus = !this.selectedAllStatus; //全选标识符
+          this.userIDs = [6];
+          if (this.selectedAllStatus == false) { //取消全选，数组制空
+            this.userIDs = [];
+          }
+          this.usersTypeList.forEach(item => { //如果全选了，其他选项ui未选中样式
+            item.checked = this.selectedAllStatus;
+          });
+           let userUrl = `${this.$parent.globalData.commonUrl}/api/loadSortUsers?tk=${this.$parent.globalData.tk}&sortType=${this.usersTypeList[index].id}`;
+          util.interface_get(userUrl).then(res => {
+            console.log('选择用户类型返回--------', res);
+          })
+          return;
+        }
+        console.log(this.userIDs)
+        if (index === 7) { //全选
+          this.userIDs = [6];
+          this.selectedAllStatus = !this.selectedAllStatus; //全选标识符
+          if (this.selectedAllStatus == false) {
+            this.userIDs = [];
+          }
+          console.log('this.userIDs--------------', this.userIDs);
+          this.usersTypeList.forEach(item => { //如果全选了，其他选项ui未选中样式
+            item.checked = this.selectedAllStatus;
+          });
+          let userUrl = `${this.$parent.globalData.commonUrl}/api/loadSortUsers?tk=${this.$parent.globalData.tk}&sortType=${this.usersTypeList[index].id}`;
+          util.interface_get(userUrl).then(res => {
+            console.log('选择用户类型返回--------', res);
+          })
+          return;
+        }
+        let userTypeCheckedList = this.usersTypeList.slice(0, this.usersTypeList.length - 1); //截取数组0到倒数第二个元素；
+        console.log('截取数组0到倒数第二个元素', userTypeCheckedList);
+        for (let i = 0; i < userTypeCheckedList.length; i++) {
+          if (userTypeCheckedList[i].checked) {
+            this.selectedAllStatus = true;
+          } else {
+            this.selectedAllStatus = false;
+            break;
+          }
+        }
+        //获取用户群
+        if (this.usersTypeList[index].checked) {
+          this.userIDs.push(parseInt(this.usersTypeList[index].id));
+          if (this.userIDs.length == 7) {
+            this.userIDs = [6];
+          }
+          console.log('this.userIDs-----------', this.userIDs)
+          if (this.selectedAllStatus) {
+            this.usersTypeList.forEach(item => {
+              item.checked = this.selectedAllStatus;
+            });
+          }
+          let userUrl = `${this.$parent.globalData.commonUrl}/api/loadSortUsers?tk=${this.$parent.globalData.tk}&sortType=${this.usersTypeList[index].id}`;
+          util.interface_get(userUrl).then(res => {
+            console.log('选择用户类型返回--------', res);
+          })
+        } else {
+          this.userIDs.splice(this.userIDs.indexOf(parseInt(this.usersTypeList[index].id)), 1);
+          if (this.userIDs.indexOf(32) != -1) {
+            this.userIDs.splice(this.userIDs.indexOf(32), 1);
+          }
+          console.log('this.userIDs-----------', this.userIDs)
+          this.usersTypeList[6].checked = false;
+          this.selectedAllStatus = false;
+        }
+
+        console.log("用户群------",this.userIDs)
+      },
+      // 优惠券选择
+      checkboxCoupon(e) {
+        this.cardId = e.detail.value;
+        console.log(this.cardId)
+      },
+      // 发放条件
+      bindPickerCondition: function(e) {
+        this.conditionIndex = e.detail.value
+      },
+      // 发布模式
+      // radioModel(e) {
+      //   console.log('发布模式：', e.detail.value);
+      //   this.timeModel = e.detail.value;
+      // },
+      // 时间选择
+      bindStartDateChange: function(e) {
+        console.log(e.detail.value)
+        this.startDate = e.detail.value;
+      },
+       bindEndDateChange: function(e) {
+         console.log(e.detail.value)
+        this.endDate = e.detail.value;
+      }
+    };
+    events = {};
+    onLoad(e) {
+      this.endDate = util.someDayLater(util.nowDate(), 10, '-');
+      this.startDate = util.nowDate();
+      var channelType = Number(e.type);
+      let _this = this;
+      if (channelType === 0) {
+        this.channel = 1;
+        wx.setNavigationBarTitle({
+          title: '自动发券'
+        });
+      } else if (channelType === 1) {
+        this.channel = 3;
+        wx.setNavigationBarTitle({
+          title: '精准推送'
+        });
+      }
+      //拉取优惠券列表
+      var cardListUrl = `${this.$parent.globalData.commonUrl}/api/loadCoupons?tk=${this.$parent.globalData.tk}`;
+      util.interface_get(cardListUrl).then(res => {
+        _this.cardList = res;
+         _this.cardList.forEach(item=>{
+           item["checked"] = false;
+         })
+        console.log("_this.cardList-------",_this.cardList)
+        _this.$apply();
+      });
+    }
+  }
+</script>
+
+<style lang="less">
+//修改默认radio样式
+//   radio .wx-radio-input{ 
+//   /* 自定义样式.... */
+//     height: 40rpx; 
+//     width: 40rpx;
+//     margin-top: 40rpx;
+//     border-radius: 3rpx;
+//     border: 2rpx solid #ccc;
+//  }
+//  radio .wx-radio-input.wx-radio-input-checked {
+//       height: 40rpx; 
+//       width: 40rpx;
+//       border: 2rpx solid #ccc;
+// }
+//  /* 选中后的的√ */
+// radio .wx-radio-input.wx-radio-input-checked::before{
+//       color: #FFBA00;
+// }
+
+  .AI-wrapper {
+    padding: 20rpx;
+    padding-bottom: 88rpx;
+    position: relative;
+  }
+  .stepOne-wrapper {
+    background: #fff;
+    padding: 10rpx;
+    margin-bottom: 20rpx;
+  }
+  .select-box {
+    margin-top: 20rpx;
+    height: 80rpx;
+    .select-item {
+      float: left;
+      display: flex;
+      margin-bottom: 8rpx;
+    }
+    .my-check {}
+    .userType-Name {}
+  }
+  .allClient {
+    margin: 20rpx 0;
+    width: 150rpx;
+    padding: 10rpx;
+    border: 1px solid #ccc;
+  }
+  /* 第二步 */
+  .stepTwo-wrapper {
+    background: #fff;
+    padding: 10rpx;
+  }
+  .scrollView {
+    height: 500rpx;
+    margin-top: 20rpx;
+  }
+  .label_tag {
+    display: flex;
+    margin-bottom: 20rpx;
+  }
+  .step2Checkbox {
+    padding-top: 50rpx;
+  }
+  .title {
+    font-weight: 700;
+    color: #333;
+    font-size: 30rpx;
+  }
+  .discountItem {
+    /* width: 400rpx; */
+    flex: 1;
+    height: 150rpx;
+    padding: 0 20rpx;
+    border: 1px solid #ccc;
+    display: flex;
+    justify-content: space-between;
+  }
+  .discountItem-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+  }
+  .discountItem-left .title {
+    font-size: 38rpx;
+    color: #ffba00;
+  }
+  .discountItem-left .time {
+    font-size: 32rpx;
+    color: #333;
+  }
+  .discountItem-right {
+    padding: 16rpx 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    text-align: center;
+  }
+  .btn-wrapper {
+    margin-top: 20rpx;
+    display: flex;
+    justify-content: space-between;
+  }
+  .btn-wrapper button {
+    background-color: #fff;
+  }
+  /* 第三步第四部 */
+  .stepThree-wrapper,
+  .stepFour-wrapper {
+    margin-top: 20rpx;
+    background: #fff;
+    padding: 10rpx;
+  }
+  .select-channel {
+    margin-top: 20rpx;
+  }
+  .selectModel,
+  .customTime-box {
+    margin-top: 20rpx;
+    .picker {
+      background-color: #ccc;
+      color: #fff;
+      width: 300rpx;
+    }
+  }
+</style>

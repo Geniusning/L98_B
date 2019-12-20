@@ -1,0 +1,268 @@
+<template>
+  <view class='mine-container'>
+    <!-- 顶部信息 -->
+    <view class='shopInfo-container'>
+      <Header :sonShopInfo.sync="shopInfo" :superior.sync="staff"></Header>
+    </view>
+    <!-- 列表 -->
+    <view class='setting-container'>
+      <!-- <navigator url='/pages/mine/dutyPeople/dutyPeople' class='item'>
+                                    <view class='name-box'>
+                                      <image class='icon' src='../../images/account.png' style='width:32rpx;height:28rpx;'></image>
+                                      <text class='settingName'>社群运营专员</text>
+                                    </view>
+                                    <image src='../../images/arrow_right.png'></image>
+                                  </navigator> -->
+      <!-- 通用模块 -->
+      <view class='mine_common_module'>
+        <navigator class='item' hover-class="none" url='/pages/mine/setting/passwordUpdate/passwordUpdate'>
+          <view class='name-box'>
+            <image class='icon' src='../../images/shop1.png' style='width:34rpx;height:32rpx;'></image>
+            <text class='settingName'>密码修改</text>
+          </view>
+          <image src='../../images/arrow_right.png'></image>
+        </navigator>
+        <navigator url='/pages/mine/feedBack/feedBack' class='item'>
+          <view class='name-box'>
+            <image class='icon' src='../../images/question.png' style='width:34rpx;height:34rpx;'></image>
+            <text class='settingName'>问题反馈</text>
+          </view>
+          <image src='../../images/arrow_right.png'></image>
+        </navigator>
+        <navigator url='/pages/mine/room/bindRoomList?type=bind' class='item'>
+          <view class='name-box'>
+            <image class='icon' src='../../images/question.png' style='width:34rpx;height:34rpx;'></image>
+            <text class='settingName'>绑定服务的房号/台号</text>
+          </view>
+          <image src='../../images/arrow_right.png'></image>
+        </navigator>
+        <navigator url='/pages/mine/addServicer' class='item'>
+          <view class='name-box'>
+            <image class='icon' src='../../images/question.png' style='width:34rpx;height:34rpx;'></image>
+            <text class='settingName'>绑定我成为客服</text>
+          </view>
+          <image src='../../images/arrow_right.png'></image>
+        </navigator>
+        <navigator url='/pages/mine/aboutUs/aboutUs' class='item'>
+          <view class='name-box'>
+            <image class='icon' src='../../images/about.png' style='width:34rpx;height:34rpx;'></image>
+            <text class='settingName'>关于我们</text>
+          </view>
+          <image src='../../images/arrow_right.png'></image>
+        </navigator>
+        <navigator  url='/pages/mine/myStaff/myStaff' class='item'>
+          <!--wx:if="{{noAuth}}" <navigator url='/pages/mine/setting/account/account' class='item'> -->
+          <view class='name-box'>
+            <image class='icon' src='../../images/shop1.png' style='width:34rpx;height:32rpx;'></image>
+            <text class='settingName'>我的下属管理</text>
+          </view>
+          <image src='../../images/arrow_right.png'></image>
+        </navigator>
+      </view>
+      <!-- 管理员模块 -->
+      <view class='mine_admin_module'>
+        <navigator url='/pages/mine/QRcode/qrCodeList' class='item'>
+          <view class='name-box'>
+            <image class='icon' src='../../images/question.png' style='width:34rpx;height:34rpx;'></image>
+            <text class='settingName'>二维码下载</text>
+          </view>
+          <image src='../../images/arrow_right.png'></image>
+        </navigator>
+        <navigator url='/pages/mine/setting/setting' class='item'>
+          <view class='name-box'>
+            <image class='icon' src='../../images/setting.png' style='width:34rpx;height:32rpx;'></image>
+            <text class='settingName'>门店设置</text>
+          </view>
+          <image src='../../images/arrow_right.png'></image>
+        </navigator>
+        <!-- <navigator url='/pages/mine/setting/account/account' class='item'>
+                      <view class='name-box'>
+                        <image class='icon' src='../../images/setting.png' style='width:34rpx;height:32rpx;'></image>
+                        <text class='settingName'>员工设置</text>
+                      </view>
+                      <image src='../../images/arrow_right.png'></image>
+                    </navigator> -->
+        <navigator url='/pages/mine/room/bindRoomList?type=list' class='item'>
+          <view class='name-box'>
+            <image class='icon' src='../../images/setting.png' style='width:34rpx;height:32rpx;'></image>
+            <text class='settingName'>房号/台号设置</text>
+          </view>
+          <image src='../../images/arrow_right.png'></image>
+        </navigator>
+        <navigator url='/pages/marketing/marketing' class='item'>
+          <view class='name-box'>
+            <image class='icon' src='../../images/about.png' style='width:34rpx;height:34rpx;'></image>
+            <text class='settingName'>营销活动设置</text>
+          </view>
+          <image src='../../images/arrow_right.png'></image>
+        </navigator>
+        <navigator url='/pages/mine/otherSetting' class='item'>
+          <view class='name-box'>
+            <image class='icon' src='../../images/about.png' style='width:34rpx;height:34rpx;'></image>
+            <text class='settingName'>其他功能开通设置</text>
+          </view>
+          <image src='../../images/arrow_right.png'></image>
+        </navigator>
+        <navigator url='/pages/mine/newShop/newShop' class='item'>
+          <view class='name-box'>
+            <image class='icon' src='../../images/about.png' style='width:34rpx;height:34rpx;'></image>
+            <text class='settingName'>新增门店</text>
+          </view>
+          <image src='../../images/arrow_right.png'></image>
+        </navigator>
+        <!-- url='/pages/mine/server/server' -->
+        <navigator @tap='intoTable' class='item'>
+          <view class='name-box'>
+            <image class='icon' src='../../images/about.png' style='width:34rpx;height:34rpx;'></image>
+            <text class='settingName'>服务套餐</text>
+          </view>
+          <image src='../../images/arrow_right.png'></image>
+        </navigator>
+        <navigator class='item' @tap='intoTable'>
+          <view class='name-box'>
+            <image class='icon' src='../../images/shop1.png' style='width:34rpx;height:32rpx;'></image>
+            <text class='settingName'>运营周报</text>
+          </view>
+          <image src='../../images/arrow_right.png'></image>
+        </navigator>
+        <view class='item' @tap='goBackShopList'>
+          <view class='name-box'>
+            <image class='icon' src='../../images/about.png' style='width:34rpx;height:32rpx;'></image>
+            <text class='settingName'>返回门店列表</text>
+          </view>
+          <!-- <image src='../../images/arrow_right.png'></image> -->
+        </view>
+        <view class='item' @tap='loginOut'>
+          <view class='name-box'>
+            <image class='icon' src='../../images/about.png' style='width:34rpx;height:32rpx;'></image>
+            <text class='settingName'>退出系统</text>
+          </view>
+          <!-- <image src='../../images/arrow_right.png'></image> -->
+        </view>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  import Header from '../../components/headPart'
+  export default class mine extends wepy.page {
+    config = {
+      navigationBarTitleText: '我的'
+    };
+    data = {
+      shopInfo: {},
+      staff: {},
+      noAuth: true
+    };
+    onLoad() {
+      this.shopInfo = this.$parent.globalData.shopInfo;
+      this.staff = this.$parent.globalData.userInfo;
+      console.log("this.staff-------", this.staff)
+      if (this.staff.role === "ZongBYG" ||
+        this.staff.role === "CityBoss" ||
+        this.staff.role === "ShopBoss" ||
+        this.staff.role === "ShopManager" ||
+        this.staff.role === "shopStaff"
+      ) {
+        this.noAuth = false
+      }
+      console.log(this.noAuth)
+    }
+    components = {
+      Header: Header
+    };
+    methods = {
+      goBackShopList() {
+        wx.reLaunch({
+          url: "/pages/log/shopList"
+        })
+      },
+      intoTable() {
+        wx.showToast({
+          title: '功能暂未开放',
+          icon: 'none',
+          duration: 2000
+        })
+      },
+      loginOut() {
+        wx.showModal({
+          title: '提示',
+          content: '是否退出系统',
+          success(res) {
+            if (res.confirm) {
+              wx.reLaunch({
+                url: "/pages/log/log"
+              })
+            } else if (res.cancel) {
+              console.log('用户点击取消')
+            }
+          }
+        })
+      }
+    }
+  }
+</script>
+
+<style lang="less">
+  .mine-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background: #efeef3;
+  }
+  .shopInfo-container {
+    width: 100%;
+    position: relative;
+    height: 306rpx;
+  }
+  .shopInfo-container .mine_bg {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    /* z-index: -1 */
+  }
+  .shopInfo-container .shopInfo-box {
+    position: relative;
+    z-index: 1;
+    margin: 0 auto;
+    margin-top: 132rpx;
+    width: 702rpx;
+    height: 239rpx;
+    background: #fff;
+    text-align: center;
+    border-radius: 8rpx;
+  }
+  /* 列表 */
+  .setting-container {
+    margin-top: 20rpx; // background: #fff;
+    .mine_common_module {
+      background-color: #fff;
+      margin-bottom: 20rpx;
+    }
+    .mine_admin_module {
+      background-color: #fff;
+    }
+  }
+  .setting-container .item {
+    padding: 20rpx;
+    border-bottom: 1px solid #f4f3f6;
+    display: flex;
+    justify-content: space-between;
+  }
+  .setting-container .item .settingName {
+    margin-top: 10rpx;
+    font-size: 28rpx;
+    color: #333;
+  }
+  .setting-container .item image {
+    width: 14rpx;
+    height: 26rpx;
+    margin-right: 8rpx;
+    margin-top: 16rpx;
+  }
+  .setting-container .item .icon {
+    vertical-align: -4rpx;
+  }
+</style>

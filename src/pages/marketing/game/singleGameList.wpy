@@ -1,0 +1,378 @@
+<template>
+  <view class='gameList-wrapper'>
+    <view>
+      <view wx:if="{{pageType=='game'}}">
+        <scroll-view scroll-y class='scrollView' style="max-height:{{winHeight}}rpx">
+          <checkbox-group @change="checkboxGame">
+            <repeat for="{{gameList}}" key='index'>
+              <label data-test="{{item.content}}" class="checkbox">
+                        <checkbox style="padding-top:60rpx" checked='{{item.checked}}' value="{{item.arenaID}}" />
+                        <view class='gameList'>
+                            <view class='gameItem'>
+                                <view class='isFinishTrue' wx:if="{{item.isFinish}}">已结束</view>
+                                <view class='isFinishFalse' wx:else>进行中</view>
+                                <view class='title'>{{item.name}}</view>
+                                <view class='gameInfo'>
+                                    <view class='gameInfo-left'>
+                                        <view class='time'>开始时间：{{item.publishTime}}</view>
+                                        <view class='time'>结束时间：{{item.endTime}}</view>
+                                    </view>
+                                    <view class='gameInfo-right'>
+                                        <view class='num'>人数：{{item.maxNumberOfPlayer}}</view>
+                                        <view class='num'>局数：{{item.maxRoundNumber}}</view>
+                                    </view>
+                                </view>
+                            </view>
+                        </view>
+                    </label>
+            </repeat>
+          </checkbox-group>
+        </scroll-view>
+      </view>
+      <!-- <view wx:else>
+        <scroll-view scroll-y class='scrollView' style="max-height:{{winHeight}}rpx">
+          <checkbox-group @change="checkboxAICard">
+            <repeat for="{{AIdiscountList}}" key='index'>
+              <label class="checkbox">
+                      <checkbox style="padding-top:60rpx"  value="{{item.id}}" />
+                      <view class="AIdiscountItem">
+                         <view class='isFinishTrue' wx:if="{{item.isFinish}}">已结束</view>
+                         <view class='isFinishFalse' wx:else>进行中</view>
+                        <view class="themeTitle">主题:({{item.theme}})</view>
+                        <view class="discountContent">
+                          <view class="discountContentLeft">
+                            <view class="lineOne">开始时间：{{item.startTime}}</view>
+                            <view class="lineTow">结束时间：{{item.endTime}}</view>
+                          </view>
+                          <view class="discountContentRight">
+                            <view class="lineOne">条件：{{item.Condition}}</view>
+                            <view class="lineTow">优惠券：{{item.couponInfo.content}}</view>
+                          </view>
+                        </view>
+                      </view>
+                  </label>
+            </repeat>
+          </checkbox-group>
+        </scroll-view>
+      </view> -->
+    </view>
+    <view class='noGame' wx:if="{{!gameList.length&&!AIdiscountList.length}}">
+      暂无内容
+    </view>
+    <view class='btn-wrapper' wx:if="{{gameList.length}}">
+      <button  class='delete' @tap='deleteGame'>删除</button>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  import util from '../../../utils/utils.js';
+  export default class singleGameList extends wepy.page {
+    config = {
+      navigationBarTitleText: '比赛状况'
+    };
+    data = {
+      arenaIDs: [],
+      AIIDs: [],
+      winHeight: '',
+      gameList: [],
+      AIdiscountList: [],
+      pageType: "",
+    };
+    methods = {
+      checkboxGame(e) {
+        this.arenaIDs = e.detail.value;
+      },
+      checkboxAICard(e) {
+        this.AIIDs = e.detail.value;
+      },
+      deleteGame() {
+        let _this = this;
+        wx.request({
+          url: `${this.$parent.globalData.commonUrl}/api/deleteArena?tk=${this.$parent.globalData.tk}`,
+          data: {
+            arenaIDs: _this.arenaIDs
+          },
+          header: {
+            'content-type': 'application/json'
+          },
+          method: 'POST',
+          success: async function(res) {
+            console.log(res);
+            if (res.statusCode === 200) {
+              let gameListData = await _this.getGameList();
+              _this.getHandledGameList(gameListData);
+            }
+          }
+        });
+        wx.request({
+          url: `${this.$parent.globalData.commonUrl}/api/delArenaScheduleTask?tk=${this.$parent.globalData.tk}`,
+          header: {
+            'content-type': 'application/json'
+          },
+          method: 'POST',
+          success: async function(res) {
+            console.log('删除计划：', res);
+            if (res.statusCode === 200) {
+              wx.showToast({
+                title: '删除成功',
+                icon: 'success',
+                duration: 2000
+              });
+            }
+          }
+        });
+      },
+      deleteAICard() {
+        let data = {
+          IDS: this.AIIDs
+        }
+        let url = `${this.$parent.globalData.commonUrl}/api/deleDispatchCoupon?tk=${this.$parent.globalData.tk}`
+        util.interface_post(url, data).then(res => {
+          console.log("删除ai优惠券--------", res)
+          this.getAICardList()
+        })
+      }
+    };
+    getHandledGameList(gameListData) {
+      let nowTime = new Date().getTime();
+      let tempgameListData = gameListData.map(item => {
+        if (Number(item.endTime) < Math.round(nowTime / 1000)) {
+          item['isFinish'] = true;
+        } else {
+          item['isFinish'] = false;
+        }
+        item.publishTime = util.timestampToTime(item.publishTime);
+        item.endTime = util.timestampToTime(item.endTime);
+        return item
+      });
+      this.gameList = tempgameListData;
+      this.$apply();
+    };
+    getGameList() {
+      return new Promise((resolve, reject) => {
+        let _this = this;
+        wx.request({
+          url: `${_this.$parent.globalData.commonUrl}/api/loadArenas?tk=${_this.$parent.globalData.tk}`,
+          success: function(res) {
+            console.log(res)
+            if (res.statusCode === 200) {
+              resolve(res.data.arenaInfos);
+            } else {
+              reject(err);
+            }
+          }
+        });
+      });
+    };
+    getAICardList() {
+      let url = `${this.$parent.globalData.commonUrl}/api/loadDispatchCouponList?tk=${this.$parent.globalData.tk}`
+      util.interface_get(url).then(res => {
+        console.log("ai优惠券列表---------", res)
+        this.AIdiscountList = res.coupon
+        this.AIdiscountList.forEach(item => {
+          let nowDateStamp = new Date(util.nowDate()).getTime();
+          let itemDateStamp = new Date(item.endTime).getTime();
+          if (nowDateStamp>itemDateStamp){
+            item['isFinish'] = true;
+          }else {
+            item['isFinish'] = false;
+          }
+          item.Condition = this.judgeCondition(item.Condition);
+          item.couponInfo.content = util.returnDiscountContent(item.couponInfo);
+        })
+        this.$apply();
+      })
+    };
+    judgeCondition(type) {
+      let conditionType = ""
+      switch (type) {
+        case 0:
+         conditionType="访问首页，人人有礼"
+          break;
+        case 1:
+         conditionType="扫核销码，核销有礼"
+          break;
+        case 2:
+         conditionType="访问游戏大厅，参赛有礼"
+          break;
+        case 3:
+         conditionType="比赛完成页，参赛安慰奖"
+          break;
+        case 4:
+         conditionType="非访问状态，系统通知(即用微信订单通知)"
+          break;
+        default:
+          break;
+      }
+      return conditionType
+    };
+    async onShow() {
+      // let gameListData = await this.getGameList();
+      // console.log('单场游戏列表：', gameListData)
+      // this.getHandledGameList(gameListData);
+    }
+    async onLoad(e) {
+      //获取屏幕高度
+      this.winHeight = util.getScrollHeight(300)
+      this.pageType = e.type;
+      if (this.pageType === "game") {
+        let gameListData = await this.getGameList();
+        this.getHandledGameList(gameListData);
+        wx.setNavigationBarTitle({
+          title: "比赛状况"
+        })
+      } else if (this.pageType === "autoDiscount") {
+        this.getAICardList()
+        wx.setNavigationBarTitle({
+          title: "活动状况"
+        })
+      }
+    }
+  }
+</script>
+
+<style lang="less">
+  .gameList-wrapper {
+    padding: 20rpx 20rpx;
+    position: relative;
+    height: 100%;
+    box-sizing: border-box;
+    .noGame {
+      width: 100%;
+      text-align: center;
+      font-size: 40rpx;
+      color: #ccc;
+      margin: 40% auto;
+    }
+    .scrollView {
+      // max-height: 800rpx;
+      overflow: hidden;
+      .checkbox {
+        display: flex;
+        margin-bottom: 20rpx;
+        background: #fff;
+        padding-left: 4rpx;
+        .gameList {
+          background-color: #fff;
+          width: 100%;
+          box-sizing: border-box;
+          padding: 10rpx 20rpx;
+          .gameItem {
+            width: 100%;
+            position: relative;
+            .isFinishTrue,
+            .isFinishFalse {
+              padding: 6rpx 10rpx;
+              position: absolute;
+              top: 10rpx;
+              right: 120rpx;
+              transform: rotate(-20deg);
+            }
+            .isFinishTrue {
+              border: 1px solid #333;
+            }
+            .isFinishFalse {
+              border: 1px solid red;
+            }
+            .title {
+              font-size: 30rpx;
+              font-weight: bold;
+              color: #333;
+              margin-bottom: 20rpx;
+            }
+            .gameInfo {
+              display: flex;
+              justify-content: space-between;
+              .gameInfo-left {
+                .time {
+                  margin-bottom: 10rpx;
+                }
+              }
+              .gameInfo-right {
+                .num {
+                  margin-bottom: 10rpx;
+                }
+              }
+            }
+          }
+        }
+        .AIdiscountItem {
+          padding: 10rpx 10rpx;
+          height: 150rpx;
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+          position: relative;
+           .isFinishTrue,
+            .isFinishFalse {
+              padding: 6rpx 10rpx;
+              position: absolute;
+              top: 10rpx;
+              right: 120rpx;
+              transform: rotate(-20deg);
+            }
+            .isFinishTrue {
+              border: 1px solid #333;
+            }
+            .isFinishFalse {
+              border: 1px solid red;
+            }
+          .themeTitle {
+            color: #333;
+            font-size: 32rpx;
+            font-weight: 800;
+            text-align: left;
+            height: 60rpx;
+          }
+          .discountContent {
+            flex: 1;
+            display: flex;
+            justify-content: space-between;
+            .discountContentLeft,
+            .discountContentRight {
+              display: flex;
+              flex-direction: column;
+              justify-content: space-between;
+              .lineOne {
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                width: 300rpx;
+              }
+              .lineTwo {
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                width: 300rpx;
+              }
+            } // .discountContentRight{
+            //   display: flex;
+            //   flex-direction: column;
+            //   justify-content: space-between;
+            //   .lineOne{}
+            //   .lineTwo{}
+            // }
+          }
+        }
+      }
+    }
+    .createGame {
+      width: 100rpx;
+      height: 100rpx;
+      line-height: 100rpx;
+      text-align: center;
+      background-color: #ffba00;
+      color: #fff;
+      border-radius: 50%;
+      position: absolute;
+      bottom: 270rpx;
+      right: 26rpx;
+    }
+    .btn-wrapper {
+      margin-top: 30rpx;
+      .delete {}
+    }
+  }
+</style>

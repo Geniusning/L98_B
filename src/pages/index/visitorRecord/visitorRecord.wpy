@@ -1,0 +1,270 @@
+<template>
+  <view class="visitorRecord-wrapper">
+    <view class='time-box'>
+      <view class='time-box-left'>
+        <picker mode="date" value="{{date}}" start="2015-09-01" end="2029-09-01" @change="bindStartDateChange">
+          <view class="picker">
+            {{startDate}}
+          </view>
+        </picker>
+      </view>
+      <view class='line'></view>
+      <view class='time-box-right'>
+        <picker mode="date" value="{{date}}" start="2015-09-01" end="2029-09-01" @change="bindEndDateChange">
+          <view class="picker">
+            {{endDate}}
+          </view>
+        </picker>
+      </view>
+      <view class='time-box-btn'>
+        <text class='btn' @tap='queryRecord'>确定</text>
+      </view>
+      <view class='totalNum-box'>
+        <text class='visitorTitle'>合计数：</text>
+        <text class='totalNum'>{{totalPeople}}</text>
+      </view>
+    </view>
+    <!-- 折线图 -->
+    <!-- <view class="container">
+              <canvas canvas-id="lineCanvas" disable-scroll="true" class="canvas" @touchstart="touchHandler" @touchmove="moveHandler" @touchend="touchEndHandler"></canvas>
+            </view> -->
+    <view class='date-box'>
+      <view class='dateTitle-wrapper'>
+        <text class='date'>日期</text>
+        <text wx:if="{{pageType==='visitor'}}" class='visitorNum'>访问次数</text>
+        <text wx:else class='visitorNum'>上线人数</text>
+      </view>
+      <scroll-view scroll-y class='scrollView' style='height:{{winHeight}}rpx'>
+        <view wx:if="{{pageType}}=='visitor'">
+          <repeat for="{{visitorRecordData}}" key="index" item="item">
+            <view @tap="goToDetaiVisitor({{item.date}})" class='specific-wrapper'>
+              <text class='date'>{{item.date}}</text>
+              <text class='num' style="text-decoration:underline;color:red">{{item.dayTotalUser}}次</text>
+            </view>
+          </repeat>
+        </view>
+        <view wx:else-if="{{pageType}}=='customer'}}">
+          <repeat for="{{OnlineVisitorData}}" key="index" item="item">
+            <view @tap="goToOnlineVisitor({{item.date}})" class='specific-wrapper'>
+              <text class='date'>{{item.date}}</text>
+              <text class='num' style="text-decoration:underline;color:red">{{item.totalNum}}人</text>
+            </view>
+          </repeat>
+        </view>
+      </scroll-view>
+    </view>
+  </view>
+</template>
+
+<script>
+  var wxCharts = require('../../../libs/wxcharts-min.js');
+  var util = require('../../../utils/utils.js')
+  var app = getApp();
+  var lineChart = null;
+  var startPos = null;
+  import wepy from 'wepy';
+  export default class visitorRecord extends wepy.page {
+    config = {
+      navigationBarTitleText: '访客记录'
+    };
+    data = {
+      pageType: "",
+      winHeight: "",
+      startDate: '2018-07-06',
+      endDate: '2019-08-08',
+      visitorRecordData: [],
+      OnlineVisitorData: [],
+      totalPeople: 0,
+    };
+    methods = {
+      queryRecord() {
+        if (this.pageType === "visitor") {
+          this.selectVisitorData();
+        } else if (this.pageType === "customer") {
+          this.selectOnlineVisitor()
+        }
+      },
+      goToDetaiVisitor(date) {
+        console.log(date)
+        wx.navigateTo({
+          url: `/pages/index/visitorRecord/visitorRecord-detail/visitorRecord-detail?Date=${date}&type=visitorRecord`,
+        })
+      },
+      goToOnlineVisitor(date) {
+        wx.navigateTo({
+          url: `/pages/index/dianNeiShangXian/dianNeiShangXian?Date=${date}`,
+        })
+      },
+      bindStartDateChange: function(e) {
+        console.log('开始日期', e.detail.value);
+        this.startDate = e.detail.value;
+      },
+      bindEndDateChange: function(e) {
+        console.log('结束日期', e.detail.value);
+        this.endDate = e.detail.value;
+        let flag = util.compareDate(this.startDate,this.endDate)
+        if (!flag) {
+           wx.showToast({
+            title: "不能小于开始日期",
+            icon: 'none',
+            duration: 2000
+          })
+          this.endDate = util.nowDate();
+        }
+      },
+      touchHandler: function(e) {
+        lineChart.scrollStart(e);
+      },
+      moveHandler: function(e) {
+        lineChart.scroll(e);
+      },
+      touchEndHandler: function(e) {
+        lineChart.scrollEnd(e);
+        lineChart.showToolTip(e, {
+          format: function(item, category) {
+            return category + ' ' + item.name + ':' + item.data;
+          }
+        });
+      },
+    };
+    //查询访客人数
+    selectVisitorData() {
+      let _this = this;
+      let url = `${this.$parent.globalData.commonUrl}/api/loadUserDayStats?tk=${this.$parent.globalData.tk}&startDay=${this.startDate}&endDay=${this.endDate}`
+      util.interface_get(url).then(res => {
+        if (res.errCode === 0) {
+          let totalPeople = 0
+          _this.visitorRecordData = res.userDayStats.reverse();
+          _this.visitorRecordData.forEach(item => {
+            item.date = util.timestampToTime(item.date).slice(0, 11);
+            totalPeople += item.dayTotalUser
+          })
+          this.totalPeople = totalPeople;
+          _this.$apply();
+        } else {
+          wx.showToast({
+            title: '暂无数据',
+            icon: 'none',
+            duration: 2000
+          })
+        }
+      })
+    }
+    //查询店内上线人数
+    selectOnlineVisitor() {
+      let _this = this;
+      let url = `${this.$parent.globalData.commonUrl}/api/loadDeskDayUserNum?tk=${this.$parent.globalData.tk}&startDay=${this.startDate}&endDay=${this.endDate}`
+      util.interface_get(url).then(res => {
+        console.log(res)
+        if (res.errCode === 0) {
+           let totalPeople = 0
+          _this.OnlineVisitorData = res.deskDayUserNum.reverse();
+          _this.OnlineVisitorData.forEach(item => {
+            item.date = util.timestampToTime(item.date).slice(0, 11);
+            totalPeople += item.totalNum
+          })
+          this.totalPeople = totalPeople;
+          _this.$apply();
+        }
+      })
+    };
+    createSimulationData() {
+      var categories = [];
+      var data = [];
+      for (var i = 0; i < 12; i++) {
+        categories.push('2018-' + (i + 1));
+        data.push(Math.random() * (100 - 10) + 10);
+      }
+      return {
+        categories: categories,
+        data: data
+      };
+    }
+    events = {};
+    onLoad(e) {
+      let _this = this;
+      this.startDate = util.someDayLater(util.nowDate(), -30, '-');
+      this.endDate = util.nowDate();
+      this.winHeight = util.getScrollHeight(230)
+      this.pageType = e.type
+      if (this.pageType === "visitor") {
+        this.selectVisitorData();
+        wx.setNavigationBarTitle({
+          title: "访客记录"
+        })
+      } else if (this.pageType === "customer") {
+        wx.setNavigationBarTitle({
+          title: "店内上线记录"
+        })
+        this.selectOnlineVisitor()
+      }
+    }
+    // var windowWidth = 420;
+    // try {
+    //   var res = wx.getSystemInfoSync();
+    //   windowWidth = res.windowWidth;
+    // } catch (e) {
+    //   console.error('getSystemInfoSync failed!');
+    // }
+    // var simulationData = this.createSimulationData();
+    // lineChart = new wxCharts({
+    //   canvasId: 'lineCanvas',
+    //   type: 'line',
+    //   categories: simulationData.categories,
+    //   animation: false,
+    //   series: [{
+    //     name: '访客量',
+    //     data: simulationData.data,
+    //     format: function(val, name) {
+    //       return val.toFixed(0) + '人';
+    //     }
+    //   }],
+    //   xAxis: {
+    //     disableGrid: false
+    //   },
+    //   yAxis: {
+    //     title: '数量 (人)',
+    //     format: function(val) {
+    //       return val.toFixed(2);
+    //     },
+    //     min: 0
+    //   },
+    //   width: windowWidth,
+    //   height: 200,
+    //   dataLabel: true,
+    //   dataPointShape: true,
+    //   enableScroll: true,
+    //   extra: {
+    //     lineStyle: 'curve'
+    //   }
+    // });
+    // Other properties
+  }
+</script>
+
+<style lang="less">
+  .visitorRecord-wrapper {
+    font-size: 28rpx;
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+    .time-box {
+      height: 50rpx;
+    }
+    .date-box {
+      flex: 1;
+    }
+    .scrollView {
+      .date {}
+      .num {
+        text-decoration: underline;
+        color: red
+      }
+    }
+  }
+  .canvas {
+    width: 100%;
+    height: 200px;
+    background: #fff;
+  }
+</style>

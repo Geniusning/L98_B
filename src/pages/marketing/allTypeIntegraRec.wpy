@@ -1,0 +1,231 @@
+<template>
+  <view class="shopmanRec_wrapper">
+    <view class="time-box">
+      <view class="time-box-left">
+        <picker mode="date" value="{{date}}" start="2015-09-01" end="2029-09-01" @change="bindStartDateChange">
+          <view class="picker">{{startDate}}</view>
+        </picker>
+      </view>
+      <view class="line"></view>
+      <view class="time-box-right">
+        <picker mode="date" value="{{date}}" start="2015-09-01" end="2029-09-01" @change="bindEndDateChange">
+          <view class="picker">{{endDate}}</view>
+        </picker>
+      </view>
+      <view class="time-box-btn">
+        <text class="btn" @tap="selecData">确定</text>
+      </view>
+      <view class="total_box">
+        积分合计:{{topTotal}}
+      </view>
+    </view>
+    <view class="content_wrapper">
+      <scroll-view scroll-y scroll-with-animation style="height:{{winHeight}}rpx">
+        <view class="list">
+          <view class="item">日期</view>
+          <view class="item">当天小计(积分)</view>
+          <view class="item">详情</view>
+        </view>
+        <repeat for="{{recordData}}" key="index" index="index" item="item">
+          <view class="list">
+            <view class="item">{{item.date}}</view>
+            <view class="item">{{item.totalData}}</view>
+            <view class="item">
+               <text wx:if="{{item.totalData=='0'}}" @tap="stop" decode class="item" style="text-decoration: underline;color:red">&gt;&gt;</text>
+              <text wx:else  @tap="intoDetail({{item.date}})" decode class="item" style="text-decoration: underline;color:red">&gt;&gt;</text>
+            </view>
+          </view>
+        </repeat>
+      </scroll-view>
+    </view>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+import util from '../../utils/utils.js';
+export default class allTypeIntegraRec extends wepy.page {
+  config = {
+    navigationBarTitleText: '当天积分统计'
+  };
+  data = {
+    endDate: '',
+    startDate: '',
+    winHeight: '',
+    recordData: [],
+    topTotal: 0,
+    url: ''
+  };
+  watch = {
+    startDate(newValue) {},
+    endDate(newValue) {}
+  };
+  methods = {
+    stop() {
+      wx.showToast({
+        title: '今日无数据',
+        icon: 'none',
+        duration: 2000
+      });
+    },
+    bindStartDateChange(e) {
+      this.startDate = e.detail.value;
+      let flag = util.compareDate(this.startDate, this.endDate);
+      if (!flag) {
+        wx.showToast({
+          title: '不能大于结束日期',
+          icon: 'none',
+          duration: 2000
+        });
+        this.startDate = util.someDayLater(util.nowDate(), -30, '-');
+      }
+      this._changeUrl();
+      console.log(this.url);
+    },
+    bindEndDateChange(e) {
+      this.endDate = e.detail.value;
+      let flag = util.compareDate(this.startDate, this.endDate);
+      if (!flag) {
+        wx.showToast({
+          title: '不能小于开始日期',
+          icon: 'none',
+          duration: 2000
+        });
+        this.endDate = util.nowDate();
+      }
+      this._changeUrl();
+      console.log(this.url);
+    },
+    selecData() {
+      this.topTotal = 0;
+      this._getIntrgralByDay(this.url);
+    },
+    intoDetail(date) {
+      wx.navigateTo({
+        url: `/pages/marketing/allTypeIntegraRecDetail?date=${date}&type=${
+          this.pageType
+        }&activity=${this.activityType}`
+      });
+    }
+  };
+  _changeUrl() {
+    switch (this.pageType) {
+      case 'sys':
+        this.url = `${this.$parent.globalData.commonUrl}/api/loadIntegralSystemDayStat?startDay=${this.startDate}&endDay=${this.endDate}&tk=${this.$parent.globalData.tk}`;
+        break;
+      case 'exchangeGift':
+        this.url = `${this.$parent.globalData.commonUrl}/api/loadIntegralConvertDayStat?startDay=${this.startDate}&endDay=${this.endDate}&tk=${this.$parent.globalData.tk}`;
+        break;
+      case 'givenGift':
+        this.url = `${this.$parent.globalData.commonUrl}/api/loadIntegralTransferDayStat?startDay=${this.startDate}&endDay=${this.endDate}&tk=${this.$parent.globalData.tk}`;
+        break;
+      default:
+        break;
+    }
+  }
+  _getIntrgralByDay(url) {
+    util.interface_get(url).then(res => {
+      console.log('res-------', res);
+      if (this.pageType === 'sys') {
+        //获得系统赠送积分
+        this.recordData = res.sysSendInteDayStat
+          .map(item => {
+            item.date = util.timestampToTime(item.date).slice(0, 10);
+            item.totalData =item.dayCheckIn +item.dayActivityShare +item.dayGameShare +item.dayMakeFriAmount;
+            this.topTotal += item.totalData;
+            return item;
+          })
+          .reverse();
+        console.log('this.recordData--------', this.recordData);
+        this.$apply();
+      } else if (this.pageType === 'exchangeGift') {
+        //积分积分优惠券
+        this.recordData = res.giftConvertStats.map(item => {
+            item.date = util.timestampToTime(item.date).slice(0, 10);
+            if (this.activityType === 'recommend') {
+              item.totalData = item.dayRecommendConvert;
+              this.topTotal += item.dayRecommendConvert;
+            } else if (this.activityType === 'gift') {
+              item.totalData = item.dayGoodsConvert;
+              this.topTotal += item.dayGoodsConvert;
+            } else {
+              item.totalData = item.dayAmount;
+              this.topTotal += item.totalData;
+            }
+            return item;
+          })
+          .reverse();
+        this.$apply();
+      } else if (this.pageType === 'givenGift') {
+        //赠送积分优惠券
+        this.recordData = res.giftSendStats.map(item => {
+            item.date = util.timestampToTime(item.date).slice(0, 10);
+            item.totalData = item.dayGiftSend;
+            this.topTotal += item.dayGiftSend;
+            return item;
+          })
+          .reverse();
+        this.$apply();
+      }
+    });
+  }
+  events = {};
+  onLoad(e) {
+    this.endDate = util.nowDate();
+    this.startDate = util.someDayLater(util.nowDate(), -30, '-');
+    this.pageType = e.type;
+    this.activityType = e.activity;
+    switch (this.pageType) {
+      case 'sys':
+        wx.setNavigationBarTitle({
+          title: '系统赠送积分'
+        });
+        this.url = `${this.$parent.globalData.commonUrl}/api/loadIntegralSystemDayStat?startDay=${this.startDate}&endDay=${
+          this.endDate
+        }&tk=${this.$parent.globalData.tk}`;
+        this._getIntrgralByDay(this.url);
+        break;
+      case 'exchangeGift':
+        wx.setNavigationBarTitle({
+          title: '积分消耗兑换'
+        });
+        this.url = `${this.$parent.globalData.commonUrl}/api/loadIntegralConvertDayStat?startDay=${this.startDate}&endDay=${
+          this.endDate
+        }&tk=${this.$parent.globalData.tk}`;
+        this._getIntrgralByDay(this.url);
+        break;
+      case 'givenGift':
+        wx.setNavigationBarTitle({
+          title: '积分转增'
+        });
+        this.url = `${this.$parent.globalData.commonUrl}/api/loadIntegralTransferDayStat?startDay=${this.startDate}&endDay=${this.endDate}&tk=${this.$parent.globalData.tk}`;
+        this._getIntrgralByDay(this.url);
+        break;
+      default:
+        break;
+    }
+    this.winHeight = util.getScrollHeight(120);
+  }
+  // Other properties
+}
+</script>
+
+<style lang="less">
+.shopmanRec_wrapper {
+  .total_box {
+    margin-left: 50rpx;
+    line-height: 50rpx;
+  }
+  .content_wrapper {
+    .list {
+      display: flex;
+      .item {
+        width: 33.333%;
+        text-align: center;
+        height: 80rpx;
+        line-height: 80rpx;
+      }
+    }
+  }
+}
+</style>

@@ -1,0 +1,220 @@
+<template>
+  <view class='qrcode-container'>
+    <view wx:if="{{roomList.length}}">
+      <view class="top_handle">
+        <checkbox-group class="checkBox_group" @change="selectAll">
+            <label class="top_checkBox">
+                <checkbox class="top_checkbox_item" value="all"  color="orange"/>
+                <view class="allSelect">
+                    全选
+                </view>
+            </label>
+        </checkbox-group>
+        <button class="downLoadBtn" @tap='savePic'>下载</button>
+      </view>
+      <view class="bottom_wrapper">
+        <checkbox-group wx:if="{{roomList.length}}" class="checkBox_group" @change="changeDesk">
+          <repeat for="{{roomList}}" key="index" item="item">
+              <label class="checkBox">
+                  <checkbox class="checkbox_item"  color="orange" value="{{item.imagesURL}}" checked="{{item.isSelect}}" />
+                  <view class="room_image">
+                      <image class='qrcode_pic' src='{{item.imagesURL}}'></image>
+                  </view>
+              </label>
+          </repeat>
+        </checkbox-group>
+      </view>
+    </view>
+    <view @tap.stop="goToCreateRoom" wx:else class="noDeskQrCode">暂无二维码图片，前往创建房间</view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'; 
+  import Loading from '../../../components/loading'
+  const util = require('../../../utils/utils.js');
+  export default class deskQrCode extends wepy.page {
+    config = {
+      navigationBarTitleText: '下载桌贴二维码'
+    };
+    components = {
+      Loading: Loading
+    };
+    data = {
+      roomList: [],
+      dataImgeList: []
+    };
+    methods = {
+      //前往创建房间
+       goToCreateRoom() {
+          wx.redirectTo({
+              url: '/pages/mine/room/createRoom'
+          })
+      },
+      //全选二维码
+      selectAll(e){
+        this.dataImgeList = [];
+        let isAll = e.detail.value[0]
+        console.log("isAll----------",isAll)
+        if(isAll ==="all"){
+          this.roomList.forEach(room=>{
+            room["isSelect"] = true;
+            this.dataImgeList.push(room.imagesURL)
+          })
+        }else {
+          this.roomList.forEach(room=>{
+          room["isSelect"] = false;
+          this.dataImgeList = []
+        })
+        }
+        this.$apply()
+        console.log("this.roomList",this.roomList)
+      },
+      //选择二维码
+      changeDesk(e){
+        this.dataImgeList = [];
+        console.log("单选下载图片",e.detail.value)
+        this.dataImgeList = [] = e.detail.value;
+      },
+      savePic: function() {
+        if(this.dataImgeList.length===0){
+          wx.showToast({
+              title: '请选择图片',
+              icon: 'none',
+              duration: 2000
+          })
+          return
+        }
+        this.downloadImgs();
+      }
+     
+    }
+    downloadImgs() {
+      var _this = this
+      util.writePhotosAlbum(                           // 获取保存到相册权限
+        function success() {
+          wx.showLoading({
+            title: '下载中',
+            mask: true
+          })
+          _this.queue(_this.dataImgeList).then(res => { // 调用保存图片promise队列
+              wx.hideLoading()
+              wx.showToast({
+                title: '下载完成'
+              })
+            })
+            .catch(err => {
+              wx.hideLoading()
+              console.log(err)
+            })
+        },
+        function fail() {
+          wx.showToast({
+            title: '您拒绝了保存到相册'
+          })
+        }
+      )
+    }
+    queue(urls) {                                       // 队列
+      let promise = Promise.resolve()
+      urls.forEach((url) => {
+        promise = promise.then(() => {
+          return this.download(url)
+        })
+      })
+      return promise
+    }
+    download(url) {                                       //下载
+      return new Promise((resolve, reject) => {
+        wx.downloadFile({
+          url: url,
+          success: function(res) {
+            var temp = res.tempFilePath
+            wx.saveImageToPhotosAlbum({
+              filePath: temp,
+              success: function(res) {
+                resolve(res)
+              },
+              fail: function(err) {
+                reject(res)
+              }
+            })
+          },
+          fail: function(err) {
+            reject(err)
+          }
+        })
+      })
+    }
+    _loadRoomList() {
+      let url = `${this.$parent.globalData.commonUrl}/api/loadDesks?tk=${this.$parent.globalData.tk}`;
+      util.interface_get(url).then(res => {
+        console.log(res);
+        wx.showLoading({
+            title: '加载中',
+            mask: true
+          })
+        if (res.errCode === 0) {
+           wx.hideLoading()
+          this.roomList = res.desks;
+        }
+        this.$apply();
+      })
+    }
+    events = {};
+    onLoad() {
+      this._loadRoomList();
+    }
+    // Other properties
+  }
+</script>
+
+<style lang="less">
+  .qrcode-container {
+    padding: 10rpx 40rpx;
+    .top_handle{
+       display: flex;
+      justify-content: space-between;
+      .downLoadBtn{
+        width: 100rpx;
+        margin: 0;
+        padding: 0;
+      }
+      .top_checkBox{
+        display: flex;
+        margin-top:30rpx;
+        .allSelect{
+          padding: 8rpx;
+          box-sizing: border-box;
+        }
+      }
+    }
+    .qrcode_pic {
+      width: 300rpx;
+      height: 300rpx;
+      margin-top: 40rpx;
+      margin-left: 130rpx;
+    }
+    .desk_desc {
+      width: 100%;
+      text-align: center;
+    }
+    .checkBox_group{
+      .checkBox{
+        display: flex;
+        .checkbox_item{
+          box-sizing: border-box;
+          padding-top: 154rpx;
+        }
+      }
+    }
+    .noDeskQrCode{
+    font-weight: 700;
+    font-size: 30rpx;
+    color: #ccc;
+    text-decoration: underline;
+    margin: 40% auto;
+    text-align: center;
+  }
+  }
+</style>

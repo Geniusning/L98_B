@@ -1,0 +1,138 @@
+<template>
+    <view class='community-wrapper'>
+        <view class='time-box'>
+            <view class='time-box-left'>
+                <picker mode="date" value="{{date}}" start="2015-09-01" end="2019-09-01" @change="bindStartDateChange">
+                    <view class="picker">
+                    {{startDate}}
+                    </view>
+                </picker>
+            </view>
+            <view class='line'></view>
+            <view class='time-box-right'>
+                <picker mode="date" value="{{date}}" start="2015-09-01" end="2019-09-01" @change="bindEndDateChange">
+                    <view class="picker">
+                    {{endDate}}
+                    </view>
+                </picker>
+            </view>
+            <view class='time-box-btn'>
+                <text class='btn' @tap='selectData'>确定</text>
+            </view>
+        </view>
+  <!-- 累计 -->
+        <view class='detail-box'>
+            <view class='item-box'>
+                <text class='name'>日期</text>
+                <text class='name'>群友点赞</text>
+                <text class='name'>互赠礼物</text>
+                <text class='name'>群友对话</text>
+                <text class='name'>游戏互动</text>
+            </view>
+            <view class='item-box'>
+                <!-- <text class='name'>累计</text>
+                <text class='name'>{{communityDataContent.makeFriendStat}}</text>
+                <text class='name'>{{communityDataContent.sentGiftStat}}</text>
+                <text class='name'>{{communityDataContent.totalChatStat}}</text>
+                <text class='name'>{{communityDataContent.totalGameStat}}</text> -->
+            </view>
+            <scroll-view scroll-y style="height:{{winHeight}}rpx">
+              <repeat for="{{communityDataContent.communityDayStats}}" key="index">
+                  <view class='item-box'>
+                      <text class='name'>{{item.date}}</text>
+                      <text class='name'>{{item.dayMakeFriendStat}}</text>
+                      <text class='name'>{{item.daySentGiftStat}}</text>
+                      <text class='name'>{{item.dayChatStat}}</text>
+                      <text class='name'>{{item.daygameStat}}</text>
+                  </view>
+              </repeat>
+            </scroll-view>
+        </view>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+const util = require('../../../utils/utils.js')
+export default class communityRecord extends wepy.page {
+  config = {
+    navigationBarTitleText: '社区活跃度'
+  };
+
+  data = {
+    winHeight: "",
+    startDate: '2018-07-06',
+    endDate: '2019-08-08',
+    communityDataContent: {},
+  };
+  methods = {
+    bindStartDateChange(e) {
+      console.log('picker发送选择改变，携带值为', e.detail.value);
+      this.startDate = e.detail.value;
+    },
+    bindEndDateChange(e) {
+      console.log('picker发送选择改变，携带值为', e.detail.value);
+      this.endDate = e.detail.value;
+    },
+    selectData() {
+      this.getCommunityRecordList();
+    }
+  };
+  getCommunityRecordList() {
+    let url = `${this.$parent.globalData.commonUrl}/api/loadCommunityDayStats?startDay=${this.startDate}&endDay=${this.endDate}&tk=${this.$parent.globalData.tk}`;
+    util.interface_get(url).then(res => {
+      let communityContent = res.coumnityDayStats;
+      communityContent.communityDayStats.forEach(item => {
+        item.date = util.timestampToTime(item.date).slice(0, 11)
+      });
+      communityContent.communityDayStats = communityContent.communityDayStats.reverse();
+      this.communityDataContent = communityContent;
+      this.$apply();
+      console.log('社群动态-----------------------------', this.communityDataContent);
+    })
+  };
+  events = {};
+  onLoad() {
+    let _this = this;
+    wx.getSystemInfo({
+      success: function (res) {
+        console.log(res);
+        var clientHeight = res.windowHeight,
+          clientWidth = res.windowWidth,
+          rpxR = 750 / clientWidth;
+        var calc = clientHeight * rpxR - 300;
+        _this.winHeight = calc;
+      }
+    });
+    this.startDate = util.someDayLater(util.nowDate(),-30,'-');
+    this.endDate = util.nowDate();
+    this.getCommunityRecordList();
+  }
+  // Other properties
+}
+</script>
+
+<style lang="less">
+.community-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  .detail-box {
+    border-top: 1px dashed #ccc;
+    padding-top: 20rpx;
+    flex: 1;
+    background-color: #fff;
+    font-size: 26rpx;
+    overflow: hidden;
+  }
+  .item-box {
+    display: flex;
+    justify-content: space-between;
+    padding: 10rpx 0;
+  }
+  .item-box .name {
+    width: 200rpx;
+    text-align: center;
+  }
+}
+</style>

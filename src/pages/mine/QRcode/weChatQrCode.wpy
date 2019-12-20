@@ -1,0 +1,99 @@
+<template>
+  <view class="checkQrCode_wrapper">
+    <image src="{{qrUrl}}" class="canvas" style="width: 200px; height: 200px;"></image>
+    <button @tap="savePic">下载到本机相册</button>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+// import drawQrcode from 'weapp-qrcode'
+const util = require('../../../utils/utils.js')
+
+export default class weChatQrCode extends wepy.page {
+   config = {
+    navigationBarTitleText: '公众号二维码下载'
+  };
+  data = {
+    qrUrl:""
+  };
+  methods = {
+    savePic() { 
+        this.downLoadImages()
+    }
+  };
+  downLoadImages() {
+    var _this = this;
+    console.log(_this.$parent.globalData.commonUrl)
+    util.writePhotosAlbum(
+      function success() {
+        wx.showLoading({
+          title: "下载中",
+          mask: true
+        })
+        _this.downLoad(_this.qrUrl).then(res => {
+          wx.hideLoading()
+          wx.showToast({
+            title: "下载完成"
+          })
+        }).catch(err => {
+          wx.hideLoading()
+          console.log(err)
+        })
+      },
+      function fail() {
+        wx.showToast({
+          title: '您拒绝了保存到相册'
+        })
+      }
+    )
+  }
+  downLoad(url) {
+    return new Promise((resolve, reject) => {
+      wx.downloadFile({
+        url: url,
+        success: function (res) {
+          console.log(res)
+          var temp = res.tempFilePath
+          wx.saveImageToPhotosAlbum({
+            filePath: temp,
+            success: function (res) {
+              resolve(res)
+            },
+            fail: function (err) {
+              reject(res)
+            }
+          })
+        },
+        fail: function (err) {
+          reject(err)
+        }
+      })
+    })
+  }
+  onLoad() {
+    var _this = this
+    let url = `${this.$parent.globalData.commonUrl}/api/loadAllQrcode?tk=${this.$parent.globalData.tk}`
+    util.interface_get(url).then(res=>{
+      console.log("二维码-------------",res)
+      this.qrUrl = res.urls[0]
+      this.$apply()
+      // drawQrcode({
+      //   width: 200,
+      //   height: 200,
+      //   canvasId: 'myQrcode',
+      //   text: res.urls[0],
+      // })
+    })
+  }
+}
+</script>
+
+<style lang="less">
+.checkQrCode_wrapper {
+  text-align: center;
+  .canvas {
+    margin: 30rpx auto;
+  }
+}
+</style>

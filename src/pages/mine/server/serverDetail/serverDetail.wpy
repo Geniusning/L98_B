@@ -1,0 +1,69 @@
+<template>
+<view class='serverDetail-container'>
+  <view class='title-box'>
+    <text class='item'>时间</text>
+    <text class='item'>时长</text>
+    <text class='item'>交费方式</text>
+    <text class='item'>凭证号</text>
+    <text class='item'>操作人</text>
+  </view>
+  <view class='content-box'>
+    <text class='item'>2018-3-30</text>
+    <text class='item'>3个月</text>
+    <text class='item'>免费试用</text>
+    <text class='item'>k56489</text>
+    <text class='item'>小猫</text>
+  </view>
+  <view class='content-box'>
+    <text class='item'>2018-3-30</text>
+    <text class='item'>3个月</text>
+    <text class='item'>现金交费</text>
+    <text class='item'>k56489</text>
+    <text class='item'>小名</text>
+  </view>
+</view>
+</template>
+
+<script>
+import wepy from 'wepy';
+
+export default class serverDetail extends wepy.page {
+  config = {
+    navigationBarTitleText: '下载二维码'
+  };
+
+  data = {};
+  methods = {
+  };
+
+  events = {};
+  onLoad() {}
+  // Other properties
+}
+</script>
+
+<style lang="less">
+
+.serverDetail-container {
+  height: 100%;
+  background: #fff;
+  padding: 20rpx 20rpx;
+  font-size: 28rpx;
+}
+
+.title-box {
+  display: flex;
+  justify-content: space-between;
+}
+
+.item {
+  width: 150rpx;
+  text-align: center;
+}
+
+.content-box {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20rpx;
+}
+</style>

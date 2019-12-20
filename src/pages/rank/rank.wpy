@@ -1,0 +1,379 @@
+<template>
+  <view class="rank_wrapper">
+    <view class="rank_title">
+      <image class="rankPic" src="../../images/rank_race.png" lazy-load="false"></image>
+      <text class="rankText">排行榜</text>
+      <view class="typePicker">
+        <radio-group class="radio-group" @change="typeChange">
+          <label class="radio" wx:for="{{typeRank}}" wx:key="index">
+                        <radio color="orange" class="radioItem" value="{{item.id}}" checked="{{item.checked}}"  /> <text class="textDesc">{{item.name}}</text>
+                    </label>
+        </radio-group>
+      </view>
+    </view>
+    <!-- 筛选区域 -->
+    <view class="rank_selection">
+      <view class="rank_selection_left">
+        <text class="yesterday {{currentTab==0?'active':''}}" @tap="seletShortCutDay(0)">昨天</text>
+        <text class="today {{currentTab==1?'active':''}} " @tap="seletShortCutDay(1)">今天</text>
+        <text class="week {{currentTab==2?'active':''}} " @tap="seletShortCutDay(2)">近7天</text>
+      </view>
+      <view class="rank_selection_right">
+        <picker mode="date" start="2015-09-01" end="2023-09-01" @change="rankBeginDateChange">
+          <view class="rank_time_picker">{{startDay}}</view>
+        </picker>
+        <text class="line">-</text>
+        <picker mode="date" start="2015-09-01" end="2029-09-01" @change="rankEndDateChange">
+          <view class="rank_time_picker">{{endDay}}</view>
+        </picker>
+        <text class="btn" @tap="selectRankData">查询</text>
+      </view>
+    </view>
+    <!-- 滚动区域 -->
+    <view>
+      <!-- 拓客 -->
+      <view wx:if="{{typeIndex=='1'}}" class="rank_scrollView">
+        <view class="rank_scrollView_title">
+          <text class="scrollTitle">排名</text>
+          <text class="scrollTitle">昵称</text>
+          <text class="scrollTitle">拓客数</text>
+          <text class="scrollTitle">店内拓客</text>
+          <text class="scrollTitle">线上拓客</text>
+          <text class="scrollTitle">详情</text>
+        </view>
+        <scroll-view scroll-y class="rank_scroll_list">
+          <repeat for="{{tuoKeClientList}}" key="index" index="index" item="item">
+            <view class="scroll_item">
+              <text class="staffInfo">{{index+1}}</text>
+              <text class="staffInfo">{{item.clerkInfo.name}}</text>
+              <text class="staffInfo">{{item.totalNum}}</text>
+              <text class="staffInfo">{{item.entertainNum}}</text>
+              <text class="staffInfo">{{item.shareNum}}</text>
+              <text decode="{{true}}" @tap="goToDetail({{item.clerkInfo.phone}})" class="staffInfo underLine">&gt;&gt;</text>
+            </view>
+          </repeat>
+        </scroll-view>
+      </view>
+      <!-- 分享 -->
+      <view wx:elif="{{typeIndex=='2'}}" class="rank_scrollView">
+        <view class="rank_scrollView_title">
+          <text class="scrollTitle timeLine">排名</text>
+          <text class="scrollTitle timeLine">昵称</text>
+          <text class="scrollTitle timeLine">分享朋友</text>
+          <text class="scrollTitle timeLine">分享朋友圈</text>
+          <text class="scrollTitle timeLine">合计</text>
+        </view>
+        <scroll-view scroll-y class="rank_scroll_list">
+          <repeat for="{{sharetList}}" key="index" index="index" item="item">
+            <view class="scroll_item">
+              <text class="staffInfo timeLine">{{index+1}}</text>
+              <text class="staffInfo timeLine">{{item.clerkInfo.name}}</text>
+              <text class="staffInfo timeLine">{{item.shareNum}}</text>
+              <text class="staffInfo timeLine">{{item.entertainNum}}</text>
+              <text class="staffInfo timeLine">{{item.totalNum}}</text>
+            </view>
+          </repeat>
+        </scroll-view>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  import util from '../../utils/utils.js'
+  export default class Rank extends wepy.page {
+    config = {
+      navigationBarTitleText: '排行榜'
+    };
+    data = {
+      currentTab: 0,
+      date: '2016-09-01',
+      typeIndex: "1",
+      startDay: "",
+      endDay: "",
+      tuoKeClientList: [],
+      sharetList: [],
+      typeRank: [{
+          id: 1,
+          name: "拓客",
+          checked: true,
+        },
+        {
+          id: 2,
+          name: "分享",
+          checked: false,
+        },
+        // {
+        //   id: 3,
+        //   name: "销售",
+        //   checked: false,
+        // },
+      ]
+    };
+    //拓客
+    _getTuoKeRankList() {
+      let url = `${this.$parent.globalData.commonUrl}/api/loadClerkClientRank?tk=${this.$parent.globalData.tk}&startDay=${this.startDay}&endDay=${this.endDay}`;
+      util.interface_get(url).then(res => {
+        console.log("拓客------", res);
+        if (res.errCode === 0) {
+          this.tuoKeClientList = this._handleTuoKeClientList(res.interface)
+        }
+        this.$apply();
+      })
+    };
+    //分享
+    _getShareRankList() {
+      let url = `${this.$parent.globalData.commonUrl}/api/loadClerkShareFriAndLineRank?tk=${this.$parent.globalData.tk}&startDate=${this.startDay}&endDate=${this.endDay}`;
+      util.interface_get(url).then(res => {
+        console.log("分享-------", res);
+        if (res.errCode === 0) {
+          this.sharetList = this._handleTuoKeClientList(res.interface)
+        }
+        this.$apply();
+      })
+    };
+    _handleTuoKeClientList(tuoKeList) {
+      var resultList = []
+      tuoKeList.forEach(element => {
+        element.totalNum = element.entertainNum + element.shareNum
+      });
+      resultList = tuoKeList.sort(this._compareTuoKeList("totalNum"))
+      return resultList
+    };
+    //排序小-大
+    _compareTuoKeList(key) {
+      return function(obj1, obj2) {
+        var v1 = obj1[key];
+        var v2 = obj2[key]
+        return v2 - v1
+      }
+    };
+    methods = {
+      seletShortCutDay(index) {
+        this.currentTab = index;
+        if (this.currentTab == "0") {
+          this.startDay = util.someDayLater(util.nowDate(), -1, '-');
+          this.endDay = util.someDayLater(util.nowDate(), -1, '-');
+          if (this.typeIndex === "1") { //拓客
+            this._getTuoKeRankList()
+          } else if (this.typeIndex === "2") { //分享
+            this._getShareRankList()
+          }
+        } else if (this.currentTab == "1") {
+          this.startDay = util.nowDate();
+          this.endDay = util.nowDate();
+          if (this.typeIndex === "1") { //拓客
+            this._getTuoKeRankList()
+          } else if (this.typeIndex === "2") { //分享
+            this._getShareRankList()
+          }
+        } else {
+          this.startDay = util.someDayLater(util.nowDate(), -7, '-');;
+          this.endDay = util.nowDate();
+          if (this.typeIndex === "1") { //拓客
+            this._getTuoKeRankList()
+          } else if (this.typeIndex === "2") { //分享
+            this._getShareRankList()
+          }
+        }
+      },
+      goToDetail(phone) {
+        wx.navigateTo({
+          url: `/pages/index/visitorRecord/visitorRecord-detail/visitorRecord-detail?startDay=${this.startDay}&endDay=${this.endDay}&type=tuoKeRank&phone=${phone}`,
+        })
+      },
+      typeChange(e) {
+        this.typeIndex = e.detail.value
+        if (this.typeIndex === "1") { //拓客
+          this._getTuoKeRankList()
+        } else if (this.typeIndex === "2") { //分享
+          this._getShareRankList()
+        }
+      },
+      rankBeginDateChange(e) {
+        this.startDay = e.detail.value;
+        let flag = util.compareDate(this.startDay, this.endDay)
+        if (!flag) {
+          wx.showToast({
+            title: "不能大于结束日期",
+            icon: 'none',
+            duration: 2000
+          })
+          this.startDay = util.someDayLater(util.nowDate(), -30, '-');
+        }
+      },
+      rankEndDateChange(e) {
+        this.endDay = e.detail.value;
+        let flag = util.compareDate(this.startDay, this.endDay)
+        if (!flag) {
+          wx.showToast({
+            title: "不能小于开始日期",
+            icon: 'none',
+            duration: 2000
+          })
+          this.endDay = util.nowDate();
+        }
+      },
+      selectRankData() {
+        if (this.typeIndex === "1") {
+          this._getTuoKeRankList();
+        } else if (this.typeIndex === "2") {
+          this._getShareRankList()
+        }
+      }
+    };
+    events = {};
+    onLoad() {
+      this.startDay = util.someDayLater(util.nowDate(), -1, '-');
+      this.endDay = util.someDayLater(util.nowDate(), -1, '-');
+      this._getTuoKeRankList()
+      this._getShareRankList()
+    }
+    // Other properties
+  }
+</script>
+
+<style lang="less">
+  .rank_wrapper {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    .rank_title {
+      position: relative;
+      height: 200rpx;
+      width: 100%;
+      text-align: center;
+      font-size: 40rpx;
+      color: #fff;
+      font-family: Arial, Helvetica, sans-serif;
+      font-weight: 800;
+      letter-spacing: 10rpx;
+      background-color: #ffba00;
+      .rankPic {
+        width: 166rpx;
+        height: 70rpx;
+        display: block;
+        margin: 0 auto;
+      }
+      .rankText {
+        text-align: center;
+        display: block;
+        margin-top: 38rpx;
+      }
+      .typePicker {
+        letter-spacing: 0rpx;
+        position: absolute;
+        right: 40rpx;
+        top: 12rpx;
+        font-size: 22rpx;
+        .radio-group {
+          width: 80rpx;
+          .radio {
+            width: 110rpx;
+            height: 60rpx;
+            display: flex;
+            .textDesc {
+              padding-top: 10rpx;
+              width: 60rpx;
+              font-size: 22rpx
+            }
+            .radioItem {
+              width: 50rpx;
+              height: 52rpx;
+              font-size: 22rpx;
+              transform: scale(0.7)
+            }
+          }
+        }
+      }
+    }
+    .rank_selection {
+      // height: rpx;
+      box-sizing: border-box;
+      display: flex;
+      padding: 10rpx 6rpx;
+      justify-content: space-between;
+      background: #fff;
+      .rank_selection_left {
+        display: flex;
+        .yesterday,
+        .today,
+        .week {
+          padding: 6rpx 8rpx;
+          background: #ccc;
+          display: inline-block;
+          margin-right: 10rpx;
+        }
+        .active {
+          background-color: #ffba00;
+          color: #fff;
+        }
+        .today {}
+        .week {}
+      }
+      .rank_selection_right {
+        display: flex;
+        .rank_time_picker {
+          width: 160rpx;
+          padding: 6rpx 8rpx;
+          margin-right: 5rpx;
+          background-color: #ccc;
+        }
+        .line {
+          padding-top: 6rpx;
+          color: #ccc;
+          margin: 0 4rpx;
+        }
+        .btn {
+          display: inline-block;
+          width: 54rpx;
+          padding: 4rpx 6rpx;
+          background-color: #ccc;
+          color: #fff;
+        }
+      }
+    }
+    .rank_scrollView {
+      flex: 1;
+      .rank_scrollView_title {
+        width: 100%;
+        height: 60rpx;
+        line-height: 60rpx;
+        .scrollTitle {
+          display: inline-block;
+          width: 16%;
+          text-align: center;
+        }
+        .timeLine {
+          width: 20%;
+          text-align: center;
+        }
+      }
+      .rank_scroll_list {
+        width: 100%;
+        .scroll_item {
+          height: 70rpx;
+          line-height: 70rpx;
+          margin-bottom: 20rpx;
+          .staffInfo {
+            display: inline-block;
+            width: 16%;
+            text-align: center;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+            &.underLine {
+              color: red;
+              text-decoration: underline;
+            }
+          }
+          .timeLine {
+            width: 20%;
+            text-align: center;
+          }
+        }
+      }
+    }
+  }
+</style>

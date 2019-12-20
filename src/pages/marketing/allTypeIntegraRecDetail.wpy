@@ -1,0 +1,340 @@
+<template>
+  <view class="integralDetail_wrapper">
+    <view class="integralDetail_top">
+      <view class="date">{{fatherDate}} 当日合计{{totalNumbers}}份,合计{{totalIntegral}}积分</view>
+      <view class="select">
+        <image src="../../images/shaixuan.png" mode="scaleToFill" lazy-load="false" class="selectIcon"></image>
+        <picker @change="bindPickerChange" value="{{pickindex}}" range="{{pickerArray}}" range-key="name">
+          <view class="picker">
+            {{pickerArray[pickindex].name}}
+          </view>
+        </picker>
+      </view>
+    </view>
+    <view class="integralDetail_bottom">
+      <scroll-view scroll-y scroll-with-animation style="height:{{winHeight}}rpx">
+        <view class="list">
+          <view class="item {{(pageType=='exchangeGift'||pageType=='sys')?'itemExchange':''}}">发生时间</view>
+          <view class="item {{(pageType=='exchangeGift'||pageType=='sys')?'itemExchange':''}}" wx:if="{{pageType=='givenGift'}}">送礼</view>
+          <view class="item {{(pageType=='exchangeGift'||pageType=='sys')?'itemExchange':''}}">{{titleHeadName}}</view>
+          <view class="item {{(pageType=='exchangeGift'||pageType=='sys')?'itemExchange':''}}">类型</view>
+          <view class="item {{(pageType=='exchangeGift'||pageType=='sys')?'itemExchange':''}}">{{integralType}}</view>
+        </view>
+        <repeat for="{{recordData}}" key="index" index="index" item="item">
+          <view class="list">
+            <view class="item {{(pageType=='exchangeGift'||pageType=='sys')?'itemExchange':''}}">{{item.milliTime}}</view>
+            <view class="item {{(pageType=='exchangeGift'||pageType=='sys')?'itemExchange':''}}" wx:if="{{pageType=='givenGift'}}">
+              <image  class="avatarIcon" src="{{item.userInfo.fromUserHeadImgUrl}}" mode="scaleToFill" lazy-load="false"></image>
+            </view>
+            <view class="item {{(pageType=='exchangeGift'||pageType=='sys')?'itemExchange':''}}">
+              <image class="avatarIcon" src="{{item.userInfo.headImgUrl}}" mode="scaleToFill" lazy-load="false"></image>
+            </view>
+            <view class="item {{(pageType=='exchangeGift'||pageType=='sys')?'itemExchange':''}}">{{item.name}}</view>
+            <view class="item {{(pageType=='exchangeGift'||pageType=='sys')?'itemExchange':''}}">{{item.integral}}</view>
+          </view>
+        </repeat>
+      </scroll-view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import util from '../../utils/utils.js'
+  export default class allTypeIntegraRecDetail extends wepy.page {
+    config = {
+      navigationBarTitleText: '详情'
+    };
+    data = {
+      fatherDate: "",
+      pickindex: 0,
+      totalIntegral: 0,
+      totalNumbers:0,
+      pageType: "",
+      integralType: "积分",
+      titleHeadName: "收礼",
+      pickerArray: [{
+        name: "全部",
+        id: "all"
+      }, ],
+      allTypesData: [],
+      winHeight: "",
+      recordData: [],
+      selectAllData:[],
+    };
+    methods = {
+      bindPickerChange(e) {
+        this.pickindex = e.detail.value
+        var dataType
+        console.log(this.pickerArray[parseInt(e.detail.value)])
+        if (this.pageType === "sys") {
+          dataType = this.pickerArray[parseInt(e.detail.value)].id
+        } else if (this.pageType === "exchangeGift") {
+          dataType = this.pickerArray[parseInt(e.detail.value)].name
+        } else if (this.pageType === "givenGift") {
+          dataType = this.pickerArray[parseInt(e.detail.value)].name
+        }
+        this._judgeIntegralType(this.pageType, dataType)
+      }
+    };
+    _judgeIntegralType(pageType, dataType) {
+      this.recordData = []
+      this.totalIntegral = 0
+      console.log("dataType---------", dataType)
+      console.log("this.allTypesData", this.allTypesData)
+      if(dataType==="全部" ||dataType==="all" ){
+        this.recordData = this.selectAllData
+        this.recordData.forEach(item=>{
+          this.totalIntegral += item.integral
+        })
+        this.$apply()
+        return
+      }
+      this.allTypesData.forEach(item => {
+        if (pageType === "exchangeGift") {
+          if (item.name === dataType) {
+            if (typeof(item.milliTime) === "number") {
+              item.milliTime = util.timestampToTime(item.milliTime).slice(11)
+            }
+            this.totalIntegral += item.integral
+            this.recordData.push(item)
+          }
+        } else if (pageType === "sys") {
+          if (item.integralType === dataType) {
+            if (typeof(item.milliTime) === "number") {
+              item.milliTime = util.timestampToTime(item.milliTime).slice(11)
+            }
+            this.totalIntegral += item.integral
+            this.recordData.push(item)
+          }
+        } else if (pageType === "givenGift") {
+          if (item.name === dataType) {
+            if (typeof(item.milliTime) === "number") {
+              item.milliTime = util.timestampToTime(item.milliTime).slice(11)
+            }
+            this.totalIntegral += item.integral
+            this.recordData.push(item)
+          }
+        }
+      })
+      this.$apply()
+    }
+    _handleItem(tempTitleArr, item, type) {
+      if ((item.integralType === "activity" || item.integralType === "checkIn" || item.integralType === "game" || item.integralType==="shoperGiftByMkFri") && type === "sys") { //系统赠送
+        item.milliTime = util.timestampToTime(item.milliTime).slice(11)
+        item["name"] = this._judgeSysIntegralName(item.integralType)
+        this.totalIntegral += item.integral
+        this.totalNumbers += 1 
+        this.recordData.push(item)
+        this.selectAllData = this.recordData
+      } else if ((item.integralType === "goodsGift" || item.integralType === "goodsRecommend" || item.integralType === "convertRecommend" || item.integralType === "convertGift" ||item.integralType === "renewDice") && type === "exchangeGift" ) { //消耗兑换
+        item.milliTime = util.timestampToTime(item.milliTime).slice(11)
+        if(item.integralType=="renewDice"){
+          item["name"] = "游戏重摇消耗"
+        }
+        this.totalIntegral += item.integral
+        this.totalNumbers += 1 
+        this.recordData.push(item)
+        this.selectAllData = this.recordData
+      } else if ((item.integralType === "virtualGift") && type === "givenGift") { //用户转增赠送
+        item.milliTime = util.timestampToTime(item.milliTime).slice(11)
+        this.totalIntegral += item.integral
+        this.totalNumbers += 1 
+        this.recordData.push(item)
+        this.selectAllData = this.recordData
+      }
+      if (item.goodsInfo) { //判断是否是兑换获得积分`
+        if ((item.integralType == "goodsRecommend" || item.integralType == "goodsGift" || item.integralType === "convertGift" || item.integralType === "convertRecommend"||item.integralType === "renewDice") && this.pageType === "exchangeGift") {
+          if(item.integralType === "renewDice"){
+            tempTitleArr.push({
+              name: item.name,
+              id: item.integralType
+            })
+          }else{
+             Object.assign(item, item.goodsInfo)
+             tempTitleArr.push({
+              name: item.goodsInfo.name,
+              id: item.integralType
+            })
+          }
+        } else if (item.integralType == "virtualGift" && this.pageType === "givenGift") {
+          Object.assign(item, item.goodsInfo)
+          tempTitleArr.push({
+            name: this._transformName(item.goodsInfo.name),
+            id: item.integralType
+          })
+          item.name = this._transformName(item.goodsInfo.name)
+        }
+      } else if (!item.goodsInfo && this.pageType === "sys") { //系统赠送
+        tempTitleArr.push({
+          name: this._judgeSysIntegralName(item.integralType),
+          id: item.integralType
+        })
+      }
+      console.log("this.recordData-------", this.recordData)
+    }
+    _loadDetailIntegral(type) {
+      this.totalNumbers = 0;
+      let url = `${this.$parent.globalData.commonUrl}/api/getIntegralStat?date=${this.fatherDate}&tk=${this.$parent.globalData.tk}`
+      wx.showLoading({
+        title: '加载中',
+        mask: true
+      })
+      var tempTitleArr = []
+      util.interface_get(url).then(res => {
+        console.log("res----------", res)
+        if (res.errCode === 0) {
+          wx.hideLoading()
+          this.allTypesData = res.everyDayIntegralForUser
+          console.log("all data-----------", this.allTypesData)
+          this.allTypesData.forEach((item,index) => {
+            this._handleItem(this.pickerArray, item, type)
+          }) 
+        }
+        //进入手动选择picker里面的第一类型数据---------begin
+        // if (this.pageType === "sys") {
+        //   this._judgeIntegralType(this.pageType, this.recordData[0].integralType)
+        // } else {
+        //   this._judgeIntegralType(this.pageType, this.recordData[0].name)
+        // }
+        //进入手动选择picker里面的第一类型数据---------end
+        var pickArr = []
+        // pickArr = this._delSameItem(tempTitleArr, this.recordData[0].integralType)
+        pickArr = this._delSameItem(this.pickerArray)
+        //判断是从营销统计进入还是从数据统计处进入-------begin
+        this.pickerArray = pickArr
+        console.log("this.pickerArray------", this.pickerArray)
+        //判断是从营销统计进入还是从数据统计处进入-------end
+        this.$apply()
+      })
+    };
+    //数组去重,并把目标type放到数组第一个元素位置
+    _delSameItem(arr, type) {
+      var newArr = [];
+      var obj = {};
+      for (var i = 0; i < arr.length; i++) {
+        if (!obj[arr[i].name]) {
+          newArr.push(arr[i]);
+          obj[arr[i].name] = true;
+        }
+      }
+      return newArr
+    };
+    _judgeSysIntegralName(type) {
+      var name
+      switch (type) {
+        case "checkIn":
+          name = "签到"
+          break;
+        case "activity":
+          name = "活动分享"
+          break;
+        case "game":
+          name = "游戏分享"
+          break;
+        case "shoperGiftByMkFri":
+          name = "交友贺礼"
+          break;
+        default:
+          name = "其他"
+          break;
+      }
+      return name
+    };
+    _transformName(name) {
+      if (name === "beer") {
+        name = "啤酒"
+      } else if (name === "flower") {
+        name = "鲜花"
+      } else if (name === "house") {
+        name = "别墅"
+      } else if (name === "boat") {
+        name = "邮轮"
+      }
+      return name
+    }
+    events = {};
+    async onLoad(e) {
+      this.pickerArray = [{
+        name: "全部",
+        id: "all"
+      }, ];
+      this.fatherDate = e.date
+      this.pageType = e.type
+      console.log("this.pageType----", this.pageType)
+      this.activityType = e.activity //判断活动类是店长推荐还是礼品兑换
+      console.log("this.activityType----", this.activityType)
+      if (this.pageType === "sys") {
+        wx.setNavigationBarTitle({
+          title: '系统赠送积分当日详情'
+        });
+        this.integralType = "获得积分"
+        this._loadDetailIntegral(this.pageType)
+      } else if (this.pageType === "exchangeGift") {
+        this.integralType = "消耗积分"
+        this.titleHeadName = "兑换人"
+        wx.setNavigationBarTitle({
+          title: '积分消耗兑换当日详情'
+        });
+        this._loadDetailIntegral(this.pageType)
+      } else if (this.pageType === "givenGift") {
+        wx.setNavigationBarTitle({
+          title: '积分转增当日详情'
+        });
+        this.integralType = "获得积分"
+        this._loadDetailIntegral(this.pageType)
+      }
+      this.winHeight = util.getScrollHeight(80)
+    }
+  }
+</script>
+
+<style lang="less">
+  .integralDetail_wrapper {
+    .integralDetail_top {
+      background-color: #fff;
+      height: 80rpx;
+      line-height: 80rpx;
+      position: relative;
+      .date {
+        width: 100%;
+        text-align: left;
+        height: 80rpx;
+        line-height: 80rpx;
+        padding-left: 24rpx;
+      }
+      .select {
+        position: absolute;
+        top: 0;
+        right: 12rpx;
+        display: flex;
+        .selectIcon {
+          width: 40rpx;
+          height: 40rpx;
+          padding-top: 16rpx;
+        }
+        .selectText {}
+      }
+    }
+    .integralDetail_bottom {
+      .list {
+        display: flex;
+        margin: 30rpx 0;
+        .item {
+          width: 20%;
+          text-align: center;
+          height: 80rpx;
+          line-height: 80rpx;
+          .avatarIcon {
+            width: 80rpx;
+            height: 80rpx;
+            border-radius: 50%;
+          }
+        }
+        .itemExchange{
+           width: 25%;
+        }
+      }
+    }
+  }
+</style>
