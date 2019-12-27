@@ -1,113 +1,127 @@
 <template>
-    <view class="lockVisitor-wrapper">
+  <view class="lockVisitor-wrapper">
     <view class='time-box'>
-        <view class='time-box-left'>
-            <picker mode="date" value="{{startDate}}" start="2015-09-01" end="2027-09-01" @change="bindStartDateChange">
-                <view class="picker">
-                {{startDate}}
-                </view>
-            </picker>
-        </view>
-        <view class='line'></view>
-        <view class='time-box-right'>
-            <picker mode="date" value="{{endDate}}" start="2015-09-01" end="2027-09-01" @change="bindEndDateChange">
-                <view class="picker">
-                {{endDate}}
-                </view>
-            </picker>
-        </view>
-        <view class='time-box-btn'>
-            <text class='btn' @tap='selectRegisterVisitor'>确定</text>
-        </view>
-        <view class='totalNum-box'>
-            <text class='visitorTitle'>合计数：</text>
-            <text class='totalNum'>{{totalPeople}}</text>
-        </view>
-  </view>
-  <view class='total-box'>
-    <text class='visitorTitle'>累计注册人数：</text>
-    <text class='totalNum'>{{registerTotalPeople}}人</text>
-  </view>
-  <view class='date-box'>
-    <view class='dateTitle-wrapper'>
-      <text class='date'>日期</text>
-      <text class='visitorNum'>注册人数</text>
+      <view class='time-box-left'>
+        <picker mode="date" value="{{startDate}}" start="2015-09-01" end="2027-09-01" @change="bindStartDateChange">
+          <view class="picker">
+            {{startDate}}
+          </view>
+        </picker>
+      </view>
+      <view class='line'></view>
+      <view class='time-box-right'>
+        <picker mode="date" value="{{endDate}}" start="2015-09-01" end="2027-09-01" @change="bindEndDateChange">
+          <view class="picker">
+            {{endDate}}
+          </view>
+        </picker>
+      </view>
+      <view class='time-box-btn'>
+        <text class='btn' @tap='selectRegisterVisitor'>确定</text>
+      </view>
+      <view class='totalNum-box'>
+        <text class='visitorTitle'>合计数：</text>
+        <text class='totalNum'>{{totalPeople}}</text>
+      </view>
     </view>
-    <scroll-view scroll-y style="height:{{winHeight}}rpx">
+    <!-- <view class='total-box'>
+      <text class='visitorTitle'>累计注册人数：</text>
+      <text class='totalNum'>{{registerTotalPeople}}人</text>
+    </view> -->
+    <view class='date-box'>
+      <view class='dateTitle-wrapper'>
+        <text class='date'>日期</text>
+        <text class='visitorNum'>注册人数</text>
+        <text class='visitorNum'>详情</text>
+      </view>
+      <scroll-view scroll-y style="height:{{winHeight}}rpx">
         <repeat for="{{dateRange}}" key="index">
-        <view class='specific-wrapper'>
+          <view class='specific-wrapper'>
             <text class='date'>{{item.date}}</text>
             <text class='num'>{{item.dayNewUser}}人</text>
-        </view>
+            <text @tap="gotoRegisterDetail({{item.date}},{{item.dayNewUser}})" class='num' style="color:red;text-decoration:underline;">详情&gt;&gt;</text>
+          </view>
         </repeat>
-    </scroll-view>
-  </view>
+      </scroll-view>
     </view>
+  </view>
 </template>
 
 <script>
-import wepy from 'wepy';
-const util = require('../../../utils/utils.js');
-export default class registerRecord extends wepy.page {
-  config = {
-    navigationBarTitleText: '注册记录'
-  };
-
-  data = {
-    winHeight: '',
-    startDate: '2018-07-06',
-    endDate: '2019-08-08',
-    registerTotalPeople: 0,
-    totalPeople: 0,
-    dateRange: []
-  };
-  methods = {
-    bindStartDateChange: function(e) {
-      console.log('picker发送选择改变，携带值为', e.detail.value);
-      this.startDate = e.detail.value;
-    },
-    bindEndDateChange: function(e) {
-      console.log('picker发送选择改变，携带值为', e.detail.value);
-      this.endDate = e.detail.value;
-    }
-  };
-  //查询锁客
-  selectRegisterVisitor() {
-    let _this = this;
-    let url = `${this.$parent.globalData.commonUrl}/api/loadUserDayStats?tk=${
-      this.$parent.globalData.tk
-    }&startDay=${this.startDate}&endDay=${this.endDate}`;
-    util.interface_get(url).then(res => {
-      console.log('注册数据----------------------', res);
-      _this.dateRange = res.userDayStats.reverse();
-      let totalPeople = 0;
-      _this.dateRange.forEach(item => {
-        item.date = util.timestampToTime(item.date).slice(0, 11);
-        totalPeople += item.dayNewUser;
+  import wepy from 'wepy';
+  const util = require('../../../utils/utils.js');
+  export default class registerRecord extends wepy.page {
+    config = {
+      navigationBarTitleText: '注册记录'
+    };
+    data = {
+      winHeight: '',
+      startDate: '2018-07-06',
+      endDate: '2019-08-08',
+      registerTotalPeople: 0,
+      totalPeople: 0,
+      dateRange: []
+    };
+    methods = {
+      gotoRegisterDetail(date, count) {
+        if (count == 0) {
+          wx.showToast({
+            title: "暂无数据",
+            icon: 'none',
+            duration: 2000
+          })
+          return
+        }
+        wx.navigateTo({
+          url: `/pages/index/visitorRecord/visitorRecord-detail/visitorRecord-detail?Date=${date}&type=register`,
+        })
+      },
+      bindStartDateChange: function(e) {
+        console.log('picker发送选择改变，携带值为', e.detail.value);
+        this.startDate = e.detail.value;
+      },
+      bindEndDateChange: function(e) {
+        console.log('picker发送选择改变，携带值为', e.detail.value);
+        this.endDate = e.detail.value;
+      }
+    };
+    //查询锁客
+    selectRegisterVisitor() {
+      let _this = this;
+      let url = `${this.$parent.globalData.commonUrl}/api/loadUserDayStats?tk=${
+        this.$parent.globalData.tk
+      }&startDay=${this.startDate}&endDay=${this.endDate}`;
+      util.interface_get(url).then(res => {
+        console.log('注册数据----------------------', res);
+        _this.dateRange = res.userDayStats.reverse();
+        let totalPeople = 0;
+        _this.dateRange.forEach(item => {
+          item.date = util.timestampToTime(item.date).slice(0, 11);
+          totalPeople += item.dayNewUser;
+        });
+        _this.totalPeople = totalPeople;
+        _this.$apply();
       });
-      _this.totalPeople = totalPeople;
-      _this.$apply();
-    });
+    }
+    events = {};
+    onLoad() {
+      let _this = this;
+      this.winHeight = util.getScrollHeight(220);
+      this.startDate = util.someDayLater(util.nowDate(), -30, '-');
+      this.endDate = util.nowDate();
+      this.selectRegisterVisitor();
+    }
+    onReady() {
+      this.registerTotalPeople = this.$parent.globalData.dataStat.userStat.totalRegister;
+    }
+    // Other properties
   }
-  events = {};
-  onLoad() {
-    let _this = this;
-    this.winHeight = util.getScrollHeight(500);
-    this.startDate = util.someDayLater(util.nowDate(), -30, '-');
-    this.endDate = util.nowDate();
-    this.selectRegisterVisitor();
-  }
-  onReady() {
-    this.registerTotalPeople = this.$parent.globalData.dataStat.userStat.totalRegister;
-  }
-  // Other properties
-}
 </script>
 
 <style lang="less">
-.lockVisitor-wrapper {
-  font-size: 26rpx;
-  height: 100%;
-  background-color: #fff;
-}
+  .lockVisitor-wrapper {
+    font-size: 26rpx;
+    height: 100%;
+    background-color: #fff;
+  }
 </style>

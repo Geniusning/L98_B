@@ -131,9 +131,9 @@ export default class extends wepy.app {
     userInfo: null,
     shopAddr: {},
     shopInfo: null,
-    commonUrl: 'https://llwant1.qianz.com', //老友
+    // commonUrl: 'https://llwant1.qianz.com', //老友
     // commonUrl: 'https://singledog.qianz.com', // 中新
-    // commonUrl: 'https://mingshao.llwant.qianz.com', // 总
+    commonUrl: 'https://llwant2.qianz.com', // 总
     singleGameFirstPrize: {},
     singleGameSecondPrize: {},
     singleGameThirdPrize: {},
@@ -144,7 +144,8 @@ export default class extends wepy.app {
     editInfo: {},
     tk: '',
     dataStat: {},
-    city: ''
+    city: '',
+    StoreName:"",
   };
   constructor() {
     super();
@@ -180,7 +181,7 @@ export default class extends wepy.app {
   //                 //   url: '/pages/log/shopList'
   //                 // });
   //                 wx.switchTab({
-  //                   url: '/pages/index/index'
+  //                   url: '/pages/mine/mine'
   //                 });
   //               }, 3000);
   //             } else {
@@ -266,17 +267,29 @@ page {
   background-color: #fff;
   flex: 1;
 }
-.date-box .dateTitle-wrapper {
+.date-box .dateTitle-wrapper,.date-box .specific-wrapper {
   display: flex;
   justify-content: space-between;
-  padding: 30rpx 40rpx;
-  font-size: 30rpx;
+  padding: 20rpx 0rpx;
+  // font-size: 30rpx;
+  width: 100%;
+  box-sizing: border-box;
 }
-.date-box .specific-wrapper {
-  display: flex;
-  justify-content: space-between;
-  padding: 20rpx 40rpx 20rpx;
-  font-size: 30rpx;
+.date-box .dateTitle-wrapper .date,.date-box .dateTitle-wrapper .visitorNum {
+   width: 33.333%;
+  text-align: center;
+}
+//  {
+//   display: flex;
+//   justify-content: space-between;
+//   padding: 20rpx p;
+//   font-size: 30rpx;
+//   width: 100%;
+//   box-sizing: border-box;
+// }
+.date-box .specific-wrapper .date,.date-box .specific-wrapper .num {
+  width: 33.333%;
+  text-align: center;
 }
 .totalNum-box {
   padding-top: 10rpx;

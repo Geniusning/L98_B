@@ -26,28 +26,31 @@
     </view>
     <!-- 折线图 -->
     <!-- <view class="container">
-              <canvas canvas-id="lineCanvas" disable-scroll="true" class="canvas" @touchstart="touchHandler" @touchmove="moveHandler" @touchend="touchEndHandler"></canvas>
-            </view> -->
+                  <canvas canvas-id="lineCanvas" disable-scroll="true" class="canvas" @touchstart="touchHandler" @touchmove="moveHandler" @touchend="touchEndHandler"></canvas>
+                </view> -->
     <view class='date-box'>
       <view class='dateTitle-wrapper'>
         <text class='date'>日期</text>
         <text wx:if="{{pageType==='visitor'}}" class='visitorNum'>访问次数</text>
         <text wx:else class='visitorNum'>上线人数</text>
+        <text class='visitorNum'>详情</text>
       </view>
       <scroll-view scroll-y class='scrollView' style='height:{{winHeight}}rpx'>
         <view wx:if="{{pageType}}=='visitor'">
           <repeat for="{{visitorRecordData}}" key="index" item="item">
-            <view @tap="goToDetaiVisitor({{item.date}})" class='specific-wrapper'>
+            <view @tap="goToDetaiVisitor({{item.date}},{{item.dayTotalUser}})" class='specific-wrapper'>
               <text class='date'>{{item.date}}</text>
-              <text class='num' style="text-decoration:underline;color:red">{{item.dayTotalUser}}次</text>
+              <text class='num'>{{item.dayTotalUser}}次</text>
+              <text class='num' style="text-decoration:underline;color:red">详情&gt;&gt;</text>
             </view>
           </repeat>
         </view>
         <view wx:else-if="{{pageType}}=='customer'}}">
           <repeat for="{{OnlineVisitorData}}" key="index" item="item">
-            <view @tap="goToOnlineVisitor({{item.date}})" class='specific-wrapper'>
+            <view @tap="goToOnlineVisitor({{item.date}},{{item.totalNum}})" class='specific-wrapper'>
               <text class='date'>{{item.date}}</text>
-              <text class='num' style="text-decoration:underline;color:red">{{item.totalNum}}人</text>
+              <text class='num' style="">{{item.totalNum}}人</text>
+              <text class='num' style="text-decoration:underline;color:red">详情&gt;&gt;</text>
             </view>
           </repeat>
         </view>
@@ -84,13 +87,29 @@
           this.selectOnlineVisitor()
         }
       },
-      goToDetaiVisitor(date) {
+      goToDetaiVisitor(date, count) {
+        if (count == 0) {
+          wx.showToast({
+            title: "暂无数据",
+            icon: 'none',
+            duration: 2000
+          })
+          return
+        }
         console.log(date)
         wx.navigateTo({
           url: `/pages/index/visitorRecord/visitorRecord-detail/visitorRecord-detail?Date=${date}&type=visitorRecord`,
         })
       },
-      goToOnlineVisitor(date) {
+      goToOnlineVisitor(date,count) {
+        if (count == 0) {
+          wx.showToast({
+            title: "暂无数据",
+            icon: 'none',
+            duration: 2000
+          })
+          return
+        }
         wx.navigateTo({
           url: `/pages/index/dianNeiShangXian/dianNeiShangXian?Date=${date}`,
         })
@@ -102,9 +121,9 @@
       bindEndDateChange: function(e) {
         console.log('结束日期', e.detail.value);
         this.endDate = e.detail.value;
-        let flag = util.compareDate(this.startDate,this.endDate)
+        let flag = util.compareDate(this.startDate, this.endDate)
         if (!flag) {
-           wx.showToast({
+          wx.showToast({
             title: "不能小于开始日期",
             icon: 'none',
             duration: 2000
@@ -157,7 +176,7 @@
       util.interface_get(url).then(res => {
         console.log(res)
         if (res.errCode === 0) {
-           let totalPeople = 0
+          let totalPeople = 0
           _this.OnlineVisitorData = res.deskDayUserNum.reverse();
           _this.OnlineVisitorData.forEach(item => {
             item.date = util.timestampToTime(item.date).slice(0, 11);
@@ -185,7 +204,7 @@
       let _this = this;
       this.startDate = util.someDayLater(util.nowDate(), -30, '-');
       this.endDate = util.nowDate();
-      this.winHeight = util.getScrollHeight(230)
+      this.winHeight = util.getScrollHeight(180)
       this.pageType = e.type
       if (this.pageType === "visitor") {
         this.selectVisitorData();
@@ -256,10 +275,10 @@
     }
     .scrollView {
       .date {}
-      .num {
-        text-decoration: underline;
-        color: red
-      }
+      // .num {
+      //   text-decoration: underline;
+      //   color: red
+      // }
     }
   }
   .canvas {

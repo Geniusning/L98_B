@@ -3,7 +3,7 @@
 
   <view class='group '>
     <text class='name '>商家名称：</text>
-    <input class='account' maxlength="8" @blur='selectShopName'  value='{{shopName}}' placeholder='请输入商家名称'></input>
+    <input class='account' disabled maxlength="8" @blur='selectShopName'  value='{{shopName}}' placeholder='请输入商家名称'></input>
   </view>
   <view class='group '>
     <text class='name '>商家简称：</text>
@@ -268,16 +268,16 @@ export default class shopInfo extends wepy.page {
         dailyPassengerFlow: this.shopCustomNum,
         image: this.uploadImgUrl
       }
-      for(let key in params){
-        if(!params[key]){
-           wx.showToast({
-              title: '请填写完整数据',
-              icon: 'none',
-              duration: 2000
-            })
-            return
-        }
-      }
+      // for(let key in params){
+      //   if(!params[key]){
+      //      wx.showToast({
+      //         title: '请填写完整数据',
+      //         icon: 'none',
+      //         duration: 2000
+      //       })
+      //       return
+      //   }
+      // }
       console.log(params)
       wx.request({
         url: `${this.$parent.globalData.commonUrl}/api/storeSetting?tk=${this.$parent.globalData.tk}`,
@@ -344,6 +344,7 @@ export default class shopInfo extends wepy.page {
   onShow() {
     let _this = this;
     this.city = this.$parent.globalData.city?this.$parent.globalData.city:"~"
+    this.shopName = this.$parent.globalData.StoreName
     try {
       wx.getStorage({
         key: 'addr',
@@ -386,7 +387,7 @@ export default class shopInfo extends wepy.page {
         if (res.statusCode === 200) {
           let resultData = res.data;
           _this.storeId = resultData.resultData;
-          _this.shopName = resultData.name;
+          _this.shopName = _this.$parent.globalData.StoreName;
           _this.aliasName = resultData.AliasName;
           _this.city = resultData.city?resultData.city:"~";
           _this.shopAdr = resultData.address;

@@ -1,7 +1,7 @@
 <template>
   <view class="shopList_wrapper">
     <repeat for="{{shopList}}" key="index" index="index" item="item">
-      <view class="shop" @tap="intoShop({{item.port}})">
+      <view class="shop" @tap="intoShop({{item.port}},{{item.id}},{{item.name}})">
         <view class="shop_left">
           <image src="../../images/shopListIcon.png" class="shopIcon"></image>
           <text class="name">{{item.name}}</text>
@@ -29,61 +29,51 @@
       navigationBarTitleText: '管辖商家及下属'
     };
     data = {
-      shopList: [{
-          name: "深圳南山魅力四射",
-          id: 1,
-          author: "Mr.Right"
-        },
-        {
-          name: "深圳福田魅力四射",
-          id: 2,
-          author: "Mr.Left"
-        },
-        {
-          name: "深圳宝安魅力四射",
-          id: 2,
-          author: "韦小宝"
-        },
+      shopList: [
+        
       ],
-      peopleList: [{
-          id: 0,
-          name: "大毛"
-        },
-        {
-          id: 1,
-          name: "二毛"
-        }
-      ]
+      // shopList: [
+      //   {
+      //     id:1,
+      //     name:"老友吧"
+      //   }
+      // ],
+      peopleList: []
     };
     methods = {
-      intoShop(port) {
+      intoShop(port,storeId,storeName) {
         console.log("port-----------", port)
+        console.log("storeId-----------", storeId)
+        console.log("storeName-----------", storeName)
+        this.$parent.globalData.StoreName = storeName
+        let setGrpcPortUrl = `${this.$parent.globalData.commonUrl}/api/setGrpcPort?tk=${this.$parent.globalData.tk}&port=${port}&storeId=${storeId}`;
         let storeSettingUrl = `${this.$parent.globalData.commonUrl}/api/loadStoreSetting?tk=${this.$parent.globalData.tk}`;
-        let setGrpcPortUrl = `${this.$parent.globalData.commonUrl}/api/setGrpcPort?tk=${this.$parent.globalData.tk}&port=${port}`;
-        // util.interface_get(setGrpcPortUrl).then(res => {
-        //   util.interface_get(storeSettingUrl).then(res => {
-        //     this.$parent.globalData.shopInfo = res;
-        //     console.log("店铺信息---------", this.$parent.globalData)
-        //     wx.switchTab({
-        //       url: '/pages/member/member'
-        //     })
+        util.interface_get(setGrpcPortUrl).then(res => {
+          setTimeout(() => {
+            util.interface_get(storeSettingUrl).then(res => {
+              this.$parent.globalData.shopInfo = res;
+              console.log("店铺信息---------", this.$parent.globalData)
+              wx.switchTab({
+                url: '/pages/member/member'
+              })
+            })
+          }, 500);
+        })
+        // util.interface_get(storeSettingUrl).then(res => {
+        //   this.$parent.globalData.shopInfo = res;
+        //   console.log("店铺信息---------", this.$parent.globalData)
+        //   wx.switchTab({
+        //     url: '/pages/member/member'
         //   })
         // })
-        util.interface_get(storeSettingUrl).then(res => {
-          this.$parent.globalData.shopInfo = res;
-          console.log("店铺信息---------", this.$parent.globalData)
-          wx.switchTab({
-            url: '/pages/member/member'
-          })
-        })
       }
     };
     _loadShopList() {
       let url = `${this.$parent.globalData.commonUrl}/api/loadShopList?tk=${this.$parent.globalData.tk}`
       util.interface_get(url).then(res => {
         console.log("店铺列表信息-----", res)
-        // this.shopList = res
-        // this.$apply()
+        this.shopList = res
+        this.$apply()
       })
     };
     events = {};

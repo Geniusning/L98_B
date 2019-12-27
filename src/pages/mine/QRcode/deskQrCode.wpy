@@ -100,7 +100,7 @@
           _this.queue(_this.dataImgeList).then(res => { // 调用保存图片promise队列
               wx.hideLoading()
               wx.showToast({
-                title: '下载完成'
+                title: '已保存到相册'
               })
             })
             .catch(err => {

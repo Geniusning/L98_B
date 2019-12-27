@@ -38,7 +38,7 @@
               </view>
               <view class="accumulated">
                 <text class="name"><text class='letterSpace'>累</text>计：</text>
-                <text class="content">{{userStat.qrcodeUser}}人</text>
+                <text class="content">{{userStat.qrcodeUser}}次</text>
               </view>
             </navigator>
           </view>
@@ -60,7 +60,7 @@
               </view>
               <view class="accumulated">
                 <text class="name"><text class='letterSpace'>累</text>计：</text>
-                <text class="content">{{userStat.otherUser}}人</text>
+                <text class="content">{{userStat.otherUser}}次</text>
               </view>
             </navigator>
           </view>

@@ -31,8 +31,8 @@
             <view class="item">{{item.date}}</view>
             <view class="item">{{item.totalData}}</view>
             <view class="item">
-               <text wx:if="{{item.totalData=='0'}}" @tap="stop" decode class="item" style="text-decoration: underline;color:red">&gt;&gt;</text>
-              <text wx:else  @tap="intoDetail({{item.date}})" decode class="item" style="text-decoration: underline;color:red">&gt;&gt;</text>
+               <text wx:if="{{item.totalData=='0'}}" @tap="stop" decode class="item" style="text-decoration: underline;color:red">详情&gt;&gt;</text>
+              <text wx:else  @tap="intoDetail({{item.date}})" decode class="item" style="text-decoration: underline;color:red">详情&gt;&gt;</text>
             </view>
           </view>
         </repeat>

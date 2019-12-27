@@ -99,6 +99,50 @@
                   </view>
                 </repeat> -->
         </view>
+        <!-- 新增用户 -->
+        <view class='visitorDetail-list' wx:if="{{visitorList.length&&pageType=='register'}}">
+          <view class='contact-list'>
+            <repeat for='{{visitorList}}' item='item'>
+              <view class='memberItem'>
+                <image class="avatar" wx:if="{{item.headimgurl}}" src='{{item.headimgurl}}'></image>
+                <image class="avatar" wx:else src='../../../../images/avatar.jpg'></image>
+                <view class='contactInfo'>
+                  <view class="userInfo">
+                    <text class='name'>{{item.nickname?item.nickname:'匿名用户'}}</text>
+                    <text class="tag">{{item.soreType?item.soreType:'低频'}}</text>
+                  </view>
+                  <text class='content' space="ensp" decode="{{true}}">来源:{{item.visitType}}  拓客:{{item.waiter?item.waiter:"自来客"}} </text>
+                </view>
+                <view class='contactInfo_times'>
+                  <text class='times' space="ensp" decode="{{true}}">到店:{{item.visitInsideStore}}  网店:{{item.visitOutsideStore}}</text>
+                  <view class='times'>{{item.visitTime}}</view>
+                </view>
+              </view>
+            </repeat>
+          </view>
+        </view>
+        <!-- 店外上线 -->
+        <view class='visitorDetail-list' wx:if="{{visitorList.length&&pageType=='outDoorUser'}}">
+          <view class='contact-list'>
+            <repeat for='{{visitorList}}' item='item'>
+              <view class='memberItem'>
+                <image class="avatar" wx:if="{{item.headimgurl}}" src='{{item.headimgurl}}'></image>
+                <image class="avatar" wx:else src='../../../../images/avatar.jpg'></image>
+                <view class='contactInfo'>
+                  <view class="userInfo">
+                    <text class='name'>{{item.nickname?item.nickname:'匿名用户'}}</text>
+                    <text class="tag">{{item.soreType?item.soreType:'低频'}}</text>
+                  </view>
+                  <text class='content' space="ensp" decode="{{true}}">来源:{{item.visitType}}  拓客:{{item.waiter?item.waiter:"自来客"}} </text>
+                </view>
+                <view class='contactInfo_times'>
+                  <text class='times' space="ensp" decode="{{true}}">到店:{{item.visitInsideStore}}  网店:{{item.visitOutsideStore}}</text>
+                  <view class='times'>{{item.visitTime}}</view>
+                </view>
+              </view>
+            </repeat>
+          </view>
+        </view>
       </view>
       <view wx:elif="{{(!visitorList.length || !onLineDeskList.length || !tuoKeClientList.length) && isLoadend}}">
         <Loading></Loading>
@@ -245,6 +289,32 @@
         _this.$apply();
       })
     };
+    //注册人数详情
+    _getRegisterUserInfo(date){
+       let url = `${this.$parent.globalData.commonUrl}/api/loadDayRegister?tk=${this.$parent.globalData.tk}&Date=${date}`
+      util.interface_get(url).then(res => {
+        console.log("loadDayRegister--------", res)
+        if (res.errCode == 0) {
+          this.visitorList = res.users
+          this._dealArr(this.visitorList)
+          this.$apply();
+          console.log(this.visitorList)
+        }
+      })
+    };
+    //店外上线用户详情
+    _loadDayOutDoorUsers(date){
+       let url = `${this.$parent.globalData.commonUrl}/api/loadDayOutDoorUsers?tk=${this.$parent.globalData.tk}&date=${date}`
+      util.interface_get(url).then(res => {
+        console.log("loadDayRegister--------", res)
+        if (res.errCode == 0) {
+          this.visitorList = res.users
+          this._dealArr(this.visitorList)
+          this.$apply();
+          console.log(this.visitorList)
+        }
+      })
+    }
     events = {};
     onLoad(e) {
       console.log(e)
@@ -260,7 +330,7 @@
       switch (this.pageType) {
         case "OnlineVisitor":
           wx.setNavigationBarTitle({
-            title: "详情"
+            title: "店内上线详情"
           })
           this._getOnlineVisitor(this.onLineTime, deskId)
           console.log("店内上线请求")
@@ -275,7 +345,20 @@
           wx.setNavigationBarTitle({
             title: "拓客详情"
           })
-          this._getTuoKeRankList(startDay, endDay)
+        this._getTuoKeRankList(startDay, endDay)
+        break;
+        case "register":
+          wx.setNavigationBarTitle({
+            title: "注册详情"
+          })
+        this._getRegisterUserInfo(this.onLineTime)
+        break;
+        case "outDoorUser":
+          wx.setNavigationBarTitle({
+            title: "店外上线详情"
+          })
+        this._loadDayOutDoorUsers(this.onLineTime)
+        break;
         default:
           break;
       }
