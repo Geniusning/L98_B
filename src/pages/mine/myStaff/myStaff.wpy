@@ -26,8 +26,16 @@
                     </view>
                 </picker>
             </view>
-            <view class="add_staff" @tap="showAuthorModal">
-                <view class="info_desc">允许查询哪些下属的门店></view>
+            <view class="add_staff">
+                <view class="info_desc">允许Ta看：</view>
+                <radio-group @change="checkboxAuth" style="display:flex;box-sizing: border-box;padding-top: 16rpx">
+                    <repeat for="{{allowAuth}}" key="index">
+                        <label class="label_tag">
+                            <radio color="#FFBA00"   value="{{item.auth}}"/>
+                            <view class="selectItem">{{item.name}}</view>
+                        </label>
+                    </repeat>
+                </radio-group>
             </view>
             <button class="addBtn" @tap="addStaff">新增</button>
         </view>
@@ -71,20 +79,30 @@
         <view wx:if="{{showAuthorModal}}" class="author_modal">
             <checkbox-group class="checkBox_groupAll" @change="selectAll">
                 <label class="checkBox">
-                                                    <checkbox class="top_checkbox_item" value="all" checked="{{allCheck}}"  color="orange"/>
-                                                    <view class="allSelect">
-                                                        全选
-                                                    </view>
-                                                </label>
+                    <checkbox class="top_checkbox_item" value="all" checked="{{allCheck}}"  color="orange"/>
+                    <view class="allSelect">
+                        全选
+                    </view>
+                </label>
             </checkbox-group>
             <checkbox-group wx:if="{{userList.length}}" class="checkBox_group" @change="changeUser">
                 <repeat for="{{userList}}" key="index" item="item">
                     <label class="checkBox" @tap="selectAuthor" data-id="{{item.phone}}">
-                                                        <checkbox class="checkbox_item"  color="orange" value="{{item.id}}" checked="{{item.checked}}" />
-                                                        <view class="username">
-                                                            <text>{{item.name}}</text>
-                                                        </view>
-                                                    </label>
+                        <checkbox class="checkbox_item"  color="orange" value="{{item.id}}"  checked="{{item.checked}}"/>
+                        <view class="username">
+                            <text>{{item.name}}</text>
+                        </view>
+                    </label>
+                </repeat>
+            </checkbox-group>
+             <checkbox-group wx:if="{{storeList.length}}" class="checkBox_group" @change="changeStore">
+                <repeat for="{{storeList}}" key="index" item="item">
+                    <label class="checkBox" @tap="selectStore" data-id="{{item.uuid}}">
+                        <checkbox class="checkbox_item"  color="orange" value="{{item.uuid}}"  checked="{{item.checked}}"/>
+                        <view class="username">
+                            <text>{{item.name}}</text>
+                        </view>
+                    </label>
                 </repeat>
             </checkbox-group>
             <view wx:else class="noUserList">暂无下属</view>
@@ -102,43 +120,117 @@
             navigationBarTitleText: '我的下属列表'
         };
         data = {
+            allowAuth:[
+                {
+                    auth:"noAllow",
+                    name:"不允许"
+                },
+                {
+                    auth:"allow",
+                    name:"另外"
+                }
+            ],
             allCheck: false,
-            // arrayRole: ['糸统管理0', '运营主管1',  '运营后台2', '运营中台3','运营前台4'],
             arrayRole: [{
                 name: "运营主管",
-                id: "YunYZG"
+                id: "k98_operation_manager"
             }],
-            userList: [{
+            userList: [
+                {
                     phone: 13323456321,
                     name: 'hotDot',
-                    value: '不许可',
-                    checked: false
+                    value: '小猫',
+                    checked:false,
                 },
                 {
                     phone: 13323456322,
                     name: 'CHN',
-                    value: '我的所有下属',
-                    checked: false,
+                    value: '三毛',
+                    checked:false,
                 },
                 {
                     phone: 13323456323,
                     name: '大毛',
                     value: '大毛',
-                    checked: false
+                    checked:false,
+                },
+                {
+                    phone: 133234563212,
+                    name: 'hotDot',
+                    value: '小猫',
+                    checked:false,
+                },
+                {
+                    phone: 133234563222,
+                    name: 'CHN',
+                    value: '三毛',
+                    checked:false,
+                },
+                {
+                    phone: 133234563232,
+                    name: '大毛',
+                    value: '大毛',
+                    checked:false,
                 }
             ],
+            subStaffList:[],
+            storeList:[
+                {
+                    uuid:"xxxxx",
+                    name:"中新吧",
+                    checked:false,
+                },
+                {
+                    uuid:"yyyyy",
+                    name:"老友吧",
+                    checked:false,
+                },
+                   {
+                    uuid:"zzzzz",
+                    name:"中新吧",
+                    checked:false,
+                },
+                {
+                    uuid:"xxxsd",
+                    name:"老友吧",
+                    checked:false,
+                },
+                   {
+                    uuid:"gsdagf",
+                    name:"中新吧",
+                    checked:false,
+                },
+                {
+                    uuid:"asdet",
+                    name:"老友吧",
+                    checked:false,
+                },   {
+                    uuid:"wetr",
+                    name:"中新吧",
+                    checked:false,
+                },
+                {
+                    uuid:"erhfsd",
+                    name:"老友吧",
+                    checked:false,
+                }
+            ],
+            paramStoreList:[],
             roleIndex: 0,
             phone: "",
             password: "",
             role: "",
-            pessmisson: [],
+            pessmisson: 0,
             workNumber: "",
             winHeight: "",
             phone: "",
             name: "",
             showBindModal: false,
             showAuthorModal: false,
-            staffList: []
+            staffList: [],
+            isShowAuthList:"noAllow",
+            userIds:[],
+            storeIds:[],
         };
         onUnload() {
             wx.removeStorage({
@@ -178,84 +270,145 @@
                     if (index == user.phone) {
                         user["checked"] = !user["checked"]
                     }
-                    if (user["checked"] && this.pessmisson.indexOf(user.phone) == -1) {
-                        this.pessmisson.push(user.phone)
-                    } else if (!user["checked"] && this.pessmisson.indexOf(user.phone) >= 0) {
-                        this.pessmisson.splice(this.pessmisson.indexOf(user.phone), 1)
+                    if (user["checked"] && this.subStaffList.indexOf(user.phone) == -1) {
+                        this.subStaffList.push(user.phone)
+                    } else if (!user["checked"] && this.subStaffList.indexOf(user.phone) >= 0) {
+                        this.subStaffList.splice(this.subStaffList.indexOf(user.phone), 1)
                     }
                     return user
                 })
-                wx.setStorage({
-                    key: "userList",
-                    data: JSON.stringify(this.userList)
+            },
+            //允许权限
+            selectStore(e) {
+                console.log("自定义属性---", e.currentTarget.dataset.id)
+                let index = e.currentTarget.dataset.id;
+                this.storeList = this.storeList.map(store => {
+                    if (index == store.uuid) {
+                        store["checked"] = !store["checked"]
+                    }
+                    if (store["checked"] && this.paramStoreList.indexOf(store.uuid) == -1) {
+                        this.paramStoreList.push(store.uuid)
+                    } else if (!store["checked"] && this.paramStoreList.indexOf(store.uuid) >= 0) {
+                        this.paramStoreList.splice(this.paramStoreList.indexOf(store.uuid), 1)
+                    }
+                    return store
                 })
             },
             //全选
             selectAll(e) {
                 let isAll = e.detail.value[0]
-                this.pessmisson = [];
+                this.subStaffList = [];
                 console.log("isAll----------", isAll)
                 if (isAll === "all") {
                     this.userList = this.userList.map(user => {
                         user["checked"] = true;
                         this.allCheck = true;
-                        this.pessmisson.push(user.phone)
+                        this.subStaffList.push(user.phone)
                         return user
                     })
+                    this.storeList = this.storeList.map(store => {
+                        store["checked"] = true;
+                        this.allCheck = true;
+                        this.paramStoreList.push(store.uuid)
+                        return store
+                    })
+                    
                 } else {
                     this.userList = this.userList.map(user => {
                         user["checked"] = false;
                         this.allCheck = false;
                         return user
                     })
+                    this.storeList = this.storeList.map(store => {
+                        store["checked"] = false;
+                        this.allCheck = false;
+                        return store
+                    })
                 }
-                wx.setStorage({
-                    key: "userList",
-                    data: JSON.stringify(this.userList)
-                })
                 this.$apply()
             },
             changeUser(e) {
-                let ids = e.detail.value;
-                if (ids.length == this.userList.length) {
+                 this.userIds = e.detail.value;
+                if (this.storeIds.length+this.userIds.length == this.userList.length+this.storeList.length) {
                     this.allCheck = true;
                     this.$apply()
                     return
                 }
                 this.allCheck = false;
             },
-            showAuthorModal() {
-                this.showAuthorModal = true;
-                let _this = this;
-                wx.getStorage({
-                    key: 'userList',
-                    success(res) {
-                        console.log("getStorage_this.userList---", res.data)
-                        _this.userList = JSON.parse(res.data)
-                    }
-                })
-                this.$apply()
-                console.log("showAuthorModal-------", this.userList)
+            changeStore(e) {
+                this.storeIds = e.detail.value;
+                if (this.storeIds.length+this.userIds.length == this.userList.length+this.storeList.length) {
+                    this.allCheck = true;
+                    this.$apply()
+                    return
+                }
+                this.allCheck = false;
+            },
+            checkboxAuth(e){
+                console.log(e.detail.value)
+                this.isShowAuthList = e.detail.value
+                if(this.isShowAuthList=="allow"){
+                    this.showAuthorModal = true;
+                    let _this = this;
+                    wx.getStorage({
+                        key: 'userList',
+                        success(res){
+                            _this.userList = JSON.parse(res.data)
+                        }
+                    })
+                    wx.getStorage({
+                        key: 'storeList',
+                        success(res){
+                            _this.storeList = JSON.parse(res.data)
+                        }
+                    })
+                    this.$apply()
+                    console.log("_this.userList----",_this.userList)
+                    console.log("_this.storeList----",_this.storeList)
+                }
             },
             closeAuthorMldal() {
+                wx.setStorage({
+                    key: "userList",
+                    data: JSON.stringify(this.userList)
+                })
+                wx.setStorage({
+                    key: "storeList",
+                    data: JSON.stringify(this.storeList)
+                })
                 this.showAuthorModal = false;
                 //数组去重
-                let newPessmisson = [this.pessmisson[0]]
-                for (let i = 0; i < this.pessmisson.length; i++) {
-                    const element = this.pessmisson[i];
-                    // for (let j = 0; j < newPessmisson.length; j++) {
-                    if (newPessmisson.indexOf(element) == -1) {
-                        newPessmisson.push(element)
+                let staffs = [this.subStaffList[0]]
+                let stores = [this.paramStoreList[0]]
+                for (let i = 0; i < this.subStaffList.length; i++) {
+                    const element = this.subStaffList[i];
+                    // for (let j = 0; j < staffs.length; j++) {
+                    if (staffs.indexOf(element) == -1) {
+                        staffs.push(element)
                     }
                     // }
                 }
-                this.pessmisson = newPessmisson;
-                console.log("pessmisson-------", this.pessmisson)
+                for (let i = 0; i < this.paramStoreList.length; i++) {
+                    const element = this.paramStoreList[i];
+                    // for (let j = 0; j < staffs.length; j++) {
+                    if (stores.indexOf(element) == -1) {
+                        stores.push(element)
+                    }
+                    // }
+                }
+                this.subStaffList = staffs;
+                this.paramStoreList = stores;
+                console.log("subStaffList-------", this.subStaffList)
+                console.log("this.paramStoreList-------", this.paramStoreList)
             },
             bindRoleChange(e) {
-                console.log('bindRoleChange', e.detail.value);
                 this.roleIndex = e.detail.value;
                 this.role = this.arrayRole[Number(e.detail.value)].id;
+                console.log('this.role', this.role);
+                if(this.role=="k98_operation_middle" || this.role=="k98_operation_behind" || this.role=="k98_operation_front"){
+                    this.permission = 1  //修改门店权限 1，其余0
+                }
             },
             getPhoneNumr(e) {
                 this.phone = e.detail.value;
@@ -267,6 +420,10 @@
                 this.workNumber = e.detail.value;
             },
             addStaff() {
+                if(this.isShowAuthList=="noAllow"){ //如果不允许则清空参数
+                    this.subStaffList = [];
+                    this.paramStoreList = []
+                }
                 this.password = this.phone.slice(5, 11);
                 let url = `${this.$parent.globalData.commonUrl}/api/addStaff?tk=${this.$parent.globalData.tk}`;
                 var params = {
@@ -274,11 +431,13 @@
                     number: this.workNumber || "001",
                     phone: this.phone,
                     password: this.password,
-                    parent: this.$parent.globalData.userInfo.number,
+                    parentId: this.$parent.globalData.userInfo.phone,
                     // phone: '8888',
                     // password: '8888',
                     role: this.role,
-                    permission: 1
+                    permission: this.permission,
+                    subStaffList:this.subStaffList, //授权管理员工给下属
+                    storeList:this.paramStoreList //授权管理门店给下属
                 };
                 if (this.phone.length != 11) {
                     wx.showToast({
@@ -331,67 +490,67 @@
             }
         };
         _judgeRole(role) {
-            if (role == "YunYZG") {
+            if (role == "k98_operation_manager") {
                 return "运营主管"
-            } else if (role == "YunYHT") {
+            } else if (role == "k98_operation_behind") {
                 return "运营后台"
-            } else if (role == "YunYZT") {
+            } else if (role == "k98_operation_middle") {
                 return "运营中台"
-            } else if (role == "YunYQT") {
+            } else if (role == "k98_operation_front") {
                 return "运营前台"
-            } else if (role == "ZongBYG") {
+            } else if (role == "k98_center_staff") {
                 return "本部员工"
-            } else if (role == "CityBoss") {
+            } else if (role == "k98_city_boss") {
                 return "城市合伙老板"
-            } else if (role == "ShopBoss") {
+            } else if (role == "k98_store_boss") {
                 return "门店老板"
-            } else if (role == "ShopManager") {
+            } else if (role == "k98_store_manager") {
                 return "店长"
-            } else if (role == "shopStaff") {
+            } else if (role == "k98_store_staff") {
                 return "店员"
-            }else if(role == "superMan"){
-                 return "系统管理员"
+            } else if (role == "k98_manager") {
+                return "系统管理员"
             } else {
                 return "运营主管"
             }
         };
         _handleArrayRole(role) {
-            if (role == "YunYZG") {
+            if (role == "k98_operation_manager") {
                 return [{
                     name: "本部员工",
-                    id: "ZongBYG"
+                    id: "k98_center_staff"
                 }, {
                     name: "运营后台",
-                    id: "YunYHT"
+                    id: "k98_operation_behind"
                 }]
-            } else if (role == "YunYHT") {
+            } else if (role == "k98_operation_behind") {
                 return [{
                     name: "城市合伙老板",
-                    id: "CityBoss"
+                    id: "k98_city_boss"
                 }, {
                     name: "运营中台",
-                    id: "YunYZT"
+                    id: "k98_operation_middle"
                 }]
-            } else if (role == "YunYZT") {
+            } else if (role == "k98_operation_middle") {
                 return [{
                     name: "运营前台",
-                    id: "YunYQT"
+                    id: "k98_operation_front"
                 }, {
                     name: "门店老板",
-                    id: "ShopBoss"
+                    id: "k98_store_boss"
                 }]
-            } else if (role == "YunYQT") {
+            } else if (role == "k98_operation_front") {
                 return [{
                     name: "店长",
-                    id: "ShopManager"
+                    id: "k98_store_manager"
                 }, {
                     name: "店员",
-                    id: "shopStaff"
+                    id: "k98_store_staff"
                 }]
             } else {
                 return [{
                     name: "运营主管",
-                    id: "YunYZG"
+                    id: "k98_operation_manager"
                 }]
             }
         };
@@ -462,8 +621,13 @@
             }
             .add_staff {
                 margin-bottom: 20rpx;
+                display: flex;
                 .info_desc {
                     margin: 20rpx 0 20rpx 40rpx
+                }
+                .label_tag{
+                    display: flex;
+                    margin-right: 20rpx;
                 }
             }
             .addBtn {}
@@ -575,7 +739,7 @@
                 }
             }
             .checkBox_group {
-                flex: 1;
+                // flex: 1;
                 .checkBox {
                     display: flex;
                     margin: 40rpx;

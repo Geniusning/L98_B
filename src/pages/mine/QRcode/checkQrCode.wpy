@@ -74,7 +74,7 @@ export default class checkQrCode extends wepy.page {
     var _this = this
     let url = `${this.$parent.globalData.commonUrl}/api/loadCouponPageQrcode?tk=${this.$parent.globalData.tk}`
     let param = {
-      url:`${this.$parent.globalData.commonUrl}/k98/card?visitType=1&isScan=true`
+      imageUrl:`${this.$parent.globalData.commonUrl}/k98/card?visitType=1&isScan=true`
     }
     util.interface_post(url,param).then(res=>{
       console.log("二维码-------------",res)

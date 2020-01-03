@@ -69,7 +69,7 @@
       }
     };
     _loadShopList() {
-      let url = `${this.$parent.globalData.commonUrl}/api/loadShopList?tk=${this.$parent.globalData.tk}`
+      let url = `${this.$parent.globalData.commonUrl}/api/loadShopList?tk=${this.$parent.globalData.tk}&phone=${this.$parent.globalData.userInfo.phone}`
       util.interface_get(url).then(res => {
         console.log("店铺列表信息-----", res)
         this.shopList = res
