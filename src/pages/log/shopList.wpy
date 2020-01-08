@@ -1,5 +1,9 @@
 <template>
   <view class="shopList_wrapper">
+    <view class="search_box">
+      <input class="search_input" placeholder="请输入店铺名或下属名" />
+      <image class="search_icon" src="../../images/search.png"></image>
+    </view>
     <repeat for="{{shopList}}" key="index" index="index" item="item">
       <view class="shop" @tap="intoShop({{item.port}},{{item.id}},{{item.name}})">
         <view class="shop_left">
@@ -8,17 +12,19 @@
         </view>
       </view>
     </repeat>
-    <repeat for="{{peopleList}}" key="index" index="index" item="item">
-      <view class="shop" @tap="intoShop">
+    <repeat for="{{staffList}}" key="index" index="index" item="item">
+      <view class="shop" @tap="goToFurther({{item.phone}})">
         <view class="shop_left">
-          <image src="../../images/avatar2.jpg" class="shopIcon"></image>
-          <text class="name">{{item.name}}</text>
+          <image src="../../images/staff_icon.png" class="shopIcon"></image>
+          <text class="name">{{item.name}}-{{item.phone}}-{{item.number}}</text>
         </view>
-        <view class="shop_right">
-          <text class="author">{{item.author}}</text>
+        <view class="shop_right" >
+          <text class="author" @tap.stop="transferStaff">交接</text>
+          <text class="author" @tap.stop="delStaff({{item.phone}})">删除</text>
         </view>
       </view>
     </repeat>
+    <view @tap="intoAddStaff" class="addStaff">+</view>
   </view>
 </template>
 <script>
@@ -29,22 +35,84 @@
       navigationBarTitleText: '管辖商家及下属'
     };
     data = {
-      shopList: [
-        
-      ],
+      shopList: [],
       // shopList: [
       //   {
       //     id:1,
       //     name:"老友吧"
       //   }
       // ],
-      peopleList: []
+      staffList: []
     };
     methods = {
-      intoShop(port,storeId,storeName) {
-        console.log("port-----------", port)
-        console.log("storeId-----------", storeId)
-        console.log("storeName-----------", storeName)
+      //查看下一层员工信息资料
+      goToFurther(phone) {
+        wx.showLoading({
+          title: "加载中"
+        })
+        let storeUrl = `${this.$parent.globalData.commonUrl}/api/loadShopList?tk=${this.$parent.globalData.tk}&phone=${phone}`
+        let staffUrl = `${this.$parent.globalData.commonUrl}/api/loadAllStaff?tk=${this.$parent.globalData.tk}&phone=${phone}`
+        util.interface_get(storeUrl).then(res => {
+          console.log("店铺列表信息-----", res)
+          this.shopList = res
+          this.$apply()
+        })
+        util.interface_get(staffUrl).then(res => {
+          let staff = res.staff;
+          staff.forEach(item => {
+            item.role_cn = util._judgeRole(item.role)
+          })
+          this.staffList = staff.sort(util.sortByKey("number"));
+          console.log("员工列表", this.staffList)
+          this.$apply();
+          wx.hideLoading()
+        })
+      },
+      transferStaff() {
+        wx.showToast({
+          title: '功能暂未完善',
+          icon: 'none',
+          duration: 2000
+        });
+      },
+      //删除员工
+      delStaff(phoneId) {
+        var _this = this
+        wx.showModal({
+          title: '提示',
+          content: '是否删除此下属',
+          success(res) {
+            if (res.confirm) {
+              let url = `${_this.$parent.globalData.commonUrl}/api/deleteStaff?tk=${_this.$parent.globalData.tk}&phone=${phoneId}&parent=${_this.$parent.globalData.userInfo.phone}`
+              util.interface_get(url).then(res => {
+                if (res.errCode === 0) {
+                  wx.showToast({
+                    title: '删除成功',
+                    icon: 'success',
+                    duration: 2000
+                  })
+                  _this._loadStaffs();
+                } else {
+                  wx.showToast({
+                    title: '删除失败',
+                    icon: 'none',
+                    duration: 2000
+                  })
+                }
+                console.log('删除结果---------------------------：', res);
+              })
+            } else if (res.cancel) {
+              console.log('用户点击取消')
+            }
+          }
+        })
+      },
+      intoAddStaff() {
+        wx.navigateTo({
+          url: `/pages/mine/myStaff/myStaff`
+        })
+      },
+      intoShop(port, storeId, storeName) {
         this.$parent.globalData.StoreName = storeName
         let setGrpcPortUrl = `${this.$parent.globalData.commonUrl}/api/setGrpcPort?tk=${this.$parent.globalData.tk}&port=${port}&storeId=${storeId}`;
         let storeSettingUrl = `${this.$parent.globalData.commonUrl}/api/loadStoreSetting?tk=${this.$parent.globalData.tk}`;
@@ -68,6 +136,23 @@
         // })
       }
     };
+    _loadStaffs() {
+      let _this = this;
+      wx.request({
+        url: `${this.$parent.globalData.commonUrl}/api/loadAllStaff?tk=${this.$parent.globalData.tk}&phone=${this.$parent.globalData.userInfo.phone}`,
+        success: res => {
+          if (res.data.errCode === 0) {
+            let staff = res.data.staff;
+            staff.forEach(item => {
+              item.role_cn = util._judgeRole(item.role)
+            })
+            _this.staffList = staff.sort(util.sortByKey("number"));
+            console.log("员工列表", _this.staffList)
+            _this.$apply();
+          }
+        }
+      })
+    };
     _loadShopList() {
       let url = `${this.$parent.globalData.commonUrl}/api/loadShopList?tk=${this.$parent.globalData.tk}&phone=${this.$parent.globalData.userInfo.phone}`
       util.interface_get(url).then(res => {
@@ -79,6 +164,11 @@
     events = {};
     onLoad() {
       this._loadShopList()
+      this._loadStaffs()
+    };
+    onShow() {
+      this._loadShopList()
+      this._loadStaffs()
     }
     // Other properties
   }
@@ -86,12 +176,32 @@
 
 <style lang="less">
   .shopList_wrapper {
+    position: relative;
+    height: 100%;
+    .search_box {
+      background-color: #fff;
+      display: flex;
+      margin-bottom: 20rpx;
+      box-sizing: border-box;
+      .search_input {
+        padding: 20rpx 0;
+        flex: 1;
+        padding-left: 20rpx;
+      }
+      .search_icon {
+        width: 50rpx;
+        height: 50rpx;
+        margin-top: 12rpx;
+      }
+    }
     .shop {
       margin: 20rpx auto;
+      margin-top: 0;
       padding: 20rpx 30rpx;
       background-color: #fff;
       font-size: 16px;
-      display: flex; // justify-content: space-between;
+      display: flex;
+      justify-content: space-between;
       .shop_left {
         display: flex;
         .shopIcon {
@@ -104,10 +214,28 @@
         }
       }
       .shop_right {
+        margin-left: 40rpx;
         .author {
           line-height: 80rpx;
+          margin-left: 10rpx;
+          padding: 10rpx 10rpx;
+          color: red;
+          text-decoration: underline;
         }
       }
+    }
+    .addStaff {
+      position: absolute;
+      width: 76rpx;
+      height: 76rpx;
+      text-align: center;
+      line-height: 74rpx;
+      background-color: #ffba00;
+      color: #fff;
+      right: 40rpx;
+      bottom: 100rpx;
+      font-size: 30px;
+      border-radius: 50%;
     }
   }
 </style>

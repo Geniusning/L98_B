@@ -24,7 +24,7 @@
           <view class="list">
             <view class="item {{(pageType=='exchangeGift'||pageType=='sys')?'itemExchange':''}}">{{item.milliTime}}</view>
             <view class="item {{(pageType=='exchangeGift'||pageType=='sys')?'itemExchange':''}}" wx:if="{{pageType=='givenGift'}}">
-              <image  class="avatarIcon" src="{{item.userInfo.fromUserHeadImgUrl}}" mode="scaleToFill" lazy-load="false"></image>
+              <image class="avatarIcon" src="{{item.userInfo.fromUserHeadImgUrl}}" mode="scaleToFill" lazy-load="false"></image>
             </view>
             <view class="item {{(pageType=='exchangeGift'||pageType=='sys')?'itemExchange':''}}">
               <image class="avatarIcon" src="{{item.userInfo.headImgUrl}}" mode="scaleToFill" lazy-load="false"></image>
@@ -49,7 +49,7 @@
       fatherDate: "",
       pickindex: 0,
       totalIntegral: 0,
-      totalNumbers:0,
+      totalNumbers: 0,
       pageType: "",
       integralType: "积分",
       titleHeadName: "收礼",
@@ -60,7 +60,7 @@
       allTypesData: [],
       winHeight: "",
       recordData: [],
-      selectAllData:[],
+      selectAllData: [],
     };
     methods = {
       bindPickerChange(e) {
@@ -80,23 +80,27 @@
     _judgeIntegralType(pageType, dataType) {
       this.recordData = []
       this.totalIntegral = 0
+      this.totalNumbers = 0
       console.log("dataType---------", dataType)
       console.log("this.allTypesData", this.allTypesData)
-      if(dataType==="全部" ||dataType==="all" ){
+      if (dataType === "全部" || dataType === "all") {
         this.recordData = this.selectAllData
-        this.recordData.forEach(item=>{
+        this.recordData.forEach(item => {
           this.totalIntegral += item.integral
+          this.totalNumbers += 1
         })
         this.$apply()
         return
       }
       this.allTypesData.forEach(item => {
+        
         if (pageType === "exchangeGift") {
           if (item.name === dataType) {
             if (typeof(item.milliTime) === "number") {
               item.milliTime = util.timestampToTime(item.milliTime).slice(11)
             }
             this.totalIntegral += item.integral
+            this.totalNumbers += 1
             this.recordData.push(item)
           }
         } else if (pageType === "sys") {
@@ -105,6 +109,7 @@
               item.milliTime = util.timestampToTime(item.milliTime).slice(11)
             }
             this.totalIntegral += item.integral
+            this.totalNumbers += 1
             this.recordData.push(item)
           }
         } else if (pageType === "givenGift") {
@@ -113,6 +118,7 @@
               item.milliTime = util.timestampToTime(item.milliTime).slice(11)
             }
             this.totalIntegral += item.integral
+            this.totalNumbers += 1
             this.recordData.push(item)
           }
         }
@@ -120,39 +126,39 @@
       this.$apply()
     }
     _handleItem(tempTitleArr, item, type) {
-      if ((item.integralType === "activity" || item.integralType === "checkIn" || item.integralType === "game" || item.integralType==="shoperGiftByMkFri") && type === "sys") { //系统赠送
+      if ((item.integralType === "activity" || item.integralType === "checkIn" || item.integralType === "game" || item.integralType === "shoperGiftByMkFri") && type === "sys") { //系统赠送
         item.milliTime = util.timestampToTime(item.milliTime).slice(11)
         item["name"] = this._judgeSysIntegralName(item.integralType)
         this.totalIntegral += item.integral
-        this.totalNumbers += 1 
+        this.totalNumbers += 1
         this.recordData.push(item)
         this.selectAllData = this.recordData
-      } else if ((item.integralType === "goodsGift" || item.integralType === "goodsRecommend" || item.integralType === "convertRecommend" || item.integralType === "convertGift" ||item.integralType === "renewDice") && type === "exchangeGift" ) { //消耗兑换
+      } else if ((item.integralType === "goodsGift" || item.integralType === "goodsRecommend" || item.integralType === "convertRecommend" || item.integralType === "convertGift" || item.integralType === "renewDice") && type === "exchangeGift") { //消耗兑换
         item.milliTime = util.timestampToTime(item.milliTime).slice(11)
-        if(item.integralType=="renewDice"){
+        if (item.integralType == "renewDice") {
           item["name"] = "游戏重摇消耗"
         }
         this.totalIntegral += item.integral
-        this.totalNumbers += 1 
+        this.totalNumbers += 1
         this.recordData.push(item)
         this.selectAllData = this.recordData
       } else if ((item.integralType === "virtualGift") && type === "givenGift") { //用户转增赠送
         item.milliTime = util.timestampToTime(item.milliTime).slice(11)
         this.totalIntegral += item.integral
-        this.totalNumbers += 1 
+        this.totalNumbers += 1
         this.recordData.push(item)
         this.selectAllData = this.recordData
       }
       if (item.goodsInfo) { //判断是否是兑换获得积分`
-        if ((item.integralType == "goodsRecommend" || item.integralType == "goodsGift" || item.integralType === "convertGift" || item.integralType === "convertRecommend"||item.integralType === "renewDice") && this.pageType === "exchangeGift") {
-          if(item.integralType === "renewDice"){
+        if ((item.integralType == "goodsRecommend" || item.integralType == "goodsGift" || item.integralType === "convertGift" || item.integralType === "convertRecommend" || item.integralType === "renewDice") && this.pageType === "exchangeGift") {
+          if (item.integralType === "renewDice") {
             tempTitleArr.push({
               name: item.name,
               id: item.integralType
             })
-          }else{
-             Object.assign(item, item.goodsInfo)
-             tempTitleArr.push({
+          } else {
+            Object.assign(item, item.goodsInfo)
+            tempTitleArr.push({
               name: item.goodsInfo.name,
               id: item.integralType
             })
@@ -187,9 +193,9 @@
           wx.hideLoading()
           this.allTypesData = res.everyDayIntegralForUser
           console.log("all data-----------", this.allTypesData)
-          this.allTypesData.forEach((item,index) => {
+          this.allTypesData.forEach((item, index) => {
             this._handleItem(this.pickerArray, item, type)
-          }) 
+          })
         }
         //进入手动选择picker里面的第一类型数据---------begin
         // if (this.pageType === "sys") {
@@ -331,8 +337,8 @@
             border-radius: 50%;
           }
         }
-        .itemExchange{
-           width: 25%;
+        .itemExchange {
+          width: 25%;
         }
       }
     }

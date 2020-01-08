@@ -31,33 +31,33 @@
                 <radio-group @change="checkboxAuth" style="display:flex;box-sizing: border-box;padding-top: 16rpx">
                     <repeat for="{{allowAuth}}" key="index">
                         <label class="label_tag">
-                            <radio color="#FFBA00"   value="{{item.auth}}"/>
-                            <view class="selectItem">{{item.name}}</view>
-                        </label>
+                                    <radio color="#FFBA00"   value="{{item.auth}}"/>
+                                    <view class="selectItem">{{item.name}}</view>
+                                </label>
                     </repeat>
                 </radio-group>
             </view>
             <button class="addBtn" @tap="addStaff">新增</button>
         </view>
-        <view class="add_staff_list">
-            <view class="add_staff_title">下属列表</view>
-            <scroll-view scroll-y style="height:{{winHeight}}rpx">
-                <view class="staffList">
-                    <repeat for="{{staffList}}" key="index" index="index" item="item">
-                        <view class="infoItem">
-                            <text class="name">{{item.number}}</text>
-                            <text class="name">{{item.name}}</text>
-                            <text class="name">{{item.phone}}</text>
-                            <text class="name">{{item.role_cn}}</text>
-                            <view class="handleBox">
-                                <!-- <text class="handle" @tap="show">改绑</text> -->
-                                <text class="handle" @tap="deleteStaff({{item.phone}})">删除</text>
-                            </view>
+        <!-- 下属列表 -->
+        <!-- <view class="add_staff_list">
+                    <view class="add_staff_title">下属列表</view>
+                    <scroll-view scroll-y style="height:{{winHeight}}rpx">
+                        <view class="staffList">
+                            <repeat for="{{staffList}}" key="index" index="index" item="item">
+                                <view class="infoItem">
+                                    <text class="name">{{item.number}}</text>
+                                    <text class="name">{{item.name}}</text>
+                                    <text class="name">{{item.phone}}</text>
+                                    <text class="name">{{item.role_cn}}</text>
+                                    <view class="handleBox">
+                                        <text class="handle" @tap="deleteStaff({{item.phone}})">删除</text>
+                                    </view>
+                                </view>
+                            </repeat>
                         </view>
-                    </repeat>
-                </view>
-            </scroll-view>
-        </view>
+                    </scroll-view>
+                </view> -->
         <!-- 改绑模态框 -->
         <view class="bind_modal" wx:if="{{showBindModal}}">
             <view class="modal_content">
@@ -79,30 +79,34 @@
         <view wx:if="{{showAuthorModal}}" class="author_modal">
             <checkbox-group class="checkBox_groupAll" @change="selectAll">
                 <label class="checkBox">
-                    <checkbox class="top_checkbox_item" value="all" checked="{{allCheck}}"  color="orange"/>
-                    <view class="allSelect">
-                        全选
-                    </view>
-                </label>
+                            <checkbox class="top_checkbox_item" value="all" checked="{{allCheck}}"  color="orange"/>
+                            <view class="allSelect">
+                                全选
+                            </view>
+                        </label>
             </checkbox-group>
+            <!-- 下属列表 -->
+            <view class="author_modal_title" wx:if="{{userList.length}}">下属列表</view>
             <checkbox-group wx:if="{{userList.length}}" class="checkBox_group" @change="changeUser">
                 <repeat for="{{userList}}" key="index" item="item">
                     <label class="checkBox" @tap="selectAuthor" data-id="{{item.phone}}">
-                        <checkbox class="checkbox_item"  color="orange" value="{{item.id}}"  checked="{{item.checked}}"/>
-                        <view class="username">
-                            <text>{{item.name}}</text>
-                        </view>
-                    </label>
+                                <checkbox class="checkbox_item"  color="orange" value="{{item.id}}"  checked="{{item.checked}}"/>
+                                <view class="username">
+                                    <text>{{item.name}}</text>
+                                </view>
+                            </label>
                 </repeat>
             </checkbox-group>
-             <checkbox-group wx:if="{{storeList.length}}" class="checkBox_group" @change="changeStore">
+            <!-- 门店列表 -->
+            <view class="author_modal_title" wx:if="{{storeList.length}}">门店列表</view>
+            <checkbox-group wx:if="{{storeList.length}}" class="checkBox_group" @change="changeStore">
                 <repeat for="{{storeList}}" key="index" item="item">
-                    <label class="checkBox" @tap="selectStore" data-id="{{item.uuid}}">
-                        <checkbox class="checkbox_item"  color="orange" value="{{item.uuid}}"  checked="{{item.checked}}"/>
-                        <view class="username">
-                            <text>{{item.name}}</text>
-                        </view>
-                    </label>
+                    <label class="checkBox" @tap="selectStore" data-id="{{item.id}}">
+                                <checkbox class="checkbox_item"  color="orange" value="{{item.id}}"  checked="{{item.checked}}"/>
+                                <view class="username">
+                                    <text>{{item.name}}</text>
+                                </view>
+                            </label>
                 </repeat>
             </checkbox-group>
             <view wx:else class="noUserList">暂无下属</view>
@@ -120,14 +124,13 @@
             navigationBarTitleText: '我的下属列表'
         };
         data = {
-            allowAuth:[
-                {
-                    auth:"noAllow",
-                    name:"不允许"
+            allowAuth: [{
+                    auth: "noAllow",
+                    name: "不允许"
                 },
                 {
-                    auth:"allow",
-                    name:"另外"
+                    auth: "allow",
+                    name: "另外"
                 }
             ],
             allCheck: false,
@@ -135,92 +138,15 @@
                 name: "运营主管",
                 id: "k98_operation_manager"
             }],
-            userList: [
-                {
-                    phone: 13323456321,
-                    name: 'hotDot',
-                    value: '小猫',
-                    checked:false,
-                },
-                {
-                    phone: 13323456322,
-                    name: 'CHN',
-                    value: '三毛',
-                    checked:false,
-                },
-                {
-                    phone: 13323456323,
-                    name: '大毛',
-                    value: '大毛',
-                    checked:false,
-                },
-                {
-                    phone: 133234563212,
-                    name: 'hotDot',
-                    value: '小猫',
-                    checked:false,
-                },
-                {
-                    phone: 133234563222,
-                    name: 'CHN',
-                    value: '三毛',
-                    checked:false,
-                },
-                {
-                    phone: 133234563232,
-                    name: '大毛',
-                    value: '大毛',
-                    checked:false,
-                }
-            ],
-            subStaffList:[],
-            storeList:[
-                {
-                    uuid:"xxxxx",
-                    name:"中新吧",
-                    checked:false,
-                },
-                {
-                    uuid:"yyyyy",
-                    name:"老友吧",
-                    checked:false,
-                },
-                   {
-                    uuid:"zzzzz",
-                    name:"中新吧",
-                    checked:false,
-                },
-                {
-                    uuid:"xxxsd",
-                    name:"老友吧",
-                    checked:false,
-                },
-                   {
-                    uuid:"gsdagf",
-                    name:"中新吧",
-                    checked:false,
-                },
-                {
-                    uuid:"asdet",
-                    name:"老友吧",
-                    checked:false,
-                },   {
-                    uuid:"wetr",
-                    name:"中新吧",
-                    checked:false,
-                },
-                {
-                    uuid:"erhfsd",
-                    name:"老友吧",
-                    checked:false,
-                }
-            ],
-            paramStoreList:[],
+            userList: [],
+            subStaffList: [],
+            storeList: [],
+            paramStoreList: [],
             roleIndex: 0,
             phone: "",
             password: "",
             role: "",
-            pessmisson: 0,
+            permission: 0,
             workNumber: "",
             winHeight: "",
             phone: "",
@@ -228,9 +154,9 @@
             showBindModal: false,
             showAuthorModal: false,
             staffList: [],
-            isShowAuthList:"noAllow",
-            userIds:[],
-            storeIds:[],
+            isShowAuthList: "noAllow",
+            userIds: [],
+            storeIds: [],
         };
         onUnload() {
             wx.removeStorage({
@@ -241,27 +167,6 @@
             })
         };
         methods = {
-            //删除员工
-            deleteStaff(phoneId) {
-                let url = `${this.$parent.globalData.commonUrl}/api/deleteStaff?tk=${this.$parent.globalData.tk}&phone=${phoneId}`
-                util.interface_get(url).then(res => {
-                    if (res.errCode === 0) {
-                        wx.showToast({
-                            title: '删除成功',
-                            icon: 'success',
-                            duration: 2000
-                        })
-                        this._loadAllStaff();
-                    } else {
-                        wx.showToast({
-                            title: '删除失败',
-                            icon: 'none',
-                            duration: 2000
-                        })
-                    }
-                    console.log('删除结果---------------------------：', res);
-                })
-            },
             //允许权限
             selectAuthor(e) {
                 console.log("自定义属性---", e.currentTarget.dataset.id)
@@ -283,13 +188,13 @@
                 console.log("自定义属性---", e.currentTarget.dataset.id)
                 let index = e.currentTarget.dataset.id;
                 this.storeList = this.storeList.map(store => {
-                    if (index == store.uuid) {
+                    if (index == store.id) {
                         store["checked"] = !store["checked"]
                     }
-                    if (store["checked"] && this.paramStoreList.indexOf(store.uuid) == -1) {
-                        this.paramStoreList.push(store.uuid)
-                    } else if (!store["checked"] && this.paramStoreList.indexOf(store.uuid) >= 0) {
-                        this.paramStoreList.splice(this.paramStoreList.indexOf(store.uuid), 1)
+                    if (store["checked"] && this.paramStoreList.indexOf(store.id) == -1) {
+                        this.paramStoreList.push(store.id)
+                    } else if (!store["checked"] && this.paramStoreList.indexOf(store.id) >= 0) {
+                        this.paramStoreList.splice(this.paramStoreList.indexOf(store.id), 1)
                     }
                     return store
                 })
@@ -309,10 +214,9 @@
                     this.storeList = this.storeList.map(store => {
                         store["checked"] = true;
                         this.allCheck = true;
-                        this.paramStoreList.push(store.uuid)
+                        this.paramStoreList.push(store.id)
                         return store
                     })
-                    
                 } else {
                     this.userList = this.userList.map(user => {
                         user["checked"] = false;
@@ -328,8 +232,8 @@
                 this.$apply()
             },
             changeUser(e) {
-                 this.userIds = e.detail.value;
-                if (this.storeIds.length+this.userIds.length == this.userList.length+this.storeList.length) {
+                this.userIds = e.detail.value;
+                if (this.storeIds.length + this.userIds.length == this.userList.length + this.storeList.length) {
                     this.allCheck = true;
                     this.$apply()
                     return
@@ -338,34 +242,34 @@
             },
             changeStore(e) {
                 this.storeIds = e.detail.value;
-                if (this.storeIds.length+this.userIds.length == this.userList.length+this.storeList.length) {
+                if (this.storeIds.length + this.userIds.length == this.userList.length + this.storeList.length) {
                     this.allCheck = true;
                     this.$apply()
                     return
                 }
                 this.allCheck = false;
             },
-            checkboxAuth(e){
+            checkboxAuth(e) {
                 console.log(e.detail.value)
                 this.isShowAuthList = e.detail.value
-                if(this.isShowAuthList=="allow"){
+                if (this.isShowAuthList == "allow") {
                     this.showAuthorModal = true;
                     let _this = this;
                     wx.getStorage({
                         key: 'userList',
-                        success(res){
+                        success(res) {
                             _this.userList = JSON.parse(res.data)
                         }
                     })
                     wx.getStorage({
                         key: 'storeList',
-                        success(res){
+                        success(res) {
                             _this.storeList = JSON.parse(res.data)
                         }
                     })
                     this.$apply()
-                    console.log("_this.userList----",_this.userList)
-                    console.log("_this.storeList----",_this.storeList)
+                    console.log("_this.userList----", _this.userList)
+                    console.log("_this.storeList----", _this.storeList)
                 }
             },
             closeAuthorMldal() {
@@ -406,8 +310,8 @@
                 this.roleIndex = e.detail.value;
                 this.role = this.arrayRole[Number(e.detail.value)].id;
                 console.log('this.role', this.role);
-                if(this.role=="k98_operation_middle" || this.role=="k98_operation_behind" || this.role=="k98_operation_front"){
-                    this.permission = 1  //修改门店权限 1，其余0
+                if (this.role == "k98_operation_middle" || this.role == "k98_operation_behind" || this.role == "k98_operation_front") {
+                    this.permission = 1 //修改门店权限 1，其余0
                 }
             },
             getPhoneNumr(e) {
@@ -420,15 +324,17 @@
                 this.workNumber = e.detail.value;
             },
             addStaff() {
-                if(this.isShowAuthList=="noAllow"){ //如果不允许则清空参数
+                if (this.isShowAuthList == "noAllow") { //如果不允许则清空参数
                     this.subStaffList = [];
                     this.paramStoreList = []
                 }
+                console.log("this.subStaffList-----------",this.subStaffList)
+                console.log("this.paramStoreList-----------",this.paramStoreList)
                 this.password = this.phone.slice(5, 11);
                 let url = `${this.$parent.globalData.commonUrl}/api/addStaff?tk=${this.$parent.globalData.tk}`;
                 var params = {
-                    name: this.name || "liuning",
-                    number: this.workNumber || "001",
+                    name: this.name || "临时工",
+                    number: this.workNumber,
                     phone: this.phone,
                     password: this.password,
                     parentId: this.$parent.globalData.userInfo.phone,
@@ -436,8 +342,8 @@
                     // password: '8888',
                     role: this.role,
                     permission: this.permission,
-                    subStaffList:this.subStaffList, //授权管理员工给下属
-                    storeList:this.paramStoreList //授权管理门店给下属
+                    subStaffList: this.subStaffList, //授权管理员工给下属
+                    storeList: this.paramStoreList //授权管理门店给下属
                 };
                 if (this.phone.length != 11) {
                     wx.showToast({
@@ -448,16 +354,7 @@
                     return
                 }
                 console.log(params)
-                for (let key in params) {
-                    if (!params[key]) {
-                        wx.showToast({
-                            title: '请输入完整信息',
-                            icon: "none",
-                            duration: 2000
-                        })
-                        return
-                    }
-                }
+               
                 util.interface_post(url, params).then(res => {
                     if (res.errCode == 0) {
                         wx.showToast({
@@ -465,7 +362,7 @@
                             icon: 'success',
                             duration: 2000
                         })
-                        this._loadAllStaff();
+                        // this._loadAllStaff();
                     } else if (res.errCode == 1091) {
                         wx.showToast({
                             title: '工号已存在',
@@ -489,31 +386,31 @@
                 this.showBindModal = !this.showBindModal;
             }
         };
-        _judgeRole(role) {
-            if (role == "k98_operation_manager") {
-                return "运营主管"
-            } else if (role == "k98_operation_behind") {
-                return "运营后台"
-            } else if (role == "k98_operation_middle") {
-                return "运营中台"
-            } else if (role == "k98_operation_front") {
-                return "运营前台"
-            } else if (role == "k98_center_staff") {
-                return "本部员工"
-            } else if (role == "k98_city_boss") {
-                return "城市合伙老板"
-            } else if (role == "k98_store_boss") {
-                return "门店老板"
-            } else if (role == "k98_store_manager") {
-                return "店长"
-            } else if (role == "k98_store_staff") {
-                return "店员"
-            } else if (role == "k98_manager") {
-                return "系统管理员"
-            } else {
-                return "运营主管"
-            }
-        };
+        // _judgeRole(role) {
+        //     if (role == "k98_operation_manager") {
+        //         return "运营主管"
+        //     } else if (role == "k98_operation_behind") {
+        //         return "运营后台"
+        //     } else if (role == "k98_operation_middle") {
+        //         return "运营中台"
+        //     } else if (role == "k98_operation_front") {
+        //         return "运营前台"
+        //     } else if (role == "k98_center_staff") {
+        //         return "本部员工"
+        //     } else if (role == "k98_city_boss") {
+        //         return "城市合伙老板"
+        //     } else if (role == "k98_store_boss") {
+        //         return "门店老板"
+        //     } else if (role == "k98_store_manager") {
+        //         return "店长"
+        //     } else if (role == "k98_store_staff") {
+        //         return "店员"
+        //     } else if (role == "k98_manager") {
+        //         return "系统管理员"
+        //     } else {
+        //         return "运营主管"
+        //     }
+        // };
         _handleArrayRole(role) {
             if (role == "k98_operation_manager") {
                 return [{
@@ -563,7 +460,7 @@
                     if (res.data.errCode === 0) {
                         let staff = res.data.staff;
                         staff.forEach(item => {
-                            item.role_cn = _this._judgeRole(item.role)
+                            item.role_cn = util._judgeRole(item.role)
                         })
                         _this.staffList = staff.sort(util.sortByKey("number"));
                         console.log("员工列表", _this.staffList)
@@ -572,12 +469,24 @@
                 }
             })
         };
+        _loadShopList() {
+            let url = `${this.$parent.globalData.commonUrl}/api/loadShopList?tk=${this.$parent.globalData.tk}&phone=${this.$parent.globalData.userInfo.phone}`
+            util.interface_get(url).then(res => {
+                this.storeList = res
+                this.storeList.forEach(store => {
+                    store["checked"] = false
+                })
+                console.log("店铺列表信息-----", this.storeList)
+                this.$apply()
+            })
+        };
         events = {};
         onLoad() {
             this.arrayRole = this._handleArrayRole(this.$parent.globalData.userInfo.role)
             this.role = this.arrayRole[0].id
             this.winHeight = util.getScrollHeight(730);
-            this._loadAllStaff();
+            // this._loadAllStaff();
+            this._loadShopList()
         }
         // Other properties
     }
@@ -625,7 +534,7 @@
                 .info_desc {
                     margin: 20rpx 0 20rpx 40rpx
                 }
-                .label_tag{
+                .label_tag {
                     display: flex;
                     margin-right: 20rpx;
                 }
@@ -728,6 +637,10 @@
                 position: absolute;
                 right: 20rpx;
                 top: 20rpx;
+            }
+            .author_modal_title {
+                margin: 40rpx 40rpx 0 40rpx;
+                color: #ffba00;
             }
             .checkBox_groupAll {
                 .checkBox {

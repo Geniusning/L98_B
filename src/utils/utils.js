@@ -246,6 +246,31 @@ const prefixZero = (num,n)=>{
   }
   return num;
 }
+const _judgeRole = (role) => {
+  if (role == "k98_operation_manager") {
+    return "运营主管"
+  } else if (role == "k98_operation_behind") {
+    return "运营后台"
+  } else if (role == "k98_operation_middle") {
+    return "运营中台"
+  } else if (role == "k98_operation_front") {
+    return "运营前台"
+  } else if (role == "k98_center_staff") {
+    return "本部员工"
+  } else if (role == "k98_city_boss") {
+    return "城市合伙老板"
+  } else if (role == "k98_store_boss") {
+    return "门店老板"
+  } else if (role == "k98_store_manager") {
+    return "店长"
+  } else if (role == "k98_store_staff") {
+    return "店员"
+  } else if (role == "k98_manager") {
+    return "系统管理员"
+  } else {
+    return "运营主管"
+  }
+};
 //压缩上传图片
 // const compressUploadImg = (this,showImgUrl,uploadImgUrl)=>{
 //   if(typeof showImgUrl =="object"){
@@ -280,5 +305,6 @@ module.exports = {
   timestampToTime2,
   getScrollHeight,
   compareDate,
-  sortByKey
+  sortByKey,
+  _judgeRole
 }

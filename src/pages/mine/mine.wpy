@@ -50,17 +50,16 @@
           </view>
           <image src='../../images/arrow_right.png'></image>
         </navigator>
-        <navigator  url='/pages/mine/myStaff/myStaff' class='item'>
-          <!--wx:if="{{noAuth}}" <navigator url='/pages/mine/setting/account/account' class='item'> -->
+        <!-- <navigator  url='/pages/mine/myStaff/myStaff' class='item'>
           <view class='name-box'>
             <image class='icon' src='../../images/shop1.png' style='width:34rpx;height:32rpx;'></image>
             <text class='settingName'>我的下属管理</text>
           </view>
           <image src='../../images/arrow_right.png'></image>
-        </navigator>
+        </navigator> -->
       </view>
       <!-- 管理员模块 -->
-      <view class='mine_admin_module'>
+      <view class='mine_admin_module' wx:if="{{noAuth}}">
         <navigator url='/pages/mine/QRcode/qrCodeList' class='item'>
           <view class='name-box'>
             <image class='icon' src='../../images/question.png' style='width:34rpx;height:34rpx;'></image>
@@ -160,12 +159,7 @@
       this.shopInfo = this.$parent.globalData.shopInfo;
       this.staff = this.$parent.globalData.userInfo;
       console.log("this.staff-------", this.staff)
-      if (this.staff.role === "ZongBYG" ||
-        this.staff.role === "CityBoss" ||
-        this.staff.role === "ShopBoss" ||
-        this.staff.role === "ShopManager" ||
-        this.staff.role === "shopStaff"
-      ) {
+      if (this.staff.permission==0) {
         this.noAuth = false
       }
       console.log(this.noAuth)

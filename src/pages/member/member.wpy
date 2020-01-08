@@ -26,10 +26,10 @@
         </view>
       </view>
       <!-- <view class='search_box' wx:if="{{searchFlag}}">
-                                      <image src='../../images/search.png' class='searchIcon'></image>
-                                      <input value="" type="text" placeholder="手机号/姓名" maxlength="20" class='search_area' />
-                                      <image src='../../images/shaixuan.png' class='selectIcon' @tap='showSelectCustomPanel'></image>
-                                    </view> -->
+                                        <image src='../../images/search.png' class='searchIcon'></image>
+                                        <input value="" type="text" placeholder="手机号/姓名" maxlength="20" class='search_area' />
+                                        <image src='../../images/shaixuan.png' class='selectIcon' @tap='showSelectCustomPanel'></image>
+                                      </view> -->
       <swiper class="tab-content" current="{{currentTab}}" duration="300" style="height:{{winHeight}}rpx" @change="changeSwiper">
         <!-- 最近访客 -->
         <swiper-item>
@@ -43,6 +43,7 @@
                     <view class="userInfo">
                       <text class='name'>{{item.nickname?item.nickname:'匿名用户'}}</text>
                       <text class="tag">{{item.soreType}}</text>
+                      <text class="tag tag1">{{item.deskCode!=0?"店内"+item.deskCode+"号":"店外"}}</text>
                     </view>
                     <text class='content' space="ensp" decode="{{true}}">来源:{{item.visitType}} 拓客:{{item.waiter?item.waiter:"自来客"}}</text>
                   </view>
@@ -70,8 +71,8 @@
                     </view>
                     <text class='content' space="ensp" decode="{{true}}">来源:{{item.visitType}} 拓客:{{item.waiter?item.waiter:"自来客"}}</text>
                     <!-- <view class='tags_list'>
-                                  <text class="tag_item">{{item.soreType}}</text>
-                                </view> -->
+                                    <text class="tag_item">{{item.soreType}}</text>
+                                  </view> -->
                   </view>
                   <view class='contactInfo_times'>
                     <text space="ensp" decode="{{true}}" class='times'>到店:{{item.visitInsideStore}}  网店:{{item.visitOutsideStore}}</text>
@@ -110,8 +111,8 @@
     </view>
   </view>
   <!-- <view wx:else class='noPermission'>
-                                                                        <text class='text'>暂无权限</text>
-                                                                      </view> -->
+                                                                          <text class='text'>暂无权限</text>
+                                                                        </view> -->
 </template>
 
 <script>
@@ -141,7 +142,7 @@
       isRecentUsersFirstLoad: true,
       allUsersCursor: 0,
       recentUsersCursor: 0,
-      myUsersCursor:0,
+      myUsersCursor: 0,
       allUserSwitch: true,
       recentUserSwitch: true,
       tuokeUserSwitch: true,
@@ -150,7 +151,7 @@
       ismyUsersFinish: false,
       allUsers: [],
       recentUsers: [],
-      myUsers:[],
+      myUsers: [],
       last30Days: '',
       customTypeList: [{
           id: 1,
@@ -196,11 +197,11 @@
       this._getMemberList(this.recentUsersCursor); //拉取成员数据
       // this.show = !!(this.$parent.globalData.userInfo.permission & 4);
     };
-    onload(){
+    onload() {
       this.loadStoreSetting()
     };
     methods = {
-      loadStoreSetting(){
+      loadStoreSetting() {
         let shopUrl = `${this.$parent.globalData.commonUrl}/api/loadStoreSetting?tk=${this.$parent.globalData.tk}`;
         util.interface_get(shopUrl).then(res => {
           console.log(res)
@@ -243,20 +244,20 @@
           this._getMemberList(this.allUsersCursor);
         } else if (this.loadType === 1) {
           this._getMemberList(this.recentUsersCursor);
-        }else if (this.loadType === 2){
-           this._getMemberList(this.myUsersCursor);
+        } else if (this.loadType === 2) {
+          this._getMemberList(this.myUsersCursor);
         }
       }
     };
     _getMemberList(startCursor) { //获取成员列表
-    console.log("获取成员列表---------this.$parent.globalData.commonUrl--------",this.$parent.globalData.commonUrl)
+      console.log("获取成员列表---------this.$parent.globalData.commonUrl--------", this.$parent.globalData.commonUrl)
       let userCount = 10 //一次性加载多少条信息
-      if(this.loadType === 2){
+      if (this.loadType === 2) {
         var url = `${this.$parent.globalData.commonUrl}/api/loadUsers?tk=${this.$parent.globalData.tk}&phone=${this.$parent.globalData.userInfo.phone}&userCount=${userCount}&startCursor=${startCursor}&loadType=${this.loadType}`;
-      }else{
+      } else {
         var url = `${this.$parent.globalData.commonUrl}/api/loadUsers?tk=${this.$parent.globalData.tk}&userCount=${userCount}&startCursor=${startCursor}&loadType=${this.loadType}`;
       }
-      console.log("url--------",url)
+      console.log("url--------", url)
       util.interface_get(url).then(res => {
         console.log('返回用户数-----------------', res)
         var usersArr = res.Users;
@@ -291,7 +292,7 @@
             this.$apply();
             console.log('最近访客-------------------', this.recentUsers);
             break;
-          case 2 : //我的客人
+          case 2: //我的客人
             this.myUsers = this.myUsers.concat(usersArr).map(item => {
               return this._judgeSortType(item)
             });
@@ -329,7 +330,7 @@
           this.loadType = 0;
           if (!this.isAllUserFinish) { //加载完全部用户就不再调接口
             this._getMemberList(this.allUsersCursor);
-          console.log('加载全部成员')
+            console.log('加载全部成员')
           }
           break;
         case 2: //加载我的拓客信息
@@ -359,7 +360,7 @@
           element.visitType = "扫核销码"
           break;
         case 2:
-          element.visitType = "扫桌贴-"+element.deskCode
+          element.visitType = "扫桌贴-" + element.deskCode
           break;
         case 3:
           element.visitType = "首页分享"
@@ -565,6 +566,11 @@
             font-size: 22rpx;
             text-align: center;
             padding: 4rpx 2rpx;
+            margin-right: 5rpx
+          }
+          .tag1 {
+            background-color: red;
+            color: #fff;
           }
         }
       }
@@ -574,7 +580,6 @@
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        .times {}
       }
     }
   }
