@@ -102,13 +102,6 @@
           </view>
           <image src='../../images/arrow_right.png'></image>
         </navigator>
-        <navigator url='/pages/mine/newShop/newShop' class='item'>
-          <view class='name-box'>
-            <image class='icon' src='../../images/about.png' style='width:34rpx;height:34rpx;'></image>
-            <text class='settingName'>新增门店</text>
-          </view>
-          <image src='../../images/arrow_right.png'></image>
-        </navigator>
         <!-- url='/pages/mine/server/server' -->
         <navigator @tap='intoTable' class='item'>
           <view class='name-box'>

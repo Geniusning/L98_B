@@ -17,6 +17,7 @@
                 </view>
                 <view class='contactInfo_times'>
                   <text class='times' space="ensp" decode="{{true}}">到店:{{item.visitInsideStore}}  网店:{{item.visitOutsideStore}}</text>
+                   <view class='times'>当日次数：{{item.dayVisitTimes}}</view>
                   <view class='times'>{{item.visitTime}}</view>
                 </view>
               </view>
@@ -137,6 +138,7 @@
                 </view>
                 <view class='contactInfo_times'>
                   <text class='times' space="ensp" decode="{{true}}">到店:{{item.visitInsideStore}}  网店:{{item.visitOutsideStore}}</text>
+                  <view class='times'>当日次数：{{item.dayVisitTimes}}</view>
                   <view class='times'>{{item.visitTime}}</view>
                 </view>
               </view>
@@ -306,7 +308,7 @@
     _loadDayOutDoorUsers(date){
        let url = `${this.$parent.globalData.commonUrl}/api/loadDayOutDoorUsers?tk=${this.$parent.globalData.tk}&date=${date}`
       util.interface_get(url).then(res => {
-        console.log("loadDayRegister--------", res)
+        console.log("loadDayOutDoorUsers--------", res)
         if (res.errCode == 0) {
           this.visitorList = res.users
           this._dealArr(this.visitorList)
