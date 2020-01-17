@@ -7,12 +7,12 @@
     <!-- 列表 -->
     <view class='setting-container'>
       <!-- <navigator url='/pages/mine/dutyPeople/dutyPeople' class='item'>
-                                    <view class='name-box'>
-                                      <image class='icon' src='../../images/account.png' style='width:32rpx;height:28rpx;'></image>
-                                      <text class='settingName'>社群运营专员</text>
-                                    </view>
-                                    <image src='../../images/arrow_right.png'></image>
-                                  </navigator> -->
+                                      <view class='name-box'>
+                                        <image class='icon' src='../../images/account.png' style='width:32rpx;height:28rpx;'></image>
+                                        <text class='settingName'>社群运营专员</text>
+                                      </view>
+                                      <image src='../../images/arrow_right.png'></image>
+                                    </navigator> -->
       <!-- 通用模块 -->
       <view class='mine_common_module'>
         <navigator class='item' hover-class="none" url='/pages/mine/setting/passwordUpdate/passwordUpdate'>
@@ -51,12 +51,12 @@
           <image src='../../images/arrow_right.png'></image>
         </navigator>
         <!-- <navigator  url='/pages/mine/myStaff/myStaff' class='item'>
-          <view class='name-box'>
-            <image class='icon' src='../../images/shop1.png' style='width:34rpx;height:32rpx;'></image>
-            <text class='settingName'>我的下属管理</text>
-          </view>
-          <image src='../../images/arrow_right.png'></image>
-        </navigator> -->
+            <view class='name-box'>
+              <image class='icon' src='../../images/shop1.png' style='width:34rpx;height:32rpx;'></image>
+              <text class='settingName'>我的下属管理</text>
+            </view>
+            <image src='../../images/arrow_right.png'></image>
+          </navigator> -->
       </view>
       <!-- 管理员模块 -->
       <view class='mine_admin_module' wx:if="{{noAuth}}">
@@ -67,7 +67,8 @@
           </view>
           <image src='../../images/arrow_right.png'></image>
         </navigator>
-        <navigator url='/pages/mine/setting/setting' class='item'>
+        <!-- <navigator url='/pages/mine/setting/setting' class='item'> -->
+        <navigator url='/pages/mine/setting/shopInfo/shopInfo' class='item'>
           <view class='name-box'>
             <image class='icon' src='../../images/setting.png' style='width:34rpx;height:32rpx;'></image>
             <text class='settingName'>门店设置</text>
@@ -75,12 +76,12 @@
           <image src='../../images/arrow_right.png'></image>
         </navigator>
         <!-- <navigator url='/pages/mine/setting/account/account' class='item'>
-                      <view class='name-box'>
-                        <image class='icon' src='../../images/setting.png' style='width:34rpx;height:32rpx;'></image>
-                        <text class='settingName'>员工设置</text>
-                      </view>
-                      <image src='../../images/arrow_right.png'></image>
-                    </navigator> -->
+                        <view class='name-box'>
+                          <image class='icon' src='../../images/setting.png' style='width:34rpx;height:32rpx;'></image>
+                          <text class='settingName'>员工设置</text>
+                        </view>
+                        <image src='../../images/arrow_right.png'></image>
+                      </navigator> -->
         <navigator url='/pages/mine/room/bindRoomList?type=list' class='item'>
           <view class='name-box'>
             <image class='icon' src='../../images/setting.png' style='width:34rpx;height:32rpx;'></image>
@@ -117,6 +118,8 @@
           </view>
           <image src='../../images/arrow_right.png'></image>
         </navigator>
+      </view>
+      <view class="mine_common_module" style="margin-top:0">
         <view class='item' @tap='goBackShopList'>
           <view class='name-box'>
             <image class='icon' src='../../images/about.png' style='width:34rpx;height:32rpx;'></image>
@@ -152,7 +155,7 @@
       this.shopInfo = this.$parent.globalData.shopInfo;
       this.staff = this.$parent.globalData.userInfo;
       console.log("this.staff-------", this.staff)
-      if (this.staff.permission==0) {
+      if (this.staff.permission == 0) {
         this.noAuth = false
       }
       console.log(this.noAuth)
@@ -202,7 +205,6 @@
   .shopInfo-container {
     width: 100%;
     position: relative;
-    height: 306rpx;
   }
   .shopInfo-container .mine_bg {
     width: 100%;
@@ -223,13 +225,14 @@
   }
   /* 列表 */
   .setting-container {
-    margin-top: 20rpx; // background: #fff;
+    // margin-top: 20rpx; // background: #fff;
     .mine_common_module {
       background-color: #fff;
-      margin-bottom: 20rpx;
+      margin-top: 20rpx;
     }
     .mine_admin_module {
       background-color: #fff;
+      margin-top: 20rpx;
     }
   }
   .setting-container .item {

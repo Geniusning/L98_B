@@ -3,9 +3,28 @@
     <!-- <view wx:if='{{show}}' class="home-container"> -->
     <view class="home-container">
       <view wx:if="{{userStat}}">
-      <!-- 门店信息 -->
+        <!-- 门店信息 -->
         <view class="shopInfo-wrapper">
-           <Header :sonShopInfo.sync="shopInfo" :superior.sync="userInfo"></Header>
+          <Header :sonShopInfo.sync="shopInfo" :superior.sync="userInfo"></Header>
+        </view>
+        <!-- 筛选区域 -->
+        <view class="rank_selection">
+          <view class="rank_selection_left">
+            <text class="yesterday {{currentTab==0?'active':''}}" @tap="seletShortCutDay(0)">昨天</text>
+            <text class="today {{currentTab==1?'active':''}} " @tap="seletShortCutDay(1)">今天</text>
+            <text class="week {{currentTab==2?'active':''}} " @tap="seletShortCutDay(2)">本周</text>
+            <text class="week {{currentTab==3?'active':''}} " @tap="seletShortCutDay(3)">本月</text>
+          </view>
+          <view class="rank_selection_right">
+            <picker mode="date" start="2019-09-01" end="2023-09-01" @change="BeginDateChange">
+              <view class="rank_time_picker">{{startDay}}</view>
+            </picker>
+            <text class="line">-</text>
+            <picker mode="date" start="2019-09-01" end="2029-09-01" @change="EndDateChange">
+              <view class="rank_time_picker">{{endDay}}</view>
+            </picker>
+            <text class="btn" @tap="selectData">查询</text>
+          </view>
         </view>
         <!-- 锁客拓客 -->
         <view class="lockAndExpand-wrapper">
@@ -13,17 +32,17 @@
             <view class="title-box-left">
               <image src="../../images/client.png" class="title-icon"></image>
               <text class="subTitle">拓客分析</text>
-              <text @tap='selectYestodayUserStat' class="yestoday {{clientFlag?'active':''}}">(昨日)</text>
+              <!-- <text @tap='selectYestodayUserStat' class="yestoday {{clientFlag?'active':''}}">(昨日)</text> -->
             </view>
-            <view class="title-box-right" @tap='selectTodayUserStat'>
-              <text class="today {{!clientFlag?'active':''}}">今日</text>
-            </view>
+            <!-- <view class="title-box-right" @tap='selectTodayUserStat'> -->
+            <!-- <text class="today {{!clientFlag?'active':''}}">今日</text> -->
+            <!-- </view> -->
           </view>
           <!-- top -->
           <view class="lockAndExpand-Part">
             <navigator url="/pages/index/visitorRecord/visitorRecord?type=visitor" hover-class="none" class="lockAndExpand-Part-item">
               <view class="item">
-                <text class="name">网店访客：</text><text class="content big">{{userStat.dayStat.dayTotalUser}}</text>
+                <text class="name">网店访客：</text><text class="content big">{{userStat.dayStat[0].dayTotalUser}}</text>
               </view>
               <view class="accumulated">
                 <text class="name"><text class='letterSpace'>累</text>计：</text>
@@ -31,10 +50,9 @@
               </view>
             </navigator>
             <view class="line"></view>
-            <!-- url="/pages/index/dianNeiShangXian/dianNeiShangXian" -->
-            <navigator url="/pages/index/visitorRecord/visitorRecord?type=customer"  hover-class="none" class="lockAndExpand-Part-item">
+            <navigator url="/pages/index/visitorRecord/visitorRecord?type=customer" hover-class="none" class="lockAndExpand-Part-item">
               <view class="item">
-                <text class="name">店内上线：</text><text class="content big">{{userStat.dayStat.dayQrcodeUser}}</text>
+                <text class="name">店内上线：</text><text class="content big">{{userStat.dayStat[0].dayQrcodeUser}}</text>
               </view>
               <view class="accumulated">
                 <text class="name"><text class='letterSpace'>累</text>计：</text>
@@ -46,7 +64,7 @@
           <view class="lockAndExpand-Part bottomPart">
             <navigator url="/pages/index/registerRecord/registerRecord" hover-class="none" class="lockAndExpand-Part-item">
               <view class="item">
-                <text class="name">新增注册：</text><text class="content big">{{userStat.dayStat.dayNewUser}}</text>
+                <text class="name">新增注册：</text><text class="content big">{{userStat.dayStat[0].dayNewUser}}</text>
               </view>
               <view class="accumulated">
                 <text class="name"><text class='letterSpace'>累</text>计：</text>
@@ -56,7 +74,7 @@
             <view class="line"></view>
             <navigator url="/pages/index/dianWaiShangXian/dianWaiShangXian" hover-class="none" class="lockAndExpand-Part-item">
               <view class="item">
-                <text class="name">店外上线：</text><text class="content big">{{userStat.dayStat.dayOtherUser}}</text>
+                <text class="name">店外上线：</text><text class="content big">{{userStat.dayStat[0].dayOtherUser}}</text>
               </view>
               <view class="accumulated">
                 <text class="name"><text class='letterSpace'>累</text>计：</text>
@@ -71,17 +89,13 @@
             <view class="title-box-left">
               <image src="../../images/activity.png" class="title-icon"></image>
               <text class="subTitle">营销活动</text>
-              <text @tap='selectYestodayCouponStat' class="yestoday {{couponFlag?'active':''}}">(昨日)</text>
-            </view>
-            <view class="title-box-right" @tap='selectTodayCouponStat'>
-              <text class="today {{!couponFlag?'active':''}}">今日</text>
             </view>
           </view>
           <!-- top -->
           <view class="lockAndExpand-Part">
             <navigator url="/pages/index/yingXiaoHuoDongModule/yingXiaoHuoDongModule?type=0" hover-class="none" class="lockAndExpand-Part-item">
               <view class="item">
-                <text class="name">发券数量：</text><text class="content big">{{marketingStat.marketingDayStat.dayIssuedCoupon}}</text>
+                <text class="name">发券数量：</text><text class="content big">{{marketingStat.marketingDayStat[0].dayIssuedCoupon}}</text>
               </view>
               <view class="accumulated">
                 <text class="name"><text class='letterSpace'>累</text>计：</text>
@@ -91,7 +105,7 @@
             <view class="line"></view>
             <navigator url="/pages/index/yingXiaoHuoDongModule/yingXiaoHuoDongModule?type=1" hover-class="none" class="lockAndExpand-Part-item">
               <view class="item">
-                <text class="name">到店核销：</text><text class="content big">{{marketingStat.marketingDayStat.daySetOffCoupon}}</text>
+                <text class="name">到店核销：</text><text class="content big">{{marketingStat.marketingDayStat[0].daySetOffCoupon}}</text>
               </view>
               <view class="accumulated">
                 <text class="name"><text class='letterSpace'>累</text>计：</text>
@@ -103,7 +117,7 @@
           <view class="lockAndExpand-Part bottomPart">
             <navigator url="/pages/index/yingXiaoHuoDongModule/yingXiaoHuoDongModule?type=2" hover-class="none" class="lockAndExpand-Part-item">
               <view class="item">
-                <text class="name">在线活动：</text><text class="content big">{{marketingStat.marketingDayStat.dayReleaseActivity}}</text>
+                <text class="name">在线活动：</text><text class="content big">{{marketingStat.marketingDayStat[0].dayReleaseActivity}}</text>
               </view>
               <view class="accumulated">
                 <text class="name"><text class='letterSpace'>累</text>计：</text>
@@ -113,7 +127,7 @@
             <view class="line"></view>
             <navigator url="/pages/index/takeInPartRecord/takeInPartRecord" hover-class="none" class="lockAndExpand-Part-item">
               <view class="item">
-                <text class="name">参与活动：</text><text class="content big">{{marketingStat.marketingDayStat.dayJoinActivity}}</text>
+                <text class="name">参与活动：</text><text class="content big">{{marketingStat.marketingDayStat[0].dayJoinActivity}}</text>
               </view>
               <view class="accumulated">
                 <text class="name"><text class='letterSpace'>累</text>计：</text>
@@ -128,10 +142,6 @@
             <view class="title-box-left">
               <image src="../../images/communityF.png" class="title-icon"></image>
               <text class="subTitle">社群活跃度</text>
-              <text @tap='selectYestodayCommunityStat' class="yestoday {{communityFlag?'active':''}}">(昨日)</text>
-            </view>
-            <view class="title-box-right" @tap='selectTodayCommunityStat'>
-              <text class="today {{!communityFlag?'active':''}}">今日</text>
             </view>
           </view>
           <!-- top -->
@@ -139,7 +149,7 @@
             <view class="lockAndExpand-Part">
               <view class="lockAndExpand-Part-item">
                 <view class="item">
-                  <text class="name">群友点赞：</text><text class="content big">{{communityStat.communityDayStat.dayMakeFriendStat}}</text>
+                  <text class="name">群友点赞：</text><text class="content big">{{communityStat.communityDayStat[0].dayMakeFriendStat}}</text>
                 </view>
                 <view class="accumulated">
                   <text class="name"><text class='letterSpace'>累</text>计：</text>
@@ -149,7 +159,7 @@
               <view class="line"></view>
               <view class="lockAndExpand-Part-item">
                 <view class="item">
-                  <text class="name">互赠礼物：</text><text class="content big">{{communityStat.communityDayStat.daySentGiftStat}}</text>
+                  <text class="name">互赠礼物：</text><text class="content big">{{communityStat.communityDayStat[0].daySentGiftStat}}</text>
                 </view>
                 <view class="accumulated">
                   <text class="name"><text class='letterSpace'>累</text>计：</text>
@@ -161,7 +171,7 @@
             <view class="lockAndExpand-Part bottomPart">
               <view class="lockAndExpand-Part-item">
                 <view class="item">
-                  <text class="name">群友对话：</text><text class="content big">{{communityStat.communityDayStat.dayChatStat}}</text>
+                  <text class="name">群友对话：</text><text class="content big">{{communityStat.communityDayStat[0].dayChatStat}}</text>
                 </view>
                 <view class="accumulated">
                   <text class="name"><text class='letterSpace'>累</text>计：</text>
@@ -171,7 +181,7 @@
               <view class="line"></view>
               <view class="lockAndExpand-Part-item">
                 <view class="item">
-                  <text class="name">游戏互动：</text><text class="content big">{{communityStat.communityDayStat.daygameStat}}</text>
+                  <text class="name">游戏互动：</text><text class="content big">{{communityStat.communityDayStat[0].daygameStat}}</text>
                 </view>
                 <view class="accumulated">
                   <text class="name"><text class='letterSpace'>累</text>计：</text>
@@ -187,17 +197,13 @@
             <view class="title-box-left">
               <image src="../../images/book.png" class="title-icon"></image>
               <text class="subTitle">服务监控</text>
-              <text @tap='selectYestodayBookingStat' class="yestoday {{bookingFlag?'active':''}}">(昨日)</text>
-            </view>
-            <view class="title-box-right" @tap='selectTodayBookingStat'>
-              <text class="today {{!bookingFlag?'active':''}}">今日</text>
             </view>
           </view>
           <!-- top -->
           <view class="lockAndExpand-Part">
             <navigator url="/pages/index/systemInform/systemInform" hover-class="none" class="lockAndExpand-Part-item">
               <view class="item">
-                <text class="name">系统通知：</text><text class="content big">{{mutualStat.MutualDayStat.dayBooking}}</text>
+                <text class="name">系统通知：</text><text class="content big">{{mutualStat.MutualDayStat[0].dayBooking}}</text>
               </view>
               <view class="accumulated">
                 <text class="name"><text class='letterSpace'>累</text>计：</text>
@@ -207,7 +213,7 @@
             <view class="line"></view>
             <navigator url="/pages/index/staffTalkWidthClient/staffTalkWidthClient" hover-class="none" class="lockAndExpand-Part-item">
               <view class="item">
-                <text class="name">客服对话：</text><text class="content big">{{mutualStat.MutualDayStat.dayClerkShareStat}}</text>
+                <text class="name">客服对话：</text><text class="content big">{{mutualStat.MutualDayStat[0].dayClerkShareStat}}</text>
               </view>
               <view class="accumulated">
                 <text class="name"><text class='letterSpace'>累</text>计：</text>
@@ -219,7 +225,7 @@
           <view class="lockAndExpand-Part bottomPart">
             <navigator url="/pages/index/dianYuanYuKeTalk/dianYuanYuKeTalk" hover-class="none" class="lockAndExpand-Part-item">
               <view class="item">
-                <text class="name">店员与客对话：</text><text class="content big">{{mutualStat.MutualDayStat.dayClerkChatStat}}</text>
+                <text class="name">店员与客对话：</text><text class="content big">{{mutualStat.MutualDayStat[0].dayClerkChatStat}}</text>
               </view>
               <view class="accumulated">
                 <text class="name"><text class='letterSpace'>累</text>计：</text>
@@ -229,7 +235,7 @@
             <view class="line"></view>
             <navigator url="/pages/index/consultGameRecord/consultGameRecord" hover-class="none" class="lockAndExpand-Part-item">
               <view class="item">
-                <text class="name">店员与客游戏：</text><text class="content big">{{mutualStat.MutualDayStat.dayClerkGameStat}}</text>
+                <text class="name">店员与客游戏：</text><text class="content big">{{mutualStat.MutualDayStat[0].dayClerkGameStat}}</text>
               </view>
               <view class="accumulated">
                 <text class="name"><text class='letterSpace'>累</text>计：</text>
@@ -240,31 +246,17 @@
         </view>
         <!-- 积分系统 -->
         <view class="lockAndExpand-wrapper">
-          <!-- <view class="title-box">
-                    <view class="title-box-left">
-                      <image src="../../images/jifen.png" class="title-icon"></image>
-                      <text class="subTitle">积分统计</text>
-                      <text class="yestoday">(昨日)</text>
-                    </view>
-                    <view class="title-box-right">
-                      <text class="today">今日</text>
-                    </view>
-                  </view> -->
           <view class="title-box">
             <view class="title-box-left">
               <image src="../../images/jifen.png" class="title-icon"></image>
               <text class="subTitle">积分统计</text>
-              <text @tap='selectYestodayJiFen' class="yestoday {{jiFenFlag?'active':''}}">(昨日)</text>
-            </view>
-            <view class="title-box-right" @tap='selectTodayJiFen'>
-              <text class="today {{!jiFenFlag?'active':''}}">今日</text>
             </view>
           </view>
           <!-- top -->
           <view class="lockAndExpand-Part">
             <navigator url="/pages/marketing/allTypeIntegraRec?type=sys" hover-class="none" class="lockAndExpand-Part-item">
               <view class="item">
-                <text class="name">糸统赠送：</text><text class="content big">{{integralStat.integralDayStat.daySystemSendStat}}</text>
+                <text class="name">糸统赠送：</text><text class="content big">{{integralStat.integralDayStat[0].daySystemSendStat}}</text>
               </view>
               <view class="accumulated">
                 <text class="name"><text class='letterSpace'>累</text>计：</text>
@@ -274,7 +266,7 @@
             <view class="line"></view>
             <navigator url="/pages/index/yingXiaoHuoDongModule/yingXiaoHuoDongModule?type=4" hover-class="none" class="lockAndExpand-Part-item">
               <view class="item">
-                <text class="name">积分充值：</text><text class="content big">{{integralStat.integralDayStat.dayPayStat}}</text>
+                <text class="name">积分充值：</text><text class="content big">{{integralStat.integralDayStat[0].dayPayStat}}</text>
               </view>
               <view class="accumulated">
                 <text class="name"><text class='letterSpace'>累</text>计：</text>
@@ -286,7 +278,7 @@
           <view class="lockAndExpand-Part bottomPart">
             <navigator url="/pages/marketing/allTypeIntegraRec?type=givenGift" hover-class="none" class="lockAndExpand-Part-item">
               <view class="item">
-                <text class="name">积分转赠：</text><text class="content big">{{integralStat.integralDayStat.dayTransferStat}}</text>
+                <text class="name">积分转赠：</text><text class="content big">{{integralStat.integralDayStat[0].dayTransferStat}}</text>
               </view>
               <view class="accumulated">
                 <text class="name"><text class='letterSpace'>累</text>计：</text>
@@ -296,7 +288,7 @@
             <view class="line"></view>
             <navigator url="/pages/marketing/allTypeIntegraRec?type=exchangeGift" hover-class="none" class="lockAndExpand-Part-item">
               <view class="item">
-                <text class="name">消耗兑换：</text><text class="content big">{{integralStat.integralDayStat.dayconvertStat}}</text>
+                <text class="name">消耗兑换：</text><text class="content big">{{integralStat.integralDayStat[0].dayconvertStat}}</text>
               </view>
               <view class="accumulated">
                 <text class="name"><text class='letterSpace'>累</text>计：</text>
@@ -311,10 +303,6 @@
             <view class="title-box-left">
               <image src="../../images/yinliu.png" class="title-icon"></image>
               <text class="subTitle">友商互推</text>
-              <text class="yestoday">(昨日)</text>
-            </view>
-            <view class="title-box-right">
-              <text class="today">今日</text>
             </view>
           </view>
           <!-- top -->
@@ -364,14 +352,10 @@
         </view>
       </view>
       <!-- loading -->
-      <view wx:else class="image_box" style="text-align:center">
-        <image class="loading_icon" src="../../images/loading.gif" mode="scaleToFill"></image>
-      </view>
+      <!-- <view wx:else class="image_box" style="text-align:center">
+                                <image class="loading_icon" src="../../images/loading.gif" mode="scaleToFill"></image>
+                              </view> -->
     </view>
-    <!-- <view wx:else class='noPermission'>
-      <text class='text'>暂无权限</text>
-    </view> -->
-
   </view>
 </template>
 
@@ -384,14 +368,9 @@
       navigationBarTitleText: '商家后台管理'
     };
     components = {
-      Header:Header
+      Header: Header
     };
     data = {
-      clientFlag: true,
-      couponFlag: true,
-      communityFlag: true,
-      bookingFlag: true,
-      jiFenFlag: true,
       userStat: {},
       marketingStat: {}, //营销活动数据
       communityStat: {}, //社群活动
@@ -400,140 +379,196 @@
       show: false,
       userInfo: {},
       shopInfo: {},
-      staff:{}
+      staff: {},
+      startDay: "",
+      endDay: "",
+      currentTab: 0
     };
     methods = {
-      //锁客拓客今日用户
-      selectTodayUserStat() {
-        let startDate = util.nowDate();
-        let endDate = util.nowDate();
-        let url = `${this.$parent.globalData.commonUrl}/api/loadUserDayStats?tk=${this.$parent.globalData.tk}&startDay=${startDate}&endDay=${endDate}`;
-        util.interface_get(url).then(res => {
-          console.log('今日访客数据---------------', res);
-          this.userStat.dayStat = res.userDayStats[0];
-          this.clientFlag = false;
-          this.$apply();
-        });
+      BeginDateChange(e) {
+        this.startDay = e.detail.value;
+        let flag = util.compareDate(this.startDay, this.endDay)
+        if (!flag) {
+          wx.showToast({
+            title: "不能大于结束日期",
+            icon: 'none',
+            duration: 2000
+          })
+          this.startDay = util.someDayLater(util.nowDate(), -30, '-');
+        }
       },
-      //锁客拓客昨日用户
-      selectYestodayUserStat() {
-        let yestoday = this.getYestoday();
-        let startDate = yestoday;
-        let endDate = yestoday;
-        let url = `${this.$parent.globalData.commonUrl}/api/loadUserDayStats?tk=${this.$parent.globalData.tk}&startDay=${startDate}&endDay=${endDate}`;
-        util.interface_get(url).then(res => {
-          this.userStat.dayStat = res.userDayStats[0];
-          this.clientFlag = true;
-          this.$apply();
-        });
+      EndDateChange(e) {
+        this.endDay = e.detail.value;
+        let flag = util.compareDate(this.startDay, this.endDay)
+        if (!flag) {
+          wx.showToast({
+            title: "不能小于开始日期",
+            icon: 'none',
+            duration: 2000
+          })
+          this.endDay = util.nowDate();
+        }
       },
-      //活动营销今日用户
-      selectTodayCouponStat() {
-        let today = util.nowDate();
-        let url = `${this.$parent.globalData.commonUrl}/api/loadMarketingDaySummary?tk=${this.$parent.globalData.tk}&day=${today}`;
-        util.interface_get(url).then(res => {
-          console.log('今日营销数据---------------', res);
-          this.marketingStat.marketingDayStat = res.dataStat;
-          this.couponFlag = false;
-          this.$apply();
-        });
+      selectData() {
+        this.execFn(this.startDay, this.endDay)
       },
-      //活动营销昨日用户
-      selectYestodayCouponStat() {
-        let yestoday = this.getYestoday();
-        let url = `${this.$parent.globalData.commonUrl}/api/loadMarketingDaySummary?tk=${this.$parent.globalData.tk}&day=${yestoday}`;
-        util.interface_get(url).then(res => {
-          console.log('昨日营销数据---------------', res);
-          this.marketingStat.marketingDayStat = res.dataStat;
-          this.couponFlag = true;
-          this.$apply();
-        });
-      },
-      //社区活跃度今日用户
-      selectTodayCommunityStat() {
-        let startDate = util.nowDate();
-        let endDate = util.nowDate();
-        let url = `${this.$parent.globalData.commonUrl}/api/loadCommunityDayStats?tk=${this.$parent.globalData.tk}&startDay=${startDate}&endDay=${endDate}`;
-        util.interface_get(url).then(res => {
-          console.log('今日社区数据---------------', res);
-          this.communityStat.communityDayStat = res.coumnityDayStats.communityDayStats[0];
-          this.communityFlag = false;
-          this.$apply();
-        });
-      },
-      //社区活跃度昨日用户
-      selectYestodayCommunityStat() {
-        let yestoday = this.getYestoday();
-        let startDate = yestoday;
-        let endDate = yestoday;
-        let url = `${this.$parent.globalData.commonUrl}/api/loadCommunityDayStats?tk=${this.$parent.globalData.tk}&startDay=${startDate}&endDay=${endDate}`;
-        util.interface_get(url).then(res => {
-          console.log('昨日社区数据---------------', res);
-          this.communityStat.communityDayStat = res.coumnityDayStats.communityDayStats[0];
-          this.communityFlag = true;
-          this.$apply();
-        });
-      },
-      //门店与客人昨日用户 
-      selectYestodayBookingStat() {
-        let yestoday = this.getYestoday();
-        let startDate = yestoday;
-        let endDate = yestoday;
-        let url = `${this.$parent.globalData.commonUrl}/api/loadMutualDaySummary?tk=${this.$parent.globalData.tk}&startDay=${startDate}&endDay=${endDate}`;
-        util.interface_get(url).then(res => {
-          console.log('昨日预定与交互数据---------------', res);
-          this.mutualStat.MutualDayStat = res.dataStat;
-          console.log('yestoday-----', this.mutualStat.MutualDayStat)
-          this.bookingFlag = true;
-          this.$apply();
-        });
-      },
-      //门店与客人今日用户
-      selectTodayBookingStat() {
-        let startDate = util.nowDate();
-        let endDate = util.nowDate();
-        let url = `${this.$parent.globalData.commonUrl}/api/loadMutualDaySummary?tk=${this.$parent.globalData.tk}&startDay=${startDate}&endDay=${endDate}`;
-        util.interface_get(url).then(res => {
-          console.log('今日预定与交互数据---------------', res);
-          this.mutualStat.MutualDayStat = res.dataStat;
-          console.log('today-----', this.mutualStat.MutualDayStat)
-          this.bookingFlag = false;
-          this.$apply();
-        });
-      },
-      //积分统计昨天用户
-      selectYestodayJiFen() {
-        let yestoday = this.getYestoday();
-        let url = `${this.$parent.globalData.commonUrl}/api/loadIntegralDaySummary?tk=${this.$parent.globalData.tk}&day=${yestoday}`;
-        util.interface_get(url).then(res => {
-          console.log('昨日积分统计---------------', res);
-          this.integralStat.integralDayStat = res.dataStat;
-          this.jiFenFlag = true;
-          this.$apply();
-        });
-      },
-      //今日积分统计
-      selectTodayJiFen() {
-        let today = util.nowDate();
-        let url = `${this.$parent.globalData.commonUrl}/api/loadIntegralDaySummary?tk=${this.$parent.globalData.tk}&day=${today}`;
-        util.interface_get(url).then(res => {
-          console.log('今日积分统计---------------', res);
-          this.integralStat.integralDayStat = res.dataStat;
-          this.jiFenFlag = false;
-          this.$apply();
-        });
+      seletShortCutDay(index) {
+        this.currentTab = index;
+        if (this.currentTab == "0") { //昨天
+          this.startDay = util.someDayLater(util.nowDate(), -1, '-');
+          this.endDay = util.someDayLater(util.nowDate(), -1, '-');
+          this.execFn(this.startDay, this.endDay)
+        } else if (this.currentTab == "1") { //今天
+          this.startDay = util.nowDate();
+          this.endDay = util.nowDate();
+          this.execFn(this.startDay, this.endDay)
+        } else if (this.currentTab == "2") { //本周
+          this.startDay = util.getLastSundayTimeStamp();
+          this.endDay = util.nowDate();
+          this.execFn(this.startDay, this.endDay)
+        } else if (this.currentTab == "3") { //本月
+          this.startDay = util.getThisMonth1().trim();
+          this.endDay = util.nowDate();
+          this.execFn(this.startDay, this.endDay)
+        }
       },
     };
-    //获取昨天日期
-    getYestoday() {
-      let day = new Date();
-      day.setTime(day.getTime() - 24 * 60 * 60 * 1000);
-      console.log(day.getMonth() + 1);
-      let year = day.getFullYear();
-      let month = day.getMonth() + 1 >= 10 ? day.getMonth() + 1 : "0" + (day.getMonth() + 1)
-      let date = day.getDate() >= 10 ? day.getDate() : "0" + day.getDate()
-      console.log(year + "-" + month + "-" + date)
-      return year + "-" + month + "-" + date;
+    execFn(startDate, endState) {
+      this.selectTodayUserStat(startDate, endState)
+      this.selectTodayCouponStat(startDate, endState)
+      this.selectTodayCommunityStat(startDate, endState)
+      this.selectYestodayBookingStat(startDate, endState)
+      this.selectYestodayJiFen(startDate, endState)
+    }
+    //锁客拓客用户
+    selectTodayUserStat(startDate, endDate) {
+      let url = `${this.$parent.globalData.commonUrl}/api/loadUserDayStats?tk=${this.$parent.globalData.tk}&startDate=${startDate}&endDate=${endDate}`;
+      util.interface_get(url).then(res => {
+        console.log('访客数据---------------', res);
+        if (res.userDayStats.length > 1) {
+          var tempUserDayStat = {
+            date: 1578758400,
+            dayTotalUser: 0,
+            dayQrcodeUser: 0,
+            dayOtherUser: 0,
+            dayNewUser: 0
+          }
+          res.userDayStats.forEach(user => {
+            tempUserDayStat.dayTotalUser += user.dayTotalUser;
+            tempUserDayStat.dayQrcodeUser += user.dayQrcodeUser;
+            tempUserDayStat.dayOtherUser += user.dayOtherUser;
+            tempUserDayStat.dayNewUser += user.dayNewUser;
+          })
+          this.userStat.dayStat = [tempUserDayStat]
+        } else {
+          this.userStat.dayStat = res.userDayStats;
+        }
+        this.$apply();
+      });
+    };
+    //营销活动用户
+    selectTodayCouponStat(startDate, endDate) {
+      let url = `${this.$parent.globalData.commonUrl}/api/loadMarketingDaySummary?tk=${this.$parent.globalData.tk}&startDate=${startDate}&endDate=${endDate}`;
+      util.interface_get(url).then(res => {
+        console.log('营销活动数据---------------', res);
+        if (res.dataStat.length > 1) {
+          var tempDataStat = {
+            date: 1578758400,
+            dayIssuedCoupon: 0,
+            daySetOffCoupon: 0,
+            dayReleaseActivity: 0,
+            dayJoinActivity: 0
+          }
+          res.dataStat.forEach(data => {
+            tempDataStat.dayIssuedCoupon += data.dayIssuedCoupon
+            tempDataStat.daySetOffCoupon += data.daySetOffCoupon
+            tempDataStat.dayReleaseActivity += data.dayReleaseActivity
+            tempDataStat.dayJoinActivity += data.dayJoinActivity
+          })
+          this.marketingStat.marketingDayStat = [tempDataStat]
+        } else {
+          this.marketingStat.marketingDayStat = res.dataStat;
+        }
+        this.$apply();
+      });
+    };
+    //社区活跃度用户
+    selectTodayCommunityStat(startDate, endDate) {
+      let url = `${this.$parent.globalData.commonUrl}/api/loadCommunityDayStats?tk=${this.$parent.globalData.tk}&startDay=${startDate}&endDay=${endDate}`;
+      util.interface_get(url).then(res => {
+        console.log('社区活跃度数据---------------', res);
+        if (res.coumnityDayStats.length > 1) {
+          var tempCom = {
+            date: 1578758400,
+            dayMakeFriendStat: 0,
+            daySentGiftStat: 0,
+            dayChatStat: 0,
+            daygameStat: 0
+          }
+          res.coumnityDayStats.forEach(community => {
+            tempCom.dayMakeFriendStat += community.dayMakeFriendStat
+            tempCom.daySentGiftStat += community.daySentGiftStat
+            tempCom.dayChatStat += community.dayChatStat
+            tempCom.daygameStat += community.daygameStat
+          })
+          this.communityStat.communityDayStat = [tempCom]
+        } else {
+          this.communityStat.communityDayStat = res.coumnityDayStats;
+        }
+        this.$apply();
+      });
+    };
+    //服务监控
+    selectYestodayBookingStat(startDate, endDate) {
+      let url = `${this.$parent.globalData.commonUrl}/api/loadMutualDaySummary?tk=${this.$parent.globalData.tk}&startDate=${startDate}&endDate=${endDate}`;
+      util.interface_get(url).then(res => {
+        console.log('服务监控---------------', res);
+        if (res.dataStat.length > 1) {
+          var tempData = {
+            date: 1578758400,
+            dayBooking: 0,
+            dayClerkShareStat: 0,
+            dayClerkChatStat: 0,
+            dayClerkGameStat: 0
+          }
+          res.dataStat.forEach(data => {
+            tempData.dayBooking += data.dayBooking
+            tempData.dayClerkShareStat += data.dayClerkShareStat
+            tempData.dayClerkChatStat += data.dayClerkChatStat
+            tempData.dayClerkGameStat += data.dayClerkGameStat
+          })
+          this.mutualStat.MutualDayStat = [tempData]
+        } else {
+          this.mutualStat.MutualDayStat = res.dataStat;
+        }
+        this.$apply();
+      });
+    };
+    //积分统计昨天用户
+    selectYestodayJiFen(startDate, endDate) {
+      let url = `${this.$parent.globalData.commonUrl}/api/loadIntegralDaySummary?tk=${this.$parent.globalData.tk}&startDate=${startDate}&endDate=${endDate}`;
+      util.interface_get(url).then(res => {
+        console.log('积分统计---------------', res);
+        if (res.dataStat.length > 1) {
+          var tempData = {
+            date: 1578758400,
+            daySystemSendStat: 0,
+            dayPayStat: 0,
+            dayTransferStat: 0,
+            dayconvertStat: 0
+          }
+          res.dataStat.forEach(data => {
+            tempData.daySystemSendStat += data.daySystemSendStat
+            tempData.dayPayStat += data.dayPayStat
+            tempData.dayTransferStat += data.dayTransferStat
+            tempData.dayconvertStat += data.dayconvertStat
+          })
+          this.integralStat.integralDayStat = [tempData]
+        } else {
+          this.integralStat.integralDayStat = res.dataStat;
+        }
+        this.$apply();
+      });
     };
     // 获取全部数据
     getDataStat(res) {
@@ -553,10 +588,8 @@
       })
     }
     async onShow() {
-      this.clientFlag = true;
-      this.couponFlag = true;
-      this.communityFlag = true;
-      this.bookingFlag = true;
+      this.startDay = util.someDayLater(util.nowDate(), -1, '-');
+      this.endDay = util.someDayLater(util.nowDate(), -1, '-');
       this.jiFenFlag = true;
       this.shopInfo = this.$parent.globalData.shopInfo;
       this.userInfo = this.$parent.globalData.userInfo;
@@ -587,6 +620,52 @@
       }
     }
     .home-container {
+      .rank_selection {
+        // height: rpx;
+        box-sizing: border-box;
+        display: flex;
+        padding: 10rpx 6rpx;
+        justify-content: space-between;
+        background: #fff;
+        .rank_selection_left {
+          display: flex;
+          .yesterday,
+          .today,
+          .week {
+            padding: 6rpx 8rpx;
+            background: #ccc;
+            display: inline-block;
+            margin-right: 10rpx;
+          }
+          .active {
+            background-color: #ffba00;
+            color: #fff;
+          }
+          .today {}
+          .week {}
+        }
+        .rank_selection_right {
+          display: flex;
+          .rank_time_picker {
+            width: 160rpx;
+            padding: 6rpx 8rpx;
+            margin-right: 5rpx;
+            background-color: #ccc;
+          }
+          .line {
+            padding-top: 6rpx;
+            color: #ccc;
+            margin: 0 4rpx;
+          }
+          .btn {
+            display: inline-block;
+            width: 54rpx;
+            padding: 4rpx 6rpx;
+            background-color: #ccc;
+            color: #fff;
+          }
+        }
+      }
       .image_box {
         width: 100%;
         .loading_icon {
@@ -597,7 +676,7 @@
         }
       }
       background-color: #f4f4f4; // 门店信息
-       // 锁客拓客
+      // 锁客拓客
       .lockAndExpand-wrapper {
         width: 702rpx;
         margin: 30rpx 24rpx 30rpx;
@@ -625,12 +704,6 @@
               font-size: 30rpx;
               font-weight: 700;
             }
-          }
-          .title-box-right {
-            padding-top: 8rpx; // .today {
-            //   color: #333;
-            //   font-weight: 900;
-            // }
           }
         }
         .lockAndExpand-Part {
@@ -682,19 +755,12 @@
             border: 1px dashed #ccc;
           }
         }
-      }
-      .yestoday {
-        margin-top: 6rpx;
-        font-weight: 800;
-        margin-left: 15rpx;
-        color: #333;
-      }
-      .active {
-        margin-top: 6rpx;
-        margin-left: 15rpx;
-        font-weight: 800;
-        color: #ffba00;
-      }
+      } // .active {
+      //   margin-top: 6rpx;
+      //   margin-left: 15rpx;
+      //   font-weight: 800;
+      //   color: #ffba00;
+      // }
     }
   }
 </style>

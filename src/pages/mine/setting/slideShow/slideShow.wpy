@@ -14,7 +14,7 @@
         </view>
         <button class='btn' @tap='save'>上传</button>
     </view>
-    <canvas style="width: {{cw}}px; height: {{ch}}px;position: absolute; z-index: -1; left: -10000rpx;; top: -10000rpx;" canvas-id="firstCanvas"></canvas>
+    <!-- <canvas style="width: {{cw}}px; height: {{ch}}px;position: absolute; z-index: -1; left: -10000rpx;; top: -10000rpx;" canvas-id="firstCanvas"></canvas> -->
 </template>
 
 <script>
@@ -166,10 +166,6 @@
                     console.log('拉取轮播图-------------------------------', res.data.adPhotoURL)
                     if (res.statusCode === 200) {
                         _this.uploadImgArr = res.data.adPhotoURL ? res.data.adPhotoURL : [];
-                        // console.log(_this.picArr);
-                        // let tempPicArr = _this.picArr
-                        // _this.uploadImgArr = tempPicArr;
-                        // console.log('初始化_this.uploadImgArr---------------',_this.uploadImgArr)
                         if (_this.uploadImgArr.length > 3 || _this.uploadImgArr.length === 3) {
                             _this.isShow = false;
                             console.log('下载后的isShow--------------------', _this.isShow)

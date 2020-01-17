@@ -31,9 +31,9 @@
                 <radio-group @change="checkboxAuth" style="display:flex;box-sizing: border-box;padding-top: 16rpx">
                     <repeat for="{{allowAuth}}" key="index">
                         <label class="label_tag">
-                                    <radio color="#FFBA00"   value="{{item.auth}}"/>
-                                    <view class="selectItem">{{item.name}}</view>
-                                </label>
+                                                        <radio color="#FFBA00"   value="{{item.auth}}"/>
+                                                        <view class="selectItem">{{item.name}}</view>
+                                                    </label>
                     </repeat>
                 </radio-group>
             </view>
@@ -41,23 +41,23 @@
         </view>
         <!-- 下属列表 -->
         <!-- <view class="add_staff_list">
-                    <view class="add_staff_title">下属列表</view>
-                    <scroll-view scroll-y style="height:{{winHeight}}rpx">
-                        <view class="staffList">
-                            <repeat for="{{staffList}}" key="index" index="index" item="item">
-                                <view class="infoItem">
-                                    <text class="name">{{item.number}}</text>
-                                    <text class="name">{{item.name}}</text>
-                                    <text class="name">{{item.phone}}</text>
-                                    <text class="name">{{item.role_cn}}</text>
-                                    <view class="handleBox">
-                                        <text class="handle" @tap="deleteStaff({{item.phone}})">删除</text>
-                                    </view>
-                                </view>
-                            </repeat>
-                        </view>
-                    </scroll-view>
-                </view> -->
+                                        <view class="add_staff_title">下属列表</view>
+                                        <scroll-view scroll-y style="height:{{winHeight}}rpx">
+                                            <view class="staffList">
+                                                <repeat for="{{staffList}}" key="index" index="index" item="item">
+                                                    <view class="infoItem">
+                                                        <text class="name">{{item.number}}</text>
+                                                        <text class="name">{{item.name}}</text>
+                                                        <text class="name">{{item.phone}}</text>
+                                                        <text class="name">{{item.role_cn}}</text>
+                                                        <view class="handleBox">
+                                                            <text class="handle" @tap="deleteStaff({{item.phone}})">删除</text>
+                                                        </view>
+                                                    </view>
+                                                </repeat>
+                                            </view>
+                                        </scroll-view>
+                                    </view> -->
         <!-- 改绑模态框 -->
         <view class="bind_modal" wx:if="{{showBindModal}}">
             <view class="modal_content">
@@ -79,22 +79,22 @@
         <view wx:if="{{showAuthorModal}}" class="author_modal">
             <checkbox-group class="checkBox_groupAll" @change="selectAll">
                 <label class="checkBox">
-                            <checkbox class="top_checkbox_item" value="all" checked="{{allCheck}}"  color="orange"/>
-                            <view class="allSelect">
-                                全选
-                            </view>
-                        </label>
+                <checkbox class="top_checkbox_item" value="all" checked="{{allCheck}}"  color="orange"/>
+                <view class="allSelect">
+                    全选
+                </view>
+            </label>
             </checkbox-group>
             <!-- 下属列表 -->
             <view class="author_modal_title" wx:if="{{userList.length}}">下属列表</view>
             <checkbox-group wx:if="{{userList.length}}" class="checkBox_group" @change="changeUser">
                 <repeat for="{{userList}}" key="index" item="item">
                     <label class="checkBox" @tap="selectAuthor" data-id="{{item.phone}}">
-                                <checkbox class="checkbox_item"  color="orange" value="{{item.id}}"  checked="{{item.checked}}"/>
-                                <view class="username">
-                                    <text>{{item.name}}</text>
-                                </view>
-                            </label>
+                        <checkbox class="checkbox_item"  color="orange" value="{{item.id}}"  checked="{{item.checked}}"/>
+                        <view class="username">
+                            <text>{{item.name}}</text>
+                        </view>
+                    </label>
                 </repeat>
             </checkbox-group>
             <!-- 门店列表 -->
@@ -102,11 +102,11 @@
             <checkbox-group wx:if="{{storeList.length}}" class="checkBox_group" @change="changeStore">
                 <repeat for="{{storeList}}" key="index" item="item">
                     <label class="checkBox" @tap="selectStore" data-id="{{item.id}}">
-                                <checkbox class="checkbox_item"  color="orange" value="{{item.id}}"  checked="{{item.checked}}"/>
-                                <view class="username">
-                                    <text>{{item.name}}</text>
-                                </view>
-                            </label>
+                        <checkbox class="checkbox_item"  color="orange" value="{{item.id}}"  checked="{{item.checked}}"/>
+                        <view class="username">
+                            <text>{{item.name}}</text>
+                        </view>
+                    </label>
                 </repeat>
             </checkbox-group>
             <view wx:else class="noUserList">暂无下属</view>
@@ -153,7 +153,6 @@
             name: "",
             showBindModal: false,
             showAuthorModal: false,
-            staffList: [],
             isShowAuthList: "noAllow",
             userIds: [],
             storeIds: [],
@@ -161,6 +160,12 @@
         onUnload() {
             wx.removeStorage({
                 key: 'userList',
+                success(res) {
+                    console.log(res)
+                }
+            })
+            wx.removeStorage({
+                key: 'storeList',
                 success(res) {
                     console.log(res)
                 }
@@ -283,26 +288,26 @@
                 })
                 this.showAuthorModal = false;
                 //数组去重
-                let staffs = [this.subStaffList[0]]
-                let stores = [this.paramStoreList[0]]
-                for (let i = 0; i < this.subStaffList.length; i++) {
-                    const element = this.subStaffList[i];
-                    // for (let j = 0; j < staffs.length; j++) {
-                    if (staffs.indexOf(element) == -1) {
-                        staffs.push(element)
+                if (this.subStaffList.length != 0) {
+                    let staffs = [this.subStaffList[0]]
+                    for (let i = 0; i < this.subStaffList.length; i++) {
+                        const element = this.subStaffList[i];
+                        if (staffs.indexOf(element) == -1) {
+                            staffs.push(element)
+                        }
                     }
-                    // }
+                    this.subStaffList = staffs;
                 }
-                for (let i = 0; i < this.paramStoreList.length; i++) {
-                    const element = this.paramStoreList[i];
-                    // for (let j = 0; j < staffs.length; j++) {
-                    if (stores.indexOf(element) == -1) {
-                        stores.push(element)
+                if (this.paramStoreList.length != 0) {
+                    let stores = [this.paramStoreList[0]]
+                    for (let i = 0; i < this.paramStoreList.length; i++) {
+                        const element = this.paramStoreList[i];
+                        if (stores.indexOf(element) == -1) {
+                            stores.push(element)
+                        }
                     }
-                    // }
+                    this.paramStoreList = stores;
                 }
-                this.subStaffList = staffs;
-                this.paramStoreList = stores;
                 console.log("subStaffList-------", this.subStaffList)
                 console.log("this.paramStoreList-------", this.paramStoreList)
             },
@@ -328,8 +333,6 @@
                     this.subStaffList = [];
                     this.paramStoreList = []
                 }
-                console.log("this.subStaffList-----------",this.subStaffList)
-                console.log("this.paramStoreList-----------",this.paramStoreList)
                 this.password = this.phone.slice(5, 11);
                 let url = `${this.$parent.globalData.commonUrl}/api/addStaff?tk=${this.$parent.globalData.tk}`;
                 var params = {
@@ -354,7 +357,6 @@
                     return
                 }
                 console.log(params)
-               
                 util.interface_post(url, params).then(res => {
                     if (res.errCode == 0) {
                         wx.showToast({
@@ -386,31 +388,6 @@
                 this.showBindModal = !this.showBindModal;
             }
         };
-        // _judgeRole(role) {
-        //     if (role == "k98_operation_manager") {
-        //         return "运营主管"
-        //     } else if (role == "k98_operation_behind") {
-        //         return "运营后台"
-        //     } else if (role == "k98_operation_middle") {
-        //         return "运营中台"
-        //     } else if (role == "k98_operation_front") {
-        //         return "运营前台"
-        //     } else if (role == "k98_center_staff") {
-        //         return "本部员工"
-        //     } else if (role == "k98_city_boss") {
-        //         return "城市合伙老板"
-        //     } else if (role == "k98_store_boss") {
-        //         return "门店老板"
-        //     } else if (role == "k98_store_manager") {
-        //         return "店长"
-        //     } else if (role == "k98_store_staff") {
-        //         return "店员"
-        //     } else if (role == "k98_manager") {
-        //         return "系统管理员"
-        //     } else {
-        //         return "运营主管"
-        //     }
-        // };
         _handleArrayRole(role) {
             if (role == "k98_operation_manager") {
                 return [{
@@ -421,6 +398,14 @@
                     id: "k98_operation_behind"
                 }]
             } else if (role == "k98_operation_behind") {
+                return [{
+                    name: "城市合伙老板",
+                    id: "k98_city_boss"
+                }, {
+                    name: "运营中台",
+                    id: "k98_operation_middle"
+                }]
+            } else if (role == "k98_center_staff") {
                 return [{
                     name: "城市合伙老板",
                     id: "k98_city_boss"
@@ -454,7 +439,7 @@
         _loadAllStaff() {
             let _this = this;
             wx.request({
-                url: `${this.$parent.globalData.commonUrl}/api/loadAllStaff?tk=${this.$parent.globalData.tk}`,
+                url: `${this.$parent.globalData.commonUrl}/api/loadAllStaff?tk=${this.$parent.globalData.tk}&phone=${this.$parent.globalData.userInfo.phone}`,
                 success: res => {
                     console.log('拉取的员工------------------------', res);
                     if (res.data.errCode === 0) {
@@ -462,8 +447,8 @@
                         staff.forEach(item => {
                             item.role_cn = util._judgeRole(item.role)
                         })
-                        _this.staffList = staff.sort(util.sortByKey("number"));
-                        console.log("员工列表", _this.staffList)
+                        _this.userList = staff.sort(util.sortByKey("number"));
+                        console.log("员工列表", _this.userList)
                         _this.$apply();
                     }
                 }
@@ -485,7 +470,7 @@
             this.arrayRole = this._handleArrayRole(this.$parent.globalData.userInfo.role)
             this.role = this.arrayRole[0].id
             this.winHeight = util.getScrollHeight(730);
-            // this._loadAllStaff();
+            this._loadAllStaff();
             this._loadShopList()
         }
         // Other properties

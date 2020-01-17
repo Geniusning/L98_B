@@ -90,9 +90,9 @@
         console.log("_loadUserOutDrTimes--------", res)
         if (res.errCode == 0) {
           this.dateRange = res.outDrOnlineTimesList
-          util.timestampToTime2
+          util.timestampToTime
           this.dateRange.forEach(item => {
-            item.date = util.timestampToTime2(item.date).slice(0, 11)
+            item.date = util.timestampToTime(item.date).slice(0, 11)
             this.totalNumber += item.joinTimes
           })
           this.dateRange.reverse()

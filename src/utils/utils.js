@@ -1,3 +1,4 @@
+
 //获取当天日期
 const nowDate = () => {
   var date = new Date()
@@ -28,26 +29,38 @@ const timestampToTime = (timestamp) => {
     return Y + M + D + h + m+s;
   }
 }
-const timestampToTime2 = (timestamp) => {
+const getDate = (timestamp) => {
   if (timestamp.toString().length > 11) {
     var date = new Date(timestamp); //时间戳为10位需*1000，时间戳为13位的话不需乘1000
     var Y = date.getFullYear() + '-';
     var M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
-    var D = (date.getDate() < 10) ? '0' + date.getDate() + " " : date.getDate() + " ";
-    var h = (date.getHours() < 10 ? '0' + date.getHours() : date.getHours()) + ':';
-    var m = (date.getMinutes() < 10) ? '0' + date.getMinutes()+":" : date.getMinutes()+':';
-    var s = (date.getSeconds() < 10) ? '0' + date.getSeconds() : date.getSeconds();
-    return Y + M + D + h + m+s;
+    var D = (date.getDate() < 10) ? '0' + date.getDate() + " " : date.getDate();
+    return Y + M + D;
   } else {
     var date = new Date(timestamp * 1000); //时间戳为10位需*1000，时间戳为13位的话不需乘1000
     var Y = date.getFullYear() + '-';
     var M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
-    var D = (date.getDate() < 10) ? '0' + date.getDate() + " " : date.getDate() + " ";
-    var h = (date.getHours() < 10 ? '0' + date.getHours() : date.getHours()) + ':';
-    var m = (date.getMinutes() < 10) ? '0' + date.getMinutes()+":" : date.getMinutes()+':';
-    var s = (date.getSeconds() < 10) ? '0' + date.getSeconds() : date.getSeconds();
-    return Y + M + D + h + m+s;
+    var D = (date.getDate() < 10) ? '0' + date.getDate() + " " : date.getDate();
+    return Y + M + D;
   }
+}
+//获得上周日日期
+const getLastSundayTimeStamp = () => {
+  var now = new Date(new Date(new Date().toLocaleDateString()).getTime());
+  var nowTime = now.getTime();
+  var day = now.getDay();
+  var oneDayTime = 24 * 60 * 60 * 1000;
+  var SundayTime = nowTime - day * oneDayTime;//显示周日时间戳
+  return getDate(SundayTime)
+}
+//获得本月1号日期
+const getThisMonth1 = () => {
+  var now = new Date(new Date(new Date().toLocaleDateString()).getTime());
+  var nowTime = now.getTime();
+  var day = now.getDate() - 1;
+  var oneDayTime = 24 * 60 * 60 * 1000;
+  var month1 = nowTime - day * oneDayTime;//显示本月1号时间戳
+  return getDate(month1)
 }
 //N天后
 /**
@@ -124,7 +137,7 @@ const interface_post = (url, data, callBack) => {
       },
       method: 'POST',
       success: res => {
-        console.log('post_res----------', res)
+        // console.log('post_res----------', res)
         if (res.statusCode === 200) {
           resolve(res.data);
           if (callBack) {
@@ -145,7 +158,7 @@ const interface_get = (url, callBack) => {
       url: url,
       success: res => {
         if (res.statusCode === 200) {
-          console.log(res)
+          // console.log(res)
           resolve(res.data)
           if (callBack) {
             callBack();
@@ -302,9 +315,11 @@ module.exports = {
   interface_get,
   returnDiscountType,
   writePhotosAlbum,
-  timestampToTime2,
+  getDate,
   getScrollHeight,
   compareDate,
   sortByKey,
-  _judgeRole
+  _judgeRole,
+  getLastSundayTimeStamp,
+  getThisMonth1
 }

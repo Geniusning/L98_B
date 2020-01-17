@@ -25,7 +25,9 @@
     };
     data = {
       account: '',
-      password: ''
+      password: '',
+      shopList: [],
+      staffList: []
     };
     methods = {
       getPhoneNumber(e) {
@@ -60,7 +62,7 @@
                   'content-type': 'application/json'
                 },
                 method: 'POST',
-                success: function(res) {
+                success: async function(res) {
                   console.log('res-------------', res.data);
                   if (res.data.errCode === 0) {
                     let loginWechatAppletReply = res.data.loginWechatAppletReply;
@@ -84,6 +86,27 @@
           }
         });
       }
+    };
+    _loadStaffs() {
+      let _this = this;
+      let url = `${this.$parent.globalData.commonUrl}/api/loadAllStaff?tk=${this.$parent.globalData.tk}&phone=${this.$parent.globalData.userInfo.phone}`
+      let test = util.interface_get(url).then(res => {
+        return new Promise(resolve => {
+          resolve(res.staff)
+        })
+      })
+      test.then(res => {
+        console.log("test------", res)
+      })
+      return this.staffList
+    };
+    _loadShopList() {
+      let url = `${this.$parent.globalData.commonUrl}/api/loadShopList?tk=${this.$parent.globalData.tk}&phone=${this.$parent.globalData.userInfo.phone}`
+      util.interface_get(url).then(res => {
+        console.log("店铺列表信息-----", res)
+        this.shopList = res
+      })
+      return this.shopList
     };
     events = {};
     onLoad() {}

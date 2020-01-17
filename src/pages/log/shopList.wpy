@@ -16,11 +16,11 @@
       <view class="shop" @tap="goToFurther({{item.phone}})">
         <view class="shop_left">
           <image src="../../images/staff_icon.png" class="shopIcon"></image>
-          <text class="name">{{item.name}}-{{item.phone}}-{{item.number}}</text>
+          <text class="name" style="font-size:13px">{{item.name}}-{{item.phone}}-{{item.number}}</text>
         </view>
         <view class="shop_right" >
           <text class="author" @tap.stop="transferStaff">交接</text>
-          <text class="author" @tap.stop="delStaff({{item.phone}})">删除</text>
+          <text class="author" @tap.stop="delStaff({{item.phone}},{{item.number}})">删除</text>
         </view>
       </view>
     </repeat>
@@ -58,6 +58,7 @@
           this.$apply()
         })
         util.interface_get(staffUrl).then(res => {
+          console.log("员工列表---res", res)
           let staff = res.staff;
           staff.forEach(item => {
             item.role_cn = util._judgeRole(item.role)
@@ -76,14 +77,14 @@
         });
       },
       //删除员工
-      delStaff(phoneId) {
+      delStaff(phoneId,number) {
         var _this = this
         wx.showModal({
           title: '提示',
           content: '是否删除此下属',
           success(res) {
             if (res.confirm) {
-              let url = `${_this.$parent.globalData.commonUrl}/api/deleteStaff?tk=${_this.$parent.globalData.tk}&phone=${phoneId}&parent=${_this.$parent.globalData.userInfo.phone}`
+              let url = `${_this.$parent.globalData.commonUrl}/api/deleteStaff?tk=${_this.$parent.globalData.tk}&phone=${phoneId}&parent=${_this.$parent.globalData.userInfo.phone}&number=${number}`
               util.interface_get(url).then(res => {
                 if (res.errCode === 0) {
                   wx.showToast({

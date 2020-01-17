@@ -181,7 +181,7 @@
       this.isLoadend = false;
       arr.forEach(element => {
         if(element.visitTime){
-          element.visitTime = util.timestampToTime2(element.visitTime);
+          element.visitTime = util.timestampToTime(element.visitTime);
         }
         switch (element.visitType) {
         case 0:
@@ -278,7 +278,7 @@
           this.isLoadend = false;
           res.interface.forEach(item => {
             if (item) {
-              item.date = util.timestampToTime2(item.date).slice(0, 10)
+              item.date = util.timestampToTime(item.date).slice(0, 10)
               item.userInfo.forEach(user => {
                 user["date"] = item.date;
                 _this.tuoKeClientList.push(user)

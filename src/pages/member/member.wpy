@@ -270,7 +270,7 @@
           return
         }
         usersArr.forEach(element => {
-          element.visitTime = util.timestampToTime2(element.visitTime);
+          element.visitTime = util.timestampToTime(element.visitTime);
           this._judgeVisitType(element) //判断访问类型
         });
         switch (this.loadType) {

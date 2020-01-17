@@ -52,29 +52,35 @@
       <text class='namePic'>商家logo：</text>
       <image src='{{uploadImgUrl}}' @tap='chooseLogoPic' class='pic'></image>
     </view>
-    <!-- <view class='ShopLogo-container'>
-      <view class='title'>店铺宣传图：</view>
-      <view class='pic-box'>
-        <repeat for="{{picArr}}" key='index' item="item">
-          <view class='logoShopBox'>
-            <image src="{{item.imgurl}}" class='logoShop'></image>
-            <image src='../../../../images/close.png' class='close' data-index='{{index}}' @tap.stop='close'></image>
-          </view>
-        </repeat>
-        <image wx:if="{{show}}" @tap.stop='chooseOnePic' src="../../../../images/add_pic.png" class='logoShop'></image>
+    <view class='slideShow'>
+      <view class='ShopLogo-container'>
+        <view class='title'>店铺宣传图：</view>
+        <view class='pic-box'>
+          <repeat for="{{uploadImgArr}}" key='index' item="item">
+            <view class='logoShopBox'>
+              <image src="{{item}}" class='logoShop' mode="aspectFill"></image>
+              <image src='../../../../images/close.png' class='close' data-index='{{index}}' @tap.stop='close'></image>
+            </view>
+          </repeat>
+          <image wx:if="{{isShow}}" @tap.stop='chooseOnePic' src="../../../../images/add_pic.png" class='logoShop'></image>
+        </view>
       </view>
-    </view> wx:if="{{show}}" -->
+      <!-- <button class='btn' @tap='save'>上传</button> -->
+    </view>
     <button @tap='save'>保存</button>
   </view>
 </template>
 
 <script>
   import wepy from 'wepy';
+  const util = require('../../../../utils/utils.js')
   export default class shopInfo extends wepy.page {
     config = {
       navigationBarTitleText: '设置'
     };
     data = {
+      uploadImgArr: [],
+      isShow: true,
       city: "",
       show: false,
       indexType: 0,
@@ -117,6 +123,56 @@
     };
     normalizePickerChangeData() {};
     methods = {
+      close: function(e) {
+        let index = e.currentTarget.dataset.index;
+        console.log(index)
+        // this.picArr.splice(index, 1);
+        this.uploadImgArr.splice(index, 1);
+        console.log('删除后的uploadImgArr-----------', this.uploadImgArr)
+        if (this.uploadImgArr.length === 3) {
+          this.isShow = false;
+          this.picArr = this.picArr;
+        } else {
+          this.isShow = true;
+          this.picArr = this.picArr;
+        }
+      },
+      chooseOnePic: function() {
+        var _this = this;
+        wx.chooseImage({
+          count: 1, // 默认9
+          sizeType: ['compressed'], // 可以指定是原图还是压缩图，默认二者都有
+          sourceType: ['album', 'camera'], // 可以指定来源是相册还是相机，默认二者都有
+          success: function(res) {
+            // 返回选定照片的本地文件路径列表，tempFilePath可以作为img标签的src属性显示图片
+            var tempFilePaths = res.tempFilePaths;
+            console.log("图片文件大小-------", tempFilePaths)
+            _this.drawCanvas(tempFilePaths[0])
+            // wx.uploadFile({
+            //     url: `${_this.$parent.globalData.commonUrl}/api/photoUpload?tk=${_this.$parent.globalData.tk}`,
+            //     filePath: tempFilePaths[0],
+            //     name: "file",
+            //     header: {
+            //         'content-type': 'multipart/form-data'
+            //     },
+            //     success: res => {
+            //         if (res.statusCode == 200) {
+            //             console.log(res)
+            //             let uploadImgUrl = JSON.parse(res.data).photoURL;
+            //             console.log('返回的图片-------------------', uploadImgUrl)
+            //             _this.uploadImgArr.push(uploadImgUrl);
+            //             console.log('_this.uploadImgArr----------------', _this.uploadImgArr);
+            //             if (_this.uploadImgArr.length === 3) {
+            //                 _this.isShow = false;
+            //                 console.log('上传后的isShow--------------------', _this.isShow)
+            //             }
+            //             _this.$apply();
+            //         }
+            //     }
+            // })
+          }
+        });
+      },
       selectAdr() {
         wx.navigateTo({
           url: '/pages/mine/setting/map/map'
@@ -265,16 +321,26 @@
           dailyPassengerFlow: this.shopCustomNum,
           image: this.uploadImgUrl
         }
-        // for(let key in params){
-        //   if(!params[key]){
-        //      wx.showToast({
-        //         title: '请填写完整数据',
-        //         icon: 'none',
-        //         duration: 2000
-        //       })
-        //       return
-        //   }
-        // }
+        wx.request({
+          url: `${this.$parent.globalData.commonUrl}/api/uploadAdvertisingPhoto?tk=${this.$parent.globalData.tk}`,
+          data: {
+            adPhotoURL: this.uploadImgArr
+          },
+          header: {
+            'content-type': 'application/json'
+          },
+          method: 'POST',
+          success: res => {
+            console.log(res)
+            if (res.data.errorCode === 0) {
+              wx.showToast({
+                title: '保存成功',
+                icon: 'success',
+                duration: 2000
+              })
+            }
+          }
+        })
         console.log(params)
         wx.request({
           url: `${this.$parent.globalData.commonUrl}/api/storeSetting?tk=${this.$parent.globalData.tk}`,
@@ -301,15 +367,15 @@
             }
           }
         })
-        let storeSettingUrl = `${this.$parent.globalData.commonUrl}/api/loadStoreSetting?tk=${this.$parent.globalData.tk}`;
-        util.interface_get(setGrpcPortUrl).then(res => {
-          setTimeout(() => {
-            util.interface_get(storeSettingUrl).then(res => {
-              this.$parent.globalData.shopInfo = res;
-              console.log("店铺信息---------", this.$parent.globalData)
-            })
-          }, 500);
+        var storeSettingUrl = `${this.$parent.globalData.commonUrl}/api/loadStoreSetting?tk=${this.$parent.globalData.tk}`;
+        // util.interface_get(storeSettingUrl).then(res => {
+        //   setTimeout(() => {
+        util.interface_get(storeSettingUrl).then(res => {
+          this.$parent.globalData.shopInfo = res;
+          console.log("店铺信息---------", this.$parent.globalData)
         })
+        // }, 500);
+        // })
       },
       chooseLogoPic: function() {
         let _this = this;
@@ -345,6 +411,54 @@
       logoPic(newvalue) {
         // console.log(newvalue);
       }
+    };
+    drawCanvas(imgInfo) {
+      var ctx = wx.createCanvasContext("firstCanvas")
+      let _this = this
+      wx.getImageInfo({
+        src: imgInfo,
+        success: (res) => {
+          console.log("图片信息-------", res)
+          if ((res.width >= 750 || res.height > 500) && res.type == "jpeg") {
+            //画出压缩图片
+            ctx.drawImage(imgInfo, 0, 0, 750, 280)
+            ctx.draw(false, setTimeout(() => {
+              wx.canvasToTempFilePath({
+                canvasId: "firstCanvas",
+                quality: 0.2,
+                success: (res => {
+                  console.log("ctx.draw后的图片资源-----", res)
+                  _this.uploadImgFile(res.tempFilePath)
+                })
+              })
+            }, 300))
+          } else {
+            _this.uploadImgFile(res.path)
+          }
+        }
+      })
+    };
+    uploadImgFile(filePath) {
+      let _this = this
+      wx.uploadFile({
+        url: `${_this.$parent.globalData.commonUrl}/api/photoUpload?tk=${_this.$parent.globalData.tk}`,
+        filePath: filePath,
+        name: "file",
+        header: {
+          'content-type': 'multipart/form-data'
+        },
+        success: res => {
+          if (res.statusCode == 200) {
+            let uploadImgUrl = JSON.parse(res.data).photoURL;
+            _this.uploadImgArr.push(uploadImgUrl);
+            console.log('_this.uploadImgArr----------------', _this.uploadImgArr);
+            if (_this.uploadImgArr.length === 3) {
+              _this.isShow = false;
+            }
+            _this.$apply();
+          }
+        }
+      })
     };
     events = {};
     onShow() {
@@ -385,6 +499,19 @@
     onLoad() {
       this.show = !!(this.$parent.globalData.userInfo.permission & 32);
       let _this = this;
+      wx.request({
+        url: `${this.$parent.globalData.commonUrl}/api/loadAdvertisingPhoto?tk=${this.$parent.globalData.tk}`,
+        success: res => {
+          console.log('拉取轮播图-------------------------------', res.data.adPhotoURL)
+          if (res.statusCode === 200) {
+            _this.uploadImgArr = res.data.adPhotoURL ? res.data.adPhotoURL : [];
+            if (_this.uploadImgArr.length > 3 || _this.uploadImgArr.length === 3) {
+              _this.isShow = false;
+            }
+            _this.$apply()
+          }
+        }
+      })
       wx.request({
         url: `${this.$parent.globalData.commonUrl}/api/loadStoreSetting?tk=${this.$parent.globalData.tk}&storeId=${this.storeId}`,
         success: res => {
@@ -501,5 +628,40 @@
     display: inline-block;
     background-color: #ccc;
     color: #fff;
+  }
+  .slideShow {
+    padding: 10rpx 10rpx;
+  }
+  .ShopLogo-container {
+    /* margin: 22rpx 30rpx; */
+    background-color: #fff;
+    padding-bottom: 10rpx;
+  }
+  .ShopLogo-container .title {
+    font-size: 30rpx;
+    color: #333;
+    margin-bottom: 20rpx;
+    /* font-weight: 700; */
+    padding: 10rpx;
+  }
+  .ShopLogo-container .pic-box {
+    width: 100%;
+    display: flex;
+  }
+  .ShopLogo-container .logoShop {
+    width: 200rpx;
+    height: 200rpx;
+    margin-right: 10rpx;
+    padding: 0 10rpx;
+  }
+  .logoShopBox {
+    position: relative;
+  }
+  .logoShopBox .close {
+    position: absolute;
+    width: 40rpx;
+    height: 40rpx;
+    top: -16rpx;
+    right: 10rpx;
   }
 </style>
