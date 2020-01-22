@@ -149,7 +149,7 @@
     //查询访客人数
     selectVisitorData() {
       let _this = this;
-      let url = `${this.$parent.globalData.commonUrl}/api/loadUserDayStats?tk=${this.$parent.globalData.tk}&startDay=${this.startDate}&endDay=${this.endDate}`
+      let url = `${this.$parent.globalData.commonUrl}/api/loadUserDayStats?tk=${this.$parent.globalData.tk}&startDate=${this.startDate}&endDate=${this.endDate}`
       util.interface_get(url).then(res => {
         if (res.errCode === 0) {
           let totalPeople = 0
