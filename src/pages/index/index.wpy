@@ -93,7 +93,7 @@
           </view>
           <!-- top -->
           <view class="lockAndExpand-Part">
-            <navigator url="/pages/index/yingXiaoHuoDongModule/yingXiaoHuoDongModule?type=0" hover-class="none" class="lockAndExpand-Part-item">
+            <navigator url="/pages/index/yingXiaoHuoDongModule/marketingAct?type=coupon" hover-class="none" class="lockAndExpand-Part-item">
               <view class="item">
                 <text class="name">发券数量：</text><text class="content big">{{marketingStat.marketingDayStat[0].dayIssuedCoupon}}</text>
               </view>
@@ -103,7 +103,7 @@
               </view>
             </navigator>
             <view class="line"></view>
-            <navigator url="/pages/index/yingXiaoHuoDongModule/yingXiaoHuoDongModule?type=1" hover-class="none" class="lockAndExpand-Part-item">
+            <navigator url="/pages/index/yingXiaoHuoDongModule/marketingAct?type=check" hover-class="none" class="lockAndExpand-Part-item">
               <view class="item">
                 <text class="name">到店核销：</text><text class="content big">{{marketingStat.marketingDayStat[0].daySetOffCoupon}}</text>
               </view>
@@ -115,17 +115,17 @@
           </view>
           <!-- bottom -->
           <view class="lockAndExpand-Part bottomPart">
-            <navigator url="/pages/index/yingXiaoHuoDongModule/yingXiaoHuoDongModule?type=2" hover-class="none" class="lockAndExpand-Part-item">
+            <navigator url="/pages/index/yingXiaoHuoDongModule/marketingAct?type=vip" hover-class="none" class="lockAndExpand-Part-item">
               <view class="item">
-                <text class="name">在线活动：</text><text class="content big">{{marketingStat.marketingDayStat[0].dayReleaseActivity}}</text>
+                <text class="name">销会员卡：</text><text class="content big">{{marketingStat.marketingDayStat[0].dayReleaseActivity}}</text>
               </view>
               <view class="accumulated">
                 <text class="name"><text class='letterSpace'>累</text>计：</text>
-                <text class="content">{{marketingStat.releaseActivity}}个</text>
+                <text class="content">{{marketingStat.releaseActivity}}张</text>
               </view>
             </navigator>
             <view class="line"></view>
-            <navigator url="/pages/index/takeInPartRecord/takeInPartRecord" hover-class="none" class="lockAndExpand-Part-item">
+            <navigator url="/pages/index/yingXiaoHuoDongModule/marketingAct?type=activity" hover-class="none" class="lockAndExpand-Part-item">
               <view class="item">
                 <text class="name">参与活动：</text><text class="content big">{{marketingStat.marketingDayStat[0].dayJoinActivity}}</text>
               </view>
@@ -588,6 +588,7 @@
       })
     }
     async onShow() {
+      this.currentTab = 0
       this.startDay = util.someDayLater(util.nowDate(), -1, '-');
       this.endDay = util.someDayLater(util.nowDate(), -1, '-');
       this.jiFenFlag = true;

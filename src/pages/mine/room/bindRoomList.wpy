@@ -3,11 +3,11 @@
         <view wx:if="{{roomList.length}}" class="top_handle">
             <checkbox-group class="checkBox_group" @change="selectAll">
                 <label class="top_checkBox">
-                        <checkbox class="top_checkbox_item" value="all"  color="orange"/>
-                        <view class="allSelect">
-                            全选
-                        </view>
-                    </label>
+                            <checkbox class="top_checkbox_item" value="all"  color="orange"/>
+                            <view class="allSelect">
+                                全选
+                            </view>
+                        </label>
             </checkbox-group>
             <!-- <view class="downLoadBtn"></view> -->
         </view>
@@ -16,9 +16,9 @@
                 <view wx:if="{{roomList.length}}">
                     <repeat for="{{roomList}}" key="index" item="item">
                         <label class="radio" style="justify-content: flex-start	">
-                                <checkbox  color="orange" value="{{item.id}}" checked="{{item.isSelect}}"/>
-                                <view class="room_name">{{item.name}}-{{item.code}}{{'('+item.remark+')'}}</view>
-                            </label>
+                                    <checkbox  color="orange" value="{{item.id}}" checked="{{item.isSelect}}"/>
+                                    <view class="room_name">{{item.name}}-{{item.code}}{{'('+item.remark+')'}}</view>
+                                </label>
                     </repeat>
                 </view>
                 <view @tap.stop="goToCreateRoom" class="noData" wx:else>暂无房间，请前往创建房间</view>
@@ -26,10 +26,12 @@
             <checkbox-group wx:else class="radio-group" @change="selectDeleteDesk">
                 <view wx:if="{{roomList.length}}">
                     <repeat for="{{roomList}}" key="index" item="item">
-                        <label class="radio">
+                        <label class="radio" @tap="tapLabel"> 
                                 <checkbox  color="orange" value="{{item.id}}" checked="{{item.isSelect}}"/>
-                                <view class="room_name">{{item.name}}-{{item.code}}号桌{{'('+item.remark+')'}}</view>
-                                <view class="remarks" @tap.stop="showRemarkShow({{item.id}})">备注</view>
+                                <!-- <view style="display:flex">  -->
+                                    <view class="room_name">{{item.name}}-{{item.code}}号桌{{'('+item.remark+')'}}</view>
+                                    <view class="remarks" @tap="showRemarkShow({{item.id}})">备注</view>
+                                <!-- </view>     -->
                             </label>
                     </repeat>
                 </view>
@@ -94,6 +96,9 @@
             // loadFlag:true
         };
         methods = {
+            tapLabel() {
+                console.log("tap log label")
+            },
             //全选
             selectAll(e) {
                 this.dataImgeList = [];
@@ -300,7 +305,7 @@
             switch (this.listOrBindType) {
                 case "list":
                     wx.setNavigationBarTitle({
-                        title: "房间列表"
+                        title: "台/房号设置"
                     })
                     this._loadNoBindRoomList()
                     break;
@@ -351,7 +356,6 @@
                     font-size: 26rpx;
                     color: red;
                     text-decoration: underline;
-                    
                     margin-top: 4rpx;
                 }
             }

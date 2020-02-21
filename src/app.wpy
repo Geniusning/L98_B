@@ -38,6 +38,8 @@ export default class extends wepy.app {
       'pages/marketing/jiFenHuanLiPin/managerGift',
       'pages/marketing/activityNotice/activityNotice',
       'pages/marketing/recommendAndGiftStat/recommendAndGiftStat',
+      'pages/marketing/recommendAndGiftStat/recommendAndGiftStatDetail',
+      'pages/marketing/recommendAndGiftStat/recommendAndGiftUnconvert',
       'pages/index/dianNeiShangXian/dianNeiShangXian',
       'pages/index/takeInPartRecord/takeInPartRecord',
       'pages/index/communityRecord/communityRecord',
@@ -51,6 +53,8 @@ export default class extends wepy.app {
       'pages/index/youShangXuanChuan/youShangXuanChuan',
       'pages/index/dianWaiShangXian/dianWaiShangXian',
       'pages/index/yingXiaoHuoDongModule/yingXiaoHuoDongModule',
+      'pages/index/yingXiaoHuoDongModule/marketingAct',
+      'pages/index/yingXiaoHuoDongModule/marketDetail',
       'pages/index/visitorRecord/visitorRecord',
       'pages/index/registerRecord/registerRecord',
       'pages/index/visitorRecord/visitorRecord-detail/visitorRecord-detail',
@@ -179,10 +183,10 @@ export default class extends wepy.app {
   //                 // wx.switchTab({
   //                 //   url: '/pages/log/shopList'
   //                 // });
-  //                 wx.switchTab({
-  //                   url: '/pages/mine/mine'
+  //                 wx.redirectTo({
+  //                   url: '/pages/log/shopList'
   //                 });
-  //               }, 3000);
+  //               }, 2000);
   //             } else {
   //               wx.showToast({
   //                 title: '账号或密码错误',

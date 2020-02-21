@@ -69,11 +69,14 @@
         console.log(this.pickerArray[parseInt(e.detail.value)])
         if (this.pageType === "sys") {
           dataType = this.pickerArray[parseInt(e.detail.value)].id
-        } else if (this.pageType === "exchangeGift") {
-          dataType = this.pickerArray[parseInt(e.detail.value)].name
-        } else if (this.pageType === "givenGift") {
+        }else{
           dataType = this.pickerArray[parseInt(e.detail.value)].name
         }
+        //  else if (this.pageType === "exchangeGift") {
+        //   dataType = this.pickerArray[parseInt(e.detail.value)].name
+        // } else if (this.pageType === "givenGift") {
+        //   dataType = this.pickerArray[parseInt(e.detail.value)].name
+        // }
         this._judgeIntegralType(this.pageType, dataType)
       }
     };
@@ -93,14 +96,14 @@
         return
       }
       this.allTypesData.forEach(item => {
-        
+        this.totalNumbers += 1
         if (pageType === "exchangeGift") {
           if (item.name === dataType) {
             if (typeof(item.milliTime) === "number") {
               item.milliTime = util.timestampToTime(item.milliTime).slice(11)
             }
             this.totalIntegral += item.integral
-            this.totalNumbers += 1
+            // this.totalNumbers += 1
             this.recordData.push(item)
           }
         } else if (pageType === "sys") {
@@ -109,7 +112,7 @@
               item.milliTime = util.timestampToTime(item.milliTime).slice(11)
             }
             this.totalIntegral += item.integral
-            this.totalNumbers += 1
+            // this.totalNumbers += 1
             this.recordData.push(item)
           }
         } else if (pageType === "givenGift") {
@@ -118,7 +121,7 @@
               item.milliTime = util.timestampToTime(item.milliTime).slice(11)
             }
             this.totalIntegral += item.integral
-            this.totalNumbers += 1
+            // this.totalNumbers += 1
             this.recordData.push(item)
           }
         }
@@ -130,24 +133,24 @@
         item.milliTime = util.timestampToTime(item.milliTime).slice(11)
         item["name"] = this._judgeSysIntegralName(item.integralType)
         this.totalIntegral += item.integral
-        this.totalNumbers += 1
+        // this.totalNumbers += 1
         this.recordData.push(item)
-        this.selectAllData = this.recordData
+        // this.selectAllData = this.recordData
       } else if ((item.integralType === "goodsGift" || item.integralType === "goodsRecommend" || item.integralType === "convertRecommend" || item.integralType === "convertGift" || item.integralType === "renewDice") && type === "exchangeGift") { //消耗兑换
         item.milliTime = util.timestampToTime(item.milliTime).slice(11)
         if (item.integralType == "renewDice") {
           item["name"] = "游戏重摇消耗"
         }
         this.totalIntegral += item.integral
-        this.totalNumbers += 1
+        // this.totalNumbers += 1
         this.recordData.push(item)
-        this.selectAllData = this.recordData
+        // this.selectAllData = this.recordData
       } else if ((item.integralType === "virtualGift") && type === "givenGift") { //用户转增赠送
         item.milliTime = util.timestampToTime(item.milliTime).slice(11)
         this.totalIntegral += item.integral
-        this.totalNumbers += 1
+        // this.totalNumbers += 1
         this.recordData.push(item)
-        this.selectAllData = this.recordData
+        // this.selectAllData = this.recordData
       }
       if (item.goodsInfo) { //判断是否是兑换获得积分`
         if ((item.integralType == "goodsRecommend" || item.integralType == "goodsGift" || item.integralType === "convertGift" || item.integralType === "convertRecommend" || item.integralType === "renewDice") && this.pageType === "exchangeGift") {
@@ -192,10 +195,11 @@
         if (res.errCode === 0) {
           wx.hideLoading()
           this.allTypesData = res.everyDayIntegralForUser
-          console.log("all data-----------", this.allTypesData)
           this.allTypesData.forEach((item, index) => {
             this._handleItem(this.pickerArray, item, type)
+            this.totalNumbers += 1
           })
+          this.selectAllData = this.recordData
         }
         //进入手动选择picker里面的第一类型数据---------begin
         // if (this.pageType === "sys") {
@@ -215,7 +219,7 @@
       })
     };
     //数组去重,并把目标type放到数组第一个元素位置
-    _delSameItem(arr, type) {
+    _delSameItem(arr) {
       var newArr = [];
       var obj = {};
       for (var i = 0; i < arr.length; i++) {
@@ -320,6 +324,10 @@
           padding-top: 16rpx;
         }
         .selectText {}
+        .picker{
+          color: red;
+          text-decoration: underline;
+        }
       }
     }
     .integralDetail_bottom {

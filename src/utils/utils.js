@@ -108,7 +108,7 @@ const returnDiscountType = (discountTypeNumber) => {
     return "实物券"
   } else if (parseInt(discountTypeNumber) === 2) {
     return "折扣券"
-  } else if (parseInt(discountTypeNumber) === 2){
+  } else if (parseInt(discountTypeNumber) === 3){
     return "兑换券"
   }else {
     return "满减券"
@@ -125,6 +125,19 @@ const returnDiscountContent = (coupon) => {
     return "兑换券"+coupon.content
   }else if(parseInt(coupon.type) === 4) {
     return "满减券"+coupon.content
+  }
+}
+const returnDiscountContentNoType = (coupon) => {
+  if (parseInt(coupon.type) === 0) {
+    return coupon.value+"元"
+  } else if (parseInt(coupon.type) === 1) {
+    return coupon.content
+  } else if (parseInt(coupon.type) === 2) {
+    return coupon.value+"折"
+  } else if (parseInt(coupon.type) === 3){
+    return coupon.content
+  }else if(parseInt(coupon.type) === 4) {
+    return coupon.content
   }
 }
 const interface_post = (url, data, callBack) => {
@@ -238,6 +251,18 @@ const sortByKey = function(key){
     return v2-v1
   }
 }
+ //数组去重,并把目标type放到数组第一个元素位置
+ const delSameItem = function(arr, type) {
+  var newArr = [];
+  var obj = {};
+  for (var i = 0; i < arr.length; i++) {
+    if (!obj[arr[i].name]) {
+      newArr.push(arr[i]);
+      obj[arr[i].name] = true;
+    }
+  }
+  return newArr
+};
 //比较日期前后
 const compareDate = (beginDate,endDate)=>{
   console.log(beginDate,endDate)
@@ -321,5 +346,7 @@ module.exports = {
   sortByKey,
   _judgeRole,
   getLastSundayTimeStamp,
-  getThisMonth1
+  getThisMonth1,
+  returnDiscountContentNoType,
+  delSameItem
 }

@@ -37,7 +37,7 @@
                 <text class='name'>{{communityDataContent.totalGameStat}}</text> -->
             </view>
             <scroll-view scroll-y style="height:{{winHeight}}rpx">
-              <repeat for="{{communityDataContent.communityDayStats}}" key="index">
+              <repeat for="{{communityDataContent}}" key="index">
                   <view class='item-box'>
                       <text class='name'>{{item.date}}</text>
                       <text class='name'>{{item.dayMakeFriendStat}}</text>
@@ -63,7 +63,7 @@ export default class communityRecord extends wepy.page {
     winHeight: "",
     startDate: '2018-07-06',
     endDate: '2019-08-08',
-    communityDataContent: {},
+    communityDataContent: [],
   };
   methods = {
     bindStartDateChange(e) {
@@ -82,10 +82,10 @@ export default class communityRecord extends wepy.page {
     let url = `${this.$parent.globalData.commonUrl}/api/loadCommunityDayStats?startDay=${this.startDate}&endDay=${this.endDate}&tk=${this.$parent.globalData.tk}`;
     util.interface_get(url).then(res => {
       let communityContent = res.coumnityDayStats;
-      communityContent.communityDayStats.forEach(item => {
+      communityContent.forEach(item => {
         item.date = util.timestampToTime(item.date).slice(0, 11)
       });
-      communityContent.communityDayStats = communityContent.communityDayStats.reverse();
+      communityContent = communityContent.reverse();
       this.communityDataContent = communityContent;
       this.$apply();
       console.log('社群动态-----------------------------', this.communityDataContent);

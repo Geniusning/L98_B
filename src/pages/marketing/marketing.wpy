@@ -25,7 +25,7 @@
       </view>
       <view class='item-right'>
         <navigator hover-class="none" url='/pages/marketing/AIdiscount/managerAIdiscount' class='setting'>管理</navigator>
-        <navigator hover-class="none" url='/pages/marketing/cardList/statCardList?type=AIdiscount' class='setting'>统计</navigator>
+        <navigator hover-class="none" url='/pages/marketing/recommendAndGiftStat/recommendAndGiftStat?type=aiCoupon' class='setting'>统计</navigator>
         <navigator hover-class="none" url='/pages/marketing/AIdiscount/AIdiscount?type=0' class='setting'>设置</navigator>
       </view>
     </view>
@@ -39,7 +39,7 @@
       </view>
       <view class='item-right'>
         <navigator hover-class="none" url='/pages/marketing/inviteDiscount/managerInviteDiscount' class='setting'>管理</navigator>
-        <navigator hover-class="none" url='/pages/marketing/cardList/statCardList?type=inviteDiscount' class='setting'>统计</navigator>
+        <navigator hover-class="none" url='/pages/marketing/recommendAndGiftStat/recommendAndGiftStat?type=inviteCoupon' class='setting'>统计</navigator>
         <navigator hover-class="none" url='/pages/marketing/inviteDiscount/inviteDiscount' class='setting'>设置</navigator>
       </view>
     </view>

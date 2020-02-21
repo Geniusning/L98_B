@@ -1,14 +1,18 @@
 <template>
   <view class="rank_wrapper">
     <view class="rank_title">
+      <image class="logo" src="{{shopInfo.image}}"></image>
       <image class="rankPic" src="../../images/rank_race.png" lazy-load="false"></image>
       <text class="rankText">排行榜</text>
       <view class="typePicker">
-        <radio-group class="radio-group" @change="typeChange">
-          <label class="radio" wx:for="{{typeRank}}" wx:key="index">
-                          <radio color="orange" class="radioItem" value="{{item.id}}" checked="{{item.checked}}"  /> <text class="textDesc">{{item.name}}</text>
-                      </label>
-        </radio-group>
+        <picker class="radio-group" value="{{typeIndex}}" range="{{typeRank}}" @change="typeChange">
+          <view class="picker">
+            当前选择：{{typeRank[typeIndex]}}
+          </view>
+          <!-- <label class="radio" wx:for="{{typeRank}}" wx:key="index"> -->
+            <!-- <radio color="orange" class="radioItem" value="{{item.id}}" checked="{{item.checked}}"  /> <text class="textDesc">{{item.name}}</text> -->
+          <!-- </label> -->
+        </picker>
       </view>
     </view>
     <!-- 筛选区域 -->
@@ -33,7 +37,7 @@
     <!-- 滚动区域 -->
     <view>
       <!-- 拓客 -->
-      <view wx:if="{{typeIndex=='1'}}" class="rank_scrollView">
+      <view wx:if="{{typeIndex==0}}" class="rank_scrollView">
         <view class="rank_scrollView_title">
           <text class="scrollTitle">排名</text>
           <text class="scrollTitle">昵称</text>
@@ -56,7 +60,7 @@
         </scroll-view>
       </view>
       <!-- 分享 -->
-      <view wx:elif="{{typeIndex=='2'}}" class="rank_scrollView">
+      <view wx:elif="{{typeIndex==1}}" class="rank_scrollView">
         <view class="rank_scrollView_title">
           <text class="scrollTitle timeLine">排名</text>
           <text class="scrollTitle timeLine">昵称</text>
@@ -88,29 +92,15 @@
       navigationBarTitleText: '排行榜'
     };
     data = {
+      shopInfo: {},
       currentTab: 0,
       date: '2016-09-01',
-      typeIndex: "1",
+      typeIndex: 0,
       startDay: "",
       endDay: "",
       tuoKeClientList: [],
       sharetList: [],
-      typeRank: [{
-          id: 1,
-          name: "拓客",
-          checked: true,
-        },
-        {
-          id: 2,
-          name: "分享",
-          checked: false,
-        },
-        // {
-        //   id: 3,
-        //   name: "销售",
-        //   checked: false,
-        // },
-      ]
+      typeRank: ["拓客","分享","销售","销卡","对话","游戏"]
     };
     //拓客
     _getTuoKeRankList() {
@@ -156,33 +146,33 @@
         if (this.currentTab == "0") { //昨天
           this.startDay = util.someDayLater(util.nowDate(), -1, '-');
           this.endDay = util.someDayLater(util.nowDate(), -1, '-');
-          if (this.typeIndex === "1") { //拓客
+          if (this.typeIndex === 0) { //拓客
             this._getTuoKeRankList()
-          } else if (this.typeIndex === "2") { //分享
+          } else if (this.typeIndex === 1) { //分享
             this._getShareRankList()
           }
         } else if (this.currentTab == "1") { //今天
           this.startDay = util.nowDate();
           this.endDay = util.nowDate();
-          if (this.typeIndex === "1") { //拓客
+          if (this.typeIndex === 0) { //拓客
             this._getTuoKeRankList()
-          } else if (this.typeIndex === "2") { //分享
+          } else if (this.typeIndex === 1) { //分享
             this._getShareRankList()
           }
         } else if (this.currentTab == "2") { //本周
           this.startDay = util.getLastSundayTimeStamp();
           this.endDay = util.nowDate();
-          if (this.typeIndex === "1") { //拓客
+          if (this.typeIndex === 0) { //拓客
             this._getTuoKeRankList()
-          } else if (this.typeIndex === "2") { //分享
+          } else if (this.typeIndex === 1) { //分享
             this._getShareRankList()
           }
         } else if (this.currentTab == "3") { //本月
           this.startDay = util.getThisMonth1();
           this.endDay = util.nowDate();
-          if (this.typeIndex === "1") { //拓客
+          if (this.typeIndex === 0) { //拓客
             this._getTuoKeRankList()
-          } else if (this.typeIndex === "2") { //分享
+          } else if (this.typeIndex === 1) { //分享
             this._getShareRankList()
           }
         }
@@ -194,9 +184,10 @@
       },
       typeChange(e) {
         this.typeIndex = e.detail.value
-        if (this.typeIndex === "1") { //拓客
+         console.log("typeindex-------",this.typeIndex)
+        if (this.typeIndex === 0) { //拓客
           this._getTuoKeRankList()
-        } else if (this.typeIndex === "2") { //分享
+        } else if (this.typeIndex === 1) { //分享
           this._getShareRankList()
         }
       },
@@ -225,15 +216,16 @@
         }
       },
       selectRankData() {
-        if (this.typeIndex === "1") {
+        if (this.typeIndex === 0) {
           this._getTuoKeRankList();
-        } else if (this.typeIndex === "2") {
+        } else if (this.typeIndex === 1) {
           this._getShareRankList()
         }
       }
     };
     events = {};
     onLoad() {
+      this.shopInfo = this.$parent.globalData.shopInfo;
       this.startDay = util.someDayLater(util.nowDate(), -1, '-');
       this.endDay = util.someDayLater(util.nowDate(), -1, '-');
       this._getTuoKeRankList()
@@ -259,6 +251,13 @@
       font-weight: 800;
       letter-spacing: 10rpx;
       background-color: #ffba00;
+      .logo {
+        position: absolute;
+        left: 30rpx;
+        top: 10rpx;
+        width: 140rpx;
+        height: 140rpx;
+      }
       .rankPic {
         width: 166rpx;
         height: 70rpx;
@@ -277,7 +276,9 @@
         top: 12rpx;
         font-size: 22rpx;
         .radio-group {
-          width: 80rpx;
+          width: 192rpx;
+          font-size: 28rpx;
+          margin-top: 60rpx;
           .radio {
             width: 110rpx;
             height: 60rpx;

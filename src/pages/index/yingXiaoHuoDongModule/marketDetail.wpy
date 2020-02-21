@@ -1,0 +1,306 @@
+<template>
+  <view class="integralDetail_wrapper">
+    <view class="integralDetail_top">
+      <view class="date">{{fatherDate}} 当日合计：{{totalNumbers}}</view>
+      <view class="select">
+        <image src="../../../images/shaixuan.png" mode="scaleToFill" lazy-load="true" class="selectIcon"></image>
+        <picker @change="bindPickerChange" value="{{pickindex}}" range="{{pickerArray}}" range-key="name">
+          <view class="picker">
+            {{pickerArray[pickindex].name}}
+          </view>
+        </picker>
+      </view>
+    </view>
+    <view class="integralDetail_bottom">
+      <scroll-view scroll-y scroll-with-animation style="height:{{winHeight}}rpx">
+        <view class="list">
+          <view class="item">发生时间</view>
+          <view class="item">头像</view>
+          <view class="item" wx:if="{{pageType!='activity'}}">名称</view>
+          <view class="item">类型</view>
+        </view>
+        <repeat for="{{detailData}}" key="index" index="index" item="item">
+          <view class="list">
+            <view class="item">{{item.milliTime}}</view>
+            <view class="item">
+              <image class="avatarIcon" src="{{item.headUrl}}" mode="scaleToFill" lazy-load="false"></image>
+            </view>
+            <view class="item" wx:if="{{pageType!='activity'}}">{{item.couponName}}</view>
+            <view class="item">{{item.name}}</view>
+          </view>
+        </repeat>
+      </scroll-view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  import Loading from '../../../components/loading'
+  const util = require('../../../utils/utils.js')
+  export default class marketDetail extends wepy.page {
+    config = {
+      navigationBarTitleText: '访客详情'
+    };
+    components = {
+      Loading: Loading
+    };
+    data = {
+      allTypesData: [],
+      detailData: [],
+      selectAllData: [],
+      pageType: "",
+      paramDate: "",
+      tuoKeTime: "",
+      deskInfo: {},
+      paramPhone: "",
+      isLoadend: true,
+      totalNumbers: 0,
+      pickindex: 0,
+      pickerArray: [{
+        name: "全部",
+        id: "all"
+      }]
+    }
+    methods = {
+      bindPickerChange(e) {
+        this.pickindex = e.detail.value
+        var dataType
+        console.log(this.pickerArray[parseInt(e.detail.value)])
+        dataType = this.pickerArray[parseInt(e.detail.value)].id
+        console.log("dataType----", dataType);
+        this._judgeMarketType(this.pageType, dataType)
+      }
+    };
+    _judgeMarketType(pageType, dataType) {
+      this.totalIntegral = 0;
+      this.totalNumbers = 0;
+      this.detailData = [];
+      if(dataType==="all"){
+        this.detailData = this.selectAllData
+        this.detailData.forEach(item=>{
+          this.totalNumbers++
+        })
+      }
+      if (pageType === "check" || pageType === "coupon") {
+        console.log("pageType---", pageType)
+        this.selectAllData.forEach(item => {
+          if (item.couponName == dataType) {
+            this.detailData.push(item)
+            this.totalNumbers++
+          }
+        })
+      }else if(pageType==="activity"){
+         console.log("dataType---", dataType)
+        this.selectAllData.forEach(item => {
+          if (item.activityType == dataType) {
+            this.detailData.push(item)
+            this.totalNumbers++
+          }
+        })
+      }
+    };
+    //到店核销详情
+    _loadCheckDetail(date) {
+      this.totalNumbers = 0
+      let url = `${this.$parent.globalData.commonUrl}/api/loadSetOffRecord?tk=${this.$parent.globalData.tk}&date=${date}`
+      util.interface_get(url).then(res => {
+        if (res.errCode == 0) {
+          this.allTypesData = res.loadSetOffRecord
+          this.allTypesData.forEach(item => {
+            this._handleItem(this.pickerArray, item, this.pageType)
+            this.totalNumbers++
+          })
+          this.selectAllData = this.detailData;
+          var pickArr = []
+          pickArr = this._delSameItem(this.pickerArray) //去重
+          this.pickerArray = pickArr
+          console.log("this.pickerArray------", this.pickerArray)
+        }
+        console.log("this.checkList-------", this.detailData)
+        this.$apply();
+      })
+    };
+    //发券记录详情
+    _loadMarketCoupon(date) {
+      this.totalNumbers = 0
+      let url = `${this.$parent.globalData.commonUrl}/api/getMarketCouponStat?tk=${this.$parent.globalData.tk}&date=${date}`
+      util.interface_get(url).then(res => {
+        if (res.errCode == 0) {
+          console.log("发券详情", res)
+          this.allTypesData = res.marketCouponDetailUser
+          this.allTypesData.forEach(item => {
+            this._handleItem(this.pickerArray, item, this.pageType)
+            this.totalNumbers++
+          })
+          this.selectAllData = this.detailData;
+          var pickArr = []
+          pickArr = this._delSameItem(this.pickerArray) //去重
+          this.pickerArray = pickArr
+          console.log("this.pickerArray------", this.pickerArray)
+        }
+        this.$apply();
+      })
+    };
+    //活动详情
+    _loadActivityDetail(date) {
+      this.totalNumbers = 0
+      let url = `${this.$parent.globalData.commonUrl}/api/getActivityStat?tk=${this.$parent.globalData.tk}&date=${date}`
+      util.interface_get(url).then(res => {
+        if (res.errCode == 0) {
+          console.log("活动详情", res)
+          this.allTypesData = res.activityDetailArr
+          this.allTypesData.forEach(item => {
+            this._handleItem(this.pickerArray, item, this.pageType)
+            this.totalNumbers++
+          })
+          this.selectAllData = this.detailData;
+          var pickArr = []
+          pickArr = this._delSameItem(this.pickerArray) //去重
+          this.pickerArray = pickArr
+          console.log("this.pickerArray------", this.pickerArray)
+        }
+        this.$apply();
+      })
+    };
+    _handleItem(tempPickArray, item, type) {
+      if (type === "check") {
+        item["milliTime"] = util.timestampToTime(item.OperationTime).slice(11)
+        item["name"] = util.returnDiscountType(item.UserCoupon.coupon.type)
+        item["couponTypeInt"] = item.UserCoupon.coupon.type
+        item["headUrl"] = item.CouponUser.userHeadURI
+        item["couponName"] = util.returnDiscountContentNoType(item.UserCoupon.coupon)
+        this.detailData.push(item)
+        tempPickArray.push({
+          name: item["couponName"],
+          id: item["couponName"]
+        })
+      } else if (type === "coupon") {
+        item["milliTime"] = util.timestampToTime(item.milliTime).slice(11)
+        item["name"] = util.returnDiscountType(item.couponTypeInt)
+        item["couponTypeInt"] = item.couponTypeInt
+        item["headUrl"] = item.userInfo.headImgUrl
+        // debugger
+         item["couponName"] = util.returnDiscountContentNoType(item.coupon)
+        this.detailData.push(item)
+        tempPickArray.push({
+          name: item["couponName"],
+          id: item["couponName"]
+        })
+      } else if (type === "activity") {
+        item["milliTime"] = util.timestampToTime(item.milliTime).slice(11)
+        item["headUrl"] = item.userInfo.headImgUrl
+        item["name"] = item.ActivityName
+        this.detailData.push(item)
+        tempPickArray.push({
+          name: item.ActivityName,
+          id: item.activityType
+        })
+      }
+    };
+    //数组去重,并把目标type放到数组第一个元素位置
+    _delSameItem(arr, type) {
+      var newArr = [];
+      var obj = {};
+      for (var i = 0; i < arr.length; i++) {
+        if (!obj[arr[i].name]) {
+          newArr.push(arr[i]);
+          obj[arr[i].name] = true;
+        }
+      }
+      return newArr
+    };
+    events = {};
+    onLoad(e) {
+      console.log(e)
+      this.paramPhone = e.phone
+      if (e.Date) {
+        this.paramDate = e.Date.trim();
+      }
+      this.pageType = e.type
+      console.log("日期",this.paramDate)
+      // let startDay = e.startDay;
+      // let endDay = e.endDay;
+      switch (this.pageType) {
+        case "check":
+          wx.setNavigationBarTitle({
+            title: "到店核销详情"
+          })
+          this._loadCheckDetail(this.paramDate)
+          console.log("到店核销详情请求")
+          break;
+        case "coupon":
+          wx.setNavigationBarTitle({
+            title: "发券详情"
+          })
+          this._loadMarketCoupon(this.paramDate)
+          console.log("发券详情请求")
+          break;
+        case "activity":
+          wx.setNavigationBarTitle({
+            title: "活动详情"
+          })
+          this._loadActivityDetail(this.paramDate)
+          console.log("活动详情请求")
+          break;
+        default:
+          break;
+      }
+    }
+    // Other properties
+  }
+</script>
+
+<style lang="less">
+  .integralDetail_wrapper {
+    .integralDetail_top {
+      background-color: #fff;
+      height: 80rpx;
+      line-height: 80rpx;
+      position: relative;
+      .date {
+        width: 100%;
+        text-align: left;
+        height: 80rpx;
+        line-height: 80rpx;
+        padding-left: 24rpx;
+      }
+      .select {
+        position: absolute;
+        top: 0;
+        right: 12rpx;
+        display: flex;
+        .selectIcon {
+          width: 40rpx;
+          height: 40rpx;
+          padding-top: 16rpx;
+        }
+        .selectText {}
+        .picker{
+          color: red;
+          text-decoration: underline;
+        }
+      }
+    }
+    .integralDetail_bottom {
+      .list {
+        display: flex;
+        margin: 30rpx 0;
+        .item {
+          width: 33.333%;
+          text-align: center;
+          height: 80rpx;
+          line-height: 80rpx;
+          .avatarIcon {
+            width: 80rpx;
+            height: 80rpx;
+            border-radius: 50%;
+          }
+        }
+        .itemExchange {
+          width: 25%;
+        }
+      }
+    }
+  }
+</style>

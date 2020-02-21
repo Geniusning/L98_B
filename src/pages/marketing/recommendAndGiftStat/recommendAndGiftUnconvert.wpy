@@ -1,0 +1,154 @@
+<template>
+  <view class="integralDetail_wrapper">
+    <view class="integralDetail_top">
+      <view class="total_box" style="margin-top: 10rpx;margin-left:14rpx;position:absolute;top:5rpx;">
+        合计份数：{{totalTimes}} 合计积分：{{totalIngegral}}
+      </view>
+      <view class="select">
+        <image src="../../../images/shaixuan.png" mode="scaleToFill" lazy-load="true" class="selectIcon"></image>
+        <picker class="pickerbox" @change="bindPickerChange" value="{{pickindex}}" range="{{pickerArray}}" range-key="name">
+          <view class="picker">
+            {{pickerArray[pickindex].name}}
+          </view>
+        </picker>
+      </view>
+    </view>
+    <view class="integralDetail_bottom">
+      <scroll-view scroll-y scroll-with-animation style="height:{{winHeight}}rpx">
+        <view class="list">
+          <view class="item">发生日期</view>
+          <view class="item">兑换人</view>
+          <view class="item">兑换项目</view>
+          <view class="item">积分</view>
+        </view>
+        <repeat for="{{recordData}}" key="index" index="index" item="item">
+          <view class="list">
+            <view class="item">{{item.milliTime}}</view>
+            <view class="item">
+              <image class="avatarIcon" src="{{item.headUrl}}" mode="scaleToFill" lazy-load="false"></image>
+            </view>
+            <view class="item">{{item.couponName}}</view>
+            <view class="item">{{item.integral}}</view>
+          </view>
+        </repeat>
+      </scroll-view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import util from '../../../utils/utils.js'
+  export default class recommendAndGiftStatDetail extends wepy.page {
+    config = {
+      navigationBarTitleText: '详情'
+    };
+    data = {
+      pageType:"",
+      pickindex: 0,
+      paramDate: "",
+      couponOriginType:"",
+      totalData: 0,
+      totalTimes: 0,
+      totalIngegral: 0,
+      date: "2020-01-01",
+      recordData: [],
+      allTypesData: [],
+      selectAllData: [],
+      pickerArray: [{
+        name: "全部",
+        id: "all"
+      }],
+      winHeight: "",
+    };
+    methods = {
+      bindPickerChange(e) {
+        this.totalTimes = 0;
+        this.totalIngegral = 0;
+        this.pickindex = e.detail.value
+        var dataType
+        console.log(this.pickerArray[parseInt(e.detail.value)])
+        dataType = this.pickerArray[parseInt(e.detail.value)].id
+        console.log("dataType----", dataType);
+        this._judgeMarketType(this.pageType, dataType)
+      },
+    };
+    _judgeMarketType(pageType, dataType) {
+      this.recordData = [];
+      if (dataType === "all") {
+        this.recordData = this.selectAllData
+        this.recordData.forEach(item => {
+          this.totalIngegral += item.integral
+          this.totalTimes++
+        })
+        return
+      }
+      this.selectAllData.forEach(item => {
+        if (item.couponName == dataType) {
+          this.totalTimes++
+          this.totalIngegral += item.integral
+          this.recordData.push(item)
+        }
+      })
+    };
+    _handleItem(tempPickArray, item,type) {
+      if(type === "aiCoupon" || type ==="inviteCoupon"){
+        item["integral"] = item.coupon.coupon.integral
+        item["milliTime"] = util.timestampToTime(item.millionTime).slice(11)
+        item["headUrl"] = item.headUrl
+        item["couponName"] = util.returnDiscountContentNoType(item.coupon.coupon)
+        this.totalTimes++
+        this.recordData.push(item)
+        tempPickArray.push({
+          name: item["couponName"],
+          id: item["couponName"]
+        })
+        return
+      }
+      item["milliTime"] = util.timestampToTime(item.time).slice(11)
+      item["integral"] = item.good.integral
+      item["headUrl"] = item.headImgUrl
+      var coupon = {
+          content:item.couponContent,
+          type :item.couponType,
+          value:item.couponValue
+      }
+      item["couponName"] = util.returnDiscountContentNoType(coupon)
+      item.couponType = util.returnDiscountType(item.couponType)
+        this.totalTimes++
+        this.totalIngegral += item["integral"]
+        this.recordData.push(item)
+        tempPickArray.push({
+          name: item["couponName"],
+          id: item["couponName"]
+        })
+    };
+    _loadUnConvertItemDetail(date,couponOriginType) {
+      let url = `${this.$parent.globalData.commonUrl}/api/loadUnconvertCoupon?tk=${this.$parent.globalData.tk}&date=${date}&couponOriginType=${couponOriginType}`
+      util.interface_get(url).then(res => {
+        console.log("data----", res)
+        if (res.errCode === 0) {
+          this.allTypesData = res.unConverCoupons.sort(util.sortByKey("time"))
+          this.allTypesData.forEach(item => {
+            this._handleItem(this.pickerArray, item,this.pageType)
+          })
+           this.selectAllData = this.recordData;
+           var pickArr = []
+           pickArr = util.delSameItem(this.pickerArray) //去重
+          this.pickerArray = pickArr
+          console.log("this.pickerArray------", this.pickerArray)
+        }
+        this.$apply()
+      })
+    };
+    events = {};
+    async onLoad(e) {
+      this.winHeight = util.getScrollHeight(144)
+      this.paramDate = e.date.trim()
+      this.pageType = e.type
+      console.log("date-----", this.paramDate)
+      this._loadUnConvertItemDetail(this.paramDate,this.pageType)
+    }
+  }
+</script>
+<style lang="less" src="./recommendAndGift.less"></style>
