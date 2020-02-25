@@ -128,14 +128,12 @@
         console.log('res-------', res);
         if (this.pageType === 'sys') {
           //获得系统赠送积分
-          this.recordData = res.sysSendInteDayStat
-            .map(item => {
+          this.recordData = res.sysSendInteDayStat.map(item => {
               item.date = util.timestampToTime(item.date).slice(0, 10);
               item.totalData = item.dayCheckIn + item.dayActivityShare + item.dayGameShare + item.dayMakeFriAmount;
               this.topTotal += item.totalData;
               return item;
-            })
-            .reverse();
+            }).reverse();
           console.log('this.recordData--------', this.recordData);
           this.$apply();
         } else if (this.pageType === 'exchangeGift') {

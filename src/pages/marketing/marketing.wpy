@@ -66,7 +66,7 @@
       </view>
       <view class='item-right'>
         <navigator hover-class="none" url='/pages/marketing/game/singleGameList?type=game' class='setting'>管理</navigator>
-        <navigator hover-class="none" url='/pages/marketing/cardList/statCardList?type=game' class='setting'>统计</navigator>
+        <navigator hover-class="none" url='/pages/marketing/activityNotice/activityNoticeStat?type=game' class='setting'>统计</navigator>
         <navigator hover-class="none" url='/pages/marketing/game/game' class='setting'>设置</navigator>
       </view>
     </view>
@@ -145,6 +145,7 @@
         </view>
       </view>
       <view class='item-right'>
+        <navigator hover-class='none' url='/pages/marketing/activityNotice/activityNoticeStat?type=activity' class='setting'>统计</navigator>
         <navigator hover-class='none' url='/pages/marketing/activityNotice/activityNotice' class='setting'>设置</navigator>
       </view>
     </view>

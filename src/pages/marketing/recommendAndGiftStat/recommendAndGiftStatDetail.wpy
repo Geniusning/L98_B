@@ -2,7 +2,7 @@
   <view class="integralDetail_wrapper">
     <view class="integralDetail_top">
       <view class="total_box" style="margin-top: 10rpx;margin-left:14rpx;position:absolute;top:5rpx;">
-        合计份数：{{totalTimes}} 合计积分：{{totalIngegral}}
+        合计份数：{{totalTimes}} <text wx:if="{{pageType != 'aiCoupon' && pageType !='inviteCoupon'}}">合计积分：{{totalIngegral}}</text>
       </view>
       <view class="select">
         <image src="../../../images/shaixuan.png" mode="scaleToFill" lazy-load="true" class="selectIcon"></image>
@@ -19,7 +19,7 @@
           <view class="item">发生日期</view>
           <view class="item">兑换人</view>
           <view class="item">核销项目</view>
-          <view class="item">积分</view>
+          <view class="item" wx:if="{{pageType != 'aiCoupon' && pageType !='inviteCoupon'}}">积分</view>
         </view>
         <repeat for="{{recordData}}" key="index" index="index" item="item">
           <view class="list">
@@ -28,7 +28,7 @@
               <image class="avatarIcon" src="{{item.headUrl}}" mode="scaleToFill" lazy-load="false"></image>
             </view>
             <view class="item">{{item.couponName}}</view>
-            <view class="item">{{item.integral}}</view>
+            <view class="item" wx:if="{{pageType != 'aiCoupon' && pageType !='inviteCoupon'}}">{{item.integral}}</view>
           </view>
         </repeat>
       </scroll-view>
@@ -47,6 +47,7 @@
       pickindex: 0,
       paramDate: "",
       totalData: 0,
+      pageType:"",
       totalTimes: 0,
       totalIngegral: 0,
       date: "2020-01-01",
