@@ -1,8 +1,8 @@
 .integralDetail_wrapper {
     .integralDetail_top {
-      background-color: #fff; // height: 80rpx;
-      // line-height: 80rpx;
-      height: 70rpx;
+      background-color: #fff;
+      height: 80rpx;
+      line-height: 80rpx;
       position: relative;
       .date {
         width: 100%;
@@ -13,21 +13,18 @@
       }
       .select {
         position: absolute;
-        top: 4rpx;
+        top: 0;
         right: 12rpx;
         display: flex;
         .selectIcon {
           width: 40rpx;
           height: 40rpx;
           padding-top: 16rpx;
-         
         }
-        .pickerbox {
-          .picker {
-            margin-top: 14rpx;
-            text-decoration: underline;
-            color: red;
-          }
+        .selectText {}
+        .picker{
+          color: red;
+          text-decoration: underline;
         }
       }
     }
@@ -45,6 +42,9 @@
             height: 80rpx;
             border-radius: 50%;
           }
+        }
+        .itemExchange {
+          width: 25%;
         }
       }
     }

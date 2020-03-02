@@ -1,12 +1,20 @@
 <template>
   <view class="integralDetail_wrapper">
     <view class="integralDetail_top">
-      <view class="total_box" style="margin-top: 10rpx;margin-left:14rpx;position:absolute;top:5rpx;">
+      <view class="total_box"
+            style="margin-top: 10rpx;margin-left:14rpx;position:absolute;top:5rpx;">
         合计次数：{{totalTimes}}
       </view>
       <view class="select">
-        <image src="../../../images/shaixuan.png" mode="scaleToFill" lazy-load="true" class="selectIcon"></image>
-        <picker class="pickerbox" @change="bindPickerChange" value="{{pickindex}}" range="{{pickerArray}}" range-key="name">
+        <image src="../../../images/shaixuan.png"
+               mode="scaleToFill"
+               lazy-load="true"
+               class="selectIcon"></image>
+        <picker class="pickerbox"
+                @change="bindPickerChange"
+                value="{{pickindex}}"
+                range="{{pickerArray}}"
+                range-key="name">
           <view class="picker">
             {{pickerArray[pickindex].name}}
           </view>
@@ -14,18 +22,28 @@
       </view>
     </view>
     <view class="integralDetail_bottom">
-      <scroll-view scroll-y scroll-with-animation style="height:{{winHeight}}rpx">
+      <scroll-view scroll-y
+                   scroll-with-animation
+                   style="height:{{winHeight}}rpx">
         <view class="list">
           <view class="item">发生日期</view>
           <view class="item">参与人</view>
+          <view class="item">活动类型</view>
           <view class="item">活动名称</view>
         </view>
-        <repeat for="{{recordData}}" key="index" index="index" item="item">
+        <repeat for="{{recordData}}"
+                key="index"
+                index="index"
+                item="item">
           <view class="list">
             <view class="item">{{item.milliTime}}</view>
             <view class="item">
-              <image class="avatarIcon" src="{{item.headUrl}}" mode="scaleToFill" lazy-load="false"></image>
+              <image class="avatarIcon"
+                     src="{{item.headUrl}}"
+                     mode="scaleToFill"
+                     lazy-load="false"></image>
             </view>
+            <view class="item">{{item.actType}}</view>
             <view class="item">{{item.actTheme}}</view>
           </view>
         </repeat>
@@ -45,7 +63,7 @@
       pickindex: 0,
       paramDate: "",
       totalData: 0,
-      pageType:"",
+      pageType: "",
       totalTimes: 0,
       date: "2020-01-01",
       recordData: [],
@@ -82,7 +100,7 @@
           this.endDate = util.nowDate();
         }
       },
-      selecData() {},
+      selecData() { },
       bindPickerChange(e) {
         this.totalTimes = 0;
         this.pickindex = e.detail.value
@@ -103,7 +121,7 @@
         return
       }
       this.selectAllData.forEach(item => {
-        if (item.actTheme== dataType) {
+        if (item.actTheme == dataType) {
           this.totalTimes++
           this.recordData.push(item)
         }
@@ -113,6 +131,11 @@
       item["milliTime"] = util.timestampToTime(item.milliTime).slice(11)
       item["actTheme"] = item.theme
       item["headUrl"] = item.userInfo.headImgUrl
+      if (this.pageType == "game") {
+        item["actType"] = "大话比赛"
+      } else if (this.pageType == "activity") {
+        item["actType"] = "活动通知"
+      }
       if (item.activityType == this.pageType) {
         this.totalTimes++
         console.log("coming in")
@@ -143,7 +166,7 @@
     };
     events = {};
     async onLoad(e) {
-        console.log(e)
+      console.log(e)
       this.winHeight = util.getScrollHeight(144)
       this.paramDate = e.date.trim()
       this.pageType = e.type
@@ -153,4 +176,5 @@
     }
   }
 </script>
-<style lang="less" src="../recommendAndGiftStat/recommendAndGift.less"></style>
+<style lang="less" src="../recommendAndGiftStat/recommendAndGift.less">
+</style>

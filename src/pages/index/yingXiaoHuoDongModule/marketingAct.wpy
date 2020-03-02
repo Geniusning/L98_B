@@ -2,7 +2,11 @@
   <view class="visitorRecord-wrapper">
     <view class='time-box'>
       <view class='time-box-left'>
-        <picker mode="date" value="{{date}}" start="2015-09-01" end="2029-09-01" @change="bindStartDateChange">
+        <picker mode="date"
+                value="{{date}}"
+                start="2015-09-01"
+                end="2029-09-01"
+                @change="bindStartDateChange">
           <view class="picker">
             {{startDate}}
           </view>
@@ -10,14 +14,19 @@
       </view>
       <view class='line'></view>
       <view class='time-box-right'>
-        <picker mode="date" value="{{date}}" start="2015-09-01" end="2029-09-01" @change="bindEndDateChange">
+        <picker mode="date"
+                value="{{date}}"
+                start="2015-09-01"
+                end="2029-09-01"
+                @change="bindEndDateChange">
           <view class="picker">
             {{endDate}}
           </view>
         </picker>
       </view>
       <view class='time-box-btn'>
-        <text class='btn' @tap="selecData">确定</text>
+        <text class='btn'
+              @tap="selecData">确定</text>
       </view>
       <view class='totalNum-box'>
         <text class='visitorTitle'>合计数：</text>
@@ -30,13 +39,19 @@
         <text class='visitorNum'>数量</text>
         <text class='visitorNum'>详情</text>
       </view>
-      <scroll-view scroll-y class='scrollView' style='height:{{winHeight}}rpx'>
+      <scroll-view scroll-y
+                   class='scrollView'
+                   style='height:{{winHeight}}rpx'>
         <view>
-          <repeat for="{{dateList}}" key="index" item="item">
-            <view @tap="gotoMarketDetail({{item.totalData}},{{item.date}})" class='specific-wrapper'>
+          <repeat for="{{dateList}}"
+                  key="index"
+                  item="item">
+            <view @tap="gotoMarketDetail({{item.totalData}},{{item.date}})"
+                  class='specific-wrapper'>
               <text class='date'>{{item.date}}</text>
               <text class='num'>{{item.totalData}}</text>
-              <text class='num' style="text-decoration:underline;color:red">详情&gt;&gt;</text>
+              <text class='num'
+                    style="text-decoration:underline;color:red">详情&gt;&gt;</text>
             </view>
           </repeat>
         </view>
@@ -75,11 +90,11 @@
         })
         console.log(count, date)
       },
-      bindStartDateChange: function(e) {
+      bindStartDateChange: function (e) {
         console.log('开始日期', e.detail.value);
         this.startDate = e.detail.value;
       },
-      bindEndDateChange: function(e) {
+      bindEndDateChange: function (e) {
         console.log('结束日期', e.detail.value);
         this.endDate = e.detail.value;
         let flag = util.compareDate(this.startDate, this.endDate)
@@ -93,7 +108,7 @@
         }
       },
       //查询数据
-      selecData: function() {
+      selecData: function () {
         this.judegePageType(this.pageType);
       }
     };
@@ -209,17 +224,5 @@
     .date-box {
       flex: 1;
     }
-    .scrollView {
-      .date {}
-      // .num {
-      //   text-decoration: underline;
-      //   color: red
-      // }
-    }
-  }
-  .canvas {
-    width: 100%;
-    height: 200px;
-    background: #fff;
   }
 </style>

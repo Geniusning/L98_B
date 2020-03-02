@@ -2,7 +2,11 @@
   <view class="recommend-wrapper">
     <view class='time-box'>
       <view class='time-box-left'>
-        <picker mode="date" value="{{date}}" start="2015-09-01" end="2019-09-01" @change="bindStartDateChange">
+        <picker mode="date"
+                value="{{date}}"
+                start="2015-09-01"
+                end="2019-09-01"
+                @change="bindStartDateChange">
           <view class="picker">
             {{startDate}}
           </view>
@@ -10,18 +14,24 @@
       </view>
       <view class='line'></view>
       <view class='time-box-right'>
-        <picker mode="date" value="{{date}}" start="2015-09-01" end="2019-09-01" @change="bindEndDateChange">
+        <picker mode="date"
+                value="{{date}}"
+                start="2015-09-01"
+                end="2038-09-01"
+                @change="bindEndDateChange">
           <view class="picker">
             {{endDate}}
           </view>
         </picker>
       </view>
-      <view class='time-box-btn' @tap="selectSpecifyData">
+      <view class='time-box-btn'
+            @tap="selectSpecifyData">
         <text class='btn'>确定</text>
       </view>
     </view>
     <view class='date-box'>
-      <scroll-view scroll-y style="height:{{winHeight}}rpx">
+      <scroll-view scroll-y
+                   style="height:{{winHeight}}rpx">
         <view class='dateTitle-wrapper'>
           <text class='item'>日期</text>
           <text class='item'>自动发券</text>
@@ -29,10 +39,11 @@
           <text class='item'>发布活动</text>
           <text class='item'>发布游戏</text>
         </view>
-        <repeat for="{{sysInformList}}" key="index">
+        <repeat for="{{sysInformList}}"
+                key="index">
           <view class='dateTitle-wrapper'>
             <text class='item'>{{item.date}}</text>
-            <text class='item'>0次</text>
+            <text class='item'>{{item.dayAutoDisStat}}次</text>
             <text class='item'>{{item.dayInviteStat}}次</text>
             <text class='item'>{{item.dayNoticeStat}}次</text>
             <text class='item'>{{item.dayArenaStat}}次</text>
@@ -60,11 +71,11 @@
       selectSpecifyData() {
         this._getSystemInfoList()
       },
-      bindStartDateChange: function(e) {
+      bindStartDateChange: function (e) {
         console.log('picker发送选择改变，携带值为', e.detail.value);
         this.startDate = e.detail.value;
       },
-      bindEndDateChange: function(e) {
+      bindEndDateChange: function (e) {
         console.log('picker发送选择改变，携带值为', e.detail.value);
         this.endDate = e.detail.value;
       }

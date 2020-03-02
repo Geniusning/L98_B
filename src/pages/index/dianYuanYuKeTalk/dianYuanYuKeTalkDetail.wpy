@@ -1,0 +1,104 @@
+<template>
+    <view class="integralDetail_wrapper">
+        <view class="integralDetail_top">
+            <view class="total_box"
+                  style="margin-top: 10rpx;margin-left:14rpx;position:absolute;top:5rpx;">
+                合计总数：{{totalTimes}}
+            </view>
+            <!-- <view class="select">
+                <image src="../../../images/shaixuan.png"
+                       mode="scaleToFill"
+                       lazy-load="true"
+                       class="selectIcon"></image>
+                <picker class="pickerbox"
+                        @change="bindPickerChange"
+                        value="{{pickindex}}"
+                        range="{{pickerArray}}"
+                        range-key="name">
+                    <view class="picker">
+                        {{pickerArray[pickindex].name}}
+                    </view>
+                </picker>
+            </view> -->
+        </view>
+        <view class="integralDetail_bottom">
+            <scroll-view scroll-y
+                         scroll-with-animation
+                         style="height:{{winHeight}}rpx">
+                <view class="list">
+                    <view class="item">发生时间</view>
+                    <view class="item">店员</view>
+                    <view class="item">对话对象</view>
+
+                </view>
+                <repeat for="{{recordData}}"
+                        key="index"
+                        index="index"
+                        item="item">
+                    <view class="list">
+                        <view class="item">{{item.milliTime}}</view>
+                        <view class="item">
+                            <image class="avatarIcon"
+                                   src="{{item.staffHeadUrl}}"
+                                   mode="scaleToFill"
+                                   lazy-load="false"></image>
+                        </view>
+                        <view class="item">
+                            <image class="avatarIcon"
+                                   src="{{item.ClientHeadUrl}}"
+                                   mode="scaleToFill"
+                                   lazy-load="false"></image>
+                        </view>
+                    </view>
+                </repeat>
+            </scroll-view>
+        </view>
+    </view>
+</template>
+
+<script>
+    import wepy from 'wepy'
+    import util from '../../../utils/utils.js'
+    export default class dianYuanYuKeTalkDetail extends wepy.page {
+        config = {
+            navigationBarTitleText: '详情'
+        };
+        data = {
+            pickindex: 0,
+            paramDate: "",
+            pageType: "",
+            totalTimes: 0,
+            date: "2020-01-01",
+            recordData: [],
+            winHeight: "",
+        };
+        methods = {};
+        _handleItem(item) {
+            item["milliTime"] = util.timestampToTime(item.millionTime).slice(11)
+        };
+        _loadClerkChatDetail(date) {
+            let url = `${this.$parent.globalData.commonUrl}/api/loadClerkChatDetail?tk=${this.$parent.globalData.tk}&date=${date}&dataType=${this.pageType}`
+            util.interface_get(url).then(res => {
+                console.log("data----", res)
+                if (res.errCode === 0) {
+                    this.recordData = res.clerkChatDetail.sort(util.sortByKey("millionTime"))
+                    this.recordData.forEach(item => {
+                        this._handleItem(item)
+                        this.totalTimes++
+                    })
+                }
+                this.$apply()
+            })
+        };
+        events = {};
+        async onLoad(e) {
+            this.winHeight = util.getScrollHeight(144)
+            this.paramDate = e.date.trim()
+            this.pageType = e.type
+            console.log("date-----", this.paramDate)
+            console.log("pageType-----", this.pageType)
+            this._loadClerkChatDetail(this.paramDate)
+        }
+    }
+</script>
+<style lang="less" src="../../marketing/recommendAndGiftStat/recommendAndGift.less"></style>
