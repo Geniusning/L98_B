@@ -6,11 +6,17 @@
         <form bindsubmit='formSubmit'>
           <view class='itemBox'>
             <text class='itemname'>第一步：会员卡名称</text>
-            <input class='input_Area' name='name' value="{{vipName}}" @blur='bindVipName' placeholder='输入本卡专用名称'></input>
+            <input class='input_Area'
+                   name='name'
+                   value="{{vipName}}"
+                   @blur='bindVipName'
+                   placeholder='输入本卡专用名称'></input>
           </view>
           <view class='itemBox'>
             <text class='itemname'>第二步：卡的种类</text>
-            <picker @change="bindVipTypeChange" value="{{vipTypeIndex}}" range="{{vipTypeList}}">
+            <picker @change="bindVipTypeChange"
+                    value="{{vipTypeIndex}}"
+                    range="{{vipTypeList}}">
               <view class="picker">
                 <text class='pickerbg'>{{vipTypeList[vipTypeIndex]}}</text>
               </view>
@@ -19,11 +25,14 @@
           </view>
           <view class='itemBox'>
             <text class='name'>第三步：VIP图片</text>
-            <image src='{{imgUrl}}' class='addPic'></image>
+            <image src='{{imgUrl}}'
+                   class='addPic'></image>
           </view>
           <view class='itemBox'>
             <text class='itemname'>第四步：使用次数</text>
-            <picker @change="bindVipTimesChange" value="{{timesListIndex}}" range="{{timesList}}">
+            <picker @change="bindVipTimesChange"
+                    value="{{timesListIndex}}"
+                    range="{{timesList}}">
               <view class="picker">
                 <text class='pickerbg'>{{timesList[timesListIndex]}}</text>
               </view>
@@ -31,7 +40,9 @@
           </view>
           <view class='itemBox'>
             <view class='itemname'>第五步：使用月数</view>
-            <picker @change="bindVipMonthsChange" value="{{monthsListIndex}}" range="{{monthsList}}">
+            <picker @change="bindVipMonthsChange"
+                    value="{{monthsListIndex}}"
+                    range="{{monthsList}}">
               <view class="picker">
                 <text class='pickerbg'>{{monthsList[monthsListIndex]}}</text>
               </view>
@@ -39,18 +50,34 @@
           </view>
           <view class='itemBox'>
             <text class='itemname'>第六步：积分换</text>
-            <input type='number' class='input_Area' value="{{integral}}" @input='setIntegral' name='integral' placeholder='兑换本卡消耗积分'></input>
+            <input type='number'
+                   class='input_Area'
+                   value="{{integral}}"
+                   @input='setIntegral'
+                   name='integral'
+                   placeholder='兑换本卡消耗积分'></input>
           </view>
           <view class="stepTwo-wrapper">
             <view class="title">第七步：选择卡券</view>
-            <scroll-view scroll-y class="scrollView">
+            <scroll-view scroll-y
+                         class="scrollView">
               <radio-group @change="checkboxCoupon">
-                <repeat for="{{cardList}}" key="index">
+                <repeat for="{{cardList}}"
+                        key="index">
                   <label class="label_tag">
-                        <radio color="#FFBA00"   checked="{{item.checked}}" value="{{item.couponID}}"/>
-                        <cardListCom :item="item" ></cardListCom>
-                    </label>
+                    <radio color="#FFBA00"
+                           checked="{{item.checked}}"
+                           value="{{item.couponID}}" />
+                    <cardListCom :item="item"></cardListCom>
+                  </label>
                 </repeat>
+                <navigator class="noCardList"
+                           wx:if="{{!cardList.length}}"
+                           url="/pages/marketing/makeDiscount/makeDiscount"
+                           open-type="navigate"
+                           hover-class="none">
+                  暂无会员卡优惠券，请前往创建
+                </navigator>
               </radio-group>
             </scroll-view>
           </view>
@@ -73,7 +100,7 @@
       vipName: "",
       times: 10,
       months: 1,
-      couponId:"",
+      couponId: "",
       vipTypeIndex: 0,
       vipTypeList: ["月卡", "次卡"],
       timesList: [10, 15, 20, 30, 60, 199],
@@ -82,7 +109,7 @@
       monthsListIndex: 0,
       imgUrl: "../../../images/vipMonths.png",
       cardList: [],
-      allTypeCardList:[]
+      allTypeCardList: []
     }
     components = {
       cardListCom: cardListCom
@@ -123,7 +150,7 @@
         console.log("months---", this.months)
       },
       setIntegral(e) {
-        
+
       },
       checkboxCoupon(e) {
         console.log("couponId------", e.detail.value)
@@ -133,12 +160,12 @@
         let url = `${this.$parent.globalData.commonUrl}/api/createVipCard?tk=${this.$parent.globalData.tk}`
         let formData = e.detail.value
         let data = {
-          name:formData.name,
-          vipCardType:this.vipTypeIndex,
-          usingTimes:this.times,
-          usingMonths:this.months,
-          vipIntegral:Number(formData.integral),
-          vipCouponID:this.couponId
+          vipName: formData.name,
+          vipCardType: this.vipTypeIndex,
+          usingTimes: this.times,
+          usingMonths: this.months,
+          vipIntegral: Number(formData.integral),
+          vipCouponID: this.couponId
         }
         util.interface_post(url, data).then(res => {
           console.log('创建vipCard-----------------------', res);
@@ -159,11 +186,12 @@
       }
     };
     events = {};
-    onShow() {};
-    onLoad() {
+    onLoad() { };
+    onShow() {
       //拉取优惠券列表
       var cardListUrl = `${this.$parent.globalData.commonUrl}/api/loadCoupons?tk=${this.$parent.globalData.tk}`;
       util.interface_get(cardListUrl).then(res => {
+        console.log("res----", res)
         this.allTypeCardList = res
         res.forEach(item => {
           item["checked"] = false;
@@ -187,6 +215,12 @@
 <style lang="less">
   .stepTwo-wrapper {
     background: #fff;
+    .noCardList {
+      margin-top: 90rpx;
+      color: #ccc;
+      text-align: center;
+      text-decoration: underline;
+    }
   }
   .scrollView {
     height: 500rpx;
@@ -202,7 +236,7 @@
   .title {
     color: #333;
     font-size: 30rpx;
-    margin-top: 30rpx
+    margin-top: 30rpx;
   }
   .discountItem {
     /* width: 400rpx; */

@@ -10,7 +10,7 @@
             当前选择：{{typeRank[typeIndex]}}
           </view>
           <!-- <label class="radio" wx:for="{{typeRank}}" wx:key="index"> -->
-            <!-- <radio color="orange" class="radioItem" value="{{item.id}}" checked="{{item.checked}}"  /> <text class="textDesc">{{item.name}}</text> -->
+          <!-- <radio color="orange" class="radioItem" value="{{item.id}}" checked="{{item.checked}}"  /> <text class="textDesc">{{item.name}}</text> -->
           <!-- </label> -->
         </picker>
       </view>
@@ -100,7 +100,7 @@
       endDay: "",
       tuoKeClientList: [],
       sharetList: [],
-      typeRank: ["拓客","分享","销售","销卡","对话","游戏"]
+      typeRank: ["拓客", "分享", "销卡", "对话", "游戏"]
     };
     //拓客
     _getTuoKeRankList() {
@@ -134,7 +134,7 @@
     };
     //排序小-大
     _compareTuoKeList(key) {
-      return function(obj1, obj2) {
+      return function (obj1, obj2) {
         var v1 = obj1[key];
         var v2 = obj2[key]
         return v2 - v1
@@ -184,7 +184,7 @@
       },
       typeChange(e) {
         this.typeIndex = e.detail.value
-         console.log("typeindex-------",this.typeIndex)
+        console.log("typeindex-------", this.typeIndex)
         if (this.typeIndex === 0) { //拓客
           this._getTuoKeRankList()
         } else if (this.typeIndex === 1) { //分享
@@ -286,13 +286,13 @@
             .textDesc {
               padding-top: 10rpx;
               width: 60rpx;
-              font-size: 22rpx
+              font-size: 22rpx;
             }
             .radioItem {
               width: 50rpx;
               height: 52rpx;
               font-size: 22rpx;
-              transform: scale(0.7)
+              transform: scale(0.7);
             }
           }
         }
@@ -319,8 +319,10 @@
           background-color: #ffba00;
           color: #fff;
         }
-        .today {}
-        .week {}
+        .today {
+        }
+        .week {
+        }
       }
       .rank_selection_right {
         display: flex;

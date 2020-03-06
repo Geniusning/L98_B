@@ -4,23 +4,36 @@
             <view class="add_staff_title">新增下属</view>
             <view class="add_staff_info">
                 <text class="info_desc">工号:</text>
-                <input @input="getWorkNum" placeholder="请输入下属工号" class="inputArea" />
+                <input @input="getWorkNum"
+                       placeholder="请输入下属工号"
+                       class="inputArea" />
             </view>
             <view class="add_staff_info">
                 <text class="info_desc">姓名:</text>
-                <input @input="getName" placeholder="请输入下属姓名" class="inputArea" />
+                <input @input="getName"
+                       placeholder="请输入下属姓名"
+                       class="inputArea" />
             </view>
             <view class="add_staff_info">
                 <text class="info_desc">手机号:</text>
-                <input type="number" @input="getPhoneNumr" placeholder="请输入手机号码" class="inputArea" />
+                <input type="number"
+                       @input="getPhoneNumr"
+                       placeholder="请输入手机号码"
+                       class="inputArea" />
             </view>
             <view class="add_staff_info">
                 <text class="info_desc">密码:</text>
-                <input type="number" disabled placeholder="默认手机号码后六位，不用输入" class="inputArea" />
+                <input type="number"
+                       disabled
+                       placeholder="默认手机号码后六位，不用输入"
+                       class="inputArea" />
             </view>
             <view class="add_staff_info">
                 <text class="info_desc">角色:</text>
-                <picker @change="bindRoleChange" value="{{roleIndex}}" range="{{arrayRole}}" range-key="name">
+                <picker @change="bindRoleChange"
+                        value="{{roleIndex}}"
+                        range="{{arrayRole}}"
+                        range-key="name">
                     <view style="color:#808080;padding-top:4rpx">
                         {{arrayRole[roleIndex].name}}
                     </view>
@@ -28,69 +41,95 @@
             </view>
             <view class="add_staff">
                 <view class="info_desc">允许Ta看：</view>
-                <radio-group @change="checkboxAuth" style="display:flex;box-sizing: border-box;padding-top: 16rpx">
-                    <repeat for="{{allowAuth}}" key="index">
+                <radio-group @change="checkboxAuth"
+                             style="display:flex;box-sizing: border-box;padding-top: 16rpx">
+                    <repeat for="{{allowAuth}}"
+                            key="index">
                         <label class="label_tag">
-                                                        <radio color="#FFBA00"   value="{{item.auth}}"/>
-                                                        <view class="selectItem">{{item.name}}</view>
-                                                    </label>
+                            <radio color="#FFBA00"
+                                   value="{{item.auth}}" />
+                            <view class="selectItem">{{item.name}}</view>
+                        </label>
                     </repeat>
                 </radio-group>
             </view>
-            <button class="addBtn" @tap="addStaff">新增</button>
+            <!-- 选择添加账号归属的门店  -->
+            <view class="add_staff"
+                  style="display:block"
+                  wx:if="{{arrayRole=='k98_operation_front'}}">
+                <view class="info_desc">请选择为哪个门店新增账号:</view>
+                <repeat for="{{storeList}}"
+                        key="index"
+                        index="index"
+                        item="item">
+                    <view class="shop"
+                          @tap="intoShop({{item.port}},{{item.id}},{{index}})">
+                        <view class="shop_left {{currentTab==index?'active':''}}">
+                            <image src="../../../images/shopListIcon.png"
+                                   class="shopIcon"></image>
+                            <text class="name">{{item.name}}</text>
+                        </view>
+                    </view>
+                </repeat>
+            </view>
+            <button class="addBtn"
+                    @tap="addStaff">新增</button>
         </view>
-        <!-- 下属列表 -->
-        <!-- <view class="add_staff_list">
-                                        <view class="add_staff_title">下属列表</view>
-                                        <scroll-view scroll-y style="height:{{winHeight}}rpx">
-                                            <view class="staffList">
-                                                <repeat for="{{staffList}}" key="index" index="index" item="item">
-                                                    <view class="infoItem">
-                                                        <text class="name">{{item.number}}</text>
-                                                        <text class="name">{{item.name}}</text>
-                                                        <text class="name">{{item.phone}}</text>
-                                                        <text class="name">{{item.role_cn}}</text>
-                                                        <view class="handleBox">
-                                                            <text class="handle" @tap="deleteStaff({{item.phone}})">删除</text>
-                                                        </view>
-                                                    </view>
-                                                </repeat>
-                                            </view>
-                                        </scroll-view>
-                                    </view> -->
         <!-- 改绑模态框 -->
-        <view class="bind_modal" wx:if="{{showBindModal}}">
+        <view class="bind_modal"
+              wx:if="{{showBindModal}}">
             <view class="modal_content">
                 <view class="add_staff_info">
                     <text class="info_desc">手机号:</text>
-                    <input value="12345678954" type="number" placeholder="请输入手机号码" class="inputArea" />
+                    <input value="12345678954"
+                           type="number"
+                           placeholder="请输入手机号码"
+                           class="inputArea" />
                 </view>
                 <view class="add_staff_info">
                     <text class="info_desc">姓名:</text>
-                    <input value="damao" placeholder="请输入下属姓名" class="inputArea" />
+                    <input value="damao"
+                           placeholder="请输入下属姓名"
+                           class="inputArea" />
                 </view>
                 <view class="btn_content">
-                    <button class="addBtn" @tap="closeModal">取消</button>
+                    <button class="addBtn"
+                            @tap="closeModal">取消</button>
                     <button class="addBtn">改绑</button>
                 </view>
             </view>
         </view>
         <!-- 高级查询模态框 -->
-        <view wx:if="{{showAuthorModal}}" class="author_modal">
-            <checkbox-group class="checkBox_groupAll" @change="selectAll">
+        <view wx:if="{{showAuthorModal}}"
+              class="author_modal">
+            <checkbox-group class="checkBox_groupAll"
+                            @change="selectAll">
                 <label class="checkBox">
-                <checkbox class="top_checkbox_item" value="all" checked="{{allCheck}}"  color="orange"/>
-                <view class="allSelect">
-                    全选
-                </view>
-            </label>
+                    <checkbox class="top_checkbox_item"
+                              value="all"
+                              checked="{{allCheck}}"
+                              color="orange" />
+                    <view class="allSelect">
+                        全选
+                    </view>
+                </label>
             </checkbox-group>
             <!-- 下属列表 -->
-            <view class="author_modal_title" wx:if="{{userList.length}}">下属列表</view>
-            <checkbox-group wx:if="{{userList.length}}" class="checkBox_group" @change="changeUser">
-                <repeat for="{{userList}}" key="index" item="item">
-                    <label class="checkBox" @tap="selectAuthor" data-id="{{item.phone}}">
-                        <checkbox class="checkbox_item"  color="orange" value="{{item.id}}"  checked="{{item.checked}}"/>
+            <view class="author_modal_title"
+                  wx:if="{{userList.length}}">下属列表</view>
+            <checkbox-group wx:if="{{userList.length}}"
+                            class="checkBox_group"
+                            @change="changeUser">
+                <repeat for="{{userList}}"
+                        key="index"
+                        item="item">
+                    <label class="checkBox"
+                           @tap="selectAuthor"
+                           data-id="{{item.phone}}">
+                        <checkbox class="checkbox_item"
+                                  color="orange"
+                                  value="{{item.id}}"
+                                  checked="{{item.checked}}" />
                         <view class="username">
                             <text>{{item.name}}</text>
                         </view>
@@ -98,21 +137,36 @@
                 </repeat>
             </checkbox-group>
             <!-- 门店列表 -->
-            <view class="author_modal_title" wx:if="{{storeList.length}}">门店列表</view>
-            <checkbox-group wx:if="{{storeList.length}}" class="checkBox_group" @change="changeStore">
-                <repeat for="{{storeList}}" key="index" item="item">
-                    <label class="checkBox" @tap="selectStore" data-id="{{item.id}}">
-                        <checkbox class="checkbox_item"  color="orange" value="{{item.id}}"  checked="{{item.checked}}"/>
+            <view class="author_modal_title"
+                  wx:if="{{storeList.length}}">门店列表</view>
+            <checkbox-group wx:if="{{storeList.length}}"
+                            class="checkBox_group"
+                            @change="changeStore">
+                <repeat for="{{storeList}}"
+                        key="index"
+                        item="item">
+                    <label class="checkBox"
+                           @tap="selectStore"
+                           data-id="{{item.id}}">
+                        <checkbox class="checkbox_item"
+                                  color="orange"
+                                  value="{{item.id}}"
+                                  checked="{{item.checked}}" />
                         <view class="username">
                             <text>{{item.name}}</text>
                         </view>
                     </label>
                 </repeat>
             </checkbox-group>
-            <view wx:else class="noUserList">暂无下属</view>
-            <image @tap="closeAuthorMldal" src="../../../images/close2.png" lazy-load="false" class="close"></image>
+            <view wx:else
+                  class="noUserList">暂无下属</view>
+            <image @tap="closeAuthorMldal"
+                   src="../../../images/close2.png"
+                   lazy-load="false"
+                   class="close"></image>
             <!-- <image @tap="closeAuthorMldal" src="../../../images/gou.png" lazy-load="false" class="gou"></image> -->
         </view>
+
     </view>
 </template>
 
@@ -125,19 +179,20 @@
         };
         data = {
             allowAuth: [{
-                    auth: "noAllow",
-                    name: "不允许"
-                },
-                {
-                    auth: "allow",
-                    name: "另外"
-                }
+                auth: "noAllow",
+                name: "不允许"
+            },
+            {
+                auth: "allow",
+                name: "另外"
+            }
             ],
             allCheck: false,
             arrayRole: [{
                 name: "运营主管",
                 id: "k98_operation_manager"
             }],
+            currentTab: null,
             userList: [],
             subStaffList: [],
             storeList: [],
@@ -156,6 +211,7 @@
             isShowAuthList: "noAllow",
             userIds: [],
             storeIds: [],
+            isSelectStore: false,
         };
         onUnload() {
             wx.removeStorage({
@@ -172,6 +228,21 @@
             })
         };
         methods = {
+            intoShop(port, storeId, index) {
+                this.isSelectStore = true;
+                this.currentTab = index
+                let setGrpcPortUrl = `${this.$parent.globalData.commonUrl}/api/setGrpcPort?tk=${this.$parent.globalData.tk}&port=${port}&storeId=${storeId}`;
+                util.interface_get(setGrpcPortUrl).then(res => {
+                    console.log("链接成功")
+                })
+                // util.interface_get(storeSettingUrl).then(res => {
+                //   this.$parent.globalData.shopInfo = res;
+                //   console.log("店铺信息---------", this.$parent.globalData)
+                //   wx.switchTab({
+                //     url: '/pages/member/member'
+                //   })
+                // })
+            },
             //允许权限
             selectAuthor(e) {
                 console.log("自定义属性---", e.currentTarget.dataset.id)
@@ -333,6 +404,13 @@
                     this.subStaffList = [];
                     this.paramStoreList = []
                 }
+                if (!this.isSelectStore) {
+                    wx.showToast({
+                        title: '请选择门店',
+                        icon: "none",
+                        duration: 2000
+                    })
+                }
                 this.password = this.phone.slice(5, 11);
                 let url = `${this.$parent.globalData.commonUrl}/api/addStaff?tk=${this.$parent.globalData.tk}`;
                 var params = {
@@ -346,7 +424,7 @@
                     role: this.role,
                     permission: this.permission,
                     subStaffList: this.subStaffList, //授权管理员工给下属
-                    storeList: this.paramStoreList //授权管理门店给下属
+                    storeList: this.paramStoreList, //授权管理门店给下属
                 };
                 if (this.phone.length != 11) {
                     wx.showToast({
@@ -479,177 +557,193 @@
 
 <style lang="less">
     .myStall_wrapper {
-        background: #f1f1f1;
-        padding: 10rpx 8rpx;
-        height: 100%;
-        box-sizing: border-box;
-        .add_staff_content {
-            margin-bottom: 30rpx;
-            background-color: #fff;
-            padding: 10rpx 10rpx;
-            .add_staff_title {
-                font-size: 20px;
-                color: #333;
-                font-weight: 800;
-                text-align: center;
-            }
-            .add_staff_info {
-                padding: 10rpx 0;
-                display: flex;
-                .info_desc {
-                    box-sizing: border-box;
-                    display: inline-block;
-                    width: 124rpx;
-                    padding-top: 7rpx;
-                    margin-left: 10rpx;
-                    margin-right: 20rpx;
-                    text-align: right;
-                }
-                .mypicker {
-                    padding-top: 4rpx;
-                }
-                .inputArea {
-                    border-bottom: 1rpx solid #f1f1f1;
-                    flex: 1;
-                }
-            }
-            .add_staff {
-                margin-bottom: 20rpx;
-                display: flex;
-                .info_desc {
-                    margin: 20rpx 0 20rpx 40rpx
-                }
-                .label_tag {
-                    display: flex;
-                    margin-right: 20rpx;
-                }
-            }
-            .addBtn {}
+      background: #f1f1f1;
+      padding: 10rpx 8rpx;
+      height: 100%;
+      box-sizing: border-box;
+      .add_staff_content {
+        margin-bottom: 30rpx;
+        background-color: #fff;
+        padding: 10rpx 10rpx;
+        .add_staff_title {
+          font-size: 20px;
+          color: #333;
+          font-weight: 800;
+          text-align: center;
         }
-        .add_staff_list {
-            background: #fff;
-            padding: 10rpx 6rpx;
-            .add_staff_title {
-                font-size: 20px;
-                color: #333;
-                font-weight: 800;
-                text-align: center;
-            }
-            .staffList {
-                .infoItem {
-                    display: flex;
-                    justify-content: space-between;
-                    margin-bottom: 20rpx;
-                    height: 96rpx;
-                    .name {
-                        width: 134rpx;
-                        height: 90;
-                        padding-top: 38rpx;
-                        word-break: break-word;
-                    }
-                    .handleBox {
-                        // display: flex;
-                        // justify-content: space-between;
-                        height: 90rpx;
-                        text-align: right;
-                        width: 132rpx;
-                        padding-top: 32rpx;
-                    }
-                    .handle {
-                        color: red;
-                        text-decoration: underline;
-                    }
-                }
-            }
+        .add_staff_info {
+          padding: 10rpx 0;
+          display: flex;
+          .info_desc {
+            box-sizing: border-box;
+            display: inline-block;
+            width: 124rpx;
+            padding-top: 7rpx;
+            margin-left: 10rpx;
+            margin-right: 20rpx;
+            text-align: right;
+          }
+          .mypicker {
+            padding-top: 4rpx;
+          }
+          .inputArea {
+            border-bottom: 1rpx solid #f1f1f1;
+            flex: 1;
+          }
         }
-        .bind_modal {
-            position: absolute;
-            left: 0;
-            right: 0;
-            top: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, .6);
-            z-index: 1;
-            .modal_content {
-                position: absolute;
-                margin-left: -250rpx;
-                width: 500rpx;
-                height: 240rpx;
-                top: 25%;
-                left: 50%;
-                background: #fff;
-                .add_staff_info {
-                    padding: 10rpx 0;
-                    display: flex;
-                    .info_desc {
-                        box-sizing: border-box;
-                        display: inline-block;
-                        width: 100rpx;
-                        padding-top: 7rpx;
-                        margin-right: 20rpx;
-                        text-align: right;
-                    }
-                    .inputArea {
-                        border-bottom: 1rpx solid #f1f1f1;
-                        flex: 1;
-                    }
-                }
-                .btn_content {
-                    display: flex;
-                    justify-content: space-around;
-                    .addBtn {
-                        width: 200rpx;
-                        height: 70rpx;
-                        font-size: 28rpx
-                    }
-                }
-            }
-        }
-        .author_modal {
-            position: fixed;
-            z-index: 1;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            left: 0;
-            background-color: rgba(0, 0, 0, .8);
-            overflow: auto;
+        .add_staff {
+          margin-bottom: 20rpx;
+          display: flex;
+          .info_desc {
+            margin: 20rpx 0 20rpx 40rpx;
+          }
+          .label_tag {
             display: flex;
-            flex-direction: column;
-            .close {
-                width: 56rpx;
-                height: 56rpx;
-                position: absolute;
-                right: 20rpx;
-                top: 20rpx;
+            margin-right: 20rpx;
+          }
+          .shop {
+            .shop_left {
+              display: flex;
+              margin-left: 62rpx;
+              margin-bottom: 10rpx;
+              .shopIcon {
+                width: 60rpx;
+                height: 60rpx;
+              }
+              .name {
+                padding-top: 20rpx;
+              }
             }
-            .author_modal_title {
-                margin: 40rpx 40rpx 0 40rpx;
-                color: #ffba00;
+            .active {
+              background-color: #ffba00;
             }
-            .checkBox_groupAll {
-                .checkBox {
-                    display: flex;
-                    margin: 40rpx 40rpx 0 40rpx;
-                    .allSelect {
-                        color: #fff;
-                    }
-                }
-            }
-            .checkBox_group {
-                // flex: 1;
-                .checkBox {
-                    display: flex;
-                    margin: 40rpx;
-                    .username {
-                        color: #fff;
-                    }
-                }
-            }
-            .noUserList {
-                color: #fff;
-                margin: 40% auto;
-            }
+          }
         }
+      }
+      .add_staff_list {
+        background: #fff;
+        padding: 10rpx 6rpx;
+        .add_staff_title {
+          font-size: 20px;
+          color: #333;
+          font-weight: 800;
+          text-align: center;
+        }
+        .staffList {
+          .infoItem {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20rpx;
+            height: 96rpx;
+            .name {
+              width: 134rpx;
+              height: 90;
+              padding-top: 38rpx;
+              word-break: break-word;
+            }
+            .handleBox {
+              // display: flex;
+              // justify-content: space-between;
+              height: 90rpx;
+              text-align: right;
+              width: 132rpx;
+              padding-top: 32rpx;
+            }
+            .handle {
+              color: red;
+              text-decoration: underline;
+            }
+          }
+        }
+      }
+      .bind_modal {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: 1;
+        .modal_content {
+          position: absolute;
+          margin-left: -250rpx;
+          width: 500rpx;
+          height: 240rpx;
+          top: 25%;
+          left: 50%;
+          background: #fff;
+          .add_staff_info {
+            padding: 10rpx 0;
+            display: flex;
+            .info_desc {
+              box-sizing: border-box;
+              display: inline-block;
+              width: 100rpx;
+              padding-top: 7rpx;
+              margin-right: 20rpx;
+              text-align: right;
+            }
+            .inputArea {
+              border-bottom: 1rpx solid #f1f1f1;
+              flex: 1;
+            }
+          }
+          .btn_content {
+            display: flex;
+            justify-content: space-around;
+            .addBtn {
+              width: 200rpx;
+              height: 70rpx;
+              font-size: 28rpx;
+            }
+          }
+        }
+      }
+      .author_modal {
+        position: fixed;
+        z-index: 1;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background-color: rgba(0, 0, 0, 0.8);
+        overflow: auto;
+        display: flex;
+        flex-direction: column;
+        .close {
+          width: 56rpx;
+          height: 56rpx;
+          position: absolute;
+          right: 20rpx;
+          top: 20rpx;
+        }
+        .author_modal_title {
+          margin: 40rpx 40rpx 0 40rpx;
+          color: #ffba00;
+        }
+        .checkBox_groupAll {
+          .checkBox {
+            display: flex;
+            margin: 40rpx 40rpx 0 40rpx;
+            .allSelect {
+              color: #fff;
+            }
+          }
+        }
+        .checkBox_group {
+          // flex: 1;
+          .checkBox {
+            display: flex;
+            margin: 40rpx;
+            .username {
+              color: #fff;
+            }
+          }
+        }
+        .noUserList {
+          color: #fff;
+          margin: 40% auto;
+        }
+      }
     }
 </style>

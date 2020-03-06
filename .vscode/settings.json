@@ -8,11 +8,4 @@
     "vetur.format.defaultFormatter.html": "js-beautify-html",
     "vetur.format.scriptInitialIndent": true,
     "vetur.format.styleInitialIndent": true,
-    // 格式 HTML 模板
-    "vetur.format.defaultFormatterOptions": {
-        "js-beautify-html": {
-            // tag 属性对齐
-            "wrap_attributes": "force-aligned"
-        }
-    }
 }
