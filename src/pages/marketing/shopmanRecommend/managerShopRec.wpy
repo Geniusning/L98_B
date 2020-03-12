@@ -5,21 +5,20 @@
         <radio-group @change="checkboxRecomAct">
           <repeat for="{{shopRecList}}" key="index" index="index" item="item">
             <label class="checkbox" class="label_wrapper">
-                        <radio color="#FFBA00" value="{{item.goods.id}}" class="checkbox"/>
-                        <view class="list_item">
-                          <view class="list_item_left">
-                            <image class="itemPic" src="{{item.goods.image}}" mode="scaleToFill"
-                              lazy-load="false">
-                            </image>
-                          </view>
-                          <view class="list_item_right">
-                            <text class="item">{{item.goods.name}}</text>
-                            <text class="item">{{item.goods.limit}}</text>
-                            <text class="item">{{item.goods.subtopic}}</text>
-                            <text class="item">原价:{{item.goods.discountPrice}}  积分：{{item.goods.integral}}</text>
-                          </view>
-                        </view>
-                      </label>
+              <radio color="#FFBA00" value="{{item.goods.id}}" class="checkbox" checked="{{item.checked}}" />
+              <view class="list_item">
+                <view class="list_item_left">
+                  <image class="itemPic" src="{{item.goods.image}}" mode="scaleToFill" lazy-load="false">
+                  </image>
+                </view>
+                <view class="list_item_right">
+                  <text class="item">{{item.goods.name}}</text>
+                  <text class="item">{{item.goods.limit}}</text>
+                  <text class="item">{{item.goods.subtopic}}</text>
+                  <text class="item">原价:{{item.goods.discountPrice}} 积分：{{item.goods.integral}}</text>
+                </view>
+              </view>
+            </label>
           </repeat>
           <view wx:if="{{!shopRecList.length}}" class="noData">暂无活动数据</view>
         </radio-group>
@@ -97,16 +96,16 @@
     };
     _loadShopRecommend() {
       wx.showLoading({
-          title: "加载中",
-          mask: true
+        title: "加载中",
+        mask: true
       })
       let url = `${this.$parent.globalData.commonUrl}/api/loadRecommends?tk=${this.$parent.globalData.tk}`
       util.interface_get(url).then(res => {
         wx.hideLoading()
         console.log("_loadShopRecommend----------", res)
         this.shopRecList = res
-        this.shopRecList.forEach(item=>{
-         item["checked"] = false
+        this.shopRecList.forEach(item => {
+          item["checked"] = false
         })
         this.$apply()
       })
@@ -127,7 +126,7 @@
         display: flex;
         .checkbox {
           padding-top: 60rpx;
-          padding-left: 6rpx
+          padding-left: 6rpx;
         }
         .list_item {
           width: 90%;

@@ -66,6 +66,7 @@
         </view>
       </view>
       <!-- <button class='btn' @tap='save'>上传</button> -->
+      <canvas style="width: {{cw}}px; height: {{ch}}px;position: absolute; z-index: -1; left: -10000rpx;; top: -10000rpx;" canvas-id="firstCanvas"></canvas>
     </view>
     <button @tap='save'>保存</button>
   </view>
@@ -79,6 +80,8 @@
       navigationBarTitleText: '设置'
     };
     data = {
+      cw: 750,
+      ch: 300,
       uploadImgArr: [],
       isShow: true,
       city: "",
@@ -121,9 +124,9 @@
         '>1200'
       ]
     };
-    normalizePickerChangeData() {};
+    normalizePickerChangeData() { };
     methods = {
-      close: function(e) {
+      close: function (e) {
         let index = e.currentTarget.dataset.index;
         console.log(index)
         // this.picArr.splice(index, 1);
@@ -137,13 +140,13 @@
           this.picArr = this.picArr;
         }
       },
-      chooseOnePic: function() {
+      chooseOnePic: function () {
         var _this = this;
         wx.chooseImage({
           count: 1, // 默认9
           sizeType: ['compressed'], // 可以指定是原图还是压缩图，默认二者都有
           sourceType: ['album', 'camera'], // 可以指定来源是相册还是相机，默认二者都有
-          success: function(res) {
+          success: function (res) {
             // 返回选定照片的本地文件路径列表，tempFilePath可以作为img标签的src属性显示图片
             var tempFilePaths = res.tempFilePaths;
             console.log("图片文件大小-------", tempFilePaths)
@@ -377,13 +380,13 @@
         // }, 500);
         // })
       },
-      chooseLogoPic: function() {
+      chooseLogoPic: function () {
         let _this = this;
         wx.chooseImage({
           count: 1, // 默认9
           sizeType: ['original', 'compressed'], // 可以指定是原图还是压缩图，默认二者都有
           sourceType: ['album', 'camera'], // 可以指定来源是相册还是相机，默认二者都有
-          success: function(res) {
+          success: function (res) {
             // 返回选定照片的本地文件路径列表，tempFilePath可以作为img标签的src属性显示图片
             let tempFilePaths = res.tempFilePaths;
             console.log(tempFilePaths);
@@ -414,6 +417,7 @@
     };
     drawCanvas(imgInfo) {
       var ctx = wx.createCanvasContext("firstCanvas")
+      console.log("ctx---", ctx)
       let _this = this
       wx.getImageInfo({
         src: imgInfo,
@@ -421,6 +425,7 @@
           console.log("图片信息-------", res)
           if ((res.width >= 750 || res.height > 500) && res.type == "jpeg") {
             //画出压缩图片
+            console.log("jinlaile")
             ctx.drawImage(imgInfo, 0, 0, 750, 280)
             ctx.draw(false, setTimeout(() => {
               wx.canvasToTempFilePath({

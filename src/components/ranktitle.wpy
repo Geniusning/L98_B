@@ -1,0 +1,42 @@
+
+<template>
+    <view class="rank_scrollView_title">
+        <repeat for="{{titleList}}" key="index" index="index" item="item">
+            <text class="scrollTitle" style="{{myWidth}}">{{item}}</text>
+        </repeat>
+    </view>
+</template>
+<script>
+    import wepy from 'wepy';
+    export default class ranktitle extends wepy.component {
+        // Other properties
+        data = {
+            // shopInfo:{},
+            // staffName:{}
+            myWidth: "width:20%"
+        };
+        watch = {
+            titleList(newValue, oldValue) {
+                if (newValue.length === 3) {
+                    this.myWidth = "width:33.3333%"
+                    this.$apply()
+                } else {
+                    this.myWidth = "width:20%"
+                    this.$apply()
+                }
+            }
+        }
+        props = {
+            titleList: {
+                type: Array
+            },
+
+        };
+        onLoad() {
+
+        }
+    }
+</script>
+
+<style lang="less">
+</style>

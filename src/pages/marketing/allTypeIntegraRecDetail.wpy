@@ -56,7 +56,7 @@
       pickerArray: [{
         name: "全部",
         id: "all"
-      }, ],
+      },],
       allTypesData: [],
       winHeight: "",
       recordData: [],
@@ -69,7 +69,7 @@
         console.log(this.pickerArray[parseInt(e.detail.value)])
         if (this.pageType === "sys") {
           dataType = this.pickerArray[parseInt(e.detail.value)].id
-        }else{
+        } else {
           dataType = this.pickerArray[parseInt(e.detail.value)].name
         }
         //  else if (this.pageType === "exchangeGift") {
@@ -99,7 +99,7 @@
         this.totalNumbers += 1
         if (pageType === "exchangeGift") {
           if (item.name === dataType) {
-            if (typeof(item.milliTime) === "number") {
+            if (typeof (item.milliTime) === "number") {
               item.milliTime = util.timestampToTime(item.milliTime).slice(11)
             }
             this.totalIntegral += item.integral
@@ -108,7 +108,7 @@
           }
         } else if (pageType === "sys") {
           if (item.integralType === dataType) {
-            if (typeof(item.milliTime) === "number") {
+            if (typeof (item.milliTime) === "number") {
               item.milliTime = util.timestampToTime(item.milliTime).slice(11)
             }
             this.totalIntegral += item.integral
@@ -117,7 +117,7 @@
           }
         } else if (pageType === "givenGift") {
           if (item.name === dataType) {
-            if (typeof(item.milliTime) === "number") {
+            if (typeof (item.milliTime) === "number") {
               item.milliTime = util.timestampToTime(item.milliTime).slice(11)
             }
             this.totalIntegral += item.integral
@@ -133,28 +133,25 @@
         item.milliTime = util.timestampToTime(item.milliTime).slice(11)
         item["name"] = this._judgeSysIntegralName(item.integralType)
         this.totalIntegral += item.integral
-        // this.totalNumbers += 1
         this.recordData.push(item)
-        // this.selectAllData = this.recordData
-      } else if ((item.integralType === "goodsGift" || item.integralType === "goodsRecommend" || item.integralType === "convertRecommend" || item.integralType === "convertGift" || item.integralType === "renewDice") && type === "exchangeGift") { //消耗兑换
+      } else if ((item.integralType == "vipCard" || item.integralType === "goodsGift" || item.integralType === "goodsRecommend" || item.integralType === "convertRecommend" || item.integralType === "convertGift" || item.integralType === "renewDice") && type === "exchangeGift") { //消耗兑换
         item.milliTime = util.timestampToTime(item.milliTime).slice(11)
         if (item.integralType == "renewDice") {
           item["name"] = "游戏重摇消耗"
         }
+        if (item.integralType == "vipCard") {
+          item["name"] = "兑换會員卡"
+        }
         this.totalIntegral += item.integral
-        // this.totalNumbers += 1
         this.recordData.push(item)
-        // this.selectAllData = this.recordData
       } else if ((item.integralType === "virtualGift") && type === "givenGift") { //用户转增赠送
         item.milliTime = util.timestampToTime(item.milliTime).slice(11)
         this.totalIntegral += item.integral
-        // this.totalNumbers += 1
         this.recordData.push(item)
-        // this.selectAllData = this.recordData
       }
-      if (item.goodsInfo) { //判断是否是兑换获得积分`
-        if ((item.integralType == "goodsRecommend" || item.integralType == "goodsGift" || item.integralType === "convertGift" || item.integralType === "convertRecommend" || item.integralType === "renewDice") && this.pageType === "exchangeGift") {
-          if (item.integralType === "renewDice") {
+      if (item.goodsInfo) { //判断是否是兑换消耗积分`
+        if ((item.integralType == "vipCard" || item.integralType == "goodsRecommend" || item.integralType == "goodsGift" || item.integralType === "convertGift" || item.integralType === "convertRecommend" || item.integralType === "renewDice") && this.pageType === "exchangeGift") {
+          if (item.integralType === "renewDice" || item.integralType == "vipCard") {
             tempTitleArr.push({
               name: item.name,
               id: item.integralType
@@ -245,6 +242,9 @@
         case "shoperGiftByMkFri":
           name = "交友贺礼"
           break;
+        case "vipCard":
+          name = "兑换會員卡"
+          break;
         default:
           name = "其他"
           break;
@@ -268,12 +268,10 @@
       this.pickerArray = [{
         name: "全部",
         id: "all"
-      }, ];
+      },];
       this.fatherDate = e.date
       this.pageType = e.type
       console.log("this.pageType----", this.pageType)
-      this.activityType = e.activity //判断活动类是店长推荐还是礼品兑换
-      console.log("this.activityType----", this.activityType)
       if (this.pageType === "sys") {
         wx.setNavigationBarTitle({
           title: '系统赠送积分当日详情'
@@ -323,8 +321,9 @@
           height: 40rpx;
           padding-top: 16rpx;
         }
-        .selectText {}
-        .picker{
+        .selectText {
+        }
+        .picker {
           color: red;
           text-decoration: underline;
         }

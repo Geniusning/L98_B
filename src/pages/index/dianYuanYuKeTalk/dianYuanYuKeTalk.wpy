@@ -2,11 +2,7 @@
   <view class="visitorRecord-wrapper">
     <view class='time-box'>
       <view class='time-box-left'>
-        <picker mode="date"
-                value="{{date}}"
-                start="2020-09-01"
-                end="2029-09-01"
-                @change="bindStartDateChange">
+        <picker mode="date" value="{{date}}" start="2020-09-01" end="2029-09-01" @change="bindStartDateChange">
           <view class="picker">
             {{startDate}}
           </view>
@@ -14,19 +10,14 @@
       </view>
       <view class='line'></view>
       <view class='time-box-right'>
-        <picker mode="date"
-                value="{{date}}"
-                start="2020-09-01"
-                end="2029-09-01"
-                @change="bindEndDateChange">
+        <picker mode="date" value="{{date}}" start="2020-09-01" end="2029-09-01" @change="bindEndDateChange">
           <view class="picker">
             {{endDate}}
           </view>
         </picker>
       </view>
       <view class='time-box-btn'>
-        <text class='btn'
-              @tap="selecData">确定</text>
+        <text class='btn' @tap="selecData">确定</text>
       </view>
       <view class='totalNum-box'>
         <text class='visitorTitle'>合计数：</text>
@@ -36,22 +27,17 @@
     <view class='date-box'>
       <view class='dateTitle-wrapper'>
         <text class='date'>日期</text>
-        <text class='visitorNum'>数量</text>
+        <text class='visitorNum' wx:if="{{pageType=='game'}}">局数</text>
+        <text class='visitorNum' wx:else>数量</text>
         <text class='visitorNum'>详情</text>
       </view>
-      <scroll-view scroll-y
-                   class='scrollView'
-                   style='height:{{winHeight}}rpx'>
+      <scroll-view scroll-y class='scrollView' style='height:{{winHeight}}rpx'>
         <view>
-          <repeat for="{{dataList}}"
-                  key="index"
-                  item="item">
-            <view @tap="gotoMarketDetail({{item.chatTimes}},{{item.date}})"
-                  class='specific-wrapper'>
+          <repeat for="{{dataList}}" key="index" item="item">
+            <view @tap="gotoMarketDetail({{item.chatTimes}},{{item.date}})" class='specific-wrapper'>
               <text class='date'>{{item.date}}</text>
               <text class='num'>{{item.chatTimes}}</text>
-              <text class='num'
-                    style="text-decoration:underline;color:red">详情&gt;&gt;</text>
+              <text class='num' style="text-decoration:underline;color:red">详情&gt;&gt;</text>
             </view>
           </repeat>
         </view>
@@ -73,17 +59,18 @@
       endDate: '2018-12-29',
       dataList: [],
       totalPeople: 0,
+      pageType: "",
     };
     methods = {
       gotoMarketDetail(count, date) {
-        // if (count == 0) {
-        //   wx.showToast({
-        //     title: "暂无数据",
-        //     icon: 'none',
-        //     duration: 2000
-        //   })
-        //   return
-        // }
+        if (count == 0) {
+          wx.showToast({
+            title: "暂无数据",
+            icon: 'none',
+            duration: 2000
+          })
+          return
+        }
         wx.navigateTo({
           url: `/pages/index/dianYuanYuKeTalk/dianYuanYuKeTalkDetail?date=${date}&type=${this.pageType}`,
         })
@@ -125,6 +112,10 @@
       if (this.pageType == "clientService") {
         wx.setNavigationBarTitle({
           title: '客服对话'
+        });
+      } else if (this.pageType == "game") {
+        wx.setNavigationBarTitle({
+          title: '店员与客游戏'
         });
       }
       console.log("dataType-------", this.pageType)

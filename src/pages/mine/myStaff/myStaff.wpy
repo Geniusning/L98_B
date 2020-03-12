@@ -4,169 +4,112 @@
             <view class="add_staff_title">新增下属</view>
             <view class="add_staff_info">
                 <text class="info_desc">工号:</text>
-                <input @input="getWorkNum"
-                       placeholder="请输入下属工号"
-                       class="inputArea" />
+                <input @input="getWorkNum" placeholder="请输入下属工号" class="inputArea" />
             </view>
             <view class="add_staff_info">
                 <text class="info_desc">姓名:</text>
-                <input @input="getName"
-                       placeholder="请输入下属姓名"
-                       class="inputArea" />
+                <input @input="getName" placeholder="请输入下属姓名" class="inputArea" />
             </view>
             <view class="add_staff_info">
                 <text class="info_desc">手机号:</text>
-                <input type="number"
-                       @input="getPhoneNumr"
-                       placeholder="请输入手机号码"
-                       class="inputArea" />
+                <input type="number" @input="getPhoneNumr" placeholder="请输入手机号码" class="inputArea" />
             </view>
             <view class="add_staff_info">
                 <text class="info_desc">密码:</text>
-                <input type="number"
-                       disabled
-                       placeholder="默认手机号码后六位，不用输入"
-                       class="inputArea" />
+                <input type="number" disabled placeholder="默认手机号码后六位，不用输入" class="inputArea" />
             </view>
             <view class="add_staff_info">
                 <text class="info_desc">角色:</text>
-                <picker @change="bindRoleChange"
-                        value="{{roleIndex}}"
-                        range="{{arrayRole}}"
-                        range-key="name">
+                <picker @change="bindRoleChange" value="{{roleIndex}}" range="{{arrayRole}}" range-key="name">
                     <view style="color:#808080;padding-top:4rpx">
                         {{arrayRole[roleIndex].name}}
                     </view>
                 </picker>
             </view>
             <view class="add_staff">
-                <view class="info_desc">允许Ta看：</view>
-                <radio-group @change="checkboxAuth"
-                             style="display:flex;box-sizing: border-box;padding-top: 16rpx">
-                    <repeat for="{{allowAuth}}"
-                            key="index">
-                        <label class="label_tag">
-                            <radio color="#FFBA00"
-                                   value="{{item.auth}}" />
-                            <view class="selectItem">{{item.name}}</view>
-                        </label>
-                    </repeat>
-                </radio-group>
+                <view @tap="checkboxAuth" class="info_desc">点开授权Ta可看到的门店或下属</view>
+                <!-- <radio-group @change="checkboxAuth" style="display:flex;box-sizing: border-box;padding-top: 16rpx">
+                            <repeat for="{{allowAuth}}" key="index">
+                                <label class="label_tag">
+                                    <radio color="#FFBA00" value="{{item.auth}}" />
+                                    <view class="selectItem">{{item.name}}</view>
+                                </label>
+                            </repeat>
+                        </radio-group> -->
             </view>
             <!-- 选择添加账号归属的门店  -->
-            <view class="add_staff"
-                  style="display:block"
-                  wx:if="{{arrayRole=='k98_operation_front'}}">
+            <view class="add_staff" style="display:block" wx:if="{{arrayRole=='k98_operation_front'}}">
                 <view class="info_desc">请选择为哪个门店新增账号:</view>
-                <repeat for="{{storeList}}"
-                        key="index"
-                        index="index"
-                        item="item">
-                    <view class="shop"
-                          @tap="intoShop({{item.port}},{{item.id}},{{index}})">
+                <repeat for="{{storeList}}" key="index" index="index" item="item">
+                    <view class="shop" @tap="intoShop({{item.port}},{{item.id}},{{index}})">
                         <view class="shop_left {{currentTab==index?'active':''}}">
-                            <image src="../../../images/shopListIcon.png"
-                                   class="shopIcon"></image>
+                            <image src="../../../images/shopListIcon.png" class="shopIcon"></image>
                             <text class="name">{{item.name}}</text>
                         </view>
                     </view>
                 </repeat>
             </view>
-            <button class="addBtn"
-                    @tap="addStaff">新增</button>
+            <button class="addBtn" @tap="addStaff">新增</button>
         </view>
         <!-- 改绑模态框 -->
-        <view class="bind_modal"
-              wx:if="{{showBindModal}}">
+        <view class="bind_modal" wx:if="{{showBindModal}}">
             <view class="modal_content">
                 <view class="add_staff_info">
                     <text class="info_desc">手机号:</text>
-                    <input value="12345678954"
-                           type="number"
-                           placeholder="请输入手机号码"
-                           class="inputArea" />
+                    <input value="12345678954" type="number" placeholder="请输入手机号码" class="inputArea" />
                 </view>
                 <view class="add_staff_info">
                     <text class="info_desc">姓名:</text>
-                    <input value="damao"
-                           placeholder="请输入下属姓名"
-                           class="inputArea" />
+                    <input value="damao" placeholder="请输入下属姓名" class="inputArea" />
                 </view>
                 <view class="btn_content">
-                    <button class="addBtn"
-                            @tap="closeModal">取消</button>
+                    <button class="addBtn" @tap="closeModal">取消</button>
                     <button class="addBtn">改绑</button>
                 </view>
             </view>
         </view>
-        <!-- 高级查询模态框 -->
-        <view wx:if="{{showAuthorModal}}"
-              class="author_modal">
-            <checkbox-group class="checkBox_groupAll"
-                            @change="selectAll">
+        <!-- 筛选门店或者店员 -->
+        <view wx:if="{{showAuthorModal}}" class="author_modal">
+            <checkbox-group class="checkBox_groupAll" @change="selectAll">
                 <label class="checkBox">
-                    <checkbox class="top_checkbox_item"
-                              value="all"
-                              checked="{{allCheck}}"
-                              color="orange" />
+                    <checkbox class="top_checkbox_item" value="all" checked="{{allCheck}}" color="orange" />
                     <view class="allSelect">
                         全选
                     </view>
                 </label>
             </checkbox-group>
-            <!-- 下属列表 -->
-            <view class="author_modal_title"
-                  wx:if="{{userList.length}}">下属列表</view>
-            <checkbox-group wx:if="{{userList.length}}"
-                            class="checkBox_group"
-                            @change="changeUser">
-                <repeat for="{{userList}}"
-                        key="index"
-                        item="item">
-                    <label class="checkBox"
-                           @tap="selectAuthor"
-                           data-id="{{item.phone}}">
-                        <checkbox class="checkbox_item"
-                                  color="orange"
-                                  value="{{item.id}}"
-                                  checked="{{item.checked}}" />
-                        <view class="username">
-                            <text>{{item.name}}</text>
-                        </view>
-                    </label>
-                </repeat>
-            </checkbox-group>
             <!-- 门店列表 -->
-            <view class="author_modal_title"
-                  wx:if="{{storeList.length}}">门店列表</view>
-            <checkbox-group wx:if="{{storeList.length}}"
-                            class="checkBox_group"
-                            @change="changeStore">
-                <repeat for="{{storeList}}"
-                        key="index"
-                        item="item">
-                    <label class="checkBox"
-                           @tap="selectStore"
-                           data-id="{{item.id}}">
-                        <checkbox class="checkbox_item"
-                                  color="orange"
-                                  value="{{item.id}}"
-                                  checked="{{item.checked}}" />
+            <view class="author_modal_title" wx:if="{{storeList.length}}">门店列表</view>
+            <checkbox-group wx:if="{{storeList.length}}" class="checkBox_group" @change="changeStore">
+                <repeat for="{{storeList}}" key="index" item="item">
+                    <label class="checkBox" @tap="selectStore" data-id="{{item.id}}">
+                        <checkbox class="checkbox_item" color="orange" value="{{item.id}}" checked="{{item.checked}}" />
                         <view class="username">
                             <text>{{item.name}}</text>
                         </view>
                     </label>
                 </repeat>
             </checkbox-group>
-            <view wx:else
-                  class="noUserList">暂无下属</view>
-            <image @tap="closeAuthorMldal"
-                   src="../../../images/close2.png"
-                   lazy-load="false"
-                   class="close"></image>
+            <!-- 下属列表 -->
+            <view class="author_modal_title" wx:if="{{userList.length}}">下属列表</view>
+            <checkbox-group wx:if="{{userList.length}}" class="checkBox_group" @change="changeUser">
+                <repeat for="{{userList}}" key="index" item="item">
+                    <label class="checkBox" @tap="selectAuthor" data-id="{{item.phone}}">
+                        <checkbox class="checkbox_item" color="orange" value="{{item.id}}" checked="{{item.checked}}" />
+                        <view class="username">
+                            <text>{{item.name}}</text>
+                        </view>
+                    </label>
+                </repeat>
+            </checkbox-group>
+            <view wx:else class="noUserList">暂无下属</view>
+            <view class="handle_content">
+                <button class="cancle" @tap="cancle">取消</button>
+                <button class="add" @tap="closeAuthorMldal">确定</button>
+            </view>
+            <!-- <image @tap="closeAuthorMldal" src="../../../images/close2.png" lazy-load="false" class="close"></image> -->
             <!-- <image @tap="closeAuthorMldal" src="../../../images/gou.png" lazy-load="false" class="gou"></image> -->
         </view>
-
     </view>
 </template>
 
@@ -325,28 +268,31 @@
                 }
                 this.allCheck = false;
             },
-            checkboxAuth(e) {
-                console.log(e.detail.value)
-                this.isShowAuthList = e.detail.value
-                if (this.isShowAuthList == "allow") {
-                    this.showAuthorModal = true;
-                    let _this = this;
-                    wx.getStorage({
-                        key: 'userList',
-                        success(res) {
-                            _this.userList = JSON.parse(res.data)
-                        }
-                    })
-                    wx.getStorage({
-                        key: 'storeList',
-                        success(res) {
-                            _this.storeList = JSON.parse(res.data)
-                        }
-                    })
-                    this.$apply()
-                    console.log("_this.userList----", _this.userList)
-                    console.log("_this.storeList----", _this.storeList)
-                }
+            checkboxAuth() {
+                // console.log(e.detail.value)
+                // this.isShowAuthList = e.detail.value
+                // if (this.isShowAuthList == "allow") {
+                this.showAuthorModal = true;
+                let _this = this;
+                wx.getStorage({
+                    key: 'userList',
+                    success(res) {
+                        _this.userList = JSON.parse(res.data)
+                    }
+                })
+                wx.getStorage({
+                    key: 'storeList',
+                    success(res) {
+                        _this.storeList = JSON.parse(res.data)
+                    }
+                })
+                this.$apply()
+                console.log("_this.userList----", _this.userList)
+                console.log("_this.storeList----", _this.storeList)
+                // }
+            },
+            cancle() {
+                this.showAuthorModal = false;
             },
             closeAuthorMldal() {
                 wx.setStorage({
@@ -706,7 +652,7 @@
         right: 0;
         bottom: 0;
         left: 0;
-        background-color: rgba(0, 0, 0, 0.8);
+        background-color: #fff;
         overflow: auto;
         display: flex;
         flex-direction: column;
@@ -726,7 +672,7 @@
             display: flex;
             margin: 40rpx 40rpx 0 40rpx;
             .allSelect {
-              color: #fff;
+              color: #333;
             }
           }
         }
@@ -736,13 +682,17 @@
             display: flex;
             margin: 40rpx;
             .username {
-              color: #fff;
+              color: #333;
             }
           }
         }
         .noUserList {
           color: #fff;
           margin: 40% auto;
+        }
+        .handle_content {
+          display: flex;
+          justify-content: space-around;
         }
       }
     }

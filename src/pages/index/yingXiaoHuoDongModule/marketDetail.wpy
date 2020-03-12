@@ -76,13 +76,13 @@
       this.totalIntegral = 0;
       this.totalNumbers = 0;
       this.detailData = [];
-      if(dataType==="all"){
+      if (dataType === "all") {
         this.detailData = this.selectAllData
-        this.detailData.forEach(item=>{
+        this.detailData.forEach(item => {
           this.totalNumbers++
         })
       }
-      if (pageType === "check" || pageType === "coupon") {
+      if (pageType === "check" || pageType === "coupon" || pageType === "vip") {
         console.log("pageType---", pageType)
         this.selectAllData.forEach(item => {
           if (item.couponName == dataType) {
@@ -90,8 +90,8 @@
             this.totalNumbers++
           }
         })
-      }else if(pageType==="activity"){
-         console.log("dataType---", dataType)
+      } else if (pageType === "activity") {
+        console.log("dataType---", dataType)
         this.selectAllData.forEach(item => {
           if (item.activityType == dataType) {
             this.detailData.push(item)
@@ -124,7 +124,7 @@
     //发券记录详情
     _loadMarketCoupon(date) {
       this.totalNumbers = 0
-      let url = `${this.$parent.globalData.commonUrl}/api/getMarketCouponStat?tk=${this.$parent.globalData.tk}&date=${date}`
+      let url = `${this.$parent.globalData.commonUrl}/api/getMarketCouponStat?tk=${this.$parent.globalData.tk}&date=${date}&dataType=${this.pageType}`
       util.interface_get(url).then(res => {
         if (res.errCode == 0) {
           console.log("发券详情", res)
@@ -175,13 +175,13 @@
           name: item["couponName"],
           id: item["couponName"]
         })
-      } else if (type === "coupon") {
+      } else if (type === "coupon" || type === "vip") {
         item["milliTime"] = util.timestampToTime(item.milliTime).slice(11)
         item["name"] = util.returnDiscountType(item.couponTypeInt)
         item["couponTypeInt"] = item.couponTypeInt
         item["headUrl"] = item.userInfo.headImgUrl
         // debugger
-         item["couponName"] = util.returnDiscountContentNoType(item.coupon)
+        item["couponName"] = util.returnDiscountContentNoType(item.coupon)
         this.detailData.push(item)
         tempPickArray.push({
           name: item["couponName"],
@@ -218,7 +218,7 @@
         this.paramDate = e.Date.trim();
       }
       this.pageType = e.type
-      console.log("日期",this.paramDate)
+      console.log("日期", this.paramDate)
       // let startDay = e.startDay;
       // let endDay = e.endDay;
       switch (this.pageType) {
@@ -232,6 +232,13 @@
         case "coupon":
           wx.setNavigationBarTitle({
             title: "发券详情"
+          })
+          this._loadMarketCoupon(this.paramDate)
+          console.log("发券详情请求")
+          break;
+        case "vip":
+          wx.setNavigationBarTitle({
+            title: "销卡详情"
           })
           this._loadMarketCoupon(this.paramDate)
           console.log("发券详情请求")

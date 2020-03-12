@@ -37,9 +37,9 @@
           <image src='../../images/arrow_right.png'></image>
         </navigator>
         <navigator url='/pages/mine/addServicer' class='item'>
-          <view class='name-box'>
+          <view class='name-box' style="display:flex">
             <image class='icon' src='../../images/question.png' style='width:34rpx;height:34rpx;'></image>
-            <text class='settingName'>绑定我成为客服</text>
+            <view class='settingName'>绑定我成为客服<text style="font-size:11px">(必须先登陆门店公众号，完善手机号)</text></view>
           </view>
           <image src='../../images/arrow_right.png'></image>
         </navigator>

@@ -14,7 +14,7 @@
         </view>
         <repeat for="{{servicerList}}" key="index" index="index" item="item">
           <view class="subServicer_title">
-            <text class="title">{{item.name}}</text>
+            <text class="title">{{item.name}}-{{item.phone}}</text>
             <text class="title">{{item.startTime}}</text>
             <text class="title">{{item.durationTime}}</text>
           </view>
@@ -34,23 +34,23 @@
     data = {
       winHeight: "",
       servicerList: [{
-          id: "1",
-          name: "liuning",
-          beginTime: "2018-10-1 20:00",
-          duration: "8小时"
-        },
-        {
-          id: "1",
-          name: "geniusning",
-          beginTime: "2018-10-1 20:00",
-          duration: "8小时"
-        },
-        {
-          id: "1",
-          name: "liuyirun",
-          beginTime: "2018-10-1 20:00",
-          duration: "正在值班"
-        }
+        id: "1",
+        name: "liuning",
+        beginTime: "2018-10-1 20:00",
+        duration: "8小时"
+      },
+      {
+        id: "1",
+        name: "geniusning",
+        beginTime: "2018-10-1 20:00",
+        duration: "8小时"
+      },
+      {
+        id: "1",
+        name: "liuyirun",
+        beginTime: "2018-10-1 20:00",
+        duration: "正在值班"
+      }
       ]
     };
     methods = {
@@ -64,14 +64,14 @@
               icon: 'none',
               duration: 1000
             })
-          }else if(res.errCode === 1038) {
-             wx.showToast({
+          } else if (res.errCode === 1038) {
+            wx.showToast({
               title: '该账号已经绑定过客服',
               icon: 'none',
               duration: 2000
             })
-          }else if(res.errCode === 1037){
-             wx.showToast({
+          } else if (res.errCode === 1037) {
+            wx.showToast({
               title: '该账号未在公众号验证管理员身份',
               icon: 'none',
               duration: 2000
@@ -113,9 +113,9 @@
         if (client.endTime === 0) {
           client["durationTime"] = "值班中"
         } else {
-          client["durationTime"] = parseInt((client.endTime - client.startTime) / 3600) === 0 ? "值班小于1小时" : parseInt((client.endTime - client.startTime) / 3600)+"小时"
+          client["durationTime"] = parseInt((client.endTime - client.startTime) / 3600) === 0 ? "值班小于1小时" : parseInt((client.endTime - client.startTime) / 3600) + "小时"
         }
-        client.startTime = util.timestampToTime(client.startTime).slice(0,16)
+        client.startTime = util.timestampToTime(client.startTime).slice(0, 16)
       })
     }
     events = {};

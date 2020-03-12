@@ -2,11 +2,7 @@
   <view class="visitorRecord-wrapper">
     <view class='time-box'>
       <view class='time-box-left'>
-        <picker mode="date"
-                value="{{date}}"
-                start="2015-09-01"
-                end="2029-09-01"
-                @change="bindStartDateChange">
+        <picker mode="date" value="{{date}}" start="2015-09-01" end="2029-09-01" @change="bindStartDateChange">
           <view class="picker">
             {{startDate}}
           </view>
@@ -14,19 +10,14 @@
       </view>
       <view class='line'></view>
       <view class='time-box-right'>
-        <picker mode="date"
-                value="{{date}}"
-                start="2015-09-01"
-                end="2029-09-01"
-                @change="bindEndDateChange">
+        <picker mode="date" value="{{date}}" start="2015-09-01" end="2029-09-01" @change="bindEndDateChange">
           <view class="picker">
             {{endDate}}
           </view>
         </picker>
       </view>
       <view class='time-box-btn'>
-        <text class='btn'
-              @tap="selecData">确定</text>
+        <text class='btn' @tap="selecData">确定</text>
       </view>
       <view class='totalNum-box'>
         <text class='visitorTitle'>合计数：</text>
@@ -39,19 +30,13 @@
         <text class='visitorNum'>数量</text>
         <text class='visitorNum'>详情</text>
       </view>
-      <scroll-view scroll-y
-                   class='scrollView'
-                   style='height:{{winHeight}}rpx'>
+      <scroll-view scroll-y class='scrollView' style='height:{{winHeight}}rpx'>
         <view>
-          <repeat for="{{dateList}}"
-                  key="index"
-                  item="item">
-            <view @tap="gotoMarketDetail({{item.totalData}},{{item.date}})"
-                  class='specific-wrapper'>
+          <repeat for="{{dateList}}" key="index" item="item">
+            <view @tap="gotoMarketDetail({{item.totalData}},{{item.date}})" class='specific-wrapper'>
               <text class='date'>{{item.date}}</text>
               <text class='num'>{{item.totalData}}</text>
-              <text class='num'
-                    style="text-decoration:underline;color:red">详情&gt;&gt;</text>
+              <text class='num' style="text-decoration:underline;color:red">详情&gt;&gt;</text>
             </view>
           </repeat>
         </view>
@@ -164,6 +149,13 @@
               item.totalData = item.dayAmount;
               return item
             }).reverse();
+          } else if (res.vipCardDateTimes) {
+            this.type_data = 'vipConvertStats';
+            this.dateList = res.vipCardDateTimes.map(item => {
+              item.date = util.timestampToTime(item.date).slice(0, 10);
+              item.totalData = item.vipCardTimes;
+              return item
+            }).reverse();
           }
           this.$apply()
         }
@@ -186,7 +178,7 @@
           wx.setNavigationBarTitle({
             title: '销卡记录'
           });
-          var url = `${this.$parent.globalData.commonUrl}/api/loadReleaseActivityDayStat?startDay=${this.startDate}&endDay=${this.endDate}&tk=${this.$parent.globalData.tk}`
+          var url = `${this.$parent.globalData.commonUrl}/api/loadVipCardDateTimes?startDay=${this.startDate}&endDay=${this.endDate}&tk=${this.$parent.globalData.tk}`
           this._getMarketingStat(url);
           break;
         case 'activity':

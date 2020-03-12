@@ -38,44 +38,72 @@
     <view>
       <!-- 拓客 -->
       <view wx:if="{{typeIndex==0}}" class="rank_scrollView">
-        <view class="rank_scrollView_title">
-          <text class="scrollTitle">排名</text>
-          <text class="scrollTitle">昵称</text>
-          <text class="scrollTitle">拓客数</text>
-          <text class="scrollTitle">店内拓客</text>
-          <text class="scrollTitle">线上拓客</text>
-          <text class="scrollTitle">详情</text>
-        </view>
+        <TitleList :titleList.sync="titleList"></TitleList>
         <scroll-view scroll-y class="rank_scroll_list">
           <repeat for="{{tuoKeClientList}}" key="index" index="index" item="item">
             <view class="scroll_item">
               <text class="staffInfo">{{index+1}}</text>
               <text class="staffInfo">{{item.clerkInfo.name}}</text>
               <text class="staffInfo">{{item.totalNum}}</text>
-              <text class="staffInfo">{{item.entertainNum}}</text>
-              <text class="staffInfo">{{item.shareNum}}</text>
-              <text decode="{{true}}" @tap="goToDetail({{item.clerkInfo.phone}})" class="staffInfo underLine">&gt;&gt;</text>
+              <text class="staffInfo">{{item.firstLineNum}}</text>
+              <text class="staffInfo">{{item.secondLineNum}}</text>
+              <!-- <text decode="{{true}}" @tap="goToDetail({{item.clerkInfo.phone}})" class="staffInfo underLine">&gt;&gt;</text> -->
             </view>
           </repeat>
         </scroll-view>
       </view>
       <!-- 分享 -->
       <view wx:elif="{{typeIndex==1}}" class="rank_scrollView">
-        <view class="rank_scrollView_title">
-          <text class="scrollTitle timeLine">排名</text>
-          <text class="scrollTitle timeLine">昵称</text>
-          <text class="scrollTitle timeLine">分享朋友</text>
-          <text class="scrollTitle timeLine">分享朋友圈</text>
-          <text class="scrollTitle timeLine">合计</text>
-        </view>
+        <TitleList :titleList.sync=""></TitleList>
+        <scroll-view scroll-y class="rank_scroll_list">
+          <repeat for="{{sharetList}}" key="index" index="index" item="item">
+            <view class="scroll_item">
+              <text class="staffInfo">{{index+1}}</text>
+              <text class="staffInfo">{{item.clerkInfo.name}}</text>
+              <text class="staffInfo">{{item.firstLineNum}}</text>
+              <text class="staffInfo">{{item.secondLineNum}}</text>
+              <text class="staffInfo">{{item.totalNum}}</text>
+            </view>
+          </repeat>
+        </scroll-view>
+      </view>
+      <!-- 销卡 -->
+      <view wx:elif="{{typeIndex==2}}" class="rank_scrollView">
+        <TitleList :titleList.sync="titleList"></TitleList>
+        <scroll-view scroll-y class="rank_scroll_list">
+          <repeat for="{{sharetList}}" key="index" index="index" item="item">
+            <view class="scroll_item">
+              <text class="staffInfo">{{index+1}}</text>
+              <text class="staffInfo">{{item.clerkInfo.name}}</text>
+              <text class="staffInfo">{{item.firstLineNum}}</text>
+              <text class="staffInfo">{{item.secondLineNum}}</text>
+              <text class="staffInfo">{{item.totalNum}}</text>
+            </view>
+          </repeat>
+        </scroll-view>
+      </view>
+      <!-- 对话 -->
+      <view wx:elif="{{typeIndex==3}}" class="rank_scrollView">
+        <TitleList :titleList.sync="titleList"></TitleList>
         <scroll-view scroll-y class="rank_scroll_list">
           <repeat for="{{sharetList}}" key="index" index="index" item="item">
             <view class="scroll_item">
               <text class="staffInfo timeLine">{{index+1}}</text>
               <text class="staffInfo timeLine">{{item.clerkInfo.name}}</text>
-              <text class="staffInfo timeLine">{{item.shareNum}}</text>
-              <text class="staffInfo timeLine">{{item.entertainNum}}</text>
-              <text class="staffInfo timeLine">{{item.totalNum}}</text>
+              <text class="staffInfo timeLine">{{item.firstLineNum}}</text>
+            </view>
+          </repeat>
+        </scroll-view>
+      </view>
+      <!-- 销卡 -->
+      <view wx:elif="{{typeIndex==4}}" class="rank_scrollView">
+        <TitleList :titleList.sync="titleList"></TitleList>
+        <scroll-view scroll-y class="rank_scroll_list">
+          <repeat for="{{sharetList}}" key="index" index="index" item="item">
+            <view class="scroll_item">
+              <text class="staffInfo timeLine">{{index+1}}</text>
+              <text class="staffInfo timeLine">{{item.clerkInfo.name}}</text>
+              <text class="staffInfo timeLine">{{item.firstLineNum}}</text>
             </view>
           </repeat>
         </scroll-view>
@@ -87,11 +115,17 @@
 <script>
   import wepy from 'wepy';
   import util from '../../utils/utils.js'
+  import TitleList from "../../components/ranktitle"
   export default class Rank extends wepy.page {
     config = {
       navigationBarTitleText: '排行榜'
     };
+    components = {
+      TitleList: TitleList
+    };
     data = {
+      titleList: ['排名', '昵称', '拓客数', '店内拓客', '线上拓客'],
+      pageType: "",
       shopInfo: {},
       currentTab: 0,
       date: '2016-09-01',
@@ -106,7 +140,7 @@
     _getTuoKeRankList() {
       let url = `${this.$parent.globalData.commonUrl}/api/loadClerkClientRank?tk=${this.$parent.globalData.tk}&startDay=${this.startDay}&endDay=${this.endDay}`;
       util.interface_get(url).then(res => {
-        console.log("拓客------", res);
+        console.log("拓------", res);
         if (res.errCode === 0) {
           this.tuoKeClientList = this._handleTuoKeClientList(res.interface)
         }
@@ -115,9 +149,9 @@
     };
     //分享
     _getShareRankList() {
-      let url = `${this.$parent.globalData.commonUrl}/api/loadClerkShareFriAndLineRank?tk=${this.$parent.globalData.tk}&startDate=${this.startDay}&endDate=${this.endDay}`;
+      let url = `${this.$parent.globalData.commonUrl}/api/loadClerkShareFriAndLineRank?tk=${this.$parent.globalData.tk}&startDate=${this.startDay}&endDate=${this.endDay}&dataType=${this.pageType}`;
       util.interface_get(url).then(res => {
-        console.log("分享-------", res);
+        console.log("-------", res);
         if (res.errCode === 0) {
           this.sharetList = this._handleTuoKeClientList(res.interface)
         }
@@ -127,7 +161,7 @@
     _handleTuoKeClientList(tuoKeList) {
       var resultList = []
       tuoKeList.forEach(element => {
-        element.totalNum = element.entertainNum + element.shareNum
+        element.totalNum = element.firstLineNum + element.secondLineNum
       });
       resultList = tuoKeList.sort(this._compareTuoKeList("totalNum"))
       return resultList
@@ -148,7 +182,7 @@
           this.endDay = util.someDayLater(util.nowDate(), -1, '-');
           if (this.typeIndex === 0) { //拓客
             this._getTuoKeRankList()
-          } else if (this.typeIndex === 1) { //分享
+          } else { //分享
             this._getShareRankList()
           }
         } else if (this.currentTab == "1") { //今天
@@ -156,7 +190,7 @@
           this.endDay = util.nowDate();
           if (this.typeIndex === 0) { //拓客
             this._getTuoKeRankList()
-          } else if (this.typeIndex === 1) { //分享
+          } else { //分享
             this._getShareRankList()
           }
         } else if (this.currentTab == "2") { //本周
@@ -164,7 +198,7 @@
           this.endDay = util.nowDate();
           if (this.typeIndex === 0) { //拓客
             this._getTuoKeRankList()
-          } else if (this.typeIndex === 1) { //分享
+          } else { //分享
             this._getShareRankList()
           }
         } else if (this.currentTab == "3") { //本月
@@ -172,7 +206,7 @@
           this.endDay = util.nowDate();
           if (this.typeIndex === 0) { //拓客
             this._getTuoKeRankList()
-          } else if (this.typeIndex === 1) { //分享
+          } else { //分享
             this._getShareRankList()
           }
         }
@@ -185,10 +219,41 @@
       typeChange(e) {
         this.typeIndex = e.detail.value
         console.log("typeindex-------", this.typeIndex)
-        if (this.typeIndex === 0) { //拓客
+        switch (this.typeIndex) {
+          case '0':
+            this.titleList = ['排名', '昵称', '拓客数', '店内拓客', '线上拓客']
+            this.$apply()
+            break;
+          case '1':
+            this.pageType = "share"
+            this.titleList = ['排名', '昵称', '分享朋友', '分享朋友圈', '合计']
+            this.$apply()
+            break;
+          case '2':
+            this.pageType = "sell"
+            this.titleList = ['排名', '昵称', '月卡', '次卡', '合计']
+            this.$apply()
+            break;
+          case '3':
+            this.pageType = "talk"
+            this.titleList = ['排名', '昵称', '与客对话次数']
+            this.$apply()
+            break;
+          case '4':
+            this.pageType = "game"
+            this.titleList = ['排名', '昵称', '与客游戏次数']
+            this.$apply()
+            break;
+
+          default:
+            break;
+        }
+        console.log(typeof (this.typeIndex))
+        console.log(this.typeIndex)
+        if (this.typeIndex == '0') { //拓客
           this._getTuoKeRankList()
-        } else if (this.typeIndex === 1) { //分享
-          this._getShareRankList()
+        } else { //分享
+          this._getShareRankList(this.pageType)
         }
       },
       rankBeginDateChange(e) {
@@ -216,15 +281,16 @@
         }
       },
       selectRankData() {
-        if (this.typeIndex === 0) {
+        if (this.typeIndex == '0') {
           this._getTuoKeRankList();
-        } else if (this.typeIndex === 1) {
+        } else {
           this._getShareRankList()
         }
       }
     };
     events = {};
-    onLoad() {
+    onLoad(e) {
+
       this.shopInfo = this.$parent.globalData.shopInfo;
       this.startDay = util.someDayLater(util.nowDate(), -1, '-');
       this.endDay = util.someDayLater(util.nowDate(), -1, '-');
@@ -354,7 +420,7 @@
         line-height: 60rpx;
         .scrollTitle {
           display: inline-block;
-          width: 16%;
+          width: 20%;
           text-align: center;
         }
         .timeLine {
@@ -370,7 +436,7 @@
           margin-bottom: 20rpx;
           .staffInfo {
             display: inline-block;
-            width: 16%;
+            width: 20%;
             text-align: center;
             text-overflow: ellipsis;
             white-space: nowrap;
@@ -381,7 +447,7 @@
             }
           }
           .timeLine {
-            width: 20%;
+            width: 33.333%;
             text-align: center;
           }
         }

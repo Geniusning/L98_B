@@ -15,18 +15,18 @@ const timestampToTime = (timestamp) => {
     var M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
     var D = (date.getDate() < 10) ? '0' + date.getDate() + " " : date.getDate() + ' ';
     var h = (date.getHours() < 10 ? '0' + date.getHours() : date.getHours()) + ':';
-    var m = (date.getMinutes() < 10) ? '0' + date.getMinutes()+":" : date.getMinutes()+':';
+    var m = (date.getMinutes() < 10) ? '0' + date.getMinutes() + ":" : date.getMinutes() + ':';
     var s = (date.getSeconds() < 10) ? '0' + date.getSeconds() : date.getSeconds();
-    return Y + M + D + h + m+s;
+    return Y + M + D + h + m + s;
   } else {
     var date = new Date(timestamp * 1000); //时间戳为10位需*1000，时间戳为13位的话不需乘1000
     var Y = date.getFullYear() + '-';
     var M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
     var D = (date.getDate() < 10) ? '0' + date.getDate() + " " : date.getDate() + ' ';
     var h = (date.getHours() < 10 ? '0' + date.getHours() : date.getHours()) + ':';
-    var m = (date.getMinutes() < 10) ? '0' + date.getMinutes()+":" : date.getMinutes()+':';
+    var m = (date.getMinutes() < 10) ? '0' + date.getMinutes() + ":" : date.getMinutes() + ':';
     var s = (date.getSeconds() < 10) ? '0' + date.getSeconds() : date.getSeconds();
-    return Y + M + D + h + m+s;
+    return Y + M + D + h + m + s;
   }
 }
 const getDate = (timestamp) => {
@@ -108,35 +108,47 @@ const returnDiscountType = (discountTypeNumber) => {
     return "实物券"
   } else if (parseInt(discountTypeNumber) === 2) {
     return "折扣券"
-  } else if (parseInt(discountTypeNumber) === 3){
+  } else if (parseInt(discountTypeNumber) === 3) {
     return "兑换券"
-  }else {
+  } else if (parseInt(discountTypeNumber) === 4) {
     return "满减券"
+  } else if (parseInt(discountTypeNumber) === 5) {
+    return "月卡券"
+  } else if (parseInt(discountTypeNumber) === 6) {
+    return "次卡券"
   }
 }
 const returnDiscountContent = (coupon) => {
   if (parseInt(coupon.type) === 0) {
-    return "现金券"+coupon.value+"元"
+    return "现金券" + coupon.value + "元"
   } else if (parseInt(coupon.type) === 1) {
-    return "实物券" +coupon.content
+    return "实物券" + coupon.content
   } else if (parseInt(coupon.type) === 2) {
-    return "折扣券" +coupon.value+"折"
-  } else if (parseInt(coupon.type) === 3){
-    return "兑换券"+coupon.content
-  }else if(parseInt(coupon.type) === 4) {
-    return "满减券"+coupon.content
+    return "折扣券" + coupon.value + "折"
+  } else if (parseInt(coupon.type) === 3) {
+    return "兑换券" + coupon.content
+  } else if (parseInt(coupon.type) === 4) {
+    return "满减券" + coupon.content
+  } else if (parseInt(coupon.type) === 5) {
+    return "月卡券" + coupon.content
+  } else if (parseInt(coupon.type) === 6) {
+    return "次卡券" + coupon.content
   }
 }
 const returnDiscountContentNoType = (coupon) => {
   if (parseInt(coupon.type) === 0) {
-    return coupon.value+"元"
+    return coupon.value + "元"
   } else if (parseInt(coupon.type) === 1) {
     return coupon.content
   } else if (parseInt(coupon.type) === 2) {
-    return coupon.value+"折"
-  } else if (parseInt(coupon.type) === 3){
+    return coupon.value + "折"
+  } else if (parseInt(coupon.type) === 3) {
     return coupon.content
-  }else if(parseInt(coupon.type) === 4) {
+  } else if (parseInt(coupon.type) === 4) {
+    return coupon.content
+  } else if (parseInt(coupon.type) === 5) {
+    return coupon.content
+  } else if (parseInt(coupon.type) === 6) {
     return coupon.content
   }
 }
@@ -189,20 +201,20 @@ const interface_get = (url, callBack) => {
   })
 }
 //获取滚动的高度
-const getScrollHeight = (height)=>{
+const getScrollHeight = (height) => {
   var scrollHeight;
   wx.getSystemInfo({
-    success: function(res) {
-        // console.log(res);
-        var clientHeight = res.windowHeight,
-            clientWidth = res.windowWidth,
-            rpxR = 750 / clientWidth;
-        scrollHeight =  clientHeight * rpxR - height;
+    success: function (res) {
+      // console.log(res);
+      var clientHeight = res.windowHeight,
+        clientWidth = res.windowWidth,
+        rpxR = 750 / clientWidth;
+      scrollHeight = clientHeight * rpxR - height;
     }
   });
   return scrollHeight
 }
-const writePhotosAlbum = (successFun,failFun) =>{
+const writePhotosAlbum = (successFun, failFun) => {
   wx.getSetting({
     success(res) {
       if (!res.authSetting['scope.writePhotosAlbum']) {
@@ -244,15 +256,15 @@ const writePhotosAlbum = (successFun,failFun) =>{
     }
   })
 }
-const sortByKey = function(key){
-  return function(obj1,obj2){
+const sortByKey = function (key) {
+  return function (obj1, obj2) {
     var v1 = obj1[key]
     var v2 = obj2[key]
-    return v2-v1
+    return v2 - v1
   }
 }
- //数组去重,并把目标type放到数组第一个元素位置
- const delSameItem = function(arr, type) {
+//数组去重,并把目标type放到数组第一个元素位置
+const delSameItem = function (arr, type) {
   var newArr = [];
   var obj = {};
   for (var i = 0; i < arr.length; i++) {
@@ -264,23 +276,23 @@ const sortByKey = function(key){
   return newArr
 };
 //比较日期前后
-const compareDate = (beginDate,endDate)=>{
-  console.log(beginDate,endDate)
+const compareDate = (beginDate, endDate) => {
+  console.log(beginDate, endDate)
   let d1 = new Date(beginDate.replace(/\-/g, "\/"))
   let d2 = new Date(endDate.replace(/\-/g, "\/"))
-  console.log("d1------------",d1)
-  console.log("d2------------",d2)
-  if(beginDate != "" && endDate != "" && d1>d2){
+  console.log("d1------------", d1)
+  console.log("d2------------", d2)
+  if (beginDate != "" && endDate != "" && d1 > d2) {
     return false
   }
   return true
 }
 //补全0
-const prefixZero = (num,n)=>{
+const prefixZero = (num, n) => {
   var len = num.toString().length;
-  while(len < n) {
-      num = "0" + num;
-      len++;
+  while (len < n) {
+    num = "0" + num;
+    len++;
   }
   return num;
 }

@@ -57,8 +57,8 @@
       url: ''
     };
     watch = {
-      startDate(newValue) {},
-      endDate(newValue) {}
+      startDate(newValue) { },
+      endDate(newValue) { }
     };
     methods = {
       stop() {
@@ -102,9 +102,7 @@
       },
       intoDetail(date) {
         wx.navigateTo({
-          url: `/pages/marketing/allTypeIntegraRecDetail?date=${date}&type=${
-              this.pageType
-            }&activity=${this.activityType}`
+          url: `/pages/marketing/allTypeIntegraRecDetail?date=${date}&type=${this.pageType}`
         });
       }
     };
@@ -126,42 +124,32 @@
     _getIntrgralByDay(url) {
       util.interface_get(url).then(res => {
         console.log('res-------', res);
-        if (this.pageType === 'sys') {
-          //获得系统赠送积分
+        if (this.pageType === 'sys') {//获得系统赠送积分
           this.recordData = res.sysSendInteDayStat.map(item => {
-              item.date = util.timestampToTime(item.date).slice(0, 10);
-              item.totalData = item.dayCheckIn + item.dayActivityShare + item.dayGameShare + item.dayMakeFriAmount;
-              this.topTotal += item.totalData;
-              return item;
-            }).reverse();
+            item.date = util.timestampToTime(item.date).slice(0, 10);
+            item.totalData = item.dayCheckIn + item.dayActivityShare + item.dayGameShare + item.dayMakeFriAmount;
+            this.topTotal += item.totalData;
+            return item;
+          }).reverse();
           console.log('this.recordData--------', this.recordData);
           this.$apply();
-        } else if (this.pageType === 'exchangeGift') {
-          //积分积分优惠券
+        } else if (this.pageType === 'exchangeGift') {  //消耗兑换
+          //积分消耗兑换优惠券
           this.recordData = res.giftConvertStats.map(item => {
-              item.date = util.timestampToTime(item.date).slice(0, 10);
-              if (this.activityType === 'recommend') {
-                item.totalData = item.dayRecommendConvert;
-                this.topTotal += item.dayRecommendConvert;
-              } else if (this.activityType === 'gift') {
-                item.totalData = item.dayGoodsConvert;
-                this.topTotal += item.dayGoodsConvert;
-              } else {
-                item.totalData = item.dayAmount;
-                this.topTotal += item.totalData;
-              }
-              return item;
-            })
+            item.date = util.timestampToTime(item.date).slice(0, 10);
+            item.totalData = item.dayGoodsConvert + item.dayRecommendConvert + item.dayVipConvert;
+            this.topTotal += item.totalData;
+            return item;
+          })
             .reverse();
           this.$apply();
-        } else if (this.pageType === 'givenGift') {
-          //赠送积分优惠券
+        } else if (this.pageType === 'givenGift') { //积分转增
           this.recordData = res.giftSendStats.map(item => {
-              item.date = util.timestampToTime(item.date).slice(0, 10);
-              item.totalData = item.dayGiftSend;
-              this.topTotal += item.dayGiftSend;
-              return item;
-            })
+            item.date = util.timestampToTime(item.date).slice(0, 10);
+            item.totalData = item.dayGiftSend;
+            this.topTotal += item.dayGiftSend;
+            return item;
+          })
             .reverse();
           this.$apply();
         }

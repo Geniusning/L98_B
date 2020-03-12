@@ -5,45 +5,32 @@
       <view wx:if="{{userStat}}">
         <!-- 门店信息 -->
         <view class="shopInfo-wrapper">
-          <Header :sonShopInfo.sync="shopInfo"
-                  :superior.sync="userInfo"></Header>
+          <Header :sonShopInfo.sync="shopInfo" :superior.sync="userInfo"></Header>
         </view>
         <!-- 筛选区域 -->
         <view class="rank_selection">
           <view class="rank_selection_left">
-            <text class="yesterday {{currentTab==0?'active':''}}"
-                  @tap="seletShortCutDay(0)">昨天</text>
-            <text class="today {{currentTab==1?'active':''}} "
-                  @tap="seletShortCutDay(1)">今天</text>
-            <text class="week {{currentTab==2?'active':''}} "
-                  @tap="seletShortCutDay(2)">本周</text>
-            <text class="week {{currentTab==3?'active':''}} "
-                  @tap="seletShortCutDay(3)">本月</text>
+            <text class="yesterday {{currentTab==0?'active':''}}" @tap="seletShortCutDay(0)">昨天</text>
+            <text class="today {{currentTab==1?'active':''}} " @tap="seletShortCutDay(1)">今天</text>
+            <text class="week {{currentTab==2?'active':''}} " @tap="seletShortCutDay(2)">本周</text>
+            <text class="week {{currentTab==3?'active':''}} " @tap="seletShortCutDay(3)">本月</text>
           </view>
           <view class="rank_selection_right">
-            <picker mode="date"
-                    start="2019-09-01"
-                    end="2023-09-01"
-                    @change="BeginDateChange">
+            <picker mode="date" start="2019-09-01" end="2023-09-01" @change="BeginDateChange">
               <view class="rank_time_picker">{{startDay}}</view>
             </picker>
             <text class="line">-</text>
-            <picker mode="date"
-                    start="2019-09-01"
-                    end="2029-09-01"
-                    @change="EndDateChange">
+            <picker mode="date" start="2019-09-01" end="2029-09-01" @change="EndDateChange">
               <view class="rank_time_picker">{{endDay}}</view>
             </picker>
-            <text class="btn"
-                  @tap="selectData">查询</text>
+            <text class="btn" @tap="selectData">查询</text>
           </view>
         </view>
         <!-- 锁客拓客 -->
         <view class="lockAndExpand-wrapper">
           <view class="title-box">
             <view class="title-box-left">
-              <image src="../../images/client.png"
-                     class="title-icon"></image>
+              <image src="../../images/client.png" class="title-icon"></image>
               <text class="subTitle">拓客分析</text>
               <!-- <text @tap='selectYestodayUserStat' class="yestoday {{clientFlag?'active':''}}">(昨日)</text> -->
             </view>
@@ -53,9 +40,7 @@
           </view>
           <!-- top -->
           <view class="lockAndExpand-Part">
-            <navigator url="/pages/index/visitorRecord/visitorRecord?type=visitor"
-                       hover-class="none"
-                       class="lockAndExpand-Part-item">
+            <navigator url="/pages/index/visitorRecord/visitorRecord?type=visitor" hover-class="none" class="lockAndExpand-Part-item">
               <view class="item">
                 <text class="name">网店访客：</text><text class="content big">{{userStat.dayStat[0].dayTotalUser}}</text>
               </view>
@@ -65,9 +50,7 @@
               </view>
             </navigator>
             <view class="line"></view>
-            <navigator url="/pages/index/visitorRecord/visitorRecord?type=customer"
-                       hover-class="none"
-                       class="lockAndExpand-Part-item">
+            <navigator url="/pages/index/visitorRecord/visitorRecord?type=customer" hover-class="none" class="lockAndExpand-Part-item">
               <view class="item">
                 <text class="name">店内上线：</text><text class="content big">{{userStat.dayStat[0].dayQrcodeUser}}</text>
               </view>
@@ -79,9 +62,7 @@
           </view>
           <!-- bottom -->
           <view class="lockAndExpand-Part bottomPart">
-            <navigator url="/pages/index/registerRecord/registerRecord"
-                       hover-class="none"
-                       class="lockAndExpand-Part-item">
+            <navigator url="/pages/index/registerRecord/registerRecord" hover-class="none" class="lockAndExpand-Part-item">
               <view class="item">
                 <text class="name">新增注册：</text><text class="content big">{{userStat.dayStat[0].dayNewUser}}</text>
               </view>
@@ -91,9 +72,7 @@
               </view>
             </navigator>
             <view class="line"></view>
-            <navigator url="/pages/index/dianWaiShangXian/dianWaiShangXian"
-                       hover-class="none"
-                       class="lockAndExpand-Part-item">
+            <navigator url="/pages/index/dianWaiShangXian/dianWaiShangXian" hover-class="none" class="lockAndExpand-Part-item">
               <view class="item">
                 <text class="name">店外上线：</text><text class="content big">{{userStat.dayStat[0].dayOtherUser}}</text>
               </view>
@@ -108,16 +87,13 @@
         <view class="lockAndExpand-wrapper">
           <view class="title-box">
             <view class="title-box-left">
-              <image src="../../images/activity.png"
-                     class="title-icon"></image>
+              <image src="../../images/activity.png" class="title-icon"></image>
               <text class="subTitle">营销活动</text>
             </view>
           </view>
           <!-- top -->
           <view class="lockAndExpand-Part">
-            <navigator url="/pages/index/yingXiaoHuoDongModule/marketingAct?type=coupon"
-                       hover-class="none"
-                       class="lockAndExpand-Part-item">
+            <navigator url="/pages/index/yingXiaoHuoDongModule/marketingAct?type=coupon" hover-class="none" class="lockAndExpand-Part-item">
               <view class="item">
                 <text class="name">发券数量：</text><text class="content big">{{marketingStat.marketingDayStat[0].dayIssuedCoupon}}</text>
               </view>
@@ -127,9 +103,7 @@
               </view>
             </navigator>
             <view class="line"></view>
-            <navigator url="/pages/index/yingXiaoHuoDongModule/marketingAct?type=check"
-                       hover-class="none"
-                       class="lockAndExpand-Part-item">
+            <navigator url="/pages/index/yingXiaoHuoDongModule/marketingAct?type=check" hover-class="none" class="lockAndExpand-Part-item">
               <view class="item">
                 <text class="name">到店核销：</text><text class="content big">{{marketingStat.marketingDayStat[0].daySetOffCoupon}}</text>
               </view>
@@ -141,21 +115,17 @@
           </view>
           <!-- bottom -->
           <view class="lockAndExpand-Part bottomPart">
-            <navigator url="/pages/index/yingXiaoHuoDongModule/marketingAct?type=vip"
-                       hover-class="none"
-                       class="lockAndExpand-Part-item">
+            <navigator url="/pages/index/yingXiaoHuoDongModule/marketingAct?type=vip" hover-class="none" class="lockAndExpand-Part-item">
               <view class="item">
-                <text class="name">销会员卡：</text><text class="content big">{{marketingStat.marketingDayStat[0].dayReleaseActivity}}</text>
+                <text class="name">销会员卡：</text><text class="content big">{{marketingStat.marketingDayStat[0].dayVipActivity}}</text>
               </view>
               <view class="accumulated">
                 <text class="name"><text class='letterSpace'>累</text>计：</text>
-                <text class="content">{{marketingStat.releaseActivity}}张</text>
+                <text class="content">{{marketingStat.vipActivity}}张</text>
               </view>
             </navigator>
             <view class="line"></view>
-            <navigator url="/pages/index/yingXiaoHuoDongModule/marketingAct?type=activity"
-                       hover-class="none"
-                       class="lockAndExpand-Part-item">
+            <navigator url="/pages/index/yingXiaoHuoDongModule/marketingAct?type=activity" hover-class="none" class="lockAndExpand-Part-item">
               <view class="item">
                 <text class="name">参与活动：</text><text class="content big">{{marketingStat.marketingDayStat[0].dayJoinActivity}}</text>
               </view>
@@ -170,14 +140,12 @@
         <view class="lockAndExpand-wrapper">
           <view class="title-box">
             <view class="title-box-left">
-              <image src="../../images/communityF.png"
-                     class="title-icon"></image>
+              <image src="../../images/communityF.png" class="title-icon"></image>
               <text class="subTitle">社群活跃度</text>
             </view>
           </view>
           <!-- top -->
-          <navigator url="/pages/index/communityRecord/communityRecord"
-                     hover-class="none">
+          <navigator url="/pages/index/communityRecord/communityRecord" hover-class="none">
             <view class="lockAndExpand-Part">
               <view class="lockAndExpand-Part-item">
                 <view class="item">
@@ -227,16 +195,13 @@
         <view class="lockAndExpand-wrapper">
           <view class="title-box">
             <view class="title-box-left">
-              <image src="../../images/book.png"
-                     class="title-icon"></image>
+              <image src="../../images/book.png" class="title-icon"></image>
               <text class="subTitle">服务监控</text>
             </view>
           </view>
           <!-- top -->
           <view class="lockAndExpand-Part">
-            <navigator url="/pages/index/systemInform/systemInform"
-                       hover-class="none"
-                       class="lockAndExpand-Part-item">
+            <navigator url="/pages/index/systemInform/systemInform" hover-class="none" class="lockAndExpand-Part-item">
               <view class="item">
                 <text class="name">系统通知：</text><text class="content big">{{mutualStat.MutualDayStat[0].daySysInfo}}</text>
               </view>
@@ -246,9 +211,7 @@
               </view>
             </navigator>
             <view class="line"></view>
-            <navigator url="/pages/index/dianYuanYuKeTalk/dianYuanYuKeTalk?type=clientService"
-                       hover-class="none"
-                       class="lockAndExpand-Part-item">
+            <navigator url="/pages/index/dianYuanYuKeTalk/dianYuanYuKeTalk?type=clientService" hover-class="none" class="lockAndExpand-Part-item">
               <view class="item">
                 <text class="name">客服对话：</text><text class="content big">{{mutualStat.MutualDayStat[0].dayClientServiveStat}}</text>
               </view>
@@ -260,9 +223,7 @@
           </view>
           <!-- bottom -->
           <view class="lockAndExpand-Part bottomPart">
-            <navigator url="/pages/index/dianYuanYuKeTalk/dianYuanYuKeTalk?type=clerk"
-                       hover-class="none"
-                       class="lockAndExpand-Part-item">
+            <navigator url="/pages/index/dianYuanYuKeTalk/dianYuanYuKeTalk?type=clerk" hover-class="none" class="lockAndExpand-Part-item">
               <view class="item">
                 <text class="name">店员与客对话：</text><text class="content big">{{mutualStat.MutualDayStat[0].dayClerkChatStat}}</text>
               </view>
@@ -272,9 +233,7 @@
               </view>
             </navigator>
             <view class="line"></view>
-            <navigator url="/pages/index/consultGameRecord/consultGameRecord"
-                       hover-class="none"
-                       class="lockAndExpand-Part-item">
+            <navigator url="/pages/index/dianYuanYuKeTalk/dianYuanYuKeTalk?type=game" hover-class="none" class="lockAndExpand-Part-item">
               <view class="item">
                 <text class="name">店员与客游戏：</text><text class="content big">{{mutualStat.MutualDayStat[0].dayClerkGameStat}}</text>
               </view>
@@ -289,16 +248,13 @@
         <view class="lockAndExpand-wrapper">
           <view class="title-box">
             <view class="title-box-left">
-              <image src="../../images/jifen.png"
-                     class="title-icon"></image>
+              <image src="../../images/jifen.png" class="title-icon"></image>
               <text class="subTitle">积分统计</text>
             </view>
           </view>
           <!-- top -->
           <view class="lockAndExpand-Part">
-            <navigator url="/pages/marketing/allTypeIntegraRec?type=sys"
-                       hover-class="none"
-                       class="lockAndExpand-Part-item">
+            <navigator url="/pages/marketing/allTypeIntegraRec?type=sys" hover-class="none" class="lockAndExpand-Part-item">
               <view class="item">
                 <text class="name">糸统赠送：</text><text class="content big">{{integralStat.integralDayStat[0].daySystemSendStat}}</text>
               </view>
@@ -308,9 +264,7 @@
               </view>
             </navigator>
             <view class="line"></view>
-            <navigator url="/pages/index/yingXiaoHuoDongModule/yingXiaoHuoDongModule?type=4"
-                       hover-class="none"
-                       class="lockAndExpand-Part-item">
+            <navigator url="/pages/index/yingXiaoHuoDongModule/yingXiaoHuoDongModule?type=4" hover-class="none" class="lockAndExpand-Part-item">
               <view class="item">
                 <text class="name">积分充值：</text><text class="content big">{{integralStat.integralDayStat[0].dayPayStat}}</text>
               </view>
@@ -322,9 +276,7 @@
           </view>
           <!-- bottom -->
           <view class="lockAndExpand-Part bottomPart">
-            <navigator url="/pages/marketing/allTypeIntegraRec?type=givenGift"
-                       hover-class="none"
-                       class="lockAndExpand-Part-item">
+            <navigator url="/pages/marketing/allTypeIntegraRec?type=givenGift" hover-class="none" class="lockAndExpand-Part-item">
               <view class="item">
                 <text class="name">积分转赠：</text><text class="content big">{{integralStat.integralDayStat[0].dayTransferStat}}</text>
               </view>
@@ -334,9 +286,7 @@
               </view>
             </navigator>
             <view class="line"></view>
-            <navigator url="/pages/marketing/allTypeIntegraRec?type=exchangeGift"
-                       hover-class="none"
-                       class="lockAndExpand-Part-item">
+            <navigator url="/pages/marketing/allTypeIntegraRec?type=exchangeGift" hover-class="none" class="lockAndExpand-Part-item">
               <view class="item">
                 <text class="name">消耗兑换：</text><text class="content big">{{integralStat.integralDayStat[0].dayconvertStat}}</text>
               </view>
@@ -351,16 +301,13 @@
         <view class="lockAndExpand-wrapper">
           <view class="title-box">
             <view class="title-box-left">
-              <image src="../../images/yinliu.png"
-                     class="title-icon"></image>
+              <image src="../../images/yinliu.png" class="title-icon"></image>
               <text class="subTitle">友商互推</text>
             </view>
           </view>
           <!-- top -->
           <view class="lockAndExpand-Part">
-            <navigator url="/pages/index/youShangXuanChuan/youShangXuanChuan"
-                       hover-class="none"
-                       class="lockAndExpand-Part-item">
+            <navigator url="/pages/index/youShangXuanChuan/youShangXuanChuan" hover-class="none" class="lockAndExpand-Part-item">
               <view class="item">
                 <text class="name">友商宣传我：</text><text class="content big">8</text>
               </view>
@@ -370,9 +317,7 @@
               </view>
             </navigator>
             <view class="line"></view>
-            <navigator url="/pages/index/youKeLingQuan/youKeLingQuan"
-                       hover-class="none"
-                       class="lockAndExpand-Part-item">
+            <navigator url="/pages/index/youKeLingQuan/youKeLingQuan" hover-class="none" class="lockAndExpand-Part-item">
               <view class="item">
                 <text class="name">友客领我券：</text><text class="content big">8</text>
               </view>
@@ -384,9 +329,7 @@
           </view>
           <!-- bottom -->
           <view class="lockAndExpand-Part bottomPart">
-            <navigator url="/pages/index/yinLiuBenHao/yinLiuBenHao"
-                       hover-class="none"
-                       class="lockAndExpand-Part-item">
+            <navigator url="/pages/index/yinLiuBenHao/yinLiuBenHao" hover-class="none" class="lockAndExpand-Part-item">
               <view class="item">
                 <text class="name">引流到本号：</text><text class="content big">8</text>
               </view>
@@ -396,9 +339,7 @@
               </view>
             </navigator>
             <view class="line"></view>
-            <navigator url="/pages/index/yinLiuYouShang/yinLiuYouShang"
-                       hover-class="none"
-                       class="lockAndExpand-Part-item">
+            <navigator url="/pages/index/yinLiuYouShang/yinLiuYouShang" hover-class="none" class="lockAndExpand-Part-item">
               <view class="item">
                 <text class="name">引流给友商：</text><text class="content big">8</text>
               </view>
@@ -412,8 +353,8 @@
       </view>
       <!-- loading -->
       <!-- <view wx:else class="image_box" style="text-align:center">
-                                <image class="loading_icon" src="../../images/loading.gif" mode="scaleToFill"></image>
-                              </view> -->
+                                  <image class="loading_icon" src="../../images/loading.gif" mode="scaleToFill"></image>
+                                </view> -->
     </view>
   </view>
 </template>

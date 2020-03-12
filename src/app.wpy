@@ -48,7 +48,6 @@
         'pages/index/systemInform/systemInform',
         'pages/index/dianYuanYuKeTalk/dianYuanYuKeTalk',
         'pages/index/dianYuanYuKeTalk/dianYuanYuKeTalkDetail',
-        'pages/index/consultGameRecord/consultGameRecord',
         'pages/index/yinLiuBenHao/yinLiuBenHao',
         'pages/index/yinLiuYouShang/yinLiuYouShang',
         'pages/index/youKeLingQuan/youKeLingQuan',

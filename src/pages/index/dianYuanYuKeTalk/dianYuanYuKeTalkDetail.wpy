@@ -1,53 +1,52 @@
 <template>
     <view class="integralDetail_wrapper">
         <view class="integralDetail_top">
-            <view class="total_box"
-                  style="margin-top: 10rpx;margin-left:14rpx;position:absolute;top:5rpx;">
+            <view class="total_box" style="margin-top: 10rpx;margin-left:14rpx;position:absolute;top:5rpx;">
                 合计总数：{{totalTimes}}
             </view>
-            <!-- <view class="select">
-                <image src="../../../images/shaixuan.png"
-                       mode="scaleToFill"
-                       lazy-load="true"
-                       class="selectIcon"></image>
-                <picker class="pickerbox"
-                        @change="bindPickerChange"
-                        value="{{pickindex}}"
-                        range="{{pickerArray}}"
-                        range-key="name">
-                    <view class="picker">
-                        {{pickerArray[pickindex].name}}
-                    </view>
-                </picker>
-            </view> -->
         </view>
         <view class="integralDetail_bottom">
-            <scroll-view scroll-y
-                         scroll-with-animation
-                         style="height:{{winHeight}}rpx">
+            <scroll-view wx:if="{{pageType != 'game'}}" scroll-y scroll-with-animation style="height:{{winHeight}}rpx">
                 <view class="list">
                     <view class="item">发生时间</view>
                     <view class="item">店员</view>
                     <view class="item">对话对象</view>
-
                 </view>
-                <repeat for="{{recordData}}"
-                        key="index"
-                        index="index"
-                        item="item">
+                <repeat for="{{recordData}}" key="index" index="index" item="item">
                     <view class="list">
                         <view class="item">{{item.milliTime}}</view>
                         <view class="item">
-                            <image class="avatarIcon"
-                                   src="{{item.staffHeadUrl}}"
-                                   mode="scaleToFill"
-                                   lazy-load="false"></image>
+                            <image class="avatarIcon" src="{{item.staffHeadUrl}}" mode="scaleToFill" lazy-load="false"></image>
                         </view>
                         <view class="item">
-                            <image class="avatarIcon"
-                                   src="{{item.ClientHeadUrl}}"
-                                   mode="scaleToFill"
-                                   lazy-load="false"></image>
+                            <image class="avatarIcon" src="{{item.ClientHeadUrl}}" mode="scaleToFill" lazy-load="false"></image>
+                        </view>
+                    </view>
+                </repeat>
+            </scroll-view>
+            <scroll-view wx:else scroll-y scroll-with-animation style="height:{{winHeight}}rpx">
+                <view class="list">
+                    <view class="item">发生时间</view>
+                    <view class="item">店员</view>
+                    <view class="item">类型</view>
+                    <view class="item">其他玩家</view>
+                </view>
+                <repeat for="{{recordData}}" key="index" index="index" item="item">
+                    <view class="list">
+                        <view class="item">{{item.milliTime}}</view>
+                        <view class="item">
+                            <image class="avatarIcon" src="{{item.clerkHeadImg}}" mode="scaleToFill" lazy-load="false"></image>
+                        </view>
+                        <view class="item">{{item.type}}</view>
+                        <view class="item" style="display:flex" wx:if="{{item.clientIds.length>1}}">
+                            <repeat for="{{clientHeadURL}}" key="index" index="index" item="item">
+                                <image class="avatarIcon" src="{{item}}" mode="scaleToFill" lazy-load="false"></image>
+                            </repeat>
+                        </view>
+                        <view class="item" wx:else>
+                            <!-- <repeat for="{{item.}}" key="index" index="index" item="item"> -->
+                            <image class="avatarIcon" src="{{item.clientHeadURL}}" mode="scaleToFill" lazy-load="false"></image>
+                            <!-- </repeat> -->
                         </view>
                     </view>
                 </repeat>
@@ -73,19 +72,34 @@
             winHeight: "",
         };
         methods = {};
-        _handleItem(item) {
-            item["milliTime"] = util.timestampToTime(item.millionTime).slice(11)
-        };
         _loadClerkChatDetail(date) {
             let url = `${this.$parent.globalData.commonUrl}/api/loadClerkChatDetail?tk=${this.$parent.globalData.tk}&date=${date}&dataType=${this.pageType}`
             util.interface_get(url).then(res => {
                 console.log("data----", res)
                 if (res.errCode === 0) {
-                    this.recordData = res.clerkChatDetail.sort(util.sortByKey("millionTime"))
-                    this.recordData.forEach(item => {
-                        this._handleItem(item)
-                        this.totalTimes++
-                    })
+                    if (this.pageType == "game") {
+                        this.recordData = res.clerkGameDetail.sort(util.sortByKey("time"))
+                        this.recordData.forEach(item => {
+                            if (item.clientIds.length > 1) {
+                                item.clientHeadURL = item.clientHeadURL.split(",")
+                            }
+                            item["milliTime"] = util.timestampToTime(item.time).slice(11)
+                            if (item.gamePath == "game3") {
+                                item["type"] = "好友局"
+                            } else if (item.gamePath == "game2") {
+                                item["type"] = "比赛局"
+                            } else if (item.gamePath == "game1") {
+                                item["type"] = "邻桌局"
+                            }
+                            this.totalTimes++
+                        })
+                    } else {
+                        this.recordData = res.clerkChatDetail.sort(util.sortByKey("millionTime"))
+                        this.recordData.forEach(item => {
+                            item["milliTime"] = util.timestampToTime(item.millionTime).slice(11)
+                            this.totalTimes++
+                        })
+                    }
                 }
                 this.$apply()
             })
@@ -101,4 +115,5 @@
         }
     }
 </script>
-<style lang="less" src="../../marketing/recommendAndGiftStat/recommendAndGift.less"></style>
+<style lang="less" src="../../marketing/recommendAndGiftStat/recommendAndGift.less">
+</style>
