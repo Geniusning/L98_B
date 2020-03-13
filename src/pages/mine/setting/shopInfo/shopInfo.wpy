@@ -325,7 +325,7 @@
           image: this.uploadImgUrl
         }
         wx.request({
-          url: `${this.$parent.globalData.commonUrl}/api/uploadAdvertisingPhoto?tk=${this.$parent.globalData.tk}`,
+          url: `${this.$parent.globalData.commonUrl}/api/uploadAdvertisingPhoto?tk=${this.$parent.globalData.tk}&storeId=${this.$parent.globalData.StoreId}`,
           data: {
             adPhotoURL: this.uploadImgArr
           },
@@ -346,7 +346,7 @@
         })
         console.log(params)
         wx.request({
-          url: `${this.$parent.globalData.commonUrl}/api/storeSetting?tk=${this.$parent.globalData.tk}`,
+          url: `${this.$parent.globalData.commonUrl}/api/storeSetting?tk=${this.$parent.globalData.tk}&storeId=${this.$parent.globalData.StoreId}`,
           data: params,
           header: {
             'content-type': 'application/json'
@@ -371,14 +371,11 @@
           }
         })
         var storeSettingUrl = `${this.$parent.globalData.commonUrl}/api/loadStoreSetting?tk=${this.$parent.globalData.tk}`;
-        // util.interface_get(storeSettingUrl).then(res => {
-        //   setTimeout(() => {
-        util.interface_get(storeSettingUrl).then(res => {
+        util.interface_get(storeSettingUrl,this.$parent.globalData.StoreId).then(res => {
           this.$parent.globalData.shopInfo = res;
           console.log("店铺信息---------", this.$parent.globalData)
         })
-        // }, 500);
-        // })
+      
       },
       chooseLogoPic: function () {
         let _this = this;
@@ -505,7 +502,7 @@
       this.show = !!(this.$parent.globalData.userInfo.permission & 32);
       let _this = this;
       wx.request({
-        url: `${this.$parent.globalData.commonUrl}/api/loadAdvertisingPhoto?tk=${this.$parent.globalData.tk}`,
+        url: `${this.$parent.globalData.commonUrl}/api/loadAdvertisingPhoto?tk=${this.$parent.globalData.tk}&storeId=${this.$parent.globalData.StoreId}`,
         success: res => {
           console.log('拉取轮播图-------------------------------', res.data.adPhotoURL)
           if (res.statusCode === 200) {
@@ -518,7 +515,7 @@
         }
       })
       wx.request({
-        url: `${this.$parent.globalData.commonUrl}/api/loadStoreSetting?tk=${this.$parent.globalData.tk}&storeId=${this.storeId}`,
+        url: `${this.$parent.globalData.commonUrl}/api/loadStoreSetting?tk=${this.$parent.globalData.tk}&storeId=${this.$parent.globalData.StoreId}`,
         success: res => {
           console.log(res)
           if (res.statusCode === 200) {

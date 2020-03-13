@@ -90,7 +90,7 @@
       deleteGame() {
         let _this = this;
         wx.request({
-          url: `${this.$parent.globalData.commonUrl}/api/deleteArena?tk=${this.$parent.globalData.tk}`,
+          url: `${this.$parent.globalData.commonUrl}/api/deleteArena?tk=${this.$parent.globalData.tk}&storeId=${this.$parent.globalData.StoreId}`,
           data: {
             arenaIDs: _this.arenaIDs
           },
@@ -107,7 +107,7 @@
           }
         });
         wx.request({
-          url: `${this.$parent.globalData.commonUrl}/api/delArenaScheduleTask?tk=${this.$parent.globalData.tk}`,
+          url: `${this.$parent.globalData.commonUrl}/api/delArenaScheduleTask?tk=${this.$parent.globalData.tk}&storeId=${this.$parent.globalData.StoreId}`,
           header: {
             'content-type': 'application/json'
           },
@@ -129,7 +129,7 @@
           IDS: this.AIIDs
         }
         let url = `${this.$parent.globalData.commonUrl}/api/deleDispatchCoupon?tk=${this.$parent.globalData.tk}`
-        util.interface_post(url, data).then(res => {
+        util.interface_post(url, data,this.$parent.globalData.StoreId).then(res => {
           console.log("删除ai优惠券--------", res)
           this.getAICardList()
         })
@@ -154,7 +154,7 @@
       return new Promise((resolve, reject) => {
         let _this = this;
         wx.request({
-          url: `${_this.$parent.globalData.commonUrl}/api/loadArenas?tk=${_this.$parent.globalData.tk}`,
+          url: `${_this.$parent.globalData.commonUrl}/api/loadArenas?tk=${_this.$parent.globalData.tk}&storeId=${this.$parent.globalData.StoreId}`,
           success: function(res) {
             console.log(res)
             if (res.statusCode === 200) {
@@ -168,7 +168,7 @@
     };
     getAICardList() {
       let url = `${this.$parent.globalData.commonUrl}/api/loadDispatchCouponList?tk=${this.$parent.globalData.tk}`
-      util.interface_get(url).then(res => {
+      util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
         console.log("ai优惠券列表---------", res)
         this.AIdiscountList = res.coupon
         this.AIdiscountList.forEach(item => {

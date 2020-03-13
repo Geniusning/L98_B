@@ -148,7 +148,7 @@
     };
     _loadActivityDetail(date) {
       let url = `${this.$parent.globalData.commonUrl}/api/getActivityStat?tk=${this.$parent.globalData.tk}&date=${date}`
-      util.interface_get(url).then(res => {
+      util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
         console.log("data----", res)
         if (res.errCode === 0) {
           this.allTypesData = res.activityDetailArr.sort(util.sortByKey("milliTime"))

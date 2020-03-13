@@ -56,7 +56,7 @@
     methods = {
       addClientService() {
         let url = `${this.$parent.globalData.commonUrl}/api/addClientService?tk=${this.$parent.globalData.tk}`;
-        util.interface_get(url).then(res => {
+        util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
           console.log(res);
           if (res.errCode === 0) {
             wx.showToast({
@@ -83,7 +83,7 @@
       },
       delClientService() {
         let url = `${this.$parent.globalData.commonUrl}/api/delClientService?tk=${this.$parent.globalData.tk}`;
-        util.interface_get(url).then(res => {
+        util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
           console.log(res);
           if (res.errCode === 0) {
             wx.showToast({
@@ -100,7 +100,7 @@
     //加载值班记录
     _loadClientServiceLog() {
       let url = `${this.$parent.globalData.commonUrl}/api/loadClientServiceLog?tk=${this.$parent.globalData.tk}`;
-      util.interface_get(url).then(res => {
+      util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
         console.log(res);
         this.servicerList = res
         this._formatClientData(this.servicerList)

@@ -74,7 +74,7 @@
         methods = {};
         _loadClerkChatDetail(date) {
             let url = `${this.$parent.globalData.commonUrl}/api/loadClerkChatDetail?tk=${this.$parent.globalData.tk}&date=${date}&dataType=${this.pageType}`
-            util.interface_get(url).then(res => {
+            util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
                 console.log("data----", res)
                 if (res.errCode === 0) {
                     if (this.pageType == "game") {

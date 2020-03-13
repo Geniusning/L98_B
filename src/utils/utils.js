@@ -13,7 +13,7 @@ const timestampToTime = (timestamp) => {
     var date = new Date(timestamp); //时间戳为10位需*1000，时间戳为13位的话不需乘1000
     var Y = date.getFullYear() + '-';
     var M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
-    var D = (date.getDate() < 10) ? '0' + date.getDate() + " " : date.getDate() + ' ';
+    var D = (date.getDate() < 10) ? '0' + date.getDate() : date.getDate();
     var h = (date.getHours() < 10 ? '0' + date.getHours() : date.getHours()) + ':';
     var m = (date.getMinutes() < 10) ? '0' + date.getMinutes() + ":" : date.getMinutes() + ':';
     var s = (date.getSeconds() < 10) ? '0' + date.getSeconds() : date.getSeconds();
@@ -22,7 +22,7 @@ const timestampToTime = (timestamp) => {
     var date = new Date(timestamp * 1000); //时间戳为10位需*1000，时间戳为13位的话不需乘1000
     var Y = date.getFullYear() + '-';
     var M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
-    var D = (date.getDate() < 10) ? '0' + date.getDate() + " " : date.getDate() + ' ';
+    var D = (date.getDate() < 10) ? '0' + date.getDate() : date.getDate();
     var h = (date.getHours() < 10 ? '0' + date.getHours() : date.getHours()) + ':';
     var m = (date.getMinutes() < 10) ? '0' + date.getMinutes() + ":" : date.getMinutes() + ':';
     var s = (date.getSeconds() < 10) ? '0' + date.getSeconds() : date.getSeconds();
@@ -34,13 +34,13 @@ const getDate = (timestamp) => {
     var date = new Date(timestamp); //时间戳为10位需*1000，时间戳为13位的话不需乘1000
     var Y = date.getFullYear() + '-';
     var M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
-    var D = (date.getDate() < 10) ? '0' + date.getDate() + " " : date.getDate();
+    var D = (date.getDate() < 10) ? '0' + date.getDate() : date.getDate();
     return Y + M + D;
   } else {
     var date = new Date(timestamp * 1000); //时间戳为10位需*1000，时间戳为13位的话不需乘1000
     var Y = date.getFullYear() + '-';
     var M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
-    var D = (date.getDate() < 10) ? '0' + date.getDate() + " " : date.getDate();
+    var D = (date.getDate() < 10) ? '0' + date.getDate() : date.getDate();
     return Y + M + D;
   }
 }
@@ -152,10 +152,10 @@ const returnDiscountContentNoType = (coupon) => {
     return coupon.content
   }
 }
-const interface_post = (url, data, callBack) => {
+const interface_post = (url, data, storeId) => {
   return new Promise((resolve, reject) => {
     wx.request({
-      url: url,
+      url: url + "&storeId=" + storeId,
       data: data,
       header: {
         'content-type': 'application/json'
@@ -165,10 +165,6 @@ const interface_post = (url, data, callBack) => {
         // console.log('post_res----------', res)
         if (res.statusCode === 200) {
           resolve(res.data);
-          if (callBack) {
-            callBack()
-          }
-
         } else {
           reject(res.data)
         }
@@ -177,17 +173,14 @@ const interface_post = (url, data, callBack) => {
 
   })
 }
-const interface_get = (url, callBack) => {
+const interface_get = (url, storeId) => {
   return new Promise((resolve, reject) => {
     wx.request({
-      url: url,
+      url: url + "&storeId=" + storeId,
       success: res => {
         if (res.statusCode === 200) {
           // console.log(res)
           resolve(res.data)
-          if (callBack) {
-            callBack();
-          }
         } else {
           wx.showToast({
             title: '暂无数据',

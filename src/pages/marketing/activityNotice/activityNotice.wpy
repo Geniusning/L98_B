@@ -163,13 +163,7 @@
           image: this.uploadItemImgUrl,
           bgImage: this.uploadBgImgUrl
         };
-        util.interface_post(url, data, () => {
-          wx.showToast({
-            title: '保存成功',
-            icon: 'success',
-            duration: 2000
-          })
-        }).then(res => {
+        util.interface_post(url, data,this.$parent.globalData.StoreId).then(res => {
           // console.log(res)
           if (res.errCode === 1) {
             wx.showToast({
@@ -186,38 +180,6 @@
           _this.bgImgUrl = "../../../images/add_pic.png";
           _this.$apply();
         })
-        // wx.request({
-        //   url: `${this.$parent.globalData.commonUrl}/api/createActivity?tk=${this.$parent.globalData.tk}`,
-        //   data: {
-        //     name: this.activityTheme,
-        //     limit: this.activityLimit,
-        //     startTime: this.beginDate,
-        //     endTime: this.endDate,
-        //     content: this.activityContent,
-        //     rule: this.activityRule,
-        //     image: this.uploadItemImgUrl
-        //   },
-        //   header: {
-        //     'content-type': 'application/json'
-        //   },
-        //   method: 'POST',
-        //   success: res => {
-        //     console.log(res)
-        //     if (res.data.errCode === 0) {
-        //       wx.showToast({
-        //         title: '保存成功',
-        //         icon: 'success',
-        //         duration: 2000
-        //       })
-        //       _this.activityTheme = "";
-        //       _this.activityLimit = "";
-        //       _this.activityContent = "";
-        //       _this.activityRule = "";
-        //       _this.imgUrl = "../../../images/add_pic.png";
-        //       _this.$apply();
-        //     }
-        //   }
-        // })
       }
     };
     onLoad() {

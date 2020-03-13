@@ -203,7 +203,7 @@
     methods = {
       loadStoreSetting() {
         let shopUrl = `${this.$parent.globalData.commonUrl}/api/loadStoreSetting?tk=${this.$parent.globalData.tk}`;
-        util.interface_get(shopUrl).then(res => {
+        util.interface_get(shopUrl,this.$parent.globalData.StoreId).then(res => {
           console.log(res)
           this.$parent.globalData.shopInfo = res;
           this.$apply()
@@ -258,7 +258,7 @@
         var url = `${this.$parent.globalData.commonUrl}/api/loadUsers?tk=${this.$parent.globalData.tk}&userCount=${userCount}&startCursor=${startCursor}&loadType=${this.loadType}`;
       }
       console.log("url--------", url)
-      util.interface_get(url).then(res => {
+      util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
         console.log('返回用户数-----------------', res)
         var usersArr = res.Users;
         if (!usersArr) {

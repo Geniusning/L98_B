@@ -231,7 +231,7 @@
             return;
           }
         }
-        util.interface_post(url, data).then(res => {
+        util.interface_post(url, data,this.$parent.globalData.StoreId).then(res => {
           console.log('发布AI优惠券结果--------', res);
           if (res.errCode == 0) {
             wx.showToast({
@@ -270,7 +270,7 @@
             item.checked = this.selectedAllStatus;
           });
            let userUrl = `${this.$parent.globalData.commonUrl}/api/loadSortUsers?tk=${this.$parent.globalData.tk}&sortType=${this.usersTypeList[index].id}`;
-          util.interface_get(userUrl).then(res => {
+          util.interface_get(userUrl,this.$parent.globalData.StoreId).then(res => {
             console.log('选择用户类型返回--------', res);
           })
           return;
@@ -287,7 +287,7 @@
             item.checked = this.selectedAllStatus;
           });
           let userUrl = `${this.$parent.globalData.commonUrl}/api/loadSortUsers?tk=${this.$parent.globalData.tk}&sortType=${this.usersTypeList[index].id}`;
-          util.interface_get(userUrl).then(res => {
+          util.interface_get(userUrl,this.$parent.globalData.StoreId).then(res => {
             console.log('选择用户类型返回--------', res);
           })
           return;
@@ -315,7 +315,7 @@
             });
           }
           let userUrl = `${this.$parent.globalData.commonUrl}/api/loadSortUsers?tk=${this.$parent.globalData.tk}&sortType=${this.usersTypeList[index].id}`;
-          util.interface_get(userUrl).then(res => {
+          util.interface_get(userUrl,this.$parent.globalData.StoreId).then(res => {
             console.log('选择用户类型返回--------', res);
           })
         } else {
@@ -373,7 +373,7 @@
       }
       //拉取优惠券列表
       var cardListUrl = `${this.$parent.globalData.commonUrl}/api/loadCoupons?tk=${this.$parent.globalData.tk}`;
-      util.interface_get(cardListUrl).then(res => {
+      util.interface_get(cardListUrl,this.$parent.globalData.StoreId).then(res => {
         _this.cardList = res;
          _this.cardList.forEach(item=>{
            item["checked"] = false;

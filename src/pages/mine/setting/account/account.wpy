@@ -128,13 +128,7 @@
       deleteStaff(phoneId) {
         console.log(phoneId);
         let url = `${this.$parent.globalData.commonUrl}/api/deleteStaff?tk=${this.$parent.globalData.tk}&phone=${phoneId}`
-        util.interface_get(url, () => {
-          wx.showToast({
-            title: '删除成功',
-            icon: 'success',
-            duration: 2000
-          })
-        }).then(res => {
+        util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
           console.log('删除结果---------------------------：', res);
           this._loadAllStaff();
         })
@@ -187,7 +181,7 @@
             return false;
           }
         }
-        util.interface_post(url, data).then(res => {
+        util.interface_post(url, data,this.$parent.globalData.StoreId).then(res => {
           console.log("新增结果-------",res)
           if (res.errCode == 0) {
             wx.showToast({
@@ -210,7 +204,7 @@
     _loadAllStaff() {
       let _this = this;
       wx.request({
-        url: `${this.$parent.globalData.commonUrl}/api/loadAllStaff?tk=${this.$parent.globalData.tk}`,
+        url: `${this.$parent.globalData.commonUrl}/api/loadAllStaff?tk=${this.$parent.globalData.tk}&storeId=${this.$parent.globalData.StoreId}`,
         success: res => {
           console.log('拉取的员工111------------------------', res);
           if (res.data.errCode === 0) {

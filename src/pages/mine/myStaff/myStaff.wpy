@@ -175,16 +175,9 @@
                 this.isSelectStore = true;
                 this.currentTab = index
                 let setGrpcPortUrl = `${this.$parent.globalData.commonUrl}/api/setGrpcPort?tk=${this.$parent.globalData.tk}&port=${port}&storeId=${storeId}`;
-                util.interface_get(setGrpcPortUrl).then(res => {
+                util.interface_get(setGrpcPortUrl,this.$parent.globalData.StoreId).then(res => {
                     console.log("链接成功")
                 })
-                // util.interface_get(storeSettingUrl).then(res => {
-                //   this.$parent.globalData.shopInfo = res;
-                //   console.log("店铺信息---------", this.$parent.globalData)
-                //   wx.switchTab({
-                //     url: '/pages/member/member'
-                //   })
-                // })
             },
             //允许权限
             selectAuthor(e) {
@@ -381,7 +374,7 @@
                     return
                 }
                 console.log(params)
-                util.interface_post(url, params).then(res => {
+                util.interface_post(url, params,this.$parent.globalData.StoreId).then(res => {
                     if (res.errCode == 0) {
                         wx.showToast({
                             title: '新增成功',
@@ -463,7 +456,7 @@
         _loadAllStaff() {
             let _this = this;
             wx.request({
-                url: `${this.$parent.globalData.commonUrl}/api/loadAllStaff?tk=${this.$parent.globalData.tk}&phone=${this.$parent.globalData.userInfo.phone}`,
+                url: `${this.$parent.globalData.commonUrl}/api/loadAllStaff?tk=${this.$parent.globalData.tk}&phone=${this.$parent.globalData.userInfo.phone}&storeId=${this.$parent.globalData.StoreId}`,
                 success: res => {
                     console.log('拉取的员工------------------------', res);
                     if (res.data.errCode === 0) {
@@ -480,7 +473,7 @@
         };
         _loadShopList() {
             let url = `${this.$parent.globalData.commonUrl}/api/loadShopList?tk=${this.$parent.globalData.tk}&phone=${this.$parent.globalData.userInfo.phone}`
-            util.interface_get(url).then(res => {
+            util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
                 this.storeList = res
                 this.storeList.forEach(store => {
                     store["checked"] = false

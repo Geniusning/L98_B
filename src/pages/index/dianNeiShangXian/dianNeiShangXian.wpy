@@ -41,7 +41,7 @@
     _loadDeskUserNum(dayStr){
       let _this = this;
       let url = `${this.$parent.globalData.commonUrl}/api/loadDeskUserNum?tk=${this.$parent.globalData.tk}&dayStr=${dayStr}`
-      util.interface_get(url).then(res => {
+      util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
         console.log("loadDeskUserNum------------",res)
         if (res.errCode === 0) {
          _this.onLineDeskList = res.deskUserNum

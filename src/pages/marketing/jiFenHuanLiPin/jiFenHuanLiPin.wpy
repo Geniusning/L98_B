@@ -117,7 +117,7 @@
           couponID: this.$parent.globalData.recommendPrize.couponID,
           id: this.id
         }
-        util.interface_post(url, data).then(res => {
+        util.interface_post(url, data,this.$parent.globalData.StoreId).then(res => {
           console.log('店长推荐成功-----------------------', res);
           if (res.errCode === 0) {
             wx.showToast({
@@ -140,22 +140,6 @@
             })
           }
         })
-        // wx.request({
-        //   url: `${this.$parent.globalData.commonUrl}/api/createGoods?tk=${this.$parent.globalData.tk}`,
-        //   data: {
-        //     name: formData.name,
-        //     integral: Number(formData.originalPrice),
-        //     discountPrice: Number(formData.discountPrice),
-        //     image: this.uploadImgUrl,
-        //     couponID: this.$parent.globalData.recommendPrize.couponID
-        //   },
-        //   header: {
-        //     'content-type': 'application/json'
-        //   },
-        //   method: 'POST',
-        //   success: res => {
-        //   }
-        // })
       }
     };
     events = {};

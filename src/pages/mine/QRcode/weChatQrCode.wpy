@@ -74,7 +74,7 @@ export default class weChatQrCode extends wepy.page {
   onLoad() {
     var _this = this
     let url = `${this.$parent.globalData.commonUrl}/api/loadAllQrcode?tk=${this.$parent.globalData.tk}`
-    util.interface_get(url).then(res=>{
+    util.interface_get(url,this.$parent.globalData.StoreId).then(res=>{
       console.log("二维码-------------",res)
       this.qrUrl = res.urls[0]
       this.$apply()

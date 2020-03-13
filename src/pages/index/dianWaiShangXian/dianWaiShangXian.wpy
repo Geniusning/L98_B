@@ -86,7 +86,7 @@
     //拉取店外上线用户
     _loadUserOutDrTimes() {
       let url = `${this.$parent.globalData.commonUrl}/api/loadUserOutDrTimes?tk=${this.$parent.globalData.tk}&startDate=${this.startDate}&endDate=${this.endDate}`
-      util.interface_get(url).then(res => {
+      util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
         console.log("_loadUserOutDrTimes--------", res)
         if (res.errCode == 0) {
           this.dateRange = res.outDrOnlineTimesList

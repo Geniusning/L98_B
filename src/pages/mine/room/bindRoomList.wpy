@@ -127,7 +127,7 @@
                     })
                 }
                 let url = `${this.$parent.globalData.commonUrl}/api/setDeskRemark?tk=${this.$parent.globalData.tk}&deskID=${this.deskRemarkId}&remark=${this.remark}`;
-                util.interface_get(url).then(res => {
+                util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
                     console.log(res)
                     if (res.errCode == 0) {
                         this.showRemarksModal = false
@@ -181,7 +181,7 @@
                     }
                 }
                 console.log("删除房间参数----------", deskIdObj)
-                util.interface_post(url, deskIdObj).then(res => {
+                util.interface_post(url, deskIdObj,this.$parent.globalData.StoreId).then(res => {
                     console.log(res);
                     if (res.errCode === 0) {
                         wx.showToast({
@@ -199,7 +199,7 @@
                 // this.loadFlag = !this.loadFlag
                 // }
                 let url = `${this.$parent.globalData.commonUrl}/api/createDesk?tk=${this.$parent.globalData.tk}&count=${this.roomCounts}&phone=${this.$parent.globalData.userInfo.phone}`;
-                util.interface_get(url).then(res => {
+                util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
                     console.log(res);
                     if (res.errCode === 0) {
                         // this.loadFlag = !this.loadFlag
@@ -245,7 +245,7 @@
                     }
                 }
                 console.log("绑定参数----------", deskIdObj)
-                util.interface_post(url, deskIdObj).then(res => {
+                util.interface_post(url, deskIdObj,this.$parent.globalData.StoreId).then(res => {
                     console.log(res);
                     if (res.errCode === 0) {
                         wx.showToast({
@@ -270,7 +270,7 @@
         };
         _loadRoomList() {
             let url = `${this.$parent.globalData.commonUrl}/api/loadDesks?tk=${this.$parent.globalData.tk}`;
-            util.interface_get(url).then(res => {
+            util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
                 console.log(res);
                 if (res.errCode === 0) {
                     this.roomList = res.desks.filter(room => {
@@ -284,7 +284,7 @@
         }
         _loadNoBindRoomList() {
             let url = `${this.$parent.globalData.commonUrl}/api/loadDesks?tk=${this.$parent.globalData.tk}`;
-            util.interface_get(url).then(res => {
+            util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
                 console.log(res);
                 if (res.errCode === 0) {
                     this.roomList = res.desks.filter(room => {

@@ -85,7 +85,7 @@
           return
         }
         let url = `${this.$parent.globalData.commonUrl}/api/putAwayOrRemoveAIAct?tk=${this.$parent.globalData.tk}&AIactivityId=${this.AIactivityId}&isPutAway=${true}`
-        util.interface_get(url).then(res => {
+        util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
           if (res.errCode === 0) {
             wx.showToast({
               title: '上架成功',
@@ -106,7 +106,7 @@
           return
         }
         let url = `${this.$parent.globalData.commonUrl}/api/putAwayOrRemoveAIAct?tk=${this.$parent.globalData.tk}&AIactivityId=${this.AIactivityId}&isPutAway=${false}`
-        util.interface_get(url).then(res => {
+        util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
           if (res.errCode === 0) {
             wx.showToast({
               title: '下架成功',
@@ -138,7 +138,7 @@
           IDS: this.AIIDs
         }
         let url = `${this.$parent.globalData.commonUrl}/api/deleDispatchCoupon?tk=${this.$parent.globalData.tk}`
-        util.interface_post(url, data).then(res => {
+        util.interface_post(url, data,this.$parent.globalData.StoreId).then(res => {
           console.log("删除ai优惠券--------", res)
           wx.showToast({
             title: '删除成功',
@@ -151,7 +151,7 @@
     };
     getAICardList() {
       let url = `${this.$parent.globalData.commonUrl}/api/loadDispatchCouponList?tk=${this.$parent.globalData.tk}`
-      util.interface_get(url).then(res => {
+      util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
         console.log(res)
         this.AIdiscountList = res.coupon
         this.AIdiscountList.forEach(item => {

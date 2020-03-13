@@ -340,7 +340,7 @@
        this.dateOfTotalTimes = 0 //重置
       this.used_AIdiscountList = [] 
       let url = `${this.$parent.globalData.commonUrl}/api/loadUserJoinAIcouponAct?tk=${this.$parent.globalData.tk}&AIactivityId=${AIactivityId}&startDate=${this.startDate}&endDate=${this.endDate}`
-      util.interface_get(url).then(res=>{
+      util.interface_get(url,this.$parent.globalData.StoreId).then(res=>{
         console.log(res)
         if(res.errCode===0){
           this.used_AIdiscountList = res.userJoinAIAct.DateUserJoin
@@ -358,7 +358,7 @@
       this.dateOfTotalTimes = 0 //重置
       this.used_inviteActList = [] //重置
       let url = `${this.$parent.globalData.commonUrl}/api/loadUserJoinInviteAct?tk=${this.$parent.globalData.tk}&activityId=${this.activityId}&startDate=${this.startDate}&endDate=${this.endDate}`
-      util.interface_get(url).then(res=>{
+      util.interface_get(url,this.$parent.globalData.StoreId).then(res=>{
         console.log(res)
         if(res.errCode===0){
           this.used_inviteActList = res.userJoinInviteAct.DateUserJoin
@@ -374,7 +374,7 @@
     //拉取邀新活动列表
     _getInviteActivityList(){
       let url = `${this.$parent.globalData.commonUrl}/api/loadInviteAcitity?tk=${this.$parent.globalData.tk}`
-      util.interface_get(url).then(res=>{
+      util.interface_get(url,this.$parent.globalData.StoreId).then(res=>{
        if(res.errCode===0){
          this.inviteAIdiscountList = res.abCouponList;
          this.inviteAIdiscountList.forEach(item=>{
@@ -391,7 +391,7 @@
       this.dateOfTotalTimes = 0 //重置
       this.used_discountList = [] //重置
       let url = `${this.$parent.globalData.commonUrl}/api/loadCouponDipAndChcout?tk=${this.$parent.globalData.tk}&couponId=${this.couponId}&startDate=${this.startDate}&endDate=${this.endDate}`
-      util.interface_get(url).then(res=>{
+      util.interface_get(url,this.$parent.globalData.StoreId).then(res=>{
         console.log(res)
         if(res.errCode===0){
           this.accumulatedDispatchTimes = res.flowCouponstatus.allDispatchTimes
@@ -426,7 +426,7 @@
       return new Promise((resolve, reject) => {
         let _this = this;
         wx.request({
-          url: `${_this.$parent.globalData.commonUrl}/api/loadArenas?tk=${_this.$parent.globalData.tk}`,
+          url: `${_this.$parent.globalData.commonUrl}/api/loadArenas?tk=${_this.$parent.globalData.tk}&storeId=${this.$parent.globalData.StoreId}`,
           success: function(res) {
             console.log(res)
             if (res.statusCode === 200) {
@@ -446,7 +446,7 @@
           mask: true
         })
         wx.request({
-          url: `${this.$parent.globalData.commonUrl}/api/loadCoupons?tk=${this.$parent.globalData.tk}`,
+          url: `${this.$parent.globalData.commonUrl}/api/loadCoupons?tk=${this.$parent.globalData.tk}&storeId=${this.$parent.globalData.StoreId}`,
           success: function(res) {
             if (res.statusCode === 200) {
               wx.hideLoading()
@@ -459,7 +459,7 @@
     //获取发布AI优惠券活动列表
     getAICardList() {
       let url = `${this.$parent.globalData.commonUrl}/api/loadDispatchCouponList?tk=${this.$parent.globalData.tk}`
-      util.interface_get(url).then(res => {
+      util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
         this.AIdiscountList = res.coupon
         this.AIdiscountList.forEach(item => {
           let nowDateStamp = new Date(util.nowDate()).getTime();

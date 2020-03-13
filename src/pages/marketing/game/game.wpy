@@ -372,7 +372,7 @@ export default class game extends wepy.page {
       if (!this.circletime) {
         console.log('单场赛')
         wx.request({
-          url: `${this.$parent.globalData.commonUrl}/api/createArena?tk=${this.$parent.globalData.tk}`,
+          url: `${this.$parent.globalData.commonUrl}/api/createArena?tk=${this.$parent.globalData.tk}&storeId=${this.$parent.globalData.StoreId}`,
           data: {
             endTime: endGameTime,
             name: _this.theme,
@@ -431,7 +431,7 @@ export default class game extends wepy.page {
       } else {
         console.log('循环赛')
         wx.request({
-          url: `${this.$parent.globalData.commonUrl}/api/createArenaScheduleTask?tk=${this.$parent.globalData.tk}`,
+          url: `${this.$parent.globalData.commonUrl}/api/createArenaScheduleTask?tk=${this.$parent.globalData.tk}&storeId=${this.$parent.globalData.StoreId}`,
           data: {
             endTimes: _this.EndTimes,
             name: _this.theme,

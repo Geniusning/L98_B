@@ -82,7 +82,7 @@
           return
         }
         let url = `${this.$parent.globalData.commonUrl}/api/delIntegralGift?tk=${this.$parent.globalData.tk}&giftId=${this.giftId}`
-        util.interface_get(url).then(res => {
+        util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
           if (res.errCode === 0) {
             console.log("del result-----", res)
             wx.showToast({
@@ -101,7 +101,7 @@
           mask: true
       })
       let url = `${this.$parent.globalData.commonUrl}/api/loadGoods?tk=${this.$parent.globalData.tk}`
-      util.interface_get(url).then(res => {
+      util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
          wx.hideLoading()
         console.log("_loadIntegralGift----------", res)
         this.integralGiftList = res

@@ -60,7 +60,7 @@
                     }
                 }
                 console.log("解绑参数----------", deskIdObj)
-                util.interface_post(url, deskIdObj).then(res => {
+                util.interface_post(url, deskIdObj,this.$parent.globalData.StoreId).then(res => {
                     console.log(res);
                     if (res.errCode === 0) {
                         wx.showToast({
@@ -81,7 +81,7 @@
         };
         _loadRoomList() {
             let url = `${this.$parent.globalData.commonUrl}/api/loadDesks?tk=${this.$parent.globalData.tk}`;
-            util.interface_get(url).then(res => {
+            util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
                 console.log(res);
                 if (res.errCode === 0) {
                     this.roomList = res.desks.filter(room => {

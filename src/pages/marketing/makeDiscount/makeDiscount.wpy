@@ -208,9 +208,7 @@ export default class makeDiscount extends wepy.page {
       //金额
       var number = Number(this.discountNum); //数量
       wx.request({
-        url: `${this.$parent.globalData.commonUrl}/api/createCoupon?tk=${
-          this.$parent.globalData.tk
-        }`,
+        url: `${this.$parent.globalData.commonUrl}/api/createCoupon?tk=${this.$parent.globalData.tk}&storeId=${this.$parent.globalData.StoreId}`,
         data: {
           type: discountTypeIndex,
           content: this.goodsValue,

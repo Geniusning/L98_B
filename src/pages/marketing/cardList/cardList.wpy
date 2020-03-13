@@ -7,52 +7,52 @@
           <checkbox-group @change="checkboxCoupon">
             <repeat for="{{cardList}}" key="index">
               <label data-test="{{item.content}}" class="checkbox">
-                <checkbox checked="{{item.checked}}" value="{{item.couponID}}"/>
-                 <cardListCom :item="item" ></cardListCom>
-                <!-- <view class="discountItem">
-                  <view class="discountItem-left">
-                    <text decode="{{true}}" space="{{true}}"  class="title" wx:if="{{item.type==0}}">({{item.theme}})--{{item.value+"元"}}</text>
-                    <text decode="{{true}}" space="{{true}}"  class="title" wx:elif="{{item.type==1}}">({{item.theme}})--{{item.content}}</text>
-                    <text decode="{{true}}" space="{{true}}"  class="title" wx:elif="{{item.type==2}}">({{item.theme}})--{{item.value+"折"}}</text>
-                    <text decode="{{true}}" space="{{true}}"  class="title" wx:elif="{{item.type==3}}">({{item.theme}})--{{item.content}}</text>
-                    <text decode="{{true}}" space="{{true}}"  class="title" wx:elif="{{item.type==4}}">({{item.theme}})--{{item.content}}</text>
-                    <text decode="{{true}}" space="{{true}}"  class="title" wx:elif="{{item.type==5}}">({{item.theme}})--{{item.content}}</text>
-                    <text decode="{{true}}" space="{{true}}"  class="title" wx:elif="{{item.type==6}}">({{item.theme}})--{{item.content}}</text>
-                    <view style="display:flex;justify-content:space-between;">
-                      <text class="limit">{{item.limit}}--</text>
-                      <text class="limit">剩余{{item.number}}张</text>
+                  <checkbox checked="{{item.checked}}" value="{{item.couponID}}"/>
+                   <cardListCom :item="item" ></cardListCom>
+                  <!-- <view class="discountItem">
+                    <view class="discountItem-left">
+                      <text decode="{{true}}" space="{{true}}"  class="title" wx:if="{{item.type==0}}">({{item.theme}})--{{item.value+"元"}}</text>
+                      <text decode="{{true}}" space="{{true}}"  class="title" wx:elif="{{item.type==1}}">({{item.theme}})--{{item.content}}</text>
+                      <text decode="{{true}}" space="{{true}}"  class="title" wx:elif="{{item.type==2}}">({{item.theme}})--{{item.value+"折"}}</text>
+                      <text decode="{{true}}" space="{{true}}"  class="title" wx:elif="{{item.type==3}}">({{item.theme}})--{{item.content}}</text>
+                      <text decode="{{true}}" space="{{true}}"  class="title" wx:elif="{{item.type==4}}">({{item.theme}})--{{item.content}}</text>
+                      <text decode="{{true}}" space="{{true}}"  class="title" wx:elif="{{item.type==5}}">({{item.theme}})--{{item.content}}</text>
+                      <text decode="{{true}}" space="{{true}}"  class="title" wx:elif="{{item.type==6}}">({{item.theme}})--{{item.content}}</text>
+                      <view style="display:flex;justify-content:space-between;">
+                        <text class="limit">{{item.limit}}--</text>
+                        <text class="limit">剩余{{item.number}}张</text>
+                      </view>
                     </view>
-                  </view>
-                  <view class="discountItem-right" wx:if="{{item.type==0}}">
-                    <text>现金券</text>
-                    <text>{{item.endTime}}</text>
-                  </view>
-                  <view class="discountItem-right" wx:if="{{item.type==1}}">
-                    <text>实物券</text>
-                     <text>{{item.endTime}}</text>
-                  </view>
-                  <view class="discountItem-right" wx:if="{{item.type==2}}">
-                    <text>折扣券</text>
-                    <text>{{item.endTime}}</text>
-                  </view>
-                  <view class="discountItem-right" wx:if="{{item.type==3}}">
-                    <text>兑换券</text>
-                    <text>{{item.endTime}}</text>
-                  </view>
-                  <view class="discountItem-right" wx:if="{{item.type==4}}">
-                    <text>满减券</text>
-                    <text>{{item.endTime}}</text>
-                  </view>
-                  <view class="discountItem-right" wx:if="{{item.type==5}}">
-                    <text>月卡券</text>
-                    <text>{{item.endTime}}</text>
-                  </view>
-                  <view class="discountItem-right" wx:if="{{item.type==6}}">
-                    <text>次卡券</text>
-                    <text>{{item.endTime}}</text>
-                  </view>
-                </view> -->
-              </label>
+                    <view class="discountItem-right" wx:if="{{item.type==0}}">
+                      <text>现金券</text>
+                      <text>{{item.endTime}}</text>
+                    </view>
+                    <view class="discountItem-right" wx:if="{{item.type==1}}">
+                      <text>实物券</text>
+                       <text>{{item.endTime}}</text>
+                    </view>
+                    <view class="discountItem-right" wx:if="{{item.type==2}}">
+                      <text>折扣券</text>
+                      <text>{{item.endTime}}</text>
+                    </view>
+                    <view class="discountItem-right" wx:if="{{item.type==3}}">
+                      <text>兑换券</text>
+                      <text>{{item.endTime}}</text>
+                    </view>
+                    <view class="discountItem-right" wx:if="{{item.type==4}}">
+                      <text>满减券</text>
+                      <text>{{item.endTime}}</text>
+                    </view>
+                    <view class="discountItem-right" wx:if="{{item.type==5}}">
+                      <text>月卡券</text>
+                      <text>{{item.endTime}}</text>
+                    </view>
+                    <view class="discountItem-right" wx:if="{{item.type==6}}">
+                      <text>次卡券</text>
+                      <text>{{item.endTime}}</text>
+                    </view>
+                  </view> -->
+                </label>
             </repeat>
           </checkbox-group>
         </scroll-view>
@@ -72,272 +72,263 @@
 </template>
 
 <script>
-import wepy from 'wepy';
-import util from '../../../utils/utils.js'
-import cardListCom from '../../../components/cardList'
-export default class cardList extends wepy.page {
-  config = {
-    navigationBarTitleText: '优惠券列表'
-  };
-  data = {
-    winHeight: "",
-    cardList: [],
-    cardIdList: [],
-    channelIndex: 0,
-    showDeleteBtn: false,
-    deleteIDs: {},
-    timeModel: 'instant',
-    date: '2018-08-20',
-    isTrue: true,
-    isFalse: false,
-    typeIndex: null,
-    isShowBtn: true
-  };
-  components = {
-    cardListCom:cardListCom
-  };
-  methods = {
-    // 确定优惠券
-    cardListBtn() {
-      if (
-        this.$parent.globalData.singleGameFirstPrize ||
-        this.$parent.globalData.singleGameSecondPrize ||
-        this.$parent.singleGameThirdPrize
-      ) {
+  import wepy from 'wepy';
+  import util from '../../../utils/utils.js'
+  import cardListCom from '../../../components/cardList'
+  export default class cardList extends wepy.page {
+    config = {
+      navigationBarTitleText: '优惠券列表'
+    };
+    data = {
+      winHeight: "",
+      cardList: [],
+      cardIdList: [],
+      channelIndex: 0,
+      showDeleteBtn: false,
+      deleteIDs: {},
+      timeModel: 'instant',
+      date: '2018-08-20',
+      isTrue: true,
+      isFalse: false,
+      typeIndex: null,
+      isShowBtn: true
+    };
+    components = {
+      cardListCom: cardListCom
+    };
+    methods = {
+      // 确定优惠券
+      cardListBtn() {
+        if (
+          this.$parent.globalData.singleGameFirstPrize ||
+          this.$parent.globalData.singleGameSecondPrize ||
+          this.$parent.singleGameThirdPrize
+        ) {
+          if (this.typeIndex == 'leagle') {
+            wx.redirectTo({
+              url: '/pages/marketing/friendBusiness/friendBusiness'
+            });
+          } else if (this.typeIndex == "recommend") {
+            wx.navigateBack({
+              delta: 1
+            });
+          } else if (this.typeIndex == 'CouponA' || this.typeIndex == 'CouponB') {
+            wx.navigateBack({
+              delta: 1
+            });
+          } else {
+            wx.navigateBack({
+              delta: 1
+            });
+          }
+        }
+      },
+      //删除优惠券
+      deleteDicount() {
+        let _this = this;
+        let data = {
+          couponIDs: _this.cardIdList
+        }
+        let url = `${this.$parent.globalData.commonUrl}/api/deleCoupons?tk=${_this.$parent.globalData.tk}`
+        console.log(_this.$parent.globalData.tk);
+        util.interface_post(url, data,).then(res=>{
+           console.log('是否删除成功：·······················', res);
+              _this.getCardList().then(res => {
+                console.log('删除后的优惠券列表', res);
+                wx.showToast({
+                  title: '删除成功',
+                  icon: 'success',
+                  duration: 2000
+                });
+                _this.cardList = res;
+                _this.$apply();
+              });
+            
+        })
+      },
+      // 返回上一页
+      back() {
         if (this.typeIndex == 'leagle') {
           wx.redirectTo({
             url: '/pages/marketing/friendBusiness/friendBusiness'
           });
-        } else if (this.typeIndex == "recommend") {
-          wx.navigateBack({
-             delta: 1
-          });
-        } else if (this.typeIndex == 'CouponA' || this.typeIndex == 'CouponB') {
-          wx.navigateBack({
-           delta: 1
-          });
         } else {
           wx.navigateBack({
-           delta: 1
+            url: '/pages/marketing/game/game'
           });
         }
-      }
-    },
-    //删除优惠券
-    deleteDicount() {
-      let _this = this;
-      console.log(_this.$parent.globalData.tk);
-      wx.request({
-        url: `${_this.$parent.globalData.commonUrl}/api/deleCoupons?tk=${_this.$parent.globalData.tk}`,
-        header: {
-          'content-type': 'application/json'
-        },
-        method: 'POST',
-        data: {
-          couponIDs: _this.cardIdList
-        },
-        success: function (res) {
-          console.log('是否删除成功：·······················', res);
-          if (res.statusCode === 200) {
-            _this.getCardList().then(res => {
-              console.log('删除后的优惠券列表', res);
-              wx.showToast({
-                title: '删除成功',
-                icon: 'success',
-                duration: 2000
-              });
-              _this.cardList = res;
-              _this.$apply();
+      },
+      // 优惠券选择
+      checkboxCoupon(e) {
+        let selectedCouponId = e.detail.value;
+        console.log(selectedCouponId);
+        if (!this.showDeleteBtn) {
+          //不是删除优惠券操作
+          var temparr = [];
+          if (selectedCouponId.length > 1) {
+            wx.showToast({
+              title: '最多选择一条',
+              icon: 'none',
+              duration: 1500
             });
+            //前两个选中的设置true,第三个设置false,限制选2个
+            temparr = this.cardList.map(item => {
+              if (item['couponID'] == selectedCouponId[1]) {
+                item['checked'] = this.isFalse;
+              }
+              if (item['couponID'] == selectedCouponId[0]) {
+                item['checked'] = this.isTrue;
+              }
+              return item;
+            });
+            this.setData({
+              cardList: temparr
+            });
+            //删除第二个选中的id
+            selectedCouponId.splice(1, 1);
+          } else {
+            let tempCoupon = this.cardList.filter(item => {
+              return item['couponID'] == selectedCouponId[0];
+            });
+            if (this.typeIndex == 1) { //一等奖
+              this.$parent.globalData.singleGameFirstPrize = tempCoupon[0];
+            } else if (this.typeIndex == 2) { //二等奖
+              this.$parent.globalData.singleGameSecondPrize = tempCoupon[0];
+            } else if (this.typeIndex == 'leagle') {
+              this.$parent.globalData.leaglePrize = tempCoupon[0];
+            } else if (this.typeIndex == 'recommend') {
+              this.$parent.globalData.recommendPrize = tempCoupon[0];
+            } else if (this.typeIndex == 'CouponA') {
+              this.$parent.globalData.CouponA = tempCoupon[0];
+            } else if (this.typeIndex == 'CouponB') {
+              this.$parent.globalData.CouponB = tempCoupon[0];
+            } else { //二等奖
+              this.$parent.globalData.singleGameThirdPrize = tempCoupon[0];
+            }
           }
-        }
-      });
-    },
-    // 返回上一页
-    back() {
-      if (this.typeIndex == 'leagle') {
-        wx.redirectTo({
-          url: '/pages/marketing/friendBusiness/friendBusiness'
-        });
-      } else {
-        wx.navigateBack({
-          url: '/pages/marketing/game/game'
-        });
-      }
-    },
-    // 优惠券选择
-    checkboxCoupon(e) {
-      let selectedCouponId = e.detail.value;
-      console.log(selectedCouponId);
-      if (!this.showDeleteBtn) {
-        //不是删除优惠券操作
-        var temparr = [];
-        if (selectedCouponId.length > 1) {
-          wx.showToast({
-            title: '最多选择一条',
-            icon: 'none',
-            duration: 1500
-          });
-          //前两个选中的设置true,第三个设置false,限制选2个
-          temparr = this.cardList.map(item => {
-            if (item['couponID'] == selectedCouponId[1]) {
-              item['checked'] = this.isFalse;
-            }
-            if (item['couponID'] == selectedCouponId[0]) {
-              item['checked'] = this.isTrue;
-            }
-            return item;
-          });
-          this.setData({
-            cardList: temparr
-          });
-          //删除第二个选中的id
-          selectedCouponId.splice(1, 1);
+          this.cardIdList = selectedCouponId;
         } else {
-          let tempCoupon = this.cardList.filter(item => {
-            return item['couponID'] == selectedCouponId[0];
-          });
-          if (this.typeIndex == 1) { //一等奖
-            this.$parent.globalData.singleGameFirstPrize = tempCoupon[0];
-          } else if (this.typeIndex == 2) { //二等奖
-            this.$parent.globalData.singleGameSecondPrize = tempCoupon[0];
-          } else if (this.typeIndex == 'leagle') {
-            this.$parent.globalData.leaglePrize = tempCoupon[0];
-          } else if (this.typeIndex == 'recommend') {
-            this.$parent.globalData.recommendPrize = tempCoupon[0];
-          } else if (this.typeIndex == 'CouponA') {
-            this.$parent.globalData.CouponA = tempCoupon[0];
-          } else if (this.typeIndex == 'CouponB') {
-            this.$parent.globalData.CouponB = tempCoupon[0];
-          } else { //二等奖
-            this.$parent.globalData.singleGameThirdPrize = tempCoupon[0];
-          }
+          //删除优惠券操作
+          this.cardIdList = selectedCouponId;
         }
-        this.cardIdList = selectedCouponId;
-      } else {
-        //删除优惠券操作
-        this.cardIdList = selectedCouponId;
       }
-    }
-  };
-  getCardList() {
-    return new Promise((resolve, reject) => {
+    };
+    getCardList() {
+      return new Promise((resolve, reject) => {
         wx.showLoading({
-            title: '加载中',
-            mask: true
-      })
-      wx.request({
-          url: `${this.$parent.globalData.commonUrl}/api/loadCoupons?tk=${this.$parent.globalData.tk}`,
-          success: function (res) {
+          title: '加载中',
+          mask: true
+        })
+        wx.request({
+          url: `${this.$parent.globalData.commonUrl}/api/loadCoupons?tk=${this.$parent.globalData.tk}&storeId=${this.$parent.globalData.StoreId}`,
+          success: function(res) {
             if (res.statusCode === 200) {
               wx.hideLoading()
               resolve(res.data);
             }
           }
         });
-    });
-  }
-  async onLoad(options) {
-    console.log('onload-options``````````````````````````````````````````', options);
-    this.typeIndex = options.singletype;
-    switch (options.type) {
-      case 'showList':
-        this.isShowBtn = false;
-        this.showDeleteBtn = true;
-        break;
-      case 'leagle':
-        this.typeIndex = 'leagle';
-        break;
-      case 'recommend':
-        this.typeIndex = 'recommend';
-        break;
-      default:
-        break;
+      });
     }
-    // if (options.type == 'showList') {
-    //   this.isShowBtn = false;
-    //   this.showDeleteBtn = true;
-    // }
-    // if (options.type == 'leagle') {
-    //   this.typeIndex = 'leagle';
-    // }
-    this.cardList = await this.getCardList();
-    console.log("cardList-------------",this.cardList)
-    this.$apply();
-
+    async onLoad(options) {
+      console.log('onload-options``````````````````````````````````````````', options);
+      this.typeIndex = options.singletype;
+      switch (options.type) {
+        case 'showList':
+          this.isShowBtn = false;
+          this.showDeleteBtn = true;
+          break;
+        case 'leagle':
+          this.typeIndex = 'leagle';
+          break;
+        case 'recommend':
+          this.typeIndex = 'recommend';
+          break;
+        default:
+          break;
+      }
+      // if (options.type == 'showList') {
+      //   this.isShowBtn = false;
+      //   this.showDeleteBtn = true;
+      // }
+      // if (options.type == 'leagle') {
+      //   this.typeIndex = 'leagle';
+      // }
+      this.cardList = await this.getCardList();
+      console.log("cardList-------------", this.cardList)
+      this.$apply();
+    }
+    onShow() {
+      this.winHeight = util.getScrollHeight(220);
+    }
+    // Other properties
   }
-  onShow() {
-    this.winHeight = util.getScrollHeight(220);
-  }
-  // Other properties
-}
 </script>
 
 <style lang="less">
-.cardList-container {
-  background-color: #fff;
-  padding: 10rpx 20rpx;
-  height: 100%;
-
-}
-.noCard{
-  margin: 50% 0;
-  width: 100%;
-  text-align: center;
-  color: #ccc;
-  font-size: 16px
-}
-.stepTwo-wrapper {
-  background: #fff;
-  padding: 10rpx;
-}
-.scrollView {
-  margin-top: 30rpx;
-}
-.checkbox {
-  display: flex;
-  margin-bottom: 20rpx;
-}
-.discountItem {
-  /* width: 400rpx; */
-  flex: 1;
-  height: 150rpx;
-  padding: 0 20rpx;
-  border: 1px solid #ccc;
-  display: flex;
-  justify-content: space-between;
-}
-.discountItem-left {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-}
-.discountItem-left .title {
-  font-size: 38rpx;
-  color: #ffba00;
-}
-.discountItem-left .time {
-  font-size: 32rpx;
-  color: #333;
-}
-.discountItem-right {
-  text-align:center;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-}
-.btn-wrapper {
-  margin-top: 30rpx;
-}
-.btn-wrapper button {
-  background-color: #fff;
-}
-.btnBox {
-  display: flex;
-  justify-content: space-between;
-  height: 90rpx;
-}
-.cardListBtn {
-  width: 300rpx;
-}
+  .cardList-container {
+    background-color: #fff;
+    padding: 10rpx 20rpx;
+    height: 100%;
+  }
+  .noCard {
+    margin: 50% 0;
+    width: 100%;
+    text-align: center;
+    color: #ccc;
+    font-size: 16px
+  }
+  .stepTwo-wrapper {
+    background: #fff;
+    padding: 10rpx;
+  }
+  .scrollView {
+    margin-top: 30rpx;
+  }
+  .checkbox {
+    display: flex;
+    margin-bottom: 20rpx;
+  }
+  .discountItem {
+    /* width: 400rpx; */
+    flex: 1;
+    height: 150rpx;
+    padding: 0 20rpx;
+    border: 1px solid #ccc;
+    display: flex;
+    justify-content: space-between;
+  }
+  .discountItem-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+  }
+  .discountItem-left .title {
+    font-size: 38rpx;
+    color: #ffba00;
+  }
+  .discountItem-left .time {
+    font-size: 32rpx;
+    color: #333;
+  }
+  .discountItem-right {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+  }
+  .btn-wrapper {
+    margin-top: 30rpx;
+  }
+  .btn-wrapper button {
+    background-color: #fff;
+  }
+  .btnBox {
+    display: flex;
+    justify-content: space-between;
+    height: 90rpx;
+  }
+  .cardListBtn {
+    width: 300rpx;
+  }
 </style>

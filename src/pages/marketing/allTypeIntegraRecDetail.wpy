@@ -84,8 +84,6 @@
       this.recordData = []
       this.totalIntegral = 0
       this.totalNumbers = 0
-      console.log("dataType---------", dataType)
-      console.log("this.allTypesData", this.allTypesData)
       if (dataType === "全部" || dataType === "all") {
         this.recordData = this.selectAllData
         this.recordData.forEach(item => {
@@ -100,7 +98,7 @@
         if (pageType === "exchangeGift") {
           if (item.name === dataType) {
             if (typeof (item.milliTime) === "number") {
-              item.milliTime = util.timestampToTime(item.milliTime).slice(11)
+              item.milliTime = util.timestampToTime(item.milliTime).slice(10)
             }
             this.totalIntegral += item.integral
             // this.totalNumbers += 1
@@ -109,7 +107,7 @@
         } else if (pageType === "sys") {
           if (item.integralType === dataType) {
             if (typeof (item.milliTime) === "number") {
-              item.milliTime = util.timestampToTime(item.milliTime).slice(11)
+              item.milliTime = util.timestampToTime(item.milliTime).slice(10)
             }
             this.totalIntegral += item.integral
             // this.totalNumbers += 1
@@ -118,7 +116,7 @@
         } else if (pageType === "givenGift") {
           if (item.name === dataType) {
             if (typeof (item.milliTime) === "number") {
-              item.milliTime = util.timestampToTime(item.milliTime).slice(11)
+              item.milliTime = util.timestampToTime(item.milliTime).slice(10)
             }
             this.totalIntegral += item.integral
             // this.totalNumbers += 1
@@ -130,12 +128,12 @@
     }
     _handleItem(tempTitleArr, item, type) {
       if ((item.integralType === "activity" || item.integralType === "checkIn" || item.integralType === "game" || item.integralType === "shoperGiftByMkFri") && type === "sys") { //系统赠送
-        item.milliTime = util.timestampToTime(item.milliTime).slice(11)
+        item.milliTime = util.timestampToTime(item.milliTime).slice(10)
         item["name"] = this._judgeSysIntegralName(item.integralType)
         this.totalIntegral += item.integral
         this.recordData.push(item)
       } else if ((item.integralType == "vipCard" || item.integralType === "goodsGift" || item.integralType === "goodsRecommend" || item.integralType === "convertRecommend" || item.integralType === "convertGift" || item.integralType === "renewDice") && type === "exchangeGift") { //消耗兑换
-        item.milliTime = util.timestampToTime(item.milliTime).slice(11)
+        item.milliTime = util.timestampToTime(item.milliTime).slice(10)
         if (item.integralType == "renewDice") {
           item["name"] = "游戏重摇消耗"
         }
@@ -145,7 +143,7 @@
         this.totalIntegral += item.integral
         this.recordData.push(item)
       } else if ((item.integralType === "virtualGift") && type === "givenGift") { //用户转增赠送
-        item.milliTime = util.timestampToTime(item.milliTime).slice(11)
+        item.milliTime = util.timestampToTime(item.milliTime).slice(10)
         this.totalIntegral += item.integral
         this.recordData.push(item)
       }
@@ -187,7 +185,7 @@
         mask: true
       })
       var tempTitleArr = []
-      util.interface_get(url).then(res => {
+      util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
         console.log("res----------", res)
         if (res.errCode === 0) {
           wx.hideLoading()

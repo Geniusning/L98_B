@@ -30,7 +30,9 @@
         <scroll-view scroll-with-animation="true" bindscrolltoupper="refresh" scroll-y="true" class="scoll-h" style="height:{{winHeight}}rpx">
           <view wx:if='{{!waitCheckOutList.length}}' class='noContent'>暂无数据</view>
           <repeat for='{{waitCheckOutList}}' key="index" index="index" item="item">
-            <image src='../../images/discount_bg.png' class='apply_check_bg'></image>
+            <image wx:if="{{item.userCoupon.coupon.type == 5}}" src='../../images/discount_vipm_bg.png' class='apply_check_bg'></image>
+            <image wx:elif="{{item.userCoupon.coupon.type == 6}}" src='../../images/discount_vipt_bg.png' class='apply_check_bg'></image>
+            <image wx:else src='../../images/discount_bg.png' class='apply_check_bg'></image>
             <view class='check_people_handleInfo'>
               <view class='avatar_and_name'>
                 <image src="{{item.userInfo.userHeadURI}}" class='avatar'></image>
@@ -43,7 +45,7 @@
               <view class='apply_check_left'>
                 <text class='discount_type'>{{item.userCoupon.coupon.typeName}}</text>
               </view>
-              <view class='apply_check_center'>
+              <view class="apply_check_center {{item.userCoupon.coupon.type==5 || item.userCoupon.coupon.type==6  ?'vipFont':''}}">
                 <view class='check_center_top'>
                   <view class='check_theme'>{{item.userCoupon.coupon.theme?item.userCoupon.coupon.theme:"梨花浅唱新人包"}}</view>
                   <view wx:if="{{item.userCoupon.coupon.senderName}}" class='receiver_info clearfix'>
@@ -71,7 +73,7 @@
           </repeat>
         </scroll-view>
       </swiper-item>
-      <!-- 记录统计1 -->
+      <!-- 记录统计 -->
       <swiper-item class="tab-content">
         <view class='select-wrapper'>
           <view class='select-box'>
@@ -100,7 +102,9 @@
           <view class='checkList'>
             <view wx:if='{{!CheckOutListRecord.length}}' class='noContent'>暂无数据</view>
             <repeat for="{{CheckOutListRecord}}" item="item">
-              <image src='../../images/songli_discount_bg.png' class='apply_check_bg'></image>
+              <image wx:if="{{item.UserCoupon.coupon.type == 5}}" src='../../images/discount_vipm_bg.png' class='apply_check_bg'></image>
+              <image wx:elif="{{item.UserCoupon.coupon.type == 6}}" src='../../images/discount_vipt_bg.png' class='apply_check_bg'></image>
+              <image wx:else src='../../images/songli_discount_bg.png' class='apply_check_bg'></image>
               <view class='check_people_handleInfo'>
                 <view class='avatar_and_name'>
                   <image src="{{item.CouponUser.userHeadURI}}" class='avatar'></image>
@@ -113,7 +117,7 @@
                 <view class='apply_check_left'>
                   <text class='discount_type'>{{item.UserCoupon.coupon.typeName}}</text>
                 </view>
-                <view class='apply_check_center'>
+                <view class="apply_check_center {{item.UserCoupon.coupon.type==5 || item.UserCoupon.coupon.type==6  ?'vipFont':''}}" >
                   <view class='check_center_top'>
                     <view class='check_theme'>{{item.UserCoupon.coupon.theme?item.UserCoupon.coupon.theme:"梨花浅唱新人包"}}</view>
                     <view wx:if="{{item.UserCoupon.coupon.senderName}}" class='receiver_info clearfix'>
@@ -124,7 +128,7 @@
                     <view class='discount_code'>{{item.UserCoupon.coupon.codeNum}}</view>
                   </view>
                   <view class='check_center_middle'>
-                    <view class='discount_content'>{{item.UserCoupon.coupon.content}}</view>
+                    <view class='discount_content'>{{item.UserCoupon.coupon.content}}<text>(会员特权)</text></view>
                   </view>
                   <view class='check_center_bottom'>
                     <!-- <view class='integral_box'></view> -->
@@ -145,8 +149,8 @@
     </swiper>
   </view>
   <!-- <view wx:else class='noPermission'>
-              <text class='text'>暂无权限</text>
-            </view> -->
+                  <text class='text'>暂无权限</text>
+                </view> -->
 </template>
 
 <script>
@@ -179,41 +183,37 @@
     };
     _loadChenkedCouponList() {
       //拉取核销列表
-      wx.request({
-        url: `${this.$parent.globalData.commonUrl}/api/loadLaunchSetOffUserCoupon?tk=${this.$parent.globalData.tk}`,
-        success: res => {
-          console.log('拉取待核销列表----------------------------------', res)
-          if (res.data.launchSetOffUserCoupons.length === 0) {
-            this.waitCheckOutList = [];
-            return false;
-          }
-          this.waitCheckOutList = res.data.launchSetOffUserCoupons;
-          // this.waitCheckOutList[0].launchTime = util.timestampToTime(this.waitCheckOutList[0].launchTime)
-          this.waitCheckOutList.forEach(item => {
-            item.launchTime = util.timestampToTime(item.launchTime)
-            let tempItem = item.userCoupon.coupon;
+      let url = `${this.$parent.globalData.commonUrl}/api/loadLaunchSetOffUserCoupon?tk=${this.$parent.globalData.tk}`
+      util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
+        console.log("待核销-------",res)
+        if (res.launchSetOffUserCoupons.length === 0) {
+          this.waitCheckOutList = [];
+          return false;
+        }
+        this.waitCheckOutList = res.launchSetOffUserCoupons;
+        // this.waitCheckOutList[0].launchTime = util.timestampToTime(this.waitCheckOutList[0].launchTime)
+        this.waitCheckOutList.forEach(item => {
+          item.launchTime = util.timestampToTime(item.launchTime)
+          let tempItem = item.userCoupon.coupon;
+          this.handleCard(tempItem)
+        })
+        this.$apply();
+      })
+      let recordUrl = `${this.$parent.globalData.commonUrl}/api/loadSetOffRecord?tk=${this.$parent.globalData.tk}`
+      //拉取核销记录
+      util.interface_get(recordUrl, this.$parent.globalData.StoreId).then(res => {
+        console.log('已核销记录--------------------------------', res)
+        if (res.loadSetOffRecord.length === 0) {
+          return false;
+        }
+        if (res.errCode === 0) {
+          this.CheckOutListRecord = res.loadSetOffRecord;
+          this.CheckOutListRecord.forEach(item => {
+            let tempItem = item.UserCoupon.coupon;
+            item.OperationTime = util.timestampToTime(item.OperationTime);
             this.handleCard(tempItem)
           })
           this.$apply();
-        }
-      })
-      //拉取核销记录
-      wx.request({
-        url: `${this.$parent.globalData.commonUrl}/api/loadSetOffRecord?tk=${this.$parent.globalData.tk}`,
-        success: res => {
-          console.log('已核销记录--------------------------------', res)
-          if (res.data.loadSetOffRecord.length === 0) {
-            return false;
-          }
-          if (res.data.errCode === 0) {
-            this.CheckOutListRecord = res.data.loadSetOffRecord;
-            this.CheckOutListRecord.forEach(item => {
-              let tempItem = item.UserCoupon.coupon;
-              item.OperationTime = util.timestampToTime(item.OperationTime);
-              this.handleCard(tempItem)
-            })
-            this.$apply();
-          }
         }
       })
     };
@@ -225,30 +225,8 @@
         util.prefixZero(tempItem.type, 1) + "-" +
         util.prefixZero(tempItem.batch, 3) + "-" +
         util.prefixZero(tempItem.acquireNum, 7)
-      switch (tempItem.type) {
-        case 0:
-          tempItem.content = tempItem.value + "元代金券";
-          tempItem['typeName'] = '现金券';
-          break;
-        case 1:
-          tempItem.content = tempItem.content;
-          tempItem['typeName'] = '实物券';
-          break;
-        case 2:
-          tempItem.content = tempItem.value + "折";
-          tempItem['typeName'] = '折扣券';
-          break;
-        case 3:
-          tempItem.content = tempItem.content;
-          tempItem['typeName'] = '兑换券';
-          break;
-        case 4:
-          tempItem.content = tempItem.content;
-          tempItem['typeName'] = '满减券';
-          break;
-        default:
-          break;
-      }
+      tempItem["typeName"] = util.returnDiscountType(tempItem.type)
+      tempItem.content = util.returnDiscountContentNoType(tempItem)
     };
     methods = {
       //下拉刷新
@@ -291,28 +269,26 @@
         let _this = this;
         console.log(Boolean(flag))
         var text = flag === "true" ? "核销成功" : "拒绝成功"
-        wx.request({
-          url: `${this.$parent.globalData.commonUrl}/api/setOffUserCoupon?tk=${this.$parent.globalData.tk}&userCouponID=${userCouponID}&userID=${userID}&agree=${flag}&setOffWay=2`,
-          success: res => {
-            console.log('核销成功-----------------------------', res)
-            if (res.data.errCode === 0) {
-              wx.showToast({
-                title: text,
-                icon: 'none',
-                duration: 2000
-              })
-              //刷新当前页面的数据
-              if (getCurrentPages().length != 0) {
-                console.log('准备重新核销')
-                getCurrentPages()[getCurrentPages().length - 1].onShow()
-              }
-            } else {
-              wx.showToast({
-                title: '核销失败',
-                icon: 'success',
-                duration: 2000
-              })
+        let url = `${this.$parent.globalData.commonUrl}/api/setOffUserCoupon?tk=${this.$parent.globalData.tk}&userCouponID=${userCouponID}&userID=${userID}&agree=${flag}&setOffWay=2`
+        util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
+          console.log('核销成功-----------------------------', res)
+          if (res.errCode === 0) {
+            wx.showToast({
+              title: text,
+              icon: 'none',
+              duration: 2000
+            })
+            //刷新当前页面的数据
+            if (getCurrentPages().length != 0) {
+              console.log('准备重新核销')
+              getCurrentPages()[getCurrentPages().length - 1].onShow()
             }
+          } else {
+            wx.showToast({
+              title: '核销失败',
+              icon: 'success',
+              duration: 2000
+            })
           }
         })
         this.$apply()
@@ -348,24 +324,22 @@
     };
     //下拉刷新
     onPullDownRefresh() {
-      wx.request({
-        url: `${this.$parent.globalData.commonUrl}/api/loadLaunchSetOffUserCoupon?tk=${this.$parent.globalData.tk}`,
-        success: res => {
-          console.log('拉取待核销列表----------------------------------', res)
-          if (res.data.launchSetOffUserCoupons.length === 0) {
-            this.waitCheckOutList = [];
-            return false;
-          }
-          wx.stopPullDownRefresh()
-          this.waitCheckOutList = res.data.launchSetOffUserCoupons;
-          // this.waitCheckOutList[0].launchTime = util.timestampToTime(this.waitCheckOutList[0].launchTime)
-          this.waitCheckOutList.forEach(item => {
-            item.launchTime = util.timestampToTime(item.launchTime)
-            let tempItem = item.userCoupon.coupon;
-            this.handleCard(tempItem)
-          })
-          this.$apply();
+      let url = `${this.$parent.globalData.commonUrl}/api/loadLaunchSetOffUserCoupon?tk=${this.$parent.globalData.tk}`
+      util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
+        console.log('拉取待核销列表----------------------------------', res)
+        if (res.launchSetOffUserCoupons.length === 0) {
+          this.waitCheckOutList = [];
+          return false;
         }
+        wx.stopPullDownRefresh()
+        this.waitCheckOutList = res.data.launchSetOffUserCoupons;
+        // this.waitCheckOutList[0].launchTime = util.timestampToTime(this.waitCheckOutList[0].launchTime)
+        this.waitCheckOutList.forEach(item => {
+          item.launchTime = util.timestampToTime(item.launchTime)
+          let tempItem = item.userCoupon.coupon;
+          this.handleCard(tempItem)
+        })
+        this.$apply();
       })
     }
     onLoad() {
@@ -399,8 +373,7 @@
     overflow: hidden;
     font-size: 26rpx;
     .top-wrapper {
-      position: relative;
-      // height: 200rpx;
+      position: relative; // height: 200rpx;
       .home_bg {
         width: 100%;
         height: 200rpx;
@@ -609,6 +582,9 @@
           }
         }
       }
+      .vipFont{
+        color: #FDDC69;
+      }
       .apply_check_right {
         padding: 26rpx 10rpx;
         box-sizing: border-box;
@@ -759,6 +735,9 @@
         }
       }
     }
+    .vipFont{
+        color: #FDDC69;
+      }
     .apply_check_right {
       padding: 6rpx 30rpx;
       box-sizing: border-box;
@@ -785,8 +764,8 @@
     font-size: 28rpx;
     display: flex;
     /*    position: absolute;
-                        z-index: 1;
-                        top: 0; */
+                            z-index: 1;
+                            top: 0; */
   }
   .select-wrapper .line {
     height: 1rpx;

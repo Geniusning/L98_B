@@ -150,6 +150,7 @@
       dataStat: {},
       city: '',
       StoreName: "",
+      StoreId:"",
     };
     constructor() {
       super();

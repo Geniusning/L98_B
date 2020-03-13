@@ -52,12 +52,12 @@
         })
         let storeUrl = `${this.$parent.globalData.commonUrl}/api/loadShopList?tk=${this.$parent.globalData.tk}&phone=${phone}`
         let staffUrl = `${this.$parent.globalData.commonUrl}/api/loadAllStaff?tk=${this.$parent.globalData.tk}&phone=${phone}`
-        util.interface_get(storeUrl).then(res => {
+        util.interface_get(storeUrl,this.$parent.globalData.StoreId).then(res => {
           console.log("店铺列表信息-----", res)
           this.shopList = res
           this.$apply()
         })
-        util.interface_get(staffUrl).then(res => {
+        util.interface_get(staffUrl,this.$parent.globalData.StoreId).then(res => {
           console.log("员工列表---res", res)
           let staff = res.staff;
           staff.forEach(item => {
@@ -85,7 +85,7 @@
           success(res) {
             if (res.confirm) {
               let url = `${_this.$parent.globalData.commonUrl}/api/deleteStaff?tk=${_this.$parent.globalData.tk}&phone=${phoneId}&parent=${_this.$parent.globalData.userInfo.phone}&number=${number}`
-              util.interface_get(url).then(res => {
+              util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
                 if (res.errCode === 0) {
                   wx.showToast({
                     title: '删除成功',
@@ -115,11 +115,12 @@
       },
       intoShop(port, storeId, storeName) {
         this.$parent.globalData.StoreName = storeName
+        this.$parent.globalData.StoreId = storeId
         let setGrpcPortUrl = `${this.$parent.globalData.commonUrl}/api/setGrpcPort?tk=${this.$parent.globalData.tk}&port=${port}&storeId=${storeId}`;
         let storeSettingUrl = `${this.$parent.globalData.commonUrl}/api/loadStoreSetting?tk=${this.$parent.globalData.tk}`;
-        util.interface_get(setGrpcPortUrl).then(res => {
+        util.interface_get(setGrpcPortUrl,this.$parent.globalData.StoreId).then(res => {
           setTimeout(() => {
-            util.interface_get(storeSettingUrl).then(res => {
+            util.interface_get(storeSettingUrl,this.$parent.globalData.StoreId).then(res => {
               this.$parent.globalData.shopInfo = res;
               console.log("店铺信息---------", this.$parent.globalData)
               wx.switchTab({
@@ -128,35 +129,25 @@
             })
           }, 500);
         })
-        // util.interface_get(storeSettingUrl).then(res => {
-        //   this.$parent.globalData.shopInfo = res;
-        //   console.log("店铺信息---------", this.$parent.globalData)
-        //   wx.switchTab({
-        //     url: '/pages/member/member'
-        //   })
-        // })
+      
       }
     };
     _loadStaffs() {
       let _this = this;
-      wx.request({
-        url: `${this.$parent.globalData.commonUrl}/api/loadAllStaff?tk=${this.$parent.globalData.tk}&phone=${this.$parent.globalData.userInfo.phone}`,
-        success: res => {
-          if (res.data.errCode === 0) {
-            let staff = res.data.staff;
+      let url = `${this.$parent.globalData.commonUrl}/api/loadAllStaff?tk=${this.$parent.globalData.tk}&phone=${this.$parent.globalData.userInfo.phone}`
+      util.interface_get(url,this.$parent.globalData.StoreId).then(res=>{
+         let staff = res.staff;
             staff.forEach(item => {
               item.role_cn = util._judgeRole(item.role)
             })
             _this.staffList = staff.sort(util.sortByKey("number"));
             console.log("员工列表", _this.staffList)
             _this.$apply();
-          }
-        }
       })
     };
     _loadShopList() {
       let url = `${this.$parent.globalData.commonUrl}/api/loadShopList?tk=${this.$parent.globalData.tk}&phone=${this.$parent.globalData.userInfo.phone}`
-      util.interface_get(url).then(res => {
+      util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
         console.log("店铺列表信息-----", res)
         this.shopList = res
         this.$apply()

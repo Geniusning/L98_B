@@ -125,7 +125,7 @@
     };
     _loadUnConvertItemDetail(date,couponOriginType) {
       let url = `${this.$parent.globalData.commonUrl}/api/loadUnconvertCoupon?tk=${this.$parent.globalData.tk}&date=${date}&couponOriginType=${couponOriginType}`
-      util.interface_get(url).then(res => {
+      util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
         console.log("data----", res)
         if (res.errCode === 0) {
           this.allTypesData = res.unConverCoupons.sort(util.sortByKey("time"))

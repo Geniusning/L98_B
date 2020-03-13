@@ -245,7 +245,7 @@
     //访客列表
     _getVisitorRecord(date) {
       let url = `${this.$parent.globalData.commonUrl}/api/loadDayVisitSysUser?tk=${this.$parent.globalData.tk}&Date=${date}`
-      util.interface_get(url).then(res => {
+      util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
         console.log("loadDayVisitSysUser--------", res)
         if (res.errCode == 0) {
           this.visitorList = res.users
@@ -258,7 +258,7 @@
     //店内上线
     _getOnlineVisitor(date, deskID) {
       let url = `${this.$parent.globalData.commonUrl}/api/loadDeskUser?tk=${this.$parent.globalData.tk}&dayStr=${date}&deskID=${deskID}`
-      util.interface_get(url).then(res => {
+      util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
         console.log("loadDeskUser---------", res)
         if (res.errCode == 0) {
           this.onLineDeskList = res.deskUsers;
@@ -272,7 +272,7 @@
     _getTuoKeRankList(startDay, endDay) {
       let _this = this;
       let url = `${this.$parent.globalData.commonUrl}/api/loadClerkDayClient?tk=${this.$parent.globalData.tk}&startDay=${startDay}&endDay=${endDay}&phone=${this.paramPhone}`
-      util.interface_get(url).then(res => {
+      util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
         console.log("loadClerkDayClient-----------", res)
         if (res.errCode == 0) {
           this.isLoadend = false;
@@ -294,7 +294,7 @@
     //注册人数详情
     _getRegisterUserInfo(date){
        let url = `${this.$parent.globalData.commonUrl}/api/loadDayRegister?tk=${this.$parent.globalData.tk}&Date=${date}`
-      util.interface_get(url).then(res => {
+      util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
         console.log("loadDayRegister--------", res)
         if (res.errCode == 0) {
           this.visitorList = res.users
@@ -307,7 +307,7 @@
     //店外上线用户详情
     _loadDayOutDoorUsers(date){
        let url = `${this.$parent.globalData.commonUrl}/api/loadDayOutDoorUsers?tk=${this.$parent.globalData.tk}&date=${date}`
-      util.interface_get(url).then(res => {
+      util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
         console.log("loadDayOutDoorUsers--------", res)
         if (res.errCode == 0) {
           this.visitorList = res.users

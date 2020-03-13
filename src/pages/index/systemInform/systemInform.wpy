@@ -82,7 +82,7 @@
     };
     _getSystemInfoList() {
       var url = `${this.$parent.globalData.commonUrl}/api/loadReleaseActivityDayStat?startDay=${this.startDate}&endDay=${this.endDate}&tk=${this.$parent.globalData.tk}`
-      util.interface_get(url).then(res => {
+      util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
         console.log("系统通知data-----------", res)
         this.sysInformList = res.activityDayStat.map(item => {
           item.date = util.timestampToTime(item.date).slice(0, 10);

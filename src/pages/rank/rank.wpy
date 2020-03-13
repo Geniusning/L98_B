@@ -139,7 +139,7 @@
     //拓客
     _getTuoKeRankList() {
       let url = `${this.$parent.globalData.commonUrl}/api/loadClerkClientRank?tk=${this.$parent.globalData.tk}&startDay=${this.startDay}&endDay=${this.endDay}`;
-      util.interface_get(url).then(res => {
+      util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
         console.log("拓------", res);
         if (res.errCode === 0) {
           this.tuoKeClientList = this._handleTuoKeClientList(res.interface)
@@ -150,7 +150,7 @@
     //分享
     _getShareRankList() {
       let url = `${this.$parent.globalData.commonUrl}/api/loadClerkShareFriAndLineRank?tk=${this.$parent.globalData.tk}&startDate=${this.startDay}&endDate=${this.endDay}&dataType=${this.pageType}`;
-      util.interface_get(url).then(res => {
+      util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
         console.log("-------", res);
         if (res.errCode === 0) {
           this.sharetList = this._handleTuoKeClientList(res.interface)

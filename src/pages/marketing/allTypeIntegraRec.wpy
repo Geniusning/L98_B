@@ -122,7 +122,7 @@
       }
     }
     _getIntrgralByDay(url) {
-      util.interface_get(url).then(res => {
+      util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
         console.log('res-------', res);
         if (this.pageType === 'sys') {//获得系统赠送积分
           this.recordData = res.sysSendInteDayStat.map(item => {
@@ -137,7 +137,7 @@
           //积分消耗兑换优惠券
           this.recordData = res.giftConvertStats.map(item => {
             item.date = util.timestampToTime(item.date).slice(0, 10);
-            item.totalData = item.dayGoodsConvert + item.dayRecommendConvert + item.dayVipConvert;
+            item.totalData = item.dayAmount;
             this.topTotal += item.totalData;
             return item;
           })

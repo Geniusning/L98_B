@@ -129,7 +129,7 @@
         console.log(e.detail.value)
         let formData = e.detail.value;
         wx.request({
-          url: `${this.$parent.globalData.commonUrl}/api/createRecommend?tk=${this.$parent.globalData.tk}`,
+          url: `${this.$parent.globalData.commonUrl}/api/createRecommend?tk=${this.$parent.globalData.tk}&storeId=${this.$parent.globalData.StoreId}`,
           data: {
             name: formData.name,
             subtopic: formData.subtopic,

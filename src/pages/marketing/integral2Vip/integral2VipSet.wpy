@@ -167,7 +167,7 @@
           vipIntegral: Number(formData.integral),
           vipCouponID: this.couponId
         }
-        util.interface_post(url, data).then(res => {
+        util.interface_post(url, data,this.$parent.globalData.StoreId).then(res => {
           console.log('创建vipCard-----------------------', res);
           if (res.errCode === 0) {
             wx.showToast({
@@ -190,7 +190,7 @@
     onShow() {
       //拉取优惠券列表
       var cardListUrl = `${this.$parent.globalData.commonUrl}/api/loadCoupons?tk=${this.$parent.globalData.tk}`;
-      util.interface_get(cardListUrl).then(res => {
+      util.interface_get(cardListUrl,this.$parent.globalData.StoreId).then(res => {
         console.log("res----", res)
         this.allTypeCardList = res
         res.forEach(item => {

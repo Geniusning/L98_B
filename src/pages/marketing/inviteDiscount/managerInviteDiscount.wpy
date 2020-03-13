@@ -84,7 +84,7 @@
           return
         }
         let url = `${this.$parent.globalData.commonUrl}/api/putAwayOrRemoveInviteAct?tk=${this.$parent.globalData.tk}&activityId=${this.activityId}&isPutAway=${true}`
-        util.interface_get(url).then(res => {
+        util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
           if (res.errCode === 0) {
             wx.showToast({
               title: '上架成功',
@@ -105,7 +105,7 @@
           return
         }
         let url = `${this.$parent.globalData.commonUrl}/api/putAwayOrRemoveInviteAct?tk=${this.$parent.globalData.tk}&activityId=${this.activityId}&isPutAway=${false}`
-        util.interface_get(url).then(res => {
+        util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
           if (res.errCode === 0) {
             wx.showToast({
               title: '下架成功',
@@ -134,7 +134,7 @@
           return
         }
         let url = `${this.$parent.globalData.commonUrl}/api/delInviteCouponAct?tk=${this.$parent.globalData.tk}&activityId=${this.activityId}`
-        util.interface_get(url).then(res => {
+        util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
           if (res.errCode === 0) {
             console.log("del result-----", res)
             wx.showToast({
@@ -149,7 +149,7 @@
     };
     _loadInviteActList() {
       let url = `${this.$parent.globalData.commonUrl}/api/loadInviteAcitity?tk=${this.$parent.globalData.tk}`
-      util.interface_get(url).then(res => {
+      util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
         if (res.errCode === 0) {
           this.inviteAIdiscountList = res.abCouponList;
           this.inviteAIdiscountList.forEach(item => {

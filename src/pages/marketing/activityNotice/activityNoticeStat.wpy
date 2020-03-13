@@ -117,7 +117,7 @@
     };
     _loadActivityStat() {
       let url = `${this.$parent.globalData.commonUrl}/api/loadActivityStat?startDate=${this.startDate}&endDate=${this.endDate}&dataType=${this.pageType}&tk=${this.$parent.globalData.tk}`;
-      util.interface_get(url).then(res => {
+      util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
         this.recordData = res.dataList.map(item => {
           item.date = util.timestampToTime(item.date).slice(0, 10)
           this.topTotal += item.JoinTimes

@@ -76,7 +76,7 @@ export default class checkQrCode extends wepy.page {
     let param = {
       imageUrl:`${this.$parent.globalData.commonUrl}/k98/card?visitType=1&isScan=true`
     }
-    util.interface_post(url,param).then(res=>{
+    util.interface_post(url,param,this.$parent.globalData.StoreId).then(res=>{
       console.log("二维码-------------",res)
       this.checkQrCode = res;
       this.$apply()

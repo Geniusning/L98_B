@@ -85,7 +85,7 @@
             save() {
                 let _this = this;
                 wx.request({
-                    url: `${this.$parent.globalData.commonUrl}/api/uploadAdvertisingPhoto?tk=${this.$parent.globalData.tk}`,
+                    url: `${this.$parent.globalData.commonUrl}/api/uploadAdvertisingPhoto?tk=${this.$parent.globalData.tk}&storeId=${this.$parent.globalData.StoreId}`,
                     data: {
                         adPhotoURL: this.uploadImgArr
                     },
@@ -161,7 +161,7 @@
         onLoad() {
             let _this = this;
             wx.request({
-                url: `${this.$parent.globalData.commonUrl}/api/loadAdvertisingPhoto?tk=${this.$parent.globalData.tk}`,
+                url: `${this.$parent.globalData.commonUrl}/api/loadAdvertisingPhoto?tk=${this.$parent.globalData.tk}&storeId=${this.$parent.globalData.StoreId}`,
                 success: res => {
                     console.log('拉取轮播图-------------------------------', res.data.adPhotoURL)
                     if (res.statusCode === 200) {

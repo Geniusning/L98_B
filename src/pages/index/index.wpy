@@ -443,7 +443,7 @@
     //锁客拓客用户
     selectTodayUserStat(startDate, endDate) {
       let url = `${this.$parent.globalData.commonUrl}/api/loadUserDayStats?tk=${this.$parent.globalData.tk}&startDate=${startDate}&endDate=${endDate}`;
-      util.interface_get(url).then(res => {
+      util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
         console.log('访客数据---------------', res);
         if (res.userDayStats.length > 1) {
           var tempUserDayStat = {
@@ -469,7 +469,7 @@
     //营销活动用户
     selectTodayCouponStat(startDate, endDate) {
       let url = `${this.$parent.globalData.commonUrl}/api/loadMarketingDaySummary?tk=${this.$parent.globalData.tk}&startDate=${startDate}&endDate=${endDate}`;
-      util.interface_get(url).then(res => {
+      util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
         console.log('营销活动数据---------------', res);
         if (res.dataStat.length > 1) {
           var tempDataStat = {
@@ -495,7 +495,7 @@
     //社区活跃度用户
     selectTodayCommunityStat(startDate, endDate) {
       let url = `${this.$parent.globalData.commonUrl}/api/loadCommunityDayStats?tk=${this.$parent.globalData.tk}&startDay=${startDate}&endDay=${endDate}`;
-      util.interface_get(url).then(res => {
+      util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
         console.log('社区活跃度数据---------------', res);
         if (res.coumnityDayStats.length > 1) {
           var tempCom = {
@@ -521,7 +521,7 @@
     //服务监控
     selectYestodayBookingStat(startDate, endDate) {
       let url = `${this.$parent.globalData.commonUrl}/api/loadMutualDaySummary?tk=${this.$parent.globalData.tk}&startDate=${startDate}&endDate=${endDate}`;
-      util.interface_get(url).then(res => {
+      util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
         console.log('服务监控---------------', res);
         if (res.dataStat.length > 1) {
           var tempData = {
@@ -547,7 +547,7 @@
     //积分统计昨天用户
     selectYestodayJiFen(startDate, endDate) {
       let url = `${this.$parent.globalData.commonUrl}/api/loadIntegralDaySummary?tk=${this.$parent.globalData.tk}&startDate=${startDate}&endDate=${endDate}`;
-      util.interface_get(url).then(res => {
+      util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
         console.log('积分统计---------------', res);
         if (res.dataStat.length > 1) {
           var tempData = {
@@ -575,7 +575,7 @@
       let _this = this;
       return new Promise((resolve, reject) => {
         wx.request({
-          url: `${this.$parent.globalData.commonUrl}/api/dataStat?tk=${this.$parent.globalData.tk}`,
+          url: `${this.$parent.globalData.commonUrl}/api/dataStat?tk=${this.$parent.globalData.tk}&storeId=${this.$parent.globalData.StoreId}`,
           success: function (res) {
             if (res.statusCode === 200) {
               _this.show = !!(_this.$parent.globalData.userInfo.permission & 1);

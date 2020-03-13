@@ -133,7 +133,7 @@
     };
     _loadCheckNumAndIngegral(dataType) {
       let url = `${this.$parent.globalData.commonUrl}/api/loadDateConvertAndSetoff?startDate=${this.startDate}&endDate=${this.endDate}&tk=${this.$parent.globalData.tk}&dataType=${dataType}`
-      util.interface_get(url).then(res => {
+      util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
         console.log("data----", res)
         if (res.errCode === 0) {
           this.recordData = res.dateCheckNumArr

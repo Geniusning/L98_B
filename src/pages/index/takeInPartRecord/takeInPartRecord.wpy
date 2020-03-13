@@ -85,7 +85,7 @@ export default class takeInPartRecord extends wepy.page {
   // 查询活动
   selectActivityData(){
     let url = `${this.$parent.globalData.commonUrl}/api/loadJoinActivityDayStat?tk=${this.$parent.globalData.tk}&startDay=${this.startDate}&endDay=${this.endDate}`;
-    util.interface_get(url).then(res=>{
+    util.interface_get(url,this.$parent.globalData.StoreId).then(res=>{
       console.log('活动返回的数据------------------------------：',res);
       this.dateRange = res.activityDayStat;
       this.dateRange = res.activityDayStat.map(item=>{

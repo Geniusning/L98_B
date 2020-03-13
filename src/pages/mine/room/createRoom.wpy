@@ -31,7 +31,7 @@
           this.loadFlag = !this.loadFlag
         }
         let url = `${this.$parent.globalData.commonUrl}/api/createDesk?tk=${this.$parent.globalData.tk}&count=${this.roomCounts}&phone=${this.$parent.globalData.userInfo.phone}`;
-        util.interface_get(url).then(res => {
+        util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
           console.log(res);
           if (res.errCode === 0) {
              this.loadFlag = !this.loadFlag
