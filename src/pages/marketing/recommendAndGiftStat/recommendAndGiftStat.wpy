@@ -138,7 +138,7 @@
         if (res.errCode === 0) {
           this.recordData = res.dateCheckNumArr
           this.recordData.forEach(item => {
-            item.date = util.timestampToTime(item.date).slice(0, 11)
+            item.date = util.timestampToTime(item.date).slice(0, 10)
           })
           this.recordData = this.recordData.reverse()
         }
@@ -160,6 +160,10 @@
       }else if (this.itemType ==="inviteCoupon"){
         wx.setNavigationBarTitle({
           title: '邀新有礼项目详情'
+        });
+      }else if (this.itemType ==="vip"){
+        wx.setNavigationBarTitle({
+          title: 'vip卡券项目详情'
         });
       }
       this.endDate = util.nowDate();

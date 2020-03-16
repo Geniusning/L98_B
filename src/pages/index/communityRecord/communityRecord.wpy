@@ -83,7 +83,7 @@ export default class communityRecord extends wepy.page {
     util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
       let communityContent = res.coumnityDayStats;
       communityContent.forEach(item => {
-        item.date = util.timestampToTime(item.date).slice(0, 11)
+        item.date = util.timestampToTime(item.date).slice(0, 10)
       });
       communityContent = communityContent.reverse();
       this.communityDataContent = communityContent;

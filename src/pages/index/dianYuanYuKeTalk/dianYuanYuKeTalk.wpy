@@ -92,7 +92,8 @@
     };
     //拉取与客对话/游戏数据
     _loadClerkChatDayStat() {
-      util.interface_get(`${this.$parent.globalData.commonUrl}/api/loadClerkDayStat?startDay=${this.startDate}&endDay=${this.endDate}&tk=${this.$parent.globalData.tk}&dataType=${this.pageType}`)
+      let url = `${this.$parent.globalData.commonUrl}/api/loadClerkDayStat?startDay=${this.startDate}&endDay=${this.endDate}&tk=${this.$parent.globalData.tk}&dataType=${this.pageType}`
+      util.interface_get(url,this.$parent.globalData.StoreId)
         .then(res => {
           console.log('---------------', res);
           if (res.errCode === 0) {

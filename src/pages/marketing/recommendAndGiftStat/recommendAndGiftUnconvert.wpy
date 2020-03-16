@@ -44,10 +44,10 @@
       navigationBarTitleText: '详情'
     };
     data = {
-      pageType:"",
+      pageType: "",
       pickindex: 0,
       paramDate: "",
-      couponOriginType:"",
+      couponOriginType: "",
       totalData: 0,
       totalTimes: 0,
       totalIngegral: 0,
@@ -86,17 +86,29 @@
       this.selectAllData.forEach(item => {
         if (item.couponName == dataType) {
           this.totalTimes++
-          this.totalIngegral += item.integral
+            this.totalIngegral += item.integral
           this.recordData.push(item)
         }
       })
     };
-    _handleItem(tempPickArray, item,type) {
-      if(type === "aiCoupon" || type ==="inviteCoupon"){
+    _handleItem(tempPickArray, item, type) {
+      if (type === "aiCoupon" || type === "inviteCoupon") {
         item["integral"] = item.coupon.coupon.integral
-        item["milliTime"] = util.timestampToTime(item.millionTime).slice(11)
+        item["milliTime"] = util.timestampToTime(item.millionTime).slice(10)
         item["headUrl"] = item.headUrl
         item["couponName"] = util.returnDiscountContentNoType(item.coupon.coupon)
+        this.totalTimes++
+          this.recordData.push(item)
+        tempPickArray.push({
+          name: item["couponName"],
+          id: item["couponName"]
+        })
+        return
+      } else if (type === "vip") {
+        item["integral"] = item.coupon.integral
+        item["milliTime"] = util.timestampToTime(item.milliTime).slice(10)
+        item["headUrl"] = item.userInfo.headImgUrl
+        item["couponName"] = util.returnDiscountContentNoType(item.coupon)
         this.totalTimes++
         this.recordData.push(item)
         tempPickArray.push({
@@ -105,36 +117,43 @@
         })
         return
       }
-      item["milliTime"] = util.timestampToTime(item.time).slice(11)
+      item["milliTime"] = util.timestampToTime(item.time).slice(10)
       item["integral"] = item.good.integral
       item["headUrl"] = item.headImgUrl
       var coupon = {
-          content:item.couponContent,
-          type :item.couponType,
-          value:item.couponValue
+        content: item.couponContent,
+        type: item.couponType,
+        value: item.couponValue
       }
       item["couponName"] = util.returnDiscountContentNoType(coupon)
       item.couponType = util.returnDiscountType(item.couponType)
-        this.totalTimes++
+      this.totalTimes++
         this.totalIngegral += item["integral"]
-        this.recordData.push(item)
-        tempPickArray.push({
-          name: item["couponName"],
-          id: item["couponName"]
-        })
+      this.recordData.push(item)
+      tempPickArray.push({
+        name: item["couponName"],
+        id: item["couponName"]
+      })
     };
-    _loadUnConvertItemDetail(date,couponOriginType) {
-      let url = `${this.$parent.globalData.commonUrl}/api/loadUnconvertCoupon?tk=${this.$parent.globalData.tk}&date=${date}&couponOriginType=${couponOriginType}`
-      util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
+    _loadUnConvertItemDetail(date, couponOriginType) {
+      let url = `${this.$parent.globalData.commonUrl}/api/loadUnconvertCoupon?tk=${this.$parent.globalData.tk}&date=${date}&dataType=${couponOriginType}`
+      util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
         console.log("data----", res)
         if (res.errCode === 0) {
-          this.allTypesData = res.unConverCoupons.sort(util.sortByKey("time"))
-          this.allTypesData.forEach(item => {
-            this._handleItem(this.pickerArray, item,this.pageType)
-          })
-           this.selectAllData = this.recordData;
-           var pickArr = []
-           pickArr = util.delSameItem(this.pickerArray) //去重
+          if (couponOriginType != "vip") {
+            this.allTypesData = res.unConverCoupons.sort(util.sortByKey("time"))
+            this.allTypesData.forEach(item => {
+              this._handleItem(this.pickerArray, item, this.pageType)
+            })
+          } else {
+            this.allTypesData = res.marketCouponDetailUser.sort(util.sortByKey("milliTime"))
+            this.allTypesData.forEach(item => {
+              this._handleItem(this.pickerArray, item, this.pageType)
+            })
+          }
+          this.selectAllData = this.recordData;
+          var pickArr = []
+          pickArr = util.delSameItem(this.pickerArray) //去重
           this.pickerArray = pickArr
           console.log("this.pickerArray------", this.pickerArray)
         }
@@ -146,10 +165,12 @@
       this.winHeight = util.getScrollHeight(144)
       this.paramDate = e.date.trim()
       this.pageType = e.type
-      console.log("pageType---",this.pageType)
+      console.log("pageType---", this.pageType)
       console.log("date-----", this.paramDate)
-      this._loadUnConvertItemDetail(this.paramDate,this.pageType)
+      this._loadUnConvertItemDetail(this.paramDate, this.pageType)
     }
   }
 </script>
-<style lang="less" src="./recommendAndGift.less"></style>
+<style lang="less" src="./recommendAndGift.less">
+
+</style>

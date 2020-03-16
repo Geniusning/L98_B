@@ -116,7 +116,7 @@
       })
     };
     _handleItem(tempPickArray, item) {
-      item["milliTime"] = util.timestampToTime(item.OperationTime).slice(11)
+      item["milliTime"] = util.timestampToTime(item.OperationTime).slice(10)
       item["name"] = util.returnDiscountType(item.UserCoupon.coupon.type)
       item["couponTypeInt"] = item.UserCoupon.coupon.type
       item["integral"] = item.UserCoupon.coupon.integral

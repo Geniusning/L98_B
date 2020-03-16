@@ -155,7 +155,7 @@
           let totalPeople = 0
           _this.visitorRecordData = res.userDayStats.reverse();
           _this.visitorRecordData.forEach(item => {
-            item.date = util.timestampToTime(item.date).slice(0, 11);
+            item.date = util.timestampToTime(item.date).slice(0, 10);
             totalPeople += item.dayTotalUser
           })
           this.totalPeople = totalPeople;
@@ -179,7 +179,7 @@
           let totalPeople = 0
           _this.OnlineVisitorData = res.deskDayUserNum.reverse();
           _this.OnlineVisitorData.forEach(item => {
-            item.date = util.timestampToTime(item.date).slice(0, 11);
+            item.date = util.timestampToTime(item.date).slice(0, 10);
             totalPeople += item.totalNum
           })
           this.totalPeople = totalPeople;

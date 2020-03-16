@@ -179,7 +179,7 @@ const interface_get = (url, storeId) => {
       url: url + "&storeId=" + storeId,
       success: res => {
         if (res.statusCode === 200) {
-          // console.log(res)
+          console.log(res)
           resolve(res.data)
         } else {
           wx.showToast({
