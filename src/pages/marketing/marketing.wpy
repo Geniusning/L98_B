@@ -70,31 +70,31 @@
         <navigator hover-class="none" url='/pages/marketing/game/game' class='setting'>设置</navigator>
       </view>
     </view>
-    <!-- 友商互推 -->
+    <!-- 在友商派送项目 -->
     <view class='item'>
       <view class='item-left'>
         <image class='pic' src='../../images/AI.png'></image>
         <view class='desc-box'>
-          <text class='name'>友商互推</text>
+          <text class='name'>在友商派送项目</text>
+        </view>
+      </view>
+      <view class='item-right'>
+        <navigator hover-class="none" url='/pages/marketing/businessLeagle/businessLeagle' class='setting'>管理</navigator>
+        <navigator hover-class="none" url='/pages/marketing/friendBusiness/friendBusiness' class='setting'>设置</navigator>
+      </view>
+    </view>
+    <!-- 友商结盟 -->
+    <view class='item'>
+      <view class='item-left'>
+        <image class='pic' src='../../images/AI.png'></image>
+        <view class='desc-box'>
+          <text class='name'>友商结盟</text>
         </view>
       </view>
       <view class='item-right'>
         <navigator hover-class="none" url='/pages/marketing/businessLeagle/businessLeagle' class='setting'>结盟</navigator>
-        <navigator hover-class="none" url='/pages/marketing/friendBusiness/friendBusiness' class='setting'>设置</navigator>
       </view>
     </view>
-    <!-- 活动管理 -->
-    <!-- <view class='item'>
-      <view class='item-left'>
-        <image class='pic' src='../../images/AI.png'></image>
-        <view class='desc-box'>
-          <text class='name'>活动管理</text>
-        </view>
-      </view>
-      <view class='item-right'>
-        <navigator hover-class="none" url='/pages/marketing/activityManager/activityManager' class='setting'>设置</navigator>
-      </view>
-    </view> -->
     <!-- 店长推荐 -->
     <view class='item'>
       <view class='item-left'>

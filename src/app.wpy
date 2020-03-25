@@ -29,6 +29,7 @@
         'pages/marketing/inviteDiscount/inviteDiscount',
         'pages/marketing/inviteDiscount/managerInviteDiscount',
         'pages/marketing/friendBusiness/friendBusiness',
+        'pages/marketing/friendBusiness/friendBusinessM',
         'pages/marketing/businessLeagle/businessLeagle',
         'pages/marketing/shopmanRecommend/shopmanRecommend',
         'pages/marketing/shopmanRecommend/managerShopRec',
