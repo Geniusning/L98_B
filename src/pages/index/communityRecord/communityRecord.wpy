@@ -29,13 +29,6 @@
                 <text class='name'>群友对话</text>
                 <text class='name'>游戏互动</text>
             </view>
-            <view class='item-box'>
-                <!-- <text class='name'>累计</text>
-                <text class='name'>{{communityDataContent.makeFriendStat}}</text>
-                <text class='name'>{{communityDataContent.sentGiftStat}}</text>
-                <text class='name'>{{communityDataContent.totalChatStat}}</text>
-                <text class='name'>{{communityDataContent.totalGameStat}}</text> -->
-            </view>
             <scroll-view scroll-y style="height:{{winHeight}}rpx">
               <repeat for="{{communityDataContent}}" key="index">
                   <view class='item-box'>

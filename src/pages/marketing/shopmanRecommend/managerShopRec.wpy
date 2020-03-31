@@ -119,48 +119,4 @@
   }
 </script>
 
-<style lang="less">
-  .managerAIDiscount_wrapper {
-    .AIDiscount_list {
-      .label_wrapper {
-        display: flex;
-        .checkbox {
-          padding-top: 60rpx;
-          padding-left: 6rpx;
-        }
-        .list_item {
-          width: 90%;
-          background-color: #fff;
-          margin: 20rpx auto;
-          box-sizing: border-box;
-          padding: 10rpx 20rpx;
-          display: flex;
-          justify-content: space-around;
-          .list_item_left {
-            .itemPic {
-              width: 210rpx;
-              height: 160rpx;
-            }
-          }
-          .list_item_right {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-around;
-            .item {
-              color: #333;
-            }
-          }
-        }
-      }
-    }
-    .handle_box {
-      height: 100rpx;
-      line-height: 100rpx;
-      display: flex;
-      justify-content: space-around;
-      .btn {
-        width: 200rpx;
-      }
-    }
-  }
-</style>
+<style lang="less" src="./managerItem.less"></style>

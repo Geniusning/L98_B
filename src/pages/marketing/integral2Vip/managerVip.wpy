@@ -1,0 +1,121 @@
+<template>
+  <view class="managerAIDiscount_wrapper">
+    <view class="AIDiscount_list">
+      <scroll-view scroll-y scroll-with-animation style="height:{{winHeight}}rpx">
+        <radio-group @change="checkboxRecomAct">
+          <repeat for="{{vipCardList}}" key="index" index="index" item="item">
+            <label class="checkbox" class="label_wrapper">
+              <radio color="#FFBA00" value="{{item.vipId}}" class="checkbox" checked="{{item.checked}}" />
+              <view class="list_item">
+                <view class="list_item_left">
+                  <image wx:if="{{item.vipCardType==0}}" class="itemPic" src="../../../images/vipMonths.png" mode="scaleToFill" lazy-load="false"></image>
+                  <image wx:else  class="itemPic" src="../../../images/vipTimes.png" mode="scaleToFill" lazy-load="false"></image>
+                  
+                </view>
+                <view class="list_item_right">
+                  <text class="item">vip卡名称:{{item.vipName}}</text>
+                  <text class="item">限制:{{item.CouponInfo.limit}}</text>
+                  <text class="item">兑换积分：{{item.vipIntegral}}</text>
+                </view>
+              </view>
+            </label>
+          </repeat>
+          <view wx:if="{{!vipCardList.length}}" class="noData">暂无活动数据</view>
+        </radio-group>
+      </scroll-view>
+    </view>
+    <view class="handle_box">
+      <button class="btn" @tap="edit">编辑</button>
+      <button class="btn" @tap="del">删除</button>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  import util from '../../../utils/utils.js'
+  export default class managervip extends wepy.page {
+    config = {
+      navigationBarTitleText: '管理积分换会员卡'
+    };
+    data = {
+      AIIDs: [],
+      winHeight: "",
+      vipCardList: [],
+      vipId: "",
+      vipCardInfo: [],
+    };
+    methods = {
+      checkboxRecomAct(e) {
+        this.vipId = e.detail.value
+        this.vipCardInfo = this.vipCardList.filter(item => {
+          return item.vipId === this.vipId
+        })
+        // this.vipCardInfo[0].goods["type"] = this.vipCardInfo[0].coupInfo.type
+        // this.vipCardInfo[0].goods["value"] = this.vipCardInfo[0].coupInfo.value
+        // this.vipCardInfo[0].goods["content"] = this.vipCardInfo[0].coupInfo.content
+        console.log(this.vipCardInfo[0])
+      },
+      edit() {
+        if (!this.vipId) {
+          wx.showToast({
+            title: '请选择项目',
+            icon: 'none',
+            duration: 2000
+          })
+          return
+        }
+        this.$parent.globalData.vipInfo = this.vipCardInfo[0]
+        wx.navigateTo({
+          url: '/pages/marketing/integral2Vip/integral2VipSet?vipId=' + this.vipId,
+        })
+      },
+      del() {
+        if (!this.vipId) {
+          wx.showToast({
+            title: '请选择项目',
+            icon: 'none',
+            duration: 2000
+          })
+          return
+        }
+        let url = `${this.$parent.globalData.commonUrl}/api/delVipCard?tk=${this.$parent.globalData.tk}&vipCardId=${this.vipId}`
+        util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
+          if (res.errCode === 0) {
+            console.log("del result-----", res)
+            wx.showToast({
+              title: '删除成功',
+              icon: 'success',
+              duration: 2000
+            })
+            this._loadVipCard()
+          }
+        })
+      }
+    };
+    _loadVipCard() {
+      // wx.showLoading({
+      //   title: "加载中",
+      //   mask: true
+      // })
+      let url = `${this.$parent.globalData.commonUrl}/api/loadVipCard?tk=${this.$parent.globalData.tk}`
+      util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
+        wx.hideLoading()
+        console.log("_loadVipCard----------", res)
+        this.vipCardList = res
+        this.vipCardList.forEach(item => {
+          item["checked"] = false
+        })
+        this.$apply()
+      })
+    }
+    events = {};
+    onLoad() {
+      this.winHeight = util.getScrollHeight(110);
+      this._loadVipCard()
+    }
+    // Other properties
+  }
+</script>
+
+<style lang="less" src="../shopmanRecommend/managerItem.less"></style>

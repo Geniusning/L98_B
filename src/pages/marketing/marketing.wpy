@@ -131,7 +131,7 @@
         </view>
       </view>
       <view class='item-right'>
-         <!-- <navigator hover-class="none" url='/pages/marketing/jiFenHuanLiPin/managerGift' class='setting'>管理</navigator> -->
+         <navigator hover-class="none" url='/pages/marketing/integral2Vip/managerVip' class='setting'>管理</navigator>
         <navigator hover-class="none" url='/pages/marketing/recommendAndGiftStat/recommendAndGiftStat?type=vip' class='setting'>统计</navigator>
         <navigator hover-class='none' url='/pages/marketing/integral2Vip/integral2VipSet' class='setting'>设置</navigator>
       </view>

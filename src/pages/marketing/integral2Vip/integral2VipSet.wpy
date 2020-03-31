@@ -97,11 +97,14 @@
       navigationBarTitleText: '积分换礼品'
     };
     data = {
+      isShowVipCardContent:false,
       vipName: "",
       times: 10,
       months: 1,
       couponId: "",
       vipTypeIndex: 0,
+      vipId:"",
+      integral:"",
       vipTypeList: ["月卡", "次卡"],
       timesList: [10, 15, 20, 30, 60, 199],
       timesListIndex: 0,
@@ -165,7 +168,8 @@
           usingTimes: this.times,
           usingMonths: this.months,
           vipIntegral: Number(formData.integral),
-          vipCouponID: this.couponId
+          vipCouponID: this.couponId,
+          vipId:this.vipId
         }
         util.interface_post(url, data,this.$parent.globalData.StoreId).then(res => {
           console.log('创建vipCard-----------------------', res);
@@ -188,6 +192,19 @@
     events = {};
     onLoad() { };
     onShow() {
+      console.log("this.$parent.globalData.vipInfo-------------",this.$parent.globalData.vipInfo);
+      let tempObj = this.$parent.globalData.vipInfo;
+      this.vipName = tempObj.vipName
+      this.vipTypeIndex = tempObj.vipCardType
+      if(this.vipTypeIndex==0){
+        this.imgUrl = "../../../images/vipMonths.png"
+      }else{
+        this.imgUrl = "../../../images/vipTimes.png"
+      }
+      this.vipId = tempObj.vipId
+      this.times = tempObj.usingTimes
+      this.months = tempObj.usingMonths
+      this.integral = tempObj.vipIntegral
       //拉取优惠券列表
       var cardListUrl = `${this.$parent.globalData.commonUrl}/api/loadCoupons?tk=${this.$parent.globalData.tk}`;
       util.interface_get(cardListUrl,this.$parent.globalData.StoreId).then(res => {
