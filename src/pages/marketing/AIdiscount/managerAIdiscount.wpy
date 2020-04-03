@@ -30,9 +30,9 @@
       </scroll-view>
     </view>
     <view class="handle_box">
-      <button class="btn" @tap="up">上架</button>
-      <button class="btn" @tap="down">下架</button>
-      <button class="btn" @tap="deleteAICard">删除</button>
+      <button class="btn left-btn" @tap="up">上架</button>
+      <button class="btn center-btn" @tap="down">下架</button>
+      <button class="btn right-btn" @tap="deleteAICard">删除</button>
     </view>
   </view>
 </template>
@@ -264,8 +264,6 @@
       }
     }
     .handle_box {
-      height: 100rpx;
-      line-height: 100rpx;
       display: flex;
       justify-content: space-around;
       .btn {
@@ -274,3 +272,4 @@
     }
   }
 </style>
+<style lang="less" src="../../../mixins/less/btn.less"></style>

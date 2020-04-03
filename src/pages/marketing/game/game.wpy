@@ -132,7 +132,7 @@
       </view>
     </view>
     <view style='padding-bottom:40rpx'>
-      <button class='btn' @tap='singleGameBtn'>确定</button>
+      <button class='btn center-btn' @tap='singleGameBtn'>确定</button>
     </view>
     <!-- </swiper-item> -->
     </swiper>
@@ -628,7 +628,7 @@ export default class game extends wepy.page {
 }
 .btn {
   margin-top: 40rpx;
-  width: 80%;
+  width: 94%;
 }
 /* 循环赛制 */
 .circulate-wrapper,
@@ -680,3 +680,4 @@ export default class game extends wepy.page {
   background-color: #ccc;
 }
 </style>
+<style lang="less" src="../../../mixins/less/btn.less"></style>

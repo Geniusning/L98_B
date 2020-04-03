@@ -108,7 +108,7 @@
         <!-- <text wx:else class='twnowDate'>{{nowDate}}</text> -->
       </view>
     </view>
-    <button class='btn' @tap.stop='makeDiscardBtn'>确定</button>
+    <button class='btn center-btn' @tap.stop='makeDiscardBtn'>确定</button>
   </view>
   </view>
 </template>
@@ -403,3 +403,4 @@ export default class makeDiscount extends wepy.page {
   background-color: #ccc;
 }
 </style>
+<style lang="less" src="../../../mixins/less/btn.less"></style>

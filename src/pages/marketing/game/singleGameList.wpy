@@ -60,7 +60,7 @@
       暂无内容
     </view>
     <view class='btn-wrapper' wx:if="{{gameList.length}}">
-      <button  class='delete' @tap='deleteGame'>删除</button>
+      <button  class='delete center-btn' @tap='deleteGame'>删除</button>
     </view>
   </view>
 </template>
@@ -376,3 +376,4 @@
     }
   }
 </style>
+<style lang="less" src="../../../mixins/less/btn.less"></style>

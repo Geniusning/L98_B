@@ -58,11 +58,11 @@
         </scroll-view>
       </view>
       <view class="btnBox" wx:if="{{isShowBtn && cardList.length}}">
-        <button class="cardListBtn" @tap.stop="back">返回</button>
-        <button class="cardListBtn" @tap.stop="cardListBtn">确定</button>
+        <button class="cardListBtn left-btn" @tap.stop="back">返回</button>
+        <button class="cardListBtn center-btn" @tap.stop="cardListBtn">确定</button>
       </view>
       <view class="btnBox" wx:if="{{showDeleteBtn && cardList.length}}">
-        <button class="cardListBtn" @tap.stop="deleteDicount">删除</button>
+        <button class="cardListBtn center-btn" @tap.stop="deleteDicount">删除</button>
         <!-- <button class="cardListBtn" @tap="editCard">编辑</button> -->
       </view>
     </view>
@@ -329,6 +329,7 @@
     height: 90rpx;
   }
   .cardListBtn {
-    width: 300rpx;
+    width: 100%;
   }
 </style>
+<style lang="less" src="../../../mixins/less/btn.less"></style>

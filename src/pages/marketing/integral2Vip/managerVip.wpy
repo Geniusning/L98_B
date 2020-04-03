@@ -25,8 +25,8 @@
       </scroll-view>
     </view>
     <view class="handle_box">
-      <button class="btn" @tap="edit">编辑</button>
-      <button class="btn" @tap="del">删除</button>
+      <button class="btn left-btn" @tap="edit">编辑</button>
+      <button class="btn center-btn" @tap="del">删除</button>
     </view>
   </view>
 </template>
@@ -119,3 +119,4 @@
 </script>
 
 <style lang="less" src="../shopmanRecommend/managerItem.less"></style>
+<style lang="less" src="../../../mixins/less/btn.less"></style>

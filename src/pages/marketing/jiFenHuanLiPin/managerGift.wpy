@@ -26,8 +26,8 @@
       </scroll-view>
     </view>
     <view class="handle_box">
-      <button class="btn" @tap="edit">编辑</button>
-      <button class="btn" @tap="del">删除</button>
+      <button class="btn left-btn" @tap="edit">编辑</button>
+      <button class="btn center-btn" @tap="del">删除</button>
     </view>
   </view>
 </template>
@@ -155,8 +155,6 @@
       }
     }
     .handle_box {
-      height: 100rpx;
-      line-height: 100rpx;
       display: flex;
       justify-content: space-around;
       .btn {
@@ -165,3 +163,4 @@
     }
   }
 </style>
+<style lang="less" src="../../../mixins/less/btn.less"></style>

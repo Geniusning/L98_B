@@ -25,7 +25,7 @@
             <view class='itemname'>第五步：赠送友商客户优惠券</view>
             <navigator open-type="redirect" url="/pages/marketing/cardList/cardList?type=leagle"  class="chooseDiscount">{{isShowDiscountContent?leaglePrize.content:"选择优惠券"}}</navigator>
           </view>
-          <button form-type="submit">提交</button>
+          <button form-type="submit " class="center-btn">提交</button>
         </form>
       </view>
     </view>
@@ -166,3 +166,4 @@
     color: #666;
   }
 </style>
+<style lang="less" src="../../../mixins/less/btn.less"></style>

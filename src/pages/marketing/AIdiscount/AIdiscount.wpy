@@ -100,7 +100,7 @@
     <view class="btn-wrapper">
       <!-- <button >保存</button>
       <button >申请发布</button> -->
-      <button @tap="dispatchDiscount">发布</button>
+      <button @tap="dispatchDiscount" class="center-btn">发布</button>
     </view>
   </view>
 </template>
@@ -113,8 +113,8 @@
       navigationBarTitleText: '发布优惠券'
     };
     data = {
-      sexList:["男","女"],
-      sexListIndex:0,
+      sexList:["男","女","全部"],
+      sexListIndex:2,
       dispatchConditionList: [{
           id: 0,
           name: "访问首页，人人有礼"
@@ -488,7 +488,7 @@
     justify-content: space-between;
   }
   .btn-wrapper button {
-    background-color: #fff;
+    width: 100%
   }
   /* 第三步第四部 */
   .stepThree-wrapper,
@@ -510,3 +510,4 @@
     }
   }
 </style>
+<style lang="less" src="../../../mixins/less/btn.less"></style>

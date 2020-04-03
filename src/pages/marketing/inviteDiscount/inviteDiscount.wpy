@@ -98,7 +98,7 @@
     <view class='btn-wrapper'>
       <!-- <button >保存</button>
       <button >申请发布</button> -->
-      <button @tap='dispatchInviteCoupon'>发布</button>
+      <button @tap='dispatchInviteCoupon' class="btn btn-center">发布</button>
     </view>
   </view>
 </template>
@@ -465,6 +465,7 @@
   }
   .btn-wrapper button {
     background-color: #fff;
+    width: 100%;
   }
   /* 第三步第四部 */
   .stepThree-wrapper,
@@ -481,3 +482,4 @@
     margin-top: 20rpx;
   }
 </style>
+<style lang="less" src="../../../mixins/less/btn.less"></style>

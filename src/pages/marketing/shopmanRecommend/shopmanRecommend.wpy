@@ -37,7 +37,7 @@
                   <switch @change="switch1Change" />
                 </view> -->
           <!-- <button @tap='submit'> 提交 </button> -->
-          <button formType='submit'> 提交 </button>
+          <button formType='submit' class="center-btn"> 提交 </button>
         </form>
       </view>
     </view>
@@ -293,3 +293,4 @@
     color: #666;
   }
 </style>
+<style lang="less" src="../../../mixins/less/btn.less"></style>

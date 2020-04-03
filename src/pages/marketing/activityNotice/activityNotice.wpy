@@ -43,7 +43,7 @@
     <!-- <view class='content'>
                   <textarea class='noticeContent' value="{{activityRule}}" @input='getActivityRule' placeholder='第八步：请输入活动细则' maxlength='140'></textarea>
               </view> -->
-    <button @tap='save'>确认发布</button>
+    <button @tap='save' class="center-btn">确认发布</button>
   </view>
 </template>
 
@@ -235,3 +235,4 @@
     margin-bottom: 30rpx;
   }
 </style>
+<style lang="less" src="../../../mixins/less/btn.less"></style>
