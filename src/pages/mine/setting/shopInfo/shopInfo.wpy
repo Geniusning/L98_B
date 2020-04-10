@@ -309,7 +309,7 @@
         let _this = this;
         wx.clearStorage();
         var params = {
-          storeId: this.storeId,
+          // storeId: this.storeId,
           name: this.shopName,
           city: this.city,
           address: this.shopAdr,
@@ -520,7 +520,7 @@
           console.log(res)
           if (res.statusCode === 200) {
             let resultData = res.data;
-            _this.storeId = resultData.resultData;
+            // _this.storeId = resultData.storeId;
             _this.shopName = _this.$parent.globalData.StoreName;
             _this.aliasName = resultData.aliasName;
             _this.city = resultData.city ? resultData.city : "~";

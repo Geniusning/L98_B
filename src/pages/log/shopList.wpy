@@ -1,9 +1,10 @@
 <template>
   <view class="shopList_wrapper">
-    <view class="search_box">
+    <Search :placeholder.sync="placeholder" :searchValue.sync="searchValue"></Search>
+    <!-- <view class="search_box">
       <input class="search_input" placeholder="请输入店铺名或下属名" />
       <image class="search_icon" src="../../images/search.png"></image>
-    </view>
+    </view> -->
     <repeat for="{{shopList}}" key="index" index="index" item="item">
       <view class="shop" @tap="intoShop({{item.port}},{{item.id}},{{item.name}})">
         <view class="shop_left">
@@ -29,13 +30,19 @@
 </template>
 <script>
   import wepy from 'wepy';
+  import Search from '../../components/search'
   const util = require('../../utils/utils.js')
   export default class shopList extends wepy.page {
     config = {
       navigationBarTitleText: '管辖商家及下属'
     };
+    components = {
+      Search: Search
+    };
     data = {
       shopList: [],
+      placeholder:"请输入店铺名或下属名",
+      searchValue:"",
       // shopList: [
       //   {
       //     id:1,
@@ -43,6 +50,11 @@
       //   }
       // ],
       staffList: []
+    };
+    watch={
+      searchValue(newValue,oldValue){
+        console.log(`新的--${newValue},旧的---${oldValue}`)
+      }
     };
     methods = {
       //查看下一层员工信息资料
@@ -155,8 +167,8 @@
     };
     events = {};
     onLoad() {
-      this._loadShopList()
-      this._loadStaffs()
+      // this._loadShopList()
+      // this._loadStaffs()
     };
     onShow() {
       this._loadShopList()

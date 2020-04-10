@@ -1,5 +1,6 @@
 <template>
   <view class="businessLeagle-wrapper">
+    <Search :placeholder.sync="placeholder" :searchValue.sync="searchValue"></Search>
     <view class='subTab-wrapper'>
       <view class="subTab-item line {{currentTab==0?'active':''}}" data-current="0" @tap="swichNav">附近商家</view>
       <view class="subTab-item line {{currentTab==1?'active':''}}" data-current="1" @tap="swichNav">邀我结盟</view>
@@ -13,23 +14,23 @@
           <checkbox-group>
             <repeat for="{{shopList}}" key="index" index="index" item="item">
               <label class="item-lable" style="display:flex">
-                  <checkbox class="check-box" checked="{{item.checked}}" />
-                  <view class='merchantItem'>
-                  <view class='merchantItem_logo'>
-                      <image src='../../../images/leagle.png' class='logo'></image>
+                    <checkbox class="check-box" checked="{{item.checked}}" />
+                    <view class='merchantItem'>
+                    <view class='merchantItem_logo'>
+                        <image src='../../../images/leagle.png' class='logo'></image>
+                    </view>
+                    <view class='merchantItem_info'>
+                        <view class='merchantItem_info_top'>
+                          <text class='shopName'>{{item.name}}</text>
+                          <!-- <text decode="{{true}}" class='distant'>{{"<"+item.dis+"km"}}</text> -->
+                        </view>
+                        <view class='merchantItem_info_bottom'>
+                          <text class='fans'>粉丝数：100</text>
+                          <text class='visitor'>昨日访问量：10</text>
+                        </view>
+                    </view>
                   </view>
-                  <view class='merchantItem_info'>
-                      <view class='merchantItem_info_top'>
-                        <text class='shopName'>{{item.name}}</text>
-                        <!-- <text decode="{{true}}" class='distant'>{{"<"+item.dis+"km"}}</text> -->
-                      </view>
-                      <view class='merchantItem_info_bottom'>
-                        <text class='fans'>粉丝数：100</text>
-                        <text class='visitor'>昨日访问量：10</text>
-                      </view>
-                  </view>
-                </view>
-                    </label>
+                      </label>
             </repeat>
           </checkbox-group>
         </scroll-view>
@@ -103,11 +104,23 @@
 
 <script>
   import wepy from 'wepy';
+  import Search from '../../../components/search'
+  const util = require('../../../utils/utils.js')
   export default class businessLeagle extends wepy.page {
     config = {
       navigationBarTitleText: '友商结盟'
     };
+    components = {
+      Search: Search
+    };
+    watch = {
+      searchValue(newValue, oldValue) {
+        console.log(`新的--${newValue},旧的---${oldValue}`)
+      }
+    };
     data = {
+      placeholder: "请输入店铺名",
+      searchValue: "",
       winHeight: '',
       currentTab: 0,
       index: 0,
@@ -147,20 +160,18 @@
         this.index = e.detail.value;
       }
     };
+    _loadNearbyShops() {
+      var Url = `${this.$parent.globalData.commonUrl}/api/loadNearbyShops?tk=${this.$parent.globalData.tk}`;
+      util.interface_get(Url, this.$parent.globalData.StoreId).then(res => {
+        console.log("res----", res)
+        this.$apply();
+      });
+    };
     events = {};
     onLoad() {
-      var that = this;
+      this._loadNearbyShops()
       //  高度自适应
-      wx.getSystemInfo({
-        success: function(res) {
-          var clientHeight = res.windowHeight,
-            clientWidth = res.windowWidth,
-            rpxR = 750 / clientWidth;
-          var calc = clientHeight * rpxR - 160;
-          console.log(calc);
-          that.winHeight = calc;
-        }
-      });
+      this.winHeight = util.getScrollHeight(160);
     }
     // Other properties
   }
