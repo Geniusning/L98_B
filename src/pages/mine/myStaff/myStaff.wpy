@@ -104,8 +104,8 @@
             </checkbox-group>
             <view wx:else class="noUserList">暂无下属</view>
             <view class="handle_content">
-                <button class="cancle" @tap="cancle">取消</button>
-                <button class="add" @tap="closeAuthorMldal">确定</button>
+                <button class="cancle left-btn" @tap="cancle">取消</button>
+                <button class="add center-btn" @tap="closeAuthorMldal">确定</button>
             </view>
             <!-- <image @tap="closeAuthorMldal" src="../../../images/close2.png" lazy-load="false" class="close"></image> -->
             <!-- <image @tap="closeAuthorMldal" src="../../../images/gou.png" lazy-load="false" class="gou"></image> -->
@@ -690,3 +690,4 @@
       }
     }
 </style>
+<style lang="less" src="../../../mixins/less/btn.less"></style>

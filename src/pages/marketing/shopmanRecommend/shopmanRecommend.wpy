@@ -80,7 +80,7 @@
             _this.imgUrl = tempFilePaths[0];
             _this.$apply();
             wx.uploadFile({
-              url: `${_this.$parent.globalData.commonUrl}/api/photoUpload?tk=${_this.$parent.globalData.tk}`,
+              url: `${_this.$parent.globalData.commonUrl}/api/photoUpload?tk=${_this.$parent.globalData.tk}&storeId=${this.$parent.globalData.StoreId}`,
               filePath: _this.imgUrl,
               name: "file",
               header: {
@@ -184,27 +184,11 @@
       }
       console.log("Object.keys(this.$parent.globalData.recommendPrize)", Object.keys(this.$parent.globalData.recommendPrize))
       console.log(this.isShowRecommendContent)
-      if (tempObj.type === 0) {
-        tempObj.content = '现金券' + tempObj.value + '元';
-        this.recommendPrize = tempObj;
-        this.$apply();
-      } else if (tempObj.type === 2) {
-        tempObj.content = '折扣券' + tempObj.value + '折';
-        this.recommendPrize = tempObj;
-        this.$apply();
-      } else if (tempObj.type === 1) {
-        this.recommendPrize = tempObj;
-        this.$apply();
-      } else if (tempObj.type === 3) {
-        this.recommendPrize = tempObj;
-        this.$apply();
-      } else if (tempObj.type === 4) {
-        this.recommendPrize = tempObj;
-        this.$apply();
-      }
-      console.log(this.recommendPrize)
+      tempObj.content = util.returnDiscountContent(tempObj.type)
+      this.recommendPrize = tempObj
+      this.$apply();
+      console.log("this.recommendPrize-------",this.recommendPrize)
     };
-    onLoad(e) {}
   }
 </script>
 

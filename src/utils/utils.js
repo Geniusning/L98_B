@@ -119,6 +119,7 @@ const returnDiscountType = (discountTypeNumber) => {
   }
 }
 const returnDiscountContent = (coupon) => {
+  console.log("coupon--------", coupon)
   if (parseInt(coupon.type) === 0) {
     return "现金券" + coupon.value + "元"
   } else if (parseInt(coupon.type) === 1) {

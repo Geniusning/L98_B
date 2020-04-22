@@ -10,22 +10,22 @@
         </view>
         <form>
           <view class='itemBox'>
-            <view class='itemname'>第二步：主题描述</view>
-            <input class='input_Area' name='originPrice' placeholder='请输入主题描述'></input>
+            <view class='itemname'>第二步：活动名称</view>
+            <input maxlength="6" class='input_Area' name='originPrice' @blur="setName" placeholder='请输入活动名称' value="{{name}}"></input>
           </view>
           <view class='itemBox'>
-            <view class='itemname'>第三步：内容说明</view>
-            <input class='input_Area' name='originPrice' placeholder='请输入内容说明'></input>
+            <view class='itemname'>第三步：限制条件</view>
+            <input maxlength="6" class='input_Area' name='originPrice' @blur="setLimit" placeholder='请输入限制条件' value="{{limit}}"></input>
           </view>
           <view class='itemBox'>
             <view class='itemname'>第四步：优惠券内容摘要</view>
-            <input class='input_Area' name='limit' placeholder='请输入优惠券内容摘要'></input>
+            <input maxlength="6" class='input_Area' name='limit' @blur="setContent" placeholder='请输入优惠券内容摘要' value="{{content}}"></input>
           </view>
           <view class='itemBox'>
             <view class='itemname'>第五步：赠送友商客户优惠券</view>
-            <navigator open-type="redirect" url="/pages/marketing/cardList/cardList?type=leagle"  class="chooseDiscount">{{isShowDiscountContent?leaglePrize.content:"选择优惠券"}}</navigator>
+            <navigator url="/pages/marketing/cardList/cardList?type=leagle" class="chooseDiscount">{{isShowDiscountContent?leaglePrize.content:"选择优惠券"}}</navigator>
           </view>
-          <button form-type="submit " class="center-btn">提交</button>
+          <button @tap="save" class="center-btn">提交</button>
         </form>
       </view>
     </view>
@@ -34,21 +34,51 @@
 
 <script>
   import wepy from 'wepy';
+  import util from '../../../utils/utils.js'
   export default class friendBusiness extends wepy.page {
     config = {
       navigationBarTitleText: '友商互推'
     };
     data = {
       picArr: [],
-      isShowDiscountContent:false,
+      isShowDiscountContent: false,
       show: true,
       imgUrl: '../../../images/add_pic.png',
-      leaglePrize:{},
+      leaglePrize: {},
+      name: "",
+      limit: "",
+      content: "",
+      couponId: "",
+      uploadImgUrl: "",
+      fbId: "",
     };
     methods = {
+      save() {
+        let data = {
+          id: this.fbId,
+          image: this.uploadImgUrl,
+          name: this.name,
+          limit: this.limit,
+          content: this.content,
+          couponID: this.couponId,
+        }
+        let url = `${this.$parent.globalData.commonUrl}/api/createResAlliance?tk=${this.$parent.globalData.tk}`
+        util.interface_post(url, data, this.$parent.globalData.StoreId).then(res => {
+          console.log(res)
+        })
+      },
+      setName(e) {
+        this.name = e.detail.value
+      },
+      setLimit(e) {
+        this.limit = e.detail.value
+      },
+      setContent(e) {
+        this.content = e.detail.value
+      },
       //选择照片
       chooseImage: function() {
-        let that = this;
+        let _this = this;
         wx.chooseImage({
           count: 1, // 默认9
           sizeType: ['compressed'], // 可以指定是原图还是压缩图，默认二者都有
@@ -56,26 +86,52 @@
           success: function(res) {
             // 返回选定照片的本地文件路径列表，tempFilePath可以作为img标签的src属性显示图片
             var tempFilePaths = res.tempFilePaths;
-            that.imgUrl = tempFilePaths[0];
-            that.$apply();
+            _this.imgUrl = tempFilePaths[0];
+            _this.$apply();
+            wx.uploadFile({
+              url: `${_this.$parent.globalData.commonUrl}/api/photoUpload?tk=${_this.$parent.globalData.tk}&storeId=${_this.$parent.globalData.StoreId}`,
+              filePath: _this.imgUrl,
+              name: "file",
+              header: {
+                'content-type': 'multipart/form-data'
+              },
+              success: res => {
+                if (res.statusCode === 200) {
+                  _this.uploadImgUrl = JSON.parse(res.data).photoURL;
+                  console.log("_this.uploadImgUrl-----", _this.uploadImgUrl);
+                }
+              },
+              fail: res => {
+                console.log("uploadFile failed err is", res)
+              },
+              complete: res => {
+                console.log("uploadFile complete  is", res)
+              }
+            })
           }
         });
       }
     };
     events = {};
-    onLoad() {
-      console.log(this.$parent.globalData.leaglePrize)
+    onShow() {
       let tempObj = this.$parent.globalData.leaglePrize;
-      if(Object.keys(this.$parent.globalData.leaglePrize).length>0){
+      let leagleEditInfo = this.$parent.globalData.leagleEditInfo;
+      if (Object.keys(this.$parent.globalData.leaglePrize).length > 0) {
         this.isShowDiscountContent = true;
-      }
-      if(tempObj.type===0){
-        tempObj.content = '现金券' + tempObj.value + '元';
+        tempObj.content = util.returnDiscountContentNoType(tempObj)
         this.leaglePrize = tempObj
-      }else{
-        this.leaglePrize = tempObj;
+        this.couponId = tempObj.couponID
+        this.$apply();
       }
-      
+      if (leagleEditInfo.name) {
+        this.fbId = leagleEditInfo.id
+        this.uploadImgUrl = leagleEditInfo.image
+        this.imgUrl = leagleEditInfo.image
+        this.name = leagleEditInfo.name
+        this.limit = leagleEditInfo.limit
+        this.content = leagleEditInfo.content
+        this.couponId = leagleEditInfo.couponId
+      }
     }
     // Other properties
   }
@@ -160,10 +216,11 @@
     width: 100%;
     height: 100rpx;
   }
-  .chooseDiscount{
-    margin-top: 10rpx;
-    // position:absolute;
+  .chooseDiscount {
+    margin-top: 10rpx; // position:absolute;
     color: #666;
   }
 </style>
-<style lang="less" src="../../../mixins/less/btn.less"></style>
+<style lang="less" src="../../../mixins/less/btn.less">
+
+</style>

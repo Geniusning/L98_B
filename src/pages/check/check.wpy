@@ -24,7 +24,7 @@
         <view class="subTab-item line {{currentTab==1?'active':''}}" data-current="1" @tap="swichNav(1)">记录统计</view>
       </view>
     </view>
-    <swiper current="{{currentTab}}" duration="300" style="height:{{winHeight}}rpx">
+    <swiper @change="changeSwiper" current="{{currentTab}}" duration="300" style="height:{{winHeight}}rpx">
       <!-- 申请核销 -->
       <swiper-item class="tab-content">
         <scroll-view scroll-with-animation="true" bindscrolltoupper="refresh" scroll-y="true" class="scoll-h" style="height:{{winHeight}}rpx">
@@ -229,6 +229,17 @@
       tempItem.content = util.returnDiscountContentNoType(tempItem)
     };
     methods = {
+      changeSwiper(e) {
+        console.log("滑动触发--------", e.detail);
+        var that = this;
+        var index = e.detail.current
+        if (this.currentTab == index) {
+          return false;
+        } else {
+          this.currentTab = index;
+        }
+       
+      },
       //下拉刷新
       refresh() {
         console.log("下拉刷新")

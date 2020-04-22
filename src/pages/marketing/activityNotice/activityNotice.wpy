@@ -52,7 +52,7 @@
   const util = require('../../../utils/utils.js');
   export default class activityNotice extends wepy.page {
     config = {
-      navigationBarTitleText: '活动通知'
+      navigationBarTitleText: '告示板'
     };
     data = {
       beginDate: '2018-08-30',

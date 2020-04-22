@@ -1,33 +1,39 @@
 <template>
   <view class="managerAIDiscount_wrapper">
-    <view class="AIDiscount_list">
-      <scroll-view scroll-y scroll-with-animation style="height:{{winHeight}}rpx">
-        <radio-group @change="checkboxRecomAct">
-          <repeat for="{{shopRecList}}" key="index" index="index" item="item">
-            <label class="checkbox" class="label_wrapper">
-              <radio color="#FFBA00" value="{{item.goods.id}}" class="checkbox" checked="{{item.checked}}" />
-              <view class="list_item">
-                <view class="list_item_left">
-                  <image class="itemPic" src="{{item.goods.image}}" mode="scaleToFill" lazy-load="false">
-                  </image>
-                </view>
-                <view class="list_item_right">
-                  <text class="item">{{item.goods.name}}</text>
-                  <text class="item">{{item.goods.limit}}</text>
-                  <text class="item">{{item.goods.subtopic}}</text>
-                  <text class="item">原价:{{item.goods.discountPrice}} 积分：{{item.goods.integral}}</text>
-                </view>
-              </view>
-            </label>
-          </repeat>
-          <view wx:if="{{!shopRecList.length}}" class="noData">暂无活动数据</view>
-        </radio-group>
-      </scroll-view>
+    <view class="has-data" wx:if="{{shopRecList.length}}">
+      <view class="AIDiscount_list">
+        <scroll-view scroll-y scroll-with-animation style="height:{{winHeight}}rpx">
+          <radio-group @change="checkboxRecomAct">
+            <repeat for="{{shopRecList}}" key="index" index="index" item="item">
+              <label class="checkbox" class="label_wrapper">
+                      <radio color="#FFBA00" value="{{item.id}}" class="checkbox" checked="{{item.checked}}" />
+                      <view class="list_item">
+                        <view class="list_item_left">
+                          <image class="itemPic" src="{{item.image}}" mode="scaleToFill" lazy-load="false">
+                          </image>
+                        </view>
+                        <view class="list_item_right">
+                          <text class="item">项目名称：{{item.name}}</text>
+                          <text class="item">限制：{{item.limit}}</text>
+                          <text class="item">描述内容：{{item.content}}</text>
+                        </view>
+                      </view>
+                    </label>
+            </repeat>
+            <view wx:if="{{!shopRecList.length}}" class="noData">暂无活动数据</view>
+          </radio-group>
+        </scroll-view>
+      </view>
+      <view class="handle_box" wx:if="{{pageType=='market'}}">
+        <button class="btn left-btn" @tap="edit">编辑</button>
+        <button class="btn center-btn" @tap="del">删除</button>
+      </view>
+      <view class="handle_box" wx:else>
+        <!-- <button class="btn left-btn" @tap="edit">编辑</button> -->
+        <button class="btn center-btn" style="width:95%" @tap="makeLeagle">确定</button>
+      </view>
     </view>
-    <view class="handle_box">
-      <button class="btn" @tap="edit">编辑</button>
-      <button class="btn" @tap="del">删除</button>
-    </view>
+    <view class="noData" wx:else>暂无数据</view>
   </view>
 </template>
 
@@ -36,9 +42,10 @@
   import util from '../../../utils/utils.js'
   export default class friendBusinessM extends wepy.page {
     config = {
-      navigationBarTitleText: '管理店长推荐'
+      navigationBarTitleText: '管理友商派送项目'
     };
     data = {
+      pageType: "",
       AIIDs: [],
       winHeight: "",
       shopRecList: [],
@@ -48,13 +55,11 @@
     methods = {
       checkboxRecomAct(e) {
         this.recommendId = e.detail.value
+        console.log
         this.recommendInfo = this.shopRecList.filter(item => {
-          return item.goods.id === this.recommendId
+          return item.id === this.recommendId
         })
-        this.recommendInfo[0].goods["type"] = this.recommendInfo[0].coupInfo.type
-        this.recommendInfo[0].goods["value"] = this.recommendInfo[0].coupInfo.value
-        this.recommendInfo[0].goods["content"] = this.recommendInfo[0].coupInfo.content
-        console.log(this.recommendInfo[0].goods)
+        console.log(this.recommendInfo[0])
       },
       edit() {
         if (!this.recommendId) {
@@ -65,10 +70,10 @@
           })
           return
         }
-        this.$parent.globalData.recommendPrize = this.recommendInfo[0].goods
-        this.$parent.globalData.editInfo = this.recommendInfo[0].goods
+        // this.$parent.globalData.leaglePrize = this.recommendInfo[0]
+        this.$parent.globalData.leagleEditInfo = this.recommendInfo[0]
         wx.navigateTo({
-          url: '/pages/marketing/shopmanRecommend/shopmanRecommend?edit=1&recommendId=' + this.recommendId,
+          url: '/pages/marketing/friendBusiness/friendBusiness?edit=1&recommendId=' + this.recommendId,
         })
       },
       del() {
@@ -80,8 +85,11 @@
           })
           return
         }
-        let url = `${this.$parent.globalData.commonUrl}/api/delRecommend?tk=${this.$parent.globalData.tk}&recommendId=${this.recommendId}`
-        util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
+        let data = {
+          ids: [this.recommendId]
+        }
+        let url = `${this.$parent.globalData.commonUrl}/api/delResAlliance?tk=${this.$parent.globalData.tk}`
+        util.interface_post(url, data, this.$parent.globalData.StoreId).then(res => {
           if (res.errCode === 0) {
             console.log("del result-----", res)
             wx.showToast({
@@ -89,21 +97,45 @@
               icon: 'success',
               duration: 2000
             })
-            this._loadShopRecommend()
+            this._loadResAlliance()
+          }
+        })
+      },
+      //结盟
+      makeLeagle() {
+        let data = {
+          InviterID: this.inviterId,
+          inviteesID: this.inviteeId,
+          inviterResID: this.recommendId
+        }
+        let url = `${this.$parent.globalData.commonUrl}/api/inviteAlliance?tk=${this.$parent.globalData.tk}`
+        util.interface_post(url, data, this.$parent.globalData.StoreId).then(res => {
+          if (res.errCode === 0) {
+            console.log("del result-----", res)
+            wx.showToast({
+              title: '结盟成功',
+              icon: 'success',
+              duration: 2000
+            })
+            setTimeout(() => {
+              wx.navigateBack({
+                delta: 1
+              });
+            }, 1000);
           }
         })
       }
     };
-    _loadShopRecommend() {
+    _loadResAlliance() {
       wx.showLoading({
         title: "加载中",
         mask: true
       })
-      let url = `${this.$parent.globalData.commonUrl}/api/loadRecommends?tk=${this.$parent.globalData.tk}`
-      util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
+      let url = `${this.$parent.globalData.commonUrl}/api/loadResAlliance?tk=${this.$parent.globalData.tk}`
+      util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
         wx.hideLoading()
-        console.log("_loadShopRecommend----------", res)
-        this.shopRecList = res
+        console.log("_loadResAlliance----------", res)
+        this.shopRecList = res.info
         this.shopRecList.forEach(item => {
           item["checked"] = false
         })
@@ -111,9 +143,20 @@
       })
     }
     events = {};
-    onLoad() {
+    onLoad(e) {
+      this.pageType = e.type
+      console.log("this.pageType---", this.pageType)
+      if (this.pageType == "leagle") {
+        this.inviterId = e.InviterID
+        this.inviteeId = e.inviteesID
+        console.log("this.inviterId---", this.inviterId)
+        console.log("this.inviteeId---", this.inviteeId)
+        wx.setNavigationBarTitle({
+          title: '选择结盟派送项目'
+        })
+      }
       this.winHeight = util.getScrollHeight(110);
-      this._loadShopRecommend()
+      this._loadResAlliance()
     }
     // Other properties
   }
@@ -154,8 +197,6 @@
       }
     }
     .handle_box {
-      height: 100rpx;
-      line-height: 100rpx;
       display: flex;
       justify-content: space-around;
       .btn {
@@ -163,4 +204,7 @@
       }
     }
   }
+</style>
+<style lang="less" src="../../../mixins/less/btn.less">
+
 </style>

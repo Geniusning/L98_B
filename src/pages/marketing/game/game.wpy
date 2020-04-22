@@ -1,23 +1,5 @@
 <template>
   <view class='game-container'>
-    <!-- <view class='beginTime-wrapper'>
-            <view class='title'>开始时间：</view>
-            <view class='beginDate'>
-              <picker mode="date" value="{{beginDate}}" start="2018-01-01" end="2025-09-01" @change="bindBeginDateChange">
-                <view class="picker">
-                  开始日期: {{beginDate}}
-                </view>
-              </picker>
-            </view>
-            <view class='beginTime'>
-              <picker mode="time" value="{{beginTime}}" start="00:00" end="24:00" @change="bindBeginTimeChange">
-                <view class="picker">
-                  开始时间: {{beginTime}}
-                </view>
-              </picker>
-            </view>
-          </view> -->
-             <!-- 设置人数 -->
     <view class='juNum-wrapper'>
       <view class='title'>第一步:比赛冠名</view>
       <input maxlength='6' @blur="selectTheme" placeholder='请填入比赛冠名'></input>
@@ -51,7 +33,7 @@
       <view class='title'>第三步：每人参赛局数：</view>
       <!-- <input type='number' @blur="chooseRound" placeholder='请填入局数'></input> -->
       <view class='timeBox'>
-        <repeat for="{{gameNums}}" key="index">
+        <repeat for="{{gameNums}}">
           <text class="timeItem {{roundShow==item.id?'active':''}}" data-index="{{item.id}}" @tap.stop='selectRoundItem'>{{item.value}}</text>
         </repeat>
       </view>
@@ -66,9 +48,11 @@
       <view class='title'>第四步：是否循环赛：</view>
       <view class='circle-box'>
         <radio-group class="radio-group" @change="radioChange">
-          <label class="radio" wx:for="{{circleItem}}" wx:key>
-                      <radio color='orange' value="{{item.name}}" checked="{{item.checked}}" />{{item.value}}
-                  </label>
+          <repeat for="{{circleItem}}" key="index" index="index" item="item">
+            <label class="radio">
+                <radio color='orange' value="{{item.name}}" checked="{{item.checked}}" />{{item.value}}
+            </label>
+          </repeat>
         </radio-group>
       </view>
       <view class='circleTime-select' wx:if='{{circletime}}'>
@@ -94,25 +78,17 @@
       <view class='title'>第五步：选择 个人/团体赛：</view>
       <view class='circle-box'>
         <radio-group class="radio-group" @change="radioChangeTeam">
-          <label class="radio" wx:for="{{gameTypeList}}" wx:key>
+          <repeat for="{{gameTypeList}}" key="index" index="index" item="item">
+          <label class="radio">
                       <radio color='orange' value="{{item.name}}" checked="{{item.checked}}" />{{item.value}}
                   </label>
+          </repeat>
         </radio-group>
       </view>
     </view>
     <view class='juNum-wrapper'>
       <view class='title'>第六步：开始时间：</view>
       <view class='startTime' style='margin:15rpx 0'>即时（发布后立即开始）</view>
-      <!-- <picker mode="date" value="{{Publicdate}}" start="2018-01-01" end="2030-09-01" @change="bindPublicDateChange">
-          <view class="picker">
-            发布日期：{{Publicdate}}
-          </view>
-        </picker>
-        <picker mode="time" value="{{PublicTime}}" start="00:00" end="24:00" bindchange="bindPublicTimeChange">
-          <view class="picker">
-            发布时间: {{PublicTime}}
-          </view>
-        </picker> -->
     </view>
     <view class='endTime-wrapper' wx:if='{{!circletime}}'>
       <view class='title'>第七步：结束时间：</view>
@@ -232,19 +208,19 @@ export default class game extends wepy.page {
     SelectfirstPrize: function () {
       console.log('111');
       wx.navigateTo({
-        url: '/pages/marketing/cardList/cardList?singletype=1'
+        url: '/pages/marketing/cardList/cardList?type=1'
       });
     },
     // 二等奖选择
     SelectSecondPrize: function () {
       wx.navigateTo({
-        url: '/pages/marketing/cardList/cardList?singletype=2'
+        url: '/pages/marketing/cardList/cardList?type=2'
       });
     },
     //三等奖选择
     SelectThirstPrize: function () {
       wx.navigateTo({
-        url: '/pages/marketing/cardList/cardList?singletype=3'
+        url: '/pages/marketing/cardList/cardList?type=3'
       });
     },
     //设置主题

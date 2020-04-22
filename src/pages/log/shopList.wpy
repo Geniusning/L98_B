@@ -25,7 +25,8 @@
         </view>
       </view>
     </repeat>
-    <view @tap="intoAddStaff" class="addStaff">+</view>
+    <view @tap="intoAddStaff" class="addStaff">新增</view>
+    <view @tap="goBack" wx:if="{{showBackBtn}}" class="goBack">返回</view>
   </view>
 </template>
 <script>
@@ -40,6 +41,7 @@
       Search: Search
     };
     data = {
+      showBackBtn:false,
       shopList: [],
       placeholder:"请输入店铺名或下属名",
       searchValue:"",
@@ -57,11 +59,17 @@
       }
     };
     methods = {
+      goBack(){
+        this._loadShopList()
+        this._loadStaffs()
+        this.showBackBtn = false;
+      },
       //查看下一层员工信息资料
       goToFurther(phone) {
         wx.showLoading({
           title: "加载中"
         })
+        this.showBackBtn = true;
         let storeUrl = `${this.$parent.globalData.commonUrl}/api/loadShopList?tk=${this.$parent.globalData.tk}&phone=${phone}`
         let staffUrl = `${this.$parent.globalData.commonUrl}/api/loadAllStaff?tk=${this.$parent.globalData.tk}&phone=${phone}`
         util.interface_get(storeUrl,this.$parent.globalData.StoreId).then(res => {
@@ -136,7 +144,7 @@
               this.$parent.globalData.shopInfo = res;
               console.log("店铺信息---------", this.$parent.globalData)
               wx.switchTab({
-                url: '/pages/member/member'
+                url: '/pages/mine/mine'
               })
             })
           }, 500);
@@ -171,6 +179,8 @@
       // this._loadStaffs()
     };
     onShow() {
+      let pages = getCurrentPages()
+      console.log("pages------",pages)
       this._loadShopList()
       this._loadStaffs()
     }
@@ -238,7 +248,20 @@
       color: #fff;
       right: 40rpx;
       bottom: 100rpx;
-      font-size: 30px;
+      font-size: 14px;
+      border-radius: 50%;
+    }
+    .goBack{
+       position: absolute;
+      width: 76rpx;
+      height: 76rpx;
+      text-align: center;
+      line-height: 74rpx;
+      background-color: #ffba00;
+      color: #fff;
+      left: 40rpx;
+      bottom: 100rpx;
+      font-size: 14px;
       border-radius: 50%;
     }
   }

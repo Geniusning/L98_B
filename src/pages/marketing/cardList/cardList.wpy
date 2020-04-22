@@ -7,59 +7,16 @@
           <checkbox-group @change="checkboxCoupon">
             <repeat for="{{cardList}}" key="index">
               <label data-test="{{item.content}}" class="checkbox">
-                  <checkbox checked="{{item.checked}}" value="{{item.couponID}}"/>
-                   <cardListCom :item="item" ></cardListCom>
-                  <!-- <view class="discountItem">
-                    <view class="discountItem-left">
-                      <text decode="{{true}}" space="{{true}}"  class="title" wx:if="{{item.type==0}}">({{item.theme}})--{{item.value+"元"}}</text>
-                      <text decode="{{true}}" space="{{true}}"  class="title" wx:elif="{{item.type==1}}">({{item.theme}})--{{item.content}}</text>
-                      <text decode="{{true}}" space="{{true}}"  class="title" wx:elif="{{item.type==2}}">({{item.theme}})--{{item.value+"折"}}</text>
-                      <text decode="{{true}}" space="{{true}}"  class="title" wx:elif="{{item.type==3}}">({{item.theme}})--{{item.content}}</text>
-                      <text decode="{{true}}" space="{{true}}"  class="title" wx:elif="{{item.type==4}}">({{item.theme}})--{{item.content}}</text>
-                      <text decode="{{true}}" space="{{true}}"  class="title" wx:elif="{{item.type==5}}">({{item.theme}})--{{item.content}}</text>
-                      <text decode="{{true}}" space="{{true}}"  class="title" wx:elif="{{item.type==6}}">({{item.theme}})--{{item.content}}</text>
-                      <view style="display:flex;justify-content:space-between;">
-                        <text class="limit">{{item.limit}}--</text>
-                        <text class="limit">剩余{{item.number}}张</text>
-                      </view>
-                    </view>
-                    <view class="discountItem-right" wx:if="{{item.type==0}}">
-                      <text>现金券</text>
-                      <text>{{item.endTime}}</text>
-                    </view>
-                    <view class="discountItem-right" wx:if="{{item.type==1}}">
-                      <text>实物券</text>
-                       <text>{{item.endTime}}</text>
-                    </view>
-                    <view class="discountItem-right" wx:if="{{item.type==2}}">
-                      <text>折扣券</text>
-                      <text>{{item.endTime}}</text>
-                    </view>
-                    <view class="discountItem-right" wx:if="{{item.type==3}}">
-                      <text>兑换券</text>
-                      <text>{{item.endTime}}</text>
-                    </view>
-                    <view class="discountItem-right" wx:if="{{item.type==4}}">
-                      <text>满减券</text>
-                      <text>{{item.endTime}}</text>
-                    </view>
-                    <view class="discountItem-right" wx:if="{{item.type==5}}">
-                      <text>月卡券</text>
-                      <text>{{item.endTime}}</text>
-                    </view>
-                    <view class="discountItem-right" wx:if="{{item.type==6}}">
-                      <text>次卡券</text>
-                      <text>{{item.endTime}}</text>
-                    </view>
-                  </view> -->
-                </label>
+                <checkbox color="#FFBA00" checked="{{item.checked}}" value="{{item.couponID}}"/>
+                  <cardListCom :item="item" ></cardListCom>
+              </label>
             </repeat>
           </checkbox-group>
         </scroll-view>
       </view>
       <view class="btnBox" wx:if="{{isShowBtn && cardList.length}}">
-        <button class="cardListBtn left-btn" @tap.stop="back">返回</button>
-        <button class="cardListBtn center-btn" @tap.stop="cardListBtn">确定</button>
+        <button class="cardListBtn left-btn" style="width:30%" @tap.stop="back">返回</button>
+        <button class="cardListBtn center-btn" style="width:30%" @tap.stop="save">确定</button>
       </view>
       <view class="btnBox" wx:if="{{showDeleteBtn && cardList.length}}">
         <button class="cardListBtn center-btn" @tap.stop="deleteDicount">删除</button>
@@ -83,6 +40,7 @@
       winHeight: "",
       cardList: [],
       cardIdList: [],
+      selectedCouponId: [],
       channelIndex: 0,
       showDeleteBtn: false,
       deleteIDs: {},
@@ -98,29 +56,19 @@
     };
     methods = {
       // 确定优惠券
-      cardListBtn() {
-        if (
-          this.$parent.globalData.singleGameFirstPrize ||
-          this.$parent.globalData.singleGameSecondPrize ||
-          this.$parent.singleGameThirdPrize
-        ) {
-          if (this.typeIndex == 'leagle') {
-            wx.redirectTo({
-              url: '/pages/marketing/friendBusiness/friendBusiness'
-            });
-          } else if (this.typeIndex == "recommend") {
-            wx.navigateBack({
-              delta: 1
-            });
-          } else if (this.typeIndex == 'CouponA' || this.typeIndex == 'CouponB') {
-            wx.navigateBack({
-              delta: 1
-            });
-          } else {
-            wx.navigateBack({
-              delta: 1
-            });
-          }
+      save() {
+        let pageState = getCurrentPages()
+        console.log("pageState--------",pageState)
+        if (this.selectedCouponId.length > 0) {
+          wx.navigateBack({
+            delta: 1
+          });
+        } else {
+          wx.showToast({
+            title: '请选择优惠券',
+            icon: 'success',
+            duration: 2000
+          });
         }
       },
       //删除优惠券
@@ -131,19 +79,18 @@
         }
         let url = `${this.$parent.globalData.commonUrl}/api/deleCoupons?tk=${_this.$parent.globalData.tk}`
         console.log(_this.$parent.globalData.tk);
-        util.interface_post(url, data,).then(res=>{
-           console.log('是否删除成功：·······················', res);
-              _this.getCardList().then(res => {
-                console.log('删除后的优惠券列表', res);
-                wx.showToast({
-                  title: '删除成功',
-                  icon: 'success',
-                  duration: 2000
-                });
-                _this.cardList = res;
-                _this.$apply();
-              });
-            
+        util.interface_post(url, data, this.$parent.globalData.StoreId).then(res => {
+          console.log('是否删除成功：·······················', res);
+          _this.getCardList().then(res => {
+            console.log('删除后的优惠券列表', res);
+            wx.showToast({
+              title: '删除成功',
+              icon: 'success',
+              duration: 2000
+            });
+            _this.cardList = res;
+            _this.$apply();
+          });
         })
       },
       // 返回上一页
@@ -154,18 +101,17 @@
           });
         } else {
           wx.navigateBack({
-            url: '/pages/marketing/game/game'
+            delta: 1
           });
         }
       },
       // 优惠券选择
       checkboxCoupon(e) {
-        let selectedCouponId = e.detail.value;
-        console.log(selectedCouponId);
-        if (!this.showDeleteBtn) {
-          //不是删除优惠券操作
+        this.selectedCouponId = e.detail.value;
+        console.log(this.selectedCouponId);
+        if (!this.showDeleteBtn) { //不是删除优惠券操作
           var temparr = [];
-          if (selectedCouponId.length > 1) {
+          if (this.selectedCouponId.length > 1) {
             wx.showToast({
               title: '最多选择一条',
               icon: 'none',
@@ -173,10 +119,10 @@
             });
             //前两个选中的设置true,第三个设置false,限制选2个
             temparr = this.cardList.map(item => {
-              if (item['couponID'] == selectedCouponId[1]) {
+              if (item['couponID'] == this.selectedCouponId[1]) {
                 item['checked'] = this.isFalse;
               }
-              if (item['couponID'] == selectedCouponId[0]) {
+              if (item['couponID'] == this.selectedCouponId[0]) {
                 item['checked'] = this.isTrue;
               }
               return item;
@@ -185,10 +131,10 @@
               cardList: temparr
             });
             //删除第二个选中的id
-            selectedCouponId.splice(1, 1);
+            this.selectedCouponId.splice(1, 1);
           } else {
             let tempCoupon = this.cardList.filter(item => {
-              return item['couponID'] == selectedCouponId[0];
+              return item['couponID'] == this.selectedCouponId[0];
             });
             if (this.typeIndex == 1) { //一等奖
               this.$parent.globalData.singleGameFirstPrize = tempCoupon[0];
@@ -196,6 +142,7 @@
               this.$parent.globalData.singleGameSecondPrize = tempCoupon[0];
             } else if (this.typeIndex == 'leagle') {
               this.$parent.globalData.leaglePrize = tempCoupon[0];
+              console.log(" console.log(this.$parent.globalData);----",this.$parent.globalData)
             } else if (this.typeIndex == 'recommend') {
               this.$parent.globalData.recommendPrize = tempCoupon[0];
             } else if (this.typeIndex == 'CouponA') {
@@ -206,10 +153,10 @@
               this.$parent.globalData.singleGameThirdPrize = tempCoupon[0];
             }
           }
-          this.cardIdList = selectedCouponId;
+          this.cardIdList = this.selectedCouponId;
         } else {
           //删除优惠券操作
-          this.cardIdList = selectedCouponId;
+          this.cardIdList = this.selectedCouponId;
         }
       }
     };
@@ -232,7 +179,7 @@
     }
     async onLoad(options) {
       console.log('onload-options``````````````````````````````````````````', options);
-      this.typeIndex = options.singletype;
+      this.typeIndex = options.type;
       switch (options.type) {
         case 'showList':
           this.isShowBtn = false;
@@ -247,13 +194,6 @@
         default:
           break;
       }
-      // if (options.type == 'showList') {
-      //   this.isShowBtn = false;
-      //   this.showDeleteBtn = true;
-      // }
-      // if (options.type == 'leagle') {
-      //   this.typeIndex = 'leagle';
-      // }
       this.cardList = await this.getCardList();
       console.log("cardList-------------", this.cardList)
       this.$apply();
@@ -332,4 +272,6 @@
     width: 100%;
   }
 </style>
-<style lang="less" src="../../../mixins/less/btn.less"></style>
+<style lang="less" src="../../../mixins/less/btn.less">
+
+</style>

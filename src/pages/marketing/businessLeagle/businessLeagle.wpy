@@ -7,32 +7,32 @@
       <view class="subTab-item line {{currentTab==2?'active':''}}" data-current="2" @tap="swichNav">我邀结盟</view>
       <view class="subTab-item {{currentTab==3?'active':''}}" data-current="3" @tap="swichNav">己结盟</view>
     </view>
-    <swiper class="tab-content" current="{{currentTab}}" duration="300" style="height:{{winHeight}}rpx">
+    <swiper @change="changeSwiper" class="tab-content" current="{{currentTab}}" duration="300" style="height:{{winHeight}}rpx">
       <!-- 附近商家 -->
       <swiper-item>
         <scroll-view scroll-y="true" class="scoll-h">
-          <checkbox-group>
+          <radio-group @change="seletStoreId">
             <repeat for="{{shopList}}" key="index" index="index" item="item">
               <label class="item-lable" style="display:flex">
-                    <checkbox class="check-box" checked="{{item.checked}}" />
-                    <view class='merchantItem'>
-                    <view class='merchantItem_logo'>
-                        <image src='../../../images/leagle.png' class='logo'></image>
+                      <radio color="#FFBA00" class="check-box" value="{{item.storeId}}" checked="{{item.checked}}" />
+                      <view class='merchantItem'>
+                      <view class='merchantItem_logo'>
+                          <image src='{{item.image}}' class='logo'></image>
+                      </view>
+                      <view class='merchantItem_info'>
+                          <view class='merchantItem_info_top'>
+                            <text class='shopName'>{{item.name}}</text>
+                            <text decode="{{true}}" class='distant'>{{item.distance}}</text>
+                          </view>
+                          <view class='merchantItem_info_bottom'>
+                            <text class='fans'>粉丝数：{{item.fanNumber}}</text>
+                            <text class='visitor'>昨日访问量：{{item.lastVisitNum}}</text>
+                          </view>
+                      </view>
                     </view>
-                    <view class='merchantItem_info'>
-                        <view class='merchantItem_info_top'>
-                          <text class='shopName'>{{item.name}}</text>
-                          <!-- <text decode="{{true}}" class='distant'>{{"<"+item.dis+"km"}}</text> -->
-                        </view>
-                        <view class='merchantItem_info_bottom'>
-                          <text class='fans'>粉丝数：100</text>
-                          <text class='visitor'>昨日访问量：10</text>
-                        </view>
-                    </view>
-                  </view>
-                      </label>
+                        </label>
             </repeat>
-          </checkbox-group>
+          </radio-group>
         </scroll-view>
       </swiper-item>
       <!-- 邀我结盟 -->
@@ -50,7 +50,7 @@
               <view class='merchantItem_info_bottom'>
                 <text class='fans'>粉丝数：100</text>
                 <text class='visitor'>昨日访问量：10</text>
-                <text class='handleApply'>同意</text>
+                <text class='handleApply' @tap="goToNext">同意</text>
                 <text class='handleApply'>拒绝</text>
               </view>
             </view>
@@ -87,6 +87,23 @@
             <view class='merchantItem_info'>
               <view class='merchantItem_info_top'>
                 <text class='shopName'>一丁点茶咖</text>
+                <!-- <text class="leagle-logo">已撤销</text> -->
+                <text class='distant'>小于2km</text>
+              </view>
+              <view class='merchantItem_info_bottom'>
+                <text class='fans'>粉丝数：100</text>
+                <text class='visitor'>昨日访问量：10</text>
+                <text class='handleApply'>撤销结盟</text>
+              </view>
+            </view>
+          </view>
+          <view class='merchantItem'>
+            <view class='merchantItem_logo'>
+              <image src='../../../images/leagle.png' class='logo'></image>
+            </view>
+            <view class='merchantItem_info'>
+              <view class='merchantItem_info_top'>
+                <text class='shopName'>一丁点茶咖</text>
                 <text class='distant'>小于2km</text>
               </view>
               <view class='merchantItem_info_bottom'>
@@ -99,6 +116,7 @@
         </scroll-view>
       </swiper-item>
     </swiper>
+    <button wx:if="{{showLeagleBtn}}" @tap="goToNext" class="center-btn" style="width:100%">邀请结盟</button>
   </view>
 </template>
 
@@ -119,13 +137,15 @@
       }
     };
     data = {
+      meInviteCursor:0,
+      meInviteCount:10,
+      inviteesId:"",
+      showLeagleBtn: true,
       placeholder: "请输入店铺名",
       searchValue: "",
       winHeight: '',
       currentTab: 0,
       index: 0,
-      startDate: '2016-09-01',
-      endDate: '2018-09-01',
       shopList: [{
           name: "一丁点茶咖",
           dis: "0.9"
@@ -146,6 +166,31 @@
       ]
     };
     methods = {
+      seletStoreId(e){
+        this.inviteesId = e.detail.value
+        console.log('inviteesId',this.inviteesId)
+      },
+      goToNext(){
+        console.log("this.$parent.globalData.StoreId---",this.$parent.globalData.StoreId)
+        wx.navigateTo({
+          url:`/pages/marketing/friendBusiness/friendBusinessM?type=leagle&InviterID=${this.$parent.globalData.StoreId}&inviteesID=${this.inviteesId}`
+        })
+      },
+      changeSwiper(e) {
+        console.log("滑动触发--------", e.detail);
+        var that = this;
+        var index = e.detail.current
+        if (this.currentTab == index) {
+          return false;
+        } else {
+          this.currentTab = index;
+        }
+        if (this.currentTab == 0) {
+          this.showLeagleBtn = true;
+        } else {
+          this.showLeagleBtn = false;
+        }
+      },
       // 点击标题切换当前页时改变样式
       swichNav: function(e) {
         var cur = e.target.dataset.current;
@@ -154,24 +199,64 @@
         } else {
           this.currentTab = cur;
         }
+        if (this.currentTab == 0) {
+          this.showLeagleBtn = true;
+        } else {
+          this.showLeagleBtn = false;
+        }
       },
       bindPickerChange: function(e) {
         console.log('picker发送选择改变，携带值为', e.detail.value);
         this.index = e.detail.value;
       }
     };
+    //加载邀我结盟消息 loadInviteMeAlliance
+     _loadInviteMeAlliance(){
+       var url = `${this.$parent.globalData.commonUrl}/api/loadInviteMeAlliance?tk=${this.$parent.globalData.tk}&cursor=${this.meInviteCursor}&count=${this.meInviteCount}`;
+      util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
+        console.log("邀请我结盟消息----", res)
+        if (res.errCode === 0) {
+       
+        }
+        this.$apply();
+      });
+    };
+    //加载我邀请结盟消息
+    _loadMeInviteAlliance(){
+       var url = `${this.$parent.globalData.commonUrl}/api/loadMeInviteAlliance?tk=${this.$parent.globalData.tk}&cursor=${this.meInviteCursor}&count=${this.meInviteCount}`;
+      util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
+        console.log("我邀请结盟消息----", res)
+        if (res.errCode === 0) {
+       
+        }
+        this.$apply();
+      });
+    };
     _loadNearbyShops() {
-      var Url = `${this.$parent.globalData.commonUrl}/api/loadNearbyShops?tk=${this.$parent.globalData.tk}`;
-      util.interface_get(Url, this.$parent.globalData.StoreId).then(res => {
+      var url = `${this.$parent.globalData.commonUrl}/api/loadNearbyStore?tk=${this.$parent.globalData.tk}`;
+      util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
         console.log("res----", res)
+        if (res.errCode === 0) {
+          this.shopList = res.nearbyStore.filter((shop => {
+            shop.distance = '<' + shop.distance.toFixed(1) + 'km'
+            if (this.$parent.globalData.StoreId != shop.storeId) {
+              return shop
+            }
+          }))
+        }
+        console.log("this.shopList-0-----", this.shopList)
         this.$apply();
       });
     };
     events = {};
+    onShow(){
+       this._loadMeInviteAlliance()
+    }
     onLoad() {
       this._loadNearbyShops()
+      this._loadInviteMeAlliance()
       //  高度自适应
-      this.winHeight = util.getScrollHeight(160);
+      this.winHeight = util.getScrollHeight(280);
     }
     // Other properties
   }
@@ -255,4 +340,7 @@
       color: #fff;
     }
   }
+</style>
+<style lang="less" src="../../../mixins/less/btn.less">
+
 </style>

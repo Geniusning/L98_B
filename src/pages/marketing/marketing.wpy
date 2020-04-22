@@ -79,7 +79,7 @@
         </view>
       </view>
       <view class='item-right'>
-        <navigator hover-class="none" url='/pages/marketing/businessLeagle/businessLeagle' class='setting'>管理</navigator>
+        <navigator hover-class="none" url='/pages/marketing/friendBusiness/friendBusinessM?type=market' class='setting'>管理</navigator>
         <navigator hover-class="none" url='/pages/marketing/friendBusiness/friendBusiness' class='setting'>设置</navigator>
       </view>
     </view>
@@ -141,7 +141,7 @@
       <view class='item-left'>
         <image class='pic' src='../../images/AI.png'></image>
         <view class='desc-box'>
-          <text class='name'>活动通知</text>
+          <text class='name'>告示板</text>
         </view>
       </view>
       <view class='item-right'>

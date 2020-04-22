@@ -25,9 +25,9 @@
             <navigator url="/pages/marketing/cardList/cardList?type=recommend" class="chooseDiscount">{{isShowRecommendContent?recommendPrize.content:"选择优惠券"}}</navigator>
           </view>
           <!-- <view class='itemBox'>
-                      <view class='itemname'>第六步：开通"现场送"</view>
-                      <switch @change="switch1Change" />
-                    </view> -->
+                        <view class='itemname'>第六步：开通"现场送"</view>
+                        <switch @change="switch1Change" />
+                      </view> -->
           <!-- <button @tap='submit'> 提交 </button> -->
           <button formType='submit' class="center-btn"> 提交 </button>
         </form>
@@ -117,7 +117,7 @@
           couponID: this.$parent.globalData.recommendPrize.couponID,
           id: this.id
         }
-        util.interface_post(url, data,this.$parent.globalData.StoreId).then(res => {
+        util.interface_post(url, data, this.$parent.globalData.StoreId).then(res => {
           console.log('店长推荐成功-----------------------', res);
           if (res.errCode === 0) {
             wx.showToast({
@@ -159,44 +159,11 @@
       if (Object.keys(this.$parent.globalData.recommendPrize).length > 0) {
         this.isShowRecommendContent = true;
       }
-      console.log(this.isShowRecommendContent)
-      if (tempObj.type === 0) {
-        tempObj.content = '现金券' + tempObj.value + '元';
-        this.recommendPrize = tempObj;
-        this.$apply();
-      } else if (tempObj.type === 1) {
-        this.recommendPrize = tempObj;
-        this.$apply();
-      } else if (tempObj.type === 2) {
-        tempObj.content = '折扣券' + tempObj.value + '折';
-        this.recommendPrize = tempObj;
-        this.$apply();
-      } else if (tempObj.type === 3) {
-        this.recommendPrize = tempObj;
-        this.$apply();
-      } else if (tempObj.type === 4) {
-        this.recommendPrize = tempObj;
-        this.$apply();
-      }
-      console.log(this.recommendPrize)
+      tempObj.content = util.returnDiscountContent(tempObj.type)
+      this.recommendPrize = tempObj
+      this.$apply();
+      console.log("this.recommendPrize--------",this.recommendPrize)
     };
-    onLoad() {
-      //   console.log(this.$parent.globalData);
-      //   let tempObj = this.$parent.globalData.recommendPrize;
-      //   if (Object.keys(this.$parent.globalData.recommendPrize).length > 0) {
-      //     this.isShowRecommendContent = true;
-      //   }
-      //   console.log(this.isShowRecommendContent)
-      //   if (tempObj.type === 0) {
-      //     tempObj.content = '现金券' + tempObj.value + '元';
-      //     this.recommendPrize = tempObj;
-      //     this.$apply();
-      //   } else {
-      //     this.recommendPrize = tempObj;
-      //     this.$apply();
-      //   }
-      //   console.log(this.recommendPrize)
-    }
   }
 </script>
 
@@ -285,4 +252,6 @@
     color: #666;
   }
 </style>
-<style lang="less" src="../../../mixins/less/btn.less"></style>
+<style lang="less" src="../../../mixins/less/btn.less">
+
+</style>
