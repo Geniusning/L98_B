@@ -14,23 +14,23 @@
           <radio-group @change="seletStoreId">
             <repeat for="{{shopList}}" key="index" index="index" item="item">
               <label class="item-lable" style="display:flex">
-                      <radio color="#FFBA00" class="check-box" value="{{item.storeId}}" checked="{{item.checked}}" />
-                      <view class='merchantItem'>
-                      <view class='merchantItem_logo'>
-                          <image src='{{item.image}}' class='logo'></image>
-                      </view>
-                      <view class='merchantItem_info'>
-                          <view class='merchantItem_info_top'>
-                            <text class='shopName'>{{item.name}}</text>
-                            <text decode="{{true}}" class='distant'>{{item.distance}}</text>
-                          </view>
-                          <view class='merchantItem_info_bottom'>
-                            <text class='fans'>粉丝数：{{item.fanNumber}}</text>
-                            <text class='visitor'>昨日访问量：{{item.lastVisitNum}}</text>
-                          </view>
-                      </view>
+                <radio color="#FFBA00" class="check-box" value="{{item.storeId}}" checked="{{item.checked}}" />
+                <view class='merchantItem'>
+                  <view class='merchantItem_logo'>
+                    <image src='{{item.image}}' class='logo'></image>
+                  </view>
+                  <view class='merchantItem_info'>
+                    <view class='merchantItem_info_top'>
+                      <text class='shopName'>{{item.name}}</text>
+                      <text decode="{{true}}" class='distant'>{{item.distance}}</text>
                     </view>
-                        </label>
+                    <view class='merchantItem_info_bottom'>
+                      <text class='fans'>粉丝数：{{item.fanNumber}}</text>
+                      <text class='visitor'>昨日访问量：{{item.lastVisitNum}}</text>
+                    </view>
+                  </view>
+                </view>
+              </label>
             </repeat>
           </radio-group>
         </scroll-view>
@@ -38,43 +38,47 @@
       <!-- 邀我结盟 -->
       <swiper-item>
         <scroll-view scroll-y="true" class="scoll-h">
-          <view class='merchantItem'>
-            <view class='merchantItem_logo'>
-              <image src='../../../images/leagle.png' class='logo'></image>
-            </view>
-            <view class='merchantItem_info'>
-              <view class='merchantItem_info_top'>
-                <text class='shopName'>一丁点茶咖</text>
-                <text class='distant'>小于2km</text>
+          <repeat for="{{inviteMeRecList}}" key="index" index="index" item="item">
+            <view class='merchantItem'>
+              <view class='merchantItem_logo'>
+                <image src='{{item.storeImage}}' class='logo'></image>
               </view>
-              <view class='merchantItem_info_bottom'>
-                <text class='fans'>粉丝数：100</text>
-                <text class='visitor'>昨日访问量：10</text>
-                <text class='handleApply' @tap="goToNext">同意</text>
-                <text class='handleApply'>拒绝</text>
+              <view class='merchantItem_info'>
+                <view class='merchantItem_info_top'>
+                  <text class='shopName'>{{item.storeName}}</text>
+                  <text class='distant'>{{item.distance}}</text>
+                </view>
+                <view class='merchantItem_info_bottom'>
+                  <text class='fans'>粉丝数：{{item.fanNumber}}</text>
+                  <text class='visitor'>昨日访问量：{{item.lastVisitNum}}</text>
+                  <text class='handleApply' @tap="goToNext">同意</text>
+                  <text class='handleApply' @tap="rejectLeagle({{item}})">拒绝</text>
+                </view>
               </view>
             </view>
-          </view>
+          </repeat>
         </scroll-view>
       </swiper-item>
       <!-- 我邀结盟 -->
       <swiper-item>
         <scroll-view scroll-y="true" class="scoll-h">
-          <view class='merchantItem'>
-            <view class='merchantItem_logo'>
-              <image src='../../../images/leagle.png' class='logo'></image>
-            </view>
-            <view class='merchantItem_info'>
-              <view class='merchantItem_info_top'>
-                <text class='shopName'>一丁点茶咖</text>
-                <text class='distant'>小于2km</text>
+          <repeat for="{{meInviteRecList}}" key="index" index="index" item="item">
+            <view class='merchantItem'>
+              <view class='merchantItem_logo'>
+                <image src='{{item.storeImage}}' class='logo'></image>
               </view>
-              <view class='merchantItem_info_bottom'>
-                <text class='fans'>粉丝数：100</text>
-                <text class='visitor'>昨日访问量：10</text>
+              <view class='merchantItem_info'>
+                <view class='merchantItem_info_top'>
+                  <text class='shopName'>{{item.storeName}}</text>
+                  <text class='distant'>{{item.distance}}</text>
+                </view>
+                <view class='merchantItem_info_bottom'>
+                  <text class='fans'>粉丝数：{{item.fanNumber}}</text>
+                  <text class='visitor'>昨日访问量：{{item.lastVisitNum}}</text>
+                </view>
               </view>
             </view>
-          </view>
+          </repeat>
         </scroll-view>
       </swiper-item>
       <!-- 己结盟 -->
@@ -137,9 +141,13 @@
       }
     };
     data = {
-      meInviteCursor:0,
-      meInviteCount:10,
-      inviteesId:"",
+      meInviteRecList: [],
+      meInviteCursor: 0,
+      meInviteCount: 10,
+      inviteMeRecList: [],
+      inviteMeCursor: 0,
+      inviteMeCount: 10,
+      inviteesId: "",
       showLeagleBtn: true,
       placeholder: "请输入店铺名",
       searchValue: "",
@@ -147,33 +155,49 @@
       currentTab: 0,
       index: 0,
       shopList: [{
-          name: "一丁点茶咖",
-          dis: "0.9"
-        },
-        {
-          name: "轰趴九八",
-          dis: "0.8"
-        }
+        name: "一丁点茶咖",
+        dis: "0.9"
+      },
+      {
+        name: "轰趴九八",
+        dis: "0.8"
+      }
       ],
       cardArray: [{
-          id: 0,
-          name: '实物券'
-        },
-        {
-          id: 1,
-          name: '现金券'
-        }
+        id: 0,
+        name: '实物券'
+      },
+      {
+        id: 1,
+        name: '现金券'
+      }
       ]
     };
     methods = {
-      seletStoreId(e){
-        this.inviteesId = e.detail.value
-        console.log('inviteesId',this.inviteesId)
+      //拒绝结盟
+      rejectLeagle(item) {
+        console.log("item---", item)
+        let url = `${this.$parent.globalData.commonUrl}/api/rejectAlliance?tk=${this.$parent.globalData.tk}`
+        let data = {
+          logID: item.logID,
+          inviterID: item.inviterID,
+          inviteesID: this.$parent.globalData.StoreId,
+          inviterResID: item.res.id,
+        }
+        util.interface_post(url, data, this.$parent.globalData.StoreId).then(res => {
+          console.log("拒绝结果----", res)
+          this._loadInviteMeAlliance()
+
+        })
       },
-      goToNext(){
-        console.log("this.$parent.globalData.StoreId---",this.$parent.globalData.StoreId)
+      seletStoreId(e) {
+        this.inviteesId = e.detail.value
+        console.log('inviteesId', this.inviteesId)
+      },
+      goToNext() {
+        console.log("this.$parent.globalData.StoreId---", this.$parent.globalData.StoreId)
         wx.navigateTo({
-          url:`/pages/marketing/friendBusiness/friendBusinessM?type=leagle&InviterID=${this.$parent.globalData.StoreId}&inviteesID=${this.inviteesId}`
+          url: `/pages/marketing/friendBusiness/friendBusinessM?type=leagle&InviterID=${this.$parent.globalData.StoreId}&inviteesID=${this.inviteesId}`
         })
       },
       changeSwiper(e) {
@@ -192,7 +216,7 @@
         }
       },
       // 点击标题切换当前页时改变样式
-      swichNav: function(e) {
+      swichNav: function (e) {
         var cur = e.target.dataset.current;
         if (this.currentTab == cur) {
           return false;
@@ -205,30 +229,39 @@
           this.showLeagleBtn = false;
         }
       },
-      bindPickerChange: function(e) {
+      bindPickerChange: function (e) {
         console.log('picker发送选择改变，携带值为', e.detail.value);
         this.index = e.detail.value;
       }
     };
     //加载邀我结盟消息 loadInviteMeAlliance
-     _loadInviteMeAlliance(){
-       var url = `${this.$parent.globalData.commonUrl}/api/loadInviteMeAlliance?tk=${this.$parent.globalData.tk}&cursor=${this.meInviteCursor}&count=${this.meInviteCount}`;
+    _loadInviteMeAlliance() {
+      var url = `${this.$parent.globalData.commonUrl}/api/loadInviteMeAlliance?tk=${this.$parent.globalData.tk}&cursor=${this.meInviteCursor}&count=${this.meInviteCount}`;
       util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
         console.log("邀请我结盟消息----", res)
         if (res.errCode === 0) {
-       
+          this.inviteMeRecList = res.inviteAlliance.details.filter((shop) => {
+            shop.distance = '<' + shop.distance.toFixed(1) + 'km'
+            return shop
+          })
+          this.inviteMeCursor = res.inviteAlliance.cursor
         }
         this.$apply();
       });
     };
     //加载我邀请结盟消息
-    _loadMeInviteAlliance(){
-       var url = `${this.$parent.globalData.commonUrl}/api/loadMeInviteAlliance?tk=${this.$parent.globalData.tk}&cursor=${this.meInviteCursor}&count=${this.meInviteCount}`;
+    _loadMeInviteAlliance() {
+      var url = `${this.$parent.globalData.commonUrl}/api/loadMeInviteAlliance?tk=${this.$parent.globalData.tk}&cursor=${this.meInviteCursor}&count=${this.meInviteCount}`;
       util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
         console.log("我邀请结盟消息----", res)
         if (res.errCode === 0) {
-       
+          this.meInviteRecList = res.inviteAlliance.details.filter((shop) => {
+            shop.distance = '<' + shop.distance.toFixed(1) + 'km'
+            return shop
+          })
+          this.meInviteCursor = res.inviteAlliance.cursor
         }
+        console.log("this.meInviteRecList---", this.meInviteRecList)
         this.$apply();
       });
     };
@@ -249,8 +282,8 @@
       });
     };
     events = {};
-    onShow(){
-       this._loadMeInviteAlliance()
+    onShow() {
+      this._loadMeInviteAlliance()
     }
     onLoad() {
       this._loadNearbyShops()
@@ -342,5 +375,4 @@
   }
 </style>
 <style lang="less" src="../../../mixins/less/btn.less">
-
 </style>
