@@ -48,7 +48,7 @@
       <view class='item-left'>
         <image class='pic' src='../../images/game.png'></image>
         <view class='desc-box'>
-          <text class='name'>精准推送</text>
+          <text class='name'>员工送券</text>
         </view>
       </view>
       <view class='item-right'>
