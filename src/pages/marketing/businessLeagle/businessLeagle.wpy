@@ -14,23 +14,23 @@
           <radio-group @change="seletStoreId">
             <repeat for="{{shopList}}" key="index" index="index" item="item">
               <label class="item-lable" style="display:flex">
-                  <radio color="#FFBA00" class="check-box" value="{{item.storeId}}" checked="{{item.checked}}" />
-                  <view class='merchantItem'>
-                    <view class='merchantItem_logo'>
-                      <image src='{{item.image}}' class='logo'></image>
-                    </view>
-                    <view class='merchantItem_info'>
-                      <view class='merchantItem_info_top'>
-                        <text class='shopName'>{{item.name}}</text>
-                        <text decode="{{true}}" class='distant'>{{item.distance}}</text>
+                    <radio color="#FFBA00" class="check-box" value="{{item.storeId}}" checked="{{item.checked}}" />
+                    <view class='merchantItem'>
+                      <view class='merchantItem_logo'>
+                        <image src='{{item.image}}' class='logo'></image>
                       </view>
-                      <view class='merchantItem_info_bottom'>
-                        <text class='fans'>粉丝数：{{item.fanNumber}}</text>
-                        <text class='visitor'>昨日访问量：{{item.lastVisitNum}}</text>
+                      <view class='merchantItem_info'>
+                        <view class='merchantItem_info_top'>
+                          <text class='shopName'>{{item.name}}</text>
+                          <text decode="{{true}}" class='distant'>{{item.distance}}</text>
+                        </view>
+                        <view class='merchantItem_info_bottom'>
+                          <text class='fans'>粉丝数：{{item.fanNumber}}</text>
+                          <text class='visitor'>昨日访问量：{{item.lastVisitNum}}</text>
+                        </view>
                       </view>
                     </view>
-                  </view>
-                </label>
+                  </label>
             </repeat>
           </radio-group>
         </scroll-view>
@@ -129,7 +129,7 @@
         <view wx:else class="noData">暂无数据</view>
       </swiper-item>
     </swiper>
-    <button wx:if="{{showLeagleBtn}}" @tap="goToNext" class="center-btn" style="width:100%">邀请结盟</button>
+    <button wx:if="{{showLeagleBtn}}" @tap="makeLeagle" class="center-btn" style="width:100%">邀请结盟</button>
   </view>
 </template>
 
@@ -184,37 +184,69 @@
       ]
     };
     methods = {
-      
-      
       //同意联盟
       agreeLeagle(item) {
-        wx.navigateTo({
-          url: `/pages/marketing/friendBusiness/friendBusinessM?type=agreeLeagle&InviterID=${item.inviterID}&inviteesID=${this.$parent.globalData.StoreId}`
+        let url = `${this.$parent.globalData.commonUrl}/api/agreeAlliance?tk=${this.$parent.globalData.tk}`
+        let data = {
+          inviterID: item.inviterID,
+          inviteesID: this.$parent.globalData.StoreId,
+        }
+        util.interface_post(url, data, this.$parent.globalData.StoreId).then(res => {
+        if (res.errCode === 0) {
+            wx.showToast({
+              title: '结盟成功',
+              icon: 'success',
+              duration: 2000
+            })
+            this._loadInviteMeAlliance()
+          }
+          this.$apply()
         })
       },
       //拒绝结盟
       rejectLeagle(item) {
         let url = `${this.$parent.globalData.commonUrl}/api/rejectAlliance?tk=${this.$parent.globalData.tk}`
         let data = {
-          logID: item.logID,
           inviterID: item.inviterID,
           inviteesID: this.$parent.globalData.StoreId,
-          inviterResID: item.res.id,
         }
         util.interface_post(url, data, this.$parent.globalData.StoreId).then(res => {
           console.log("拒绝结果----", res)
-          this._loadInviteMeAlliance()
+          if (res.errCode === 0) {
+            wx.showToast({
+              title: '拒绝成功',
+              icon: 'success',
+              duration: 2000
+            })
+            this._loadInviteMeAlliance()
+          }
+          this.$apply()
         })
       },
       seletStoreId(e) {
         this.inviteesId = e.detail.value
         console.log('inviteesId', this.inviteesId)
       },
-      goToNext() {
-        console.log("this.$parent.globalData.StoreId---", this.$parent.globalData.StoreId)
-        wx.navigateTo({
-          url: `/pages/marketing/friendBusiness/friendBusinessM?type=leagle&InviterID=${this.$parent.globalData.StoreId}&inviteesID=${this.inviteesId}`
+      makeLeagle() {
+        let data = {
+          InviterID: this.$parent.globalData.StoreId,
+          inviteesID: this.inviteesId,
+        }
+        let url = `${this.$parent.globalData.commonUrl}/api/inviteAlliance?tk=${this.$parent.globalData.tk}`
+        util.interface_post(url, data, this.$parent.globalData.StoreId).then(res => {
+          if (res.errCode === 0) {
+            console.log("del result-----", res)
+            wx.showToast({
+              title: '结盟成功',
+              icon: 'success',
+              duration: 2000
+            })
+          }
         })
+        // console.log("this.$parent.globalData.StoreId---", this.$parent.globalData.StoreId)
+        // wx.navigateTo({
+        //   url: `/pages/marketing/friendBusiness/friendBusinessM?type=leagle&InviterID=${this.$parent.globalData.StoreId}&inviteesID=${this.inviteesId}`
+        // })
       },
       changeSwiper(e) {
         console.log("滑动触发--------", e.detail);
@@ -251,15 +283,15 @@
       }
     };
     //拉取已结盟商家\
-    _getAreadyAlliance(){
-       var url = `${this.$parent.globalData.commonUrl}/api/getAreadyAlliance?tk=${this.$parent.globalData.tk}`;
+    _getAreadyAlliance() {
+      var url = `${this.$parent.globalData.commonUrl}/api/getAreadyAlliance?tk=${this.$parent.globalData.tk}`;
       util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
         console.log("拉取已结盟商家----", res)
-        if (res.errCode === 0) {
-          this.leagleedShop = res.inviteAlliance.details.filter((shop) => {
-            shop.distance = '<' + shop.distance.toFixed(1) + 'km'
-            return shop
-          })
+        if (res.errCode === 0 && res.areadyAlliance.length) {
+          // this.leagleedShop = res.areadyAlliance.details.filter((shop) => {
+          //   shop.distance = '<' + shop.distance.toFixed(1) + 'km'
+          //   return shop
+          // })
         }
         this.$apply();
       });
@@ -269,8 +301,8 @@
       var url = `${this.$parent.globalData.commonUrl}/api/loadInviteMeAlliance?tk=${this.$parent.globalData.tk}&cursor=${this.meInviteCursor}&count=${this.meInviteCount}`;
       util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
         console.log("邀请我结盟消息----", res)
-        if (res.errCode === 0) {
-          this.inviteMeRecList = res.areadyAlliance.filter((shop) => {
+        if (res.errCode === 0 && res.inviteAlliance.details.length) {
+          this.inviteMeRecList = res.inviteAlliance.details.filter((shop) => {
             shop.distance = '<' + shop.distance.toFixed(1) + 'km'
             return shop
           })
@@ -284,7 +316,7 @@
       var url = `${this.$parent.globalData.commonUrl}/api/loadMeInviteAlliance?tk=${this.$parent.globalData.tk}&cursor=${this.meInviteCursor}&count=${this.meInviteCount}`;
       util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
         console.log("我邀请结盟消息----", res)
-        if (res.errCode === 0) {
+        if (res.errCode === 0 && res.inviteAlliance.details.length) {
           this.meInviteRecList = res.inviteAlliance.details.filter((shop) => {
             shop.distance = '<' + shop.distance.toFixed(1) + 'km'
             return shop
