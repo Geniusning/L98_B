@@ -6,19 +6,19 @@
           <radio-group @change="checkboxRecomAct">
             <repeat for="{{shopRecList}}" key="index" index="index" item="item">
               <label class="checkbox" class="label_wrapper">
-                      <radio color="#FFBA00" value="{{item.id}}" class="checkbox" checked="{{item.checked}}" />
-                      <view class="list_item">
-                        <view class="list_item_left">
-                          <image class="itemPic" src="{{item.image}}" mode="scaleToFill" lazy-load="false">
-                          </image>
-                        </view>
-                        <view class="list_item_right">
-                          <text class="item">项目名称：{{item.name}}</text>
-                          <text class="item">限制：{{item.limit}}</text>
-                          <text class="item">描述内容：{{item.content}}</text>
-                        </view>
-                      </view>
-                    </label>
+                <radio color="#FFBA00" value="{{item.id}}" class="checkbox" checked="{{item.checked}}" />
+                <view class="list_item">
+                  <view class="list_item_left">
+                    <image class="itemPic" src="{{item.image}}" mode="scaleToFill" lazy-load="false">
+                    </image>
+                  </view>
+                  <view class="list_item_right">
+                    <text class="item">项目名称：{{item.name}}</text>
+                    <text class="item">限制：{{item.limit}}</text>
+                    <text class="item">描述内容：{{item.content}}</text>
+                  </view>
+                </view>
+              </label>
             </repeat>
             <view wx:if="{{!shopRecList.length}}" class="noData">暂无活动数据</view>
           </radio-group>
@@ -30,7 +30,7 @@
       </view>
       <view class="handle_box" wx:else>
         <!-- <button class="btn left-btn" @tap="edit">编辑</button> -->
-        <button class="btn center-btn" style="width:95%" @tap="makeLeagle">确定</button>
+        <button class="btn center-btn" style="width:95%" @tap="upRack">确定</button>
       </view>
     </view>
     <view class="noData" wx:else>暂无数据</view>
@@ -45,6 +45,7 @@
       navigationBarTitleText: '管理友商派送项目'
     };
     data = {
+      storeId: "",
       pageType: "",
       AIIDs: [],
       winHeight: "",
@@ -102,18 +103,24 @@
         })
       },
       //结盟
-      makeLeagle() {
-        let data = {
-          InviterID: this.inviterId,
-          inviteesID: this.inviteeId,
-          inviterResID: this.recommendId
+      upRack() {
+        if (!this.recommendId) {
+          wx.showToast({
+            title: '请选择项目',
+            icon: 'none',
+            duration: 2000
+          })
+          return
         }
-        let url = `${this.$parent.globalData.commonUrl}/api/inviteAlliance?tk=${this.$parent.globalData.tk}`
+        let data = {
+          resID: this.recommendId,
+          storeID: this.storeId,
+        }
+        let url = `${this.$parent.globalData.commonUrl}/api/upRack?tk=${this.$parent.globalData.tk}`
         util.interface_post(url, data, this.$parent.globalData.StoreId).then(res => {
           if (res.errCode === 0) {
-            console.log("del result-----", res)
             wx.showToast({
-              title: '结盟成功',
+              title: '添加成功',
               icon: 'success',
               duration: 2000
             })
@@ -123,6 +130,7 @@
               });
             }, 1000);
           }
+
         })
       }
     };
@@ -146,11 +154,9 @@
     onLoad(e) {
       this.pageType = e.type
       console.log("this.pageType---", this.pageType)
-      if (this.pageType == "leagle") {
-        this.inviterId = e.InviterID
-        this.inviteeId = e.inviteesID
-        console.log("this.inviterId---", this.inviterId)
-        console.log("this.inviteeId---", this.inviteeId)
+      if (this.pageType == "upRack") {
+        this.storeId = e.storeID
+        console.log("storeId-----", this.storeId)
         wx.setNavigationBarTitle({
           title: '选择结盟派送项目'
         })
@@ -206,5 +212,4 @@
   }
 </style>
 <style lang="less" src="../../../mixins/less/btn.less">
-
 </style>
