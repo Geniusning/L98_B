@@ -46,6 +46,7 @@
 
 <script>
   import wepy from 'wepy';
+  import util from '../../../utils/utils.js'
   export default class shopmanRecommend extends wepy.page {
     config = {
       navigationBarTitleText: '店长推荐',
@@ -80,7 +81,7 @@
             _this.imgUrl = tempFilePaths[0];
             _this.$apply();
             wx.uploadFile({
-              url: `${_this.$parent.globalData.commonUrl}/api/photoUpload?tk=${_this.$parent.globalData.tk}&storeId=${this.$parent.globalData.StoreId}`,
+              url: `${_this.$parent.globalData.commonUrl}/api/photoUpload?tk=${_this.$parent.globalData.tk}&storeId=${_this.$parent.globalData.StoreId}`,
               filePath: _this.imgUrl,
               name: "file",
               header: {
@@ -166,12 +167,15 @@
     };
     events = {};
     onShow() {
+      var tempObj = this.$parent.globalData.recommendPrize;
+      var editInfo = this.$parent.globalData.editInfo;
       if (Object.keys(this.$parent.globalData.recommendPrize).length > 0) {
         this.isShowRecommendContent = true;
+        tempObj.content = util.returnDiscountContent(tempObj)
+        this.recommendPrize = tempObj
+        this.$apply();
       }
       console.log(this.$parent.globalData);
-      let tempObj = this.$parent.globalData.recommendPrize;
-      let editInfo = this.$parent.globalData.editInfo;
       if (editInfo.name) {
         this.name = editInfo.name
         this.imgUrl = editInfo.image
@@ -183,11 +187,9 @@
         this.id = editInfo.id
       }
       console.log("Object.keys(this.$parent.globalData.recommendPrize)", Object.keys(this.$parent.globalData.recommendPrize))
-      console.log(this.isShowRecommendContent)
-      tempObj.content = util.returnDiscountContent(tempObj.type)
-      this.recommendPrize = tempObj
-      this.$apply();
-      console.log("this.recommendPrize-------",this.recommendPrize)
+    
+     
+     
     };
   }
 </script>

@@ -104,8 +104,9 @@
           content: '是否删除此下属',
           success(res) {
             if (res.confirm) {
+              console.log("进入删除")
               let url = `${_this.$parent.globalData.commonUrl}/api/deleteStaff?tk=${_this.$parent.globalData.tk}&phone=${phoneId}&parent=${_this.$parent.globalData.userInfo.phone}&number=${number}`
-              util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
+              util.interface_get(url,_this.$parent.globalData.StoreId).then(res => {
                 if (res.errCode === 0) {
                   wx.showToast({
                     title: '删除成功',

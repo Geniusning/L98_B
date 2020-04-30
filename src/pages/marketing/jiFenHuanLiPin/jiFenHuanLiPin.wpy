@@ -25,9 +25,9 @@
             <navigator url="/pages/marketing/cardList/cardList?type=recommend" class="chooseDiscount">{{isShowRecommendContent?recommendPrize.content:"选择优惠券"}}</navigator>
           </view>
           <!-- <view class='itemBox'>
-                        <view class='itemname'>第六步：开通"现场送"</view>
-                        <switch @change="switch1Change" />
-                      </view> -->
+                          <view class='itemname'>第六步：开通"现场送"</view>
+                          <switch @change="switch1Change" />
+                        </view> -->
           <!-- <button @tap='submit'> 提交 </button> -->
           <button formType='submit' class="center-btn"> 提交 </button>
         </form>
@@ -71,7 +71,7 @@
             _this.imgUrl = tempFilePaths[0];
             _this.$apply();
             wx.uploadFile({
-              url: `${_this.$parent.globalData.commonUrl}/api/photoUpload?tk=${_this.$parent.globalData.tk}`,
+              url: `${_this.$parent.globalData.commonUrl}/api/photoUpload?tk=${_this.$parent.globalData.tk}&storeId=${_this.$parent.globalData.StoreId}`,
               filePath: _this.imgUrl,
               name: "file",
               header: {
@@ -145,8 +145,8 @@
     events = {};
     onShow() {
       console.log(this.$parent.globalData);
-      let tempObj = this.$parent.globalData.recommendPrize;
-      let editInfo = this.$parent.globalData.editInfo;
+      var tempObj = this.$parent.globalData.recommendPrize;
+      var editInfo = this.$parent.globalData.editInfo;
       if (editInfo.name) {
         this.name = editInfo.name
         this.originPrice = editInfo.integral
@@ -158,11 +158,11 @@
       this.couponID = tempObj.couponID
       if (Object.keys(this.$parent.globalData.recommendPrize).length > 0) {
         this.isShowRecommendContent = true;
+        tempObj.content = util.returnDiscountContent(tempObj)
+        this.recommendPrize = tempObj
+        this.$apply();
       }
-      tempObj.content = util.returnDiscountContent(tempObj.type)
-      this.recommendPrize = tempObj
-      this.$apply();
-      console.log("this.recommendPrize--------",this.recommendPrize)
+      console.log("this.recommendPrize--------", this.recommendPrize)
     };
   }
 </script>

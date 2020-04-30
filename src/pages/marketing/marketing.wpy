@@ -79,7 +79,7 @@
         </view>
       </view>
       <view class='item-right'>
-        <navigator hover-class="none" url='/pages/marketing/friendBusiness/friendBusinessM?type=market' class='setting'>管理</navigator>
+        <navigator hover-class="none" url='/pages/marketing/friendBusiness/friendBusinessM?type=managerLeagle' class='setting'>管理</navigator>
         <navigator hover-class="none" url='/pages/marketing/friendBusiness/friendBusiness' class='setting'>设置</navigator>
       </view>
     </view>

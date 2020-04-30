@@ -80,7 +80,7 @@
             <radio color='orange' value="{{item.id}}" checked="{{item.checked}}" />{{item.value}}
           </repeat>
         </radio-group>
-        <picker wx:if="{{beginTimeShow=='3'}}" mode="date" value="{{starDate}}" start="2018-01-01" end="2027-09-01" @change="bindStartDateChange">
+        <picker wx:if="{{beginTimeShow=='3'}}" mode="date" value="{{starDate}}" start="{{starDate}}" end="2027-09-01" @change="bindStartDateChange">
           <view class="picker">
             <text class='pickerbg'>请选择生效时间：{{starDate}}</text>
           </view>
@@ -100,9 +100,9 @@
             </repeat>
           </radio-group>
         </view>
-        <picker wx:if="{{endTimeShow=='custom'}}" mode="date" value="{{endPickerDate}}" start="2018-09-01" end="2020-09-01" @change="bindEndDateChange">
+        <picker wx:if="{{endTimeShow=='custom'}}" mode="date" value="{{endPickerDate}}" start="{{starDate}}" end="2029-09-01" @change="bindEndDateChange">
           <view class="endDatepicker">
-            {{endPickerDate}}
+            {{endDate}}
           </view>
         </picker>
         <!-- <text wx:else class='twnowDate'>{{nowDate}}</text> -->
@@ -133,7 +133,7 @@ export default class makeDiscount extends wepy.page {
     discountTypeIndex: '0',
     starDate: '',
     endDate: '',
-    endPickerDate: '2021-09-01',
+    endPickerDate: '',
     moneyValue: '',
     goodsValue: '',
     themeValue: '',
@@ -268,9 +268,7 @@ export default class makeDiscount extends wepy.page {
     },
     //失效自定义的时间
     bindEndDateChange(e) {
-      let date = e.detail.value;
-      this.endPickerDate = date;
-      this.endDate = date;
+      this.endDate = e.detail.value;
     },
     //输入金额触发
     inputMoney(e) {
@@ -324,6 +322,7 @@ export default class makeDiscount extends wepy.page {
   onShow() {
     this.endDate = util.someDayLater(util.nowDate(), 1, '-');
     this.starDate = util.nowDate();
+    this.endPickerDate = this.starDate
   }
 }
 </script>

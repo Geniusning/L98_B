@@ -6,25 +6,26 @@
           <radio-group @change="checkboxRecomAct">
             <repeat for="{{shopRecList}}" key="index" index="index" item="item">
               <label class="checkbox" class="label_wrapper">
-                <radio color="#FFBA00" value="{{item.id}}" class="checkbox" checked="{{item.checked}}" />
-                <view class="list_item">
-                  <view class="list_item_left">
-                    <image class="itemPic" src="{{item.image}}" mode="scaleToFill" lazy-load="false">
-                    </image>
+                  <radio color="#FFBA00" value="{{item.id}}" class="checkbox" checked="{{item.checked}}" />
+                  <view class="list_item">
+                    <view class="list_item_left">
+                      <image class="itemPic" src="{{item.image}}" mode="scaleToFill" lazy-load="false">
+                      </image>
+                    </view>
+                    <view class="list_item_right">
+                      <text class="item">项目名称：{{item.name}}</text>
+                      <text class="item">限制：{{item.limit}}</text>
+                      <text wx:if="{{item.isused}}" class="status">使用中</text>
+                      <text class="item">描述内容：{{item.content}}</text>
+                    </view>
                   </view>
-                  <view class="list_item_right">
-                    <text class="item">项目名称：{{item.name}}</text>
-                    <text class="item">限制：{{item.limit}}</text>
-                    <text class="item">描述内容：{{item.content}}</text>
-                  </view>
-                </view>
-              </label>
+                </label>
             </repeat>
             <view wx:if="{{!shopRecList.length}}" class="noData">暂无活动数据</view>
           </radio-group>
         </scroll-view>
       </view>
-      <view class="handle_box" wx:if="{{pageType=='market'}}">
+      <view class="handle_box" wx:if="{{pageType=='managerLeagle'}}">
         <button class="btn left-btn" @tap="edit">编辑</button>
         <button class="btn center-btn" @tap="del">删除</button>
       </view>
@@ -56,11 +57,10 @@
     methods = {
       checkboxRecomAct(e) {
         this.recommendId = e.detail.value
-        console.log
         this.recommendInfo = this.shopRecList.filter(item => {
           return item.id === this.recommendId
         })
-        console.log(this.recommendInfo[0])
+      this.$parent.globalData.leagleEditInfo = this.recommendInfo[0]
       },
       edit() {
         if (!this.recommendId) {
@@ -72,7 +72,8 @@
           return
         }
         // this.$parent.globalData.leaglePrize = this.recommendInfo[0]
-        this.$parent.globalData.leagleEditInfo = this.recommendInfo[0]
+        
+        console.log("选中的管理友商物品----",this.$parent.globalData.leagleEditInfo)
         wx.navigateTo({
           url: '/pages/marketing/friendBusiness/friendBusiness?edit=1&recommendId=' + this.recommendId,
         })
@@ -81,6 +82,14 @@
         if (!this.recommendId) {
           wx.showToast({
             title: '请选择项目',
+            icon: 'none',
+            duration: 2000
+          })
+          return
+        }
+        if (this.recommendInfo[0].isused) {
+          wx.showToast({
+            title: '此项目正在其他店铺使用',
             icon: 'none',
             duration: 2000
           })
@@ -99,6 +108,12 @@
               duration: 2000
             })
             this._loadResAlliance()
+          } else {
+            wx.showToast({
+              title: '删除失败',
+              icon: 'none',
+              duration: 2000
+            })
           }
         })
       },
@@ -130,7 +145,6 @@
               });
             }, 1000);
           }
-
         })
       }
     };
@@ -162,6 +176,9 @@
         })
       }
       this.winHeight = util.getScrollHeight(110);
+      // this._loadResAlliance()
+    };
+    onShow() {
       this._loadResAlliance()
     }
     // Other properties
@@ -195,8 +212,18 @@
             display: flex;
             flex-direction: column;
             justify-content: space-around;
+            position: relative;
             .item {
               color: #333;
+            }
+            .status {
+              position: absolute;
+              top: 60rpx;
+              right: -40rpx;
+              padding: 4rpx 6rpx;
+              border: 1px solid red;
+              color: red;
+              transform: rotate(-20deg);
             }
           }
         }
@@ -212,4 +239,5 @@
   }
 </style>
 <style lang="less" src="../../../mixins/less/btn.less">
+
 </style>

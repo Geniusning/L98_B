@@ -319,7 +319,7 @@
             <view class="line"></view>
             <navigator url="/pages/index/youKeLingQuan/youKeLingQuan" hover-class="none" class="lockAndExpand-Part-item">
               <view class="item">
-                <text class="name">友客领我券：</text><text class="content big">8</text>
+                <text class="name">我为友商引流：</text><text class="content big">8</text>
               </view>
               <view class="accumulated">
                 <text class="name"><text class='letterSpace'>累</text>计：</text>
@@ -331,7 +331,7 @@
           <view class="lockAndExpand-Part bottomPart">
             <navigator url="/pages/index/yinLiuBenHao/yinLiuBenHao" hover-class="none" class="lockAndExpand-Part-item">
               <view class="item">
-                <text class="name">引流到本号：</text><text class="content big">8</text>
+                <text class="name">友客领我券：</text><text class="content big">8</text>
               </view>
               <view class="accumulated">
                 <text class="name"><text class='letterSpace'>累</text>计：</text>
@@ -341,7 +341,7 @@
             <view class="line"></view>
             <navigator url="/pages/index/yinLiuYouShang/yinLiuYouShang" hover-class="none" class="lockAndExpand-Part-item">
               <view class="item">
-                <text class="name">引流给友商：</text><text class="content big">8</text>
+                <text class="name">友客到我店：</text><text class="content big">8</text>
               </view>
               <view class="accumulated">
                 <text class="name"><text class='letterSpace'>累</text>计：</text>

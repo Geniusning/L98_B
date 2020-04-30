@@ -132,13 +132,16 @@
         item["name"] = this._judgeSysIntegralName(item.integralType)
         this.totalIntegral += item.integral
         this.recordData.push(item)
-      } else if ((item.integralType == "vipCard" || item.integralType === "goodsGift" || item.integralType === "goodsRecommend" || item.integralType === "convertRecommend" || item.integralType === "convertGift" || item.integralType === "renewDice") && type === "exchangeGift") { //消耗兑换
+      } else if ((item.integralType == "game" || item.integralType == "vipCard" || item.integralType === "goodsGift" || item.integralType === "goodsRecommend" || item.integralType === "convertRecommend" || item.integralType === "convertGift" || item.integralType === "renewDice") && type === "exchangeGift") { //消耗兑换
         item.milliTime = util.timestampToTime(item.milliTime).slice(10)
         if (item.integralType == "renewDice") {
           item["name"] = "游戏重摇消耗"
         }
         if (item.integralType == "vipCard") {
           item["name"] = "兑换會員卡"
+        }
+        if (item.integralType == "game") {
+          item["name"] = "游戏送礼"
         }
         this.totalIntegral += item.integral
         this.recordData.push(item)
@@ -148,8 +151,8 @@
         this.recordData.push(item)
       }
       if (item.goodsInfo) { //判断是否是兑换消耗积分`
-        if ((item.integralType == "vipCard" || item.integralType == "goodsRecommend" || item.integralType == "goodsGift" || item.integralType === "convertGift" || item.integralType === "convertRecommend" || item.integralType === "renewDice") && this.pageType === "exchangeGift") {
-          if (item.integralType === "renewDice" || item.integralType == "vipCard") {
+        if ((item.integralType == "game" || item.integralType == "vipCard" || item.integralType == "goodsRecommend" || item.integralType == "goodsGift" || item.integralType === "convertGift" || item.integralType === "convertRecommend" || item.integralType === "renewDice") && this.pageType === "exchangeGift") {
+          if (item.integralType === "renewDice" || item.integralType == "vipCard" || item.integralType == "game") {
             tempTitleArr.push({
               name: item.name,
               id: item.integralType
@@ -186,7 +189,7 @@
       })
       var tempTitleArr = []
       util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
-        console.log("res----------", res)
+        console.log("res _loadDetailIntegral----------", res)
         if (res.errCode === 0) {
           wx.hideLoading()
           this.allTypesData = res.everyDayIntegralForUser
@@ -195,6 +198,7 @@
             this.totalNumbers += 1
           })
           this.selectAllData = this.recordData
+          
         }
         //进入手动选择picker里面的第一类型数据---------begin
         // if (this.pageType === "sys") {

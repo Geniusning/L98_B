@@ -28,7 +28,7 @@
             }
         };
         onLoad() {
-            console.log("placeholder---",this.placeholder)
+            // console.log("placeholder---",this.placeholder)
         }
     }
 </script>

@@ -22,6 +22,8 @@
                   <view class='merchantItem_info'>
                     <view class='merchantItem_info_top'>
                       <text class='shopName'>{{item.name}}</text>
+                      <text wx:if="{{item.allianceState==='Ready'}}" class="status">已结盟</text>
+                      <!-- <text  class="status">已撤销</text> -->
                       <text decode="{{true}}" class='distant'>{{item.distance}}</text>
                     </view>
                     <view class='merchantItem_info_bottom'>
@@ -94,13 +96,24 @@
             <repeat for="{{leagleedShop}}" key="index" index="index" item="item">
               <view class='merchantItem'>
                 <view class='merchantItem_logo'>
-                  <image src='{{item.image}}' class='logo'></image>
+                  <image wx:if="{{item.res != null}}" src='{{item.res.image}}' class='logo'></image>
+                  <image wx:else src='{{item.image}}' class='logo'></image>
                 </view>
                 <view class='merchantItem_info'>
                   <view class='merchantItem_info_top'>
-                    <text class='shopName'>{{item.name}}</text>
+                    <view class="shop-nameAndLogo">
+                      <image class="shopLogo" wx:if="{{item.res != null}}" src="{{item.image}}" 
+                        lazy-load="false">
+                      </image>
+                      <text class='shopName' style="margin-bottom:4rpx;">{{item.name}}</text>
                     <text class='fans' wx:if="{{item.res == null}}" style="">粉丝数：{{item.fanNumber}}</text>
+                    </view>
                     <text class='distant'>{{item.distance}}</text>
+                  </view>
+                  <view class="merchantItem_info_middle" wx:if="{{item.res != null}}">
+                    <view class="product-name">项目名称：{{item.res.name}}</view>
+                    <view class="product-limit">限制：{{item.res.limit}}</view>
+                    <view class="product-desc">项目摘要：{{item.res.content}}</view>
                   </view>
                   <view class='merchantItem_info_bottom'>
                     <text class='fans' wx:if="{{!(item.res == null)}}" style="">粉丝数：{{item.fanNumber}}</text>
@@ -110,7 +123,7 @@
                   </view>
                 </view>
               </view>
-              <view style="margin-top:-16rpx;background:#ffba00">
+              <!-- <view style="margin-top:-16rpx;background:#ffba00">
                 <view class='merchantItem' style="margin-top:-16rpx;background:#ffba00;color:#fff" wx:if="{{item.res != null}}">
                   <view class='merchantItem_logo'>
                     <image src='{{item.res.image}}' class='logo'></image>
@@ -129,7 +142,7 @@
                 <view wx:else class="goods-desc">
                   暂无项目，请选择上架
                 </view>
-              </view>
+              </view> -->
             </repeat>
           </scroll-view>
         </view>
@@ -171,23 +184,15 @@
       winHeight: '',
       currentTab: 0,
       index: 0,
-      shopList: [{
-        name: "一丁点茶咖",
-        dis: "0.9"
-      },
-      {
-        name: "轰趴九八",
-        dis: "0.8"
-      }
-      ],
+      shopList: [],
       cardArray: [{
-        id: 0,
-        name: '实物券'
-      },
-      {
-        id: 1,
-        name: '现金券'
-      }
+          id: 0,
+          name: '实物券'
+        },
+        {
+          id: 1,
+          name: '现金券'
+        }
       ]
     };
     methods = {
@@ -206,6 +211,7 @@
         }
         util.interface_post(url, data, this.$parent.globalData.StoreId).then(res => {
           console.log("撤销结盟----", res)
+          this.leagleedShop = [];
           if (res.errCode === 0) {
             wx.showToast({
               title: '撤销成功',
@@ -213,6 +219,7 @@
               duration: 2000
             })
             this._getAreadyAlliance()
+            this._loadNearbyShops()
             this.$apply()
           }
         })
@@ -225,6 +232,7 @@
           inviteesID: this.$parent.globalData.StoreId,
         }
         util.interface_post(url, data, this.$parent.globalData.StoreId).then(res => {
+          this.inviteMeRecList = []
           if (res.errCode === 0) {
             wx.showToast({
               title: '结盟成功',
@@ -232,6 +240,13 @@
               duration: 2000
             })
             this._loadInviteMeAlliance()
+            this._getAreadyAlliance()
+          }else if(res.errCode === 1043 ){ //友商个数已满
+            wx.showToast({
+              title: '最多允许结盟6个友商,须先删除,才能新增结盟',
+              icon: 'none',
+              duration: 2000
+            })
           }
           this.$apply()
         })
@@ -244,6 +259,7 @@
           inviteesID: this.$parent.globalData.StoreId,
         }
         util.interface_post(url, data, this.$parent.globalData.StoreId).then(res => {
+          this.inviteMeRecList = []
           console.log("拒绝结果----", res)
           if (res.errCode === 0) {
             wx.showToast({
@@ -252,8 +268,8 @@
               duration: 2000
             })
             this._loadInviteMeAlliance()
+            this.$apply()
           }
-          this.$apply()
         })
       },
       seletStoreId(e) {
@@ -268,18 +284,21 @@
         let url = `${this.$parent.globalData.commonUrl}/api/inviteAlliance?tk=${this.$parent.globalData.tk}`
         util.interface_post(url, data, this.$parent.globalData.StoreId).then(res => {
           if (res.errCode === 0) {
-            console.log("del result-----", res)
+            console.log(" result-----", res)
             wx.showToast({
-              title: '结盟成功',
+              title: '邀请成功',
               icon: 'success',
+              duration: 2000
+            })
+          } else if (res.errCode === 1046) {
+            wx.showToast({
+              title: '已结盟',
+              icon: 'none',
               duration: 2000
             })
           }
         })
-        // console.log("this.$parent.globalData.StoreId---", this.$parent.globalData.StoreId)
-        // wx.navigateTo({
-        //   url: `/pages/marketing/friendBusiness/friendBusinessM?type=leagle&InviterID=${this.$parent.globalData.StoreId}&inviteesID=${this.inviteesId}`
-        // })
+        this._loadMeInviteAlliance()
       },
       changeSwiper(e) {
         console.log("滑动触发--------", e.detail);
@@ -297,7 +316,7 @@
         }
       },
       // 点击标题切换当前页时改变样式
-      swichNav: function (e) {
+      swichNav: function(e) {
         var cur = e.target.dataset.current;
         if (this.currentTab == cur) {
           return false;
@@ -310,7 +329,7 @@
           this.showLeagleBtn = false;
         }
       },
-      bindPickerChange: function (e) {
+      bindPickerChange: function(e) {
         console.log('picker发送选择改变，携带值为', e.detail.value);
         this.index = e.detail.value;
       }
@@ -321,12 +340,12 @@
       util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
         console.log("拉取已结盟商家----", res)
         if (res.errCode === 0 && res.areadyAlliance.length) {
-          this.leagleedShop = res.areadyAlliance.filter((shop) => {
+          this.leagleedShop = res.areadyAlliance
+          this.leagleedShop.forEach((shop) => {
             shop.distance = '<' + shop.distance.toFixed(1) + 'km'
-            return shop
           })
+          this.$apply();
         }
-        this.$apply();
       });
     }
     //加载邀我结盟消息 loadInviteMeAlliance
@@ -335,9 +354,9 @@
       util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
         console.log("邀请我结盟消息----", res)
         if (res.errCode === 0 && res.inviteAlliance.details.length) {
-          this.inviteMeRecList = res.inviteAlliance.details.filter((shop) => {
+          this.inviteMeRecList = res.inviteAlliance.details
+          this.inviteMeRecList.forEach((shop) => {
             shop.distance = '<' + shop.distance.toFixed(1) + 'km'
-            return shop
           })
           this.inviteMeCursor = res.inviteAlliance.cursor
         }
@@ -350,20 +369,19 @@
       util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
         console.log("我邀请结盟消息----", res)
         if (res.errCode === 0 && res.inviteAlliance.details.length) {
-          this.meInviteRecList = res.inviteAlliance.details.filter((shop) => {
+          this.meInviteRecList = res.inviteAlliance.details
+          this.meInviteRecList.forEach((shop) => {
             shop.distance = '<' + shop.distance.toFixed(1) + 'km'
-            return shop
           })
           this.meInviteCursor = res.inviteAlliance.cursor
         }
-        console.log("this.meInviteRecList---", this.meInviteRecList)
         this.$apply();
       });
     };
     _loadNearbyShops() {
       var url = `${this.$parent.globalData.commonUrl}/api/loadNearbyStore?tk=${this.$parent.globalData.tk}`;
       util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
-        console.log("res----", res)
+        console.log("拉取附近商家", res)
         if (res.errCode === 0) {
           this.shopList = res.nearbyStore.filter((shop => {
             shop.distance = '<' + shop.distance.toFixed(1) + 'km'
@@ -372,21 +390,19 @@
             }
           }))
         }
-        console.log("this.shopList-0-----", this.shopList)
         this.$apply();
       });
     };
     events = {};
     onShow() {
-      this._loadMeInviteAlliance()
       this._getAreadyAlliance()
     }
     onLoad() {
-      this._loadNearbyShops()
-      this._loadInviteMeAlliance()
-
       //  高度自适应
       this.winHeight = util.getScrollHeight(280);
+      this._loadMeInviteAlliance()
+      this._loadInviteMeAlliance()
+      this._loadNearbyShops()
     }
     // Other properties
   }
@@ -437,26 +453,27 @@
       padding-top: 34rpx;
     }
   }
+  .goods-desc {
+    width: 100%;
+    text-align: center;
+    color: #fff;
+    height: 50rpx;
+    line-height: 50rpx;
+  }
   .merchantItem {
     flex: 1;
     margin: 16rpx auto;
     padding: 10rpx 20rpx;
     box-sizing: border-box;
     background-color: #fff;
-    height: 150rpx;
+    // height: 150rpx;
     display: flex;
     justify-content: flex-start;
     font-size: 28rpx;
-    .goods-desc {
-      width: 100%;
-      text-align: center;
-      color: #333;
-      height: 150rpx;
-      line-height: 150rpx;
-    }
     .logo {
       width: 130rpx;
       height: 130rpx;
+      margin-top: 40rpx;
     }
     .merchantItem_info {
       flex: 1;
@@ -469,6 +486,30 @@
     .merchantItem_info_bottom {
       display: flex;
       justify-content: space-between;
+      
+      .status {
+        padding: 5rpx 6rpx;
+        border: 1px solid red;
+        color: red;
+        transform: rotate(10deg);
+      }
+      .shopLogo{
+        width: 50rpx;
+        height: 50rpx;
+        border-radius: 50%;
+        margin-right: 4rpx;
+      }
+    }
+    .merchantItem_info_top{
+      .shop-nameAndLogo{
+        display: flex;
+        align-items: center;
+      }
+    }
+    .merchantItem_info_middle{
+      .product-name,.product-limit,.product-desc{
+        margin-top: 6rpx;
+      }
     }
     .handleApply {
       display: inline-block;
@@ -479,4 +520,5 @@
   }
 </style>
 <style lang="less" src="../../../mixins/less/btn.less">
+
 </style>
