@@ -14,25 +14,25 @@
           <radio-group @change="seletStoreId">
             <repeat for="{{shopList}}" key="index" index="index" item="item">
               <label class="item-lable" style="display:flex">
-                <radio color="#FFBA00" class="check-box" value="{{item.storeId}}" checked="{{item.checked}}" />
-                <view class='merchantItem'>
-                  <view class='merchantItem_logo'>
-                    <image src='{{item.image}}' class='logo'></image>
-                  </view>
-                  <view class='merchantItem_info'>
-                    <view class='merchantItem_info_top'>
-                      <text class='shopName'>{{item.name}}</text>
-                      <text wx:if="{{item.allianceState==='Ready'}}" class="status">已结盟</text>
-                      <!-- <text  class="status">已撤销</text> -->
-                      <text decode="{{true}}" class='distant'>{{item.distance}}</text>
+                  <radio color="#FFBA00" class="check-box" value="{{item.storeId}}" checked="{{item.checked}}" />
+                  <view class='merchantItem'>
+                    <view class='merchantItem_logo'>
+                      <image src='{{item.image}}' class='logo'></image>
                     </view>
-                    <view class='merchantItem_info_bottom'>
-                      <text class='fans'>粉丝数：{{item.fanNumber}}</text>
-                      <text class='visitor'>昨日访问量：{{item.lastVisitNum}}</text>
+                    <view class='merchantItem_info'>
+                      <view class='merchantItem_info_top'>
+                        <text class='shopName'>{{item.name}}</text>
+                        <text wx:if="{{item.allianceState==='Ready'}}" class="status">已结盟</text>
+                        <!-- <text  class="status">已撤销</text> -->
+                        <text decode="{{true}}" class='distant'>{{item.distance}}</text>
+                      </view>
+                      <view class='merchantItem_info_bottom'>
+                        <text class='fans'>粉丝数：{{item.fanNumber}}</text>
+                        <text class='visitor'>昨日访问量：{{item.lastVisitNum}}</text>
+                      </view>
                     </view>
                   </view>
-                </view>
-              </label>
+                </label>
             </repeat>
           </radio-group>
         </scroll-view>
@@ -94,26 +94,15 @@
         <view wx:if="{{leagleedShop.length}}">
           <scroll-view scroll-y="true" class="scoll-h">
             <repeat for="{{leagleedShop}}" key="index" index="index" item="item">
-              <view class='merchantItem'>
+              <view class='merchantItem' wx:if="{{item.res == null}}">
                 <view class='merchantItem_logo'>
-                  <image wx:if="{{item.res != null}}" src='{{item.res.image}}' class='logo'></image>
-                  <image wx:else src='{{item.image}}' class='logo'></image>
+                  <image src='{{item.image}}' class='logo'></image>
                 </view>
                 <view class='merchantItem_info'>
                   <view class='merchantItem_info_top'>
-                    <view class="shop-nameAndLogo">
-                      <image class="shopLogo" wx:if="{{item.res != null}}" src="{{item.image}}" 
-                        lazy-load="false">
-                      </image>
-                      <text class='shopName' style="margin-bottom:4rpx;">{{item.name}}</text>
+                    <text class='shopName'>{{item.name}}</text>
                     <text class='fans' wx:if="{{item.res == null}}" style="">粉丝数：{{item.fanNumber}}</text>
-                    </view>
                     <text class='distant'>{{item.distance}}</text>
-                  </view>
-                  <view class="merchantItem_info_middle" wx:if="{{item.res != null}}">
-                    <view class="product-name">项目名称：{{item.res.name}}</view>
-                    <view class="product-limit">限制：{{item.res.limit}}</view>
-                    <view class="product-desc">项目摘要：{{item.res.content}}</view>
                   </view>
                   <view class='merchantItem_info_bottom'>
                     <text class='fans' wx:if="{{!(item.res == null)}}" style="">粉丝数：{{item.fanNumber}}</text>
@@ -123,26 +112,48 @@
                   </view>
                 </view>
               </view>
+              <view class="already-upRack-item" wx:else>
+                <view class="shopInfo">
+                  <image src="{{}}" lazy-load="false" class="shop-logo"></image>
+                  <text class="shop-name"></text>
+                  <text class="shop-distance"></text>
+                </view>
+                <view class="resInfo-box">
+                  <view class="res-img">
+                    <image src="{{}}" mode="scaleToFill" lazy-load="false" class="img"></image>
+                  </view>
+                  <view class="res-info">
+                    <text class="res-name"></text>
+                    <text class="res-limit"></text>
+                    <text class="res-desc"></text>
+                    <text></text>
+                  </view>
+                </view>
+                <view class="handle">
+                  <text class="fans">粉丝数:</text>
+                  <text class="lastVisitNum">昨日访问量:</text>
+                </view>
+              </view>
               <!-- <view style="margin-top:-16rpx;background:#ffba00">
-                <view class='merchantItem' style="margin-top:-16rpx;background:#ffba00;color:#fff" wx:if="{{item.res != null}}">
-                  <view class='merchantItem_logo'>
-                    <image src='{{item.res.image}}' class='logo'></image>
-                  </view>
-                  <view class='merchantItem_info'>
-                    <view class='merchantItem_info_top'>
-                      <text class='shopName'>项目名称：{{item.res.name}}</text>
-                      <text class='distant'>限制：{{item.res.limit}}</text>
+                  <view class='merchantItem' style="margin-top:-16rpx;background:#ffba00;color:#fff" wx:if="{{item.res != null}}">
+                    <view class='merchantItem_logo'>
+                      <image src='{{item.res.image}}' class='logo'></image>
                     </view>
-                    <view class='merchantItem_info_bottom'>
-                      <text class='fans'>项目摘要：{{item.res.content}}</text>
-                      <text class='visitor'>我店上架项目详情</text>
+                    <view class='merchantItem_info'>
+                      <view class='merchantItem_info_top'>
+                        <text class='shopName'>项目名称：{{item.res.name}}</text>
+                        <text class='distant'>限制：{{item.res.limit}}</text>
+                      </view>
+                      <view class='merchantItem_info_bottom'>
+                        <text class='fans'>项目摘要：{{item.res.content}}</text>
+                        <text class='visitor'>我店上架项目详情</text>
+                      </view>
                     </view>
                   </view>
-                </view>
-                <view wx:else class="goods-desc">
-                  暂无项目，请选择上架
-                </view>
-              </view> -->
+                  <view wx:else class="goods-desc">
+                    暂无项目，请选择上架
+                  </view>
+                </view> -->
             </repeat>
           </scroll-view>
         </view>
@@ -211,7 +222,6 @@
         }
         util.interface_post(url, data, this.$parent.globalData.StoreId).then(res => {
           console.log("撤销结盟----", res)
-          this.leagleedShop = [];
           if (res.errCode === 0) {
             wx.showToast({
               title: '撤销成功',
@@ -219,7 +229,6 @@
               duration: 2000
             })
             this._getAreadyAlliance()
-            this._loadNearbyShops()
             this.$apply()
           }
         })
@@ -241,14 +250,8 @@
             })
             this._loadInviteMeAlliance()
             this._getAreadyAlliance()
-          }else if(res.errCode === 1043 ){ //友商个数已满
-            wx.showToast({
-              title: '最多允许结盟6个友商,须先删除,才能新增结盟',
-              icon: 'none',
-              duration: 2000
-            })
+            this.$apply()
           }
-          this.$apply()
         })
       },
       //拒绝结盟
@@ -466,14 +469,13 @@
     padding: 10rpx 20rpx;
     box-sizing: border-box;
     background-color: #fff;
-    // height: 150rpx;
+    height: 150rpx;
     display: flex;
     justify-content: flex-start;
     font-size: 28rpx;
     .logo {
       width: 130rpx;
       height: 130rpx;
-      margin-top: 40rpx;
     }
     .merchantItem_info {
       flex: 1;
@@ -486,29 +488,11 @@
     .merchantItem_info_bottom {
       display: flex;
       justify-content: space-between;
-      
       .status {
         padding: 5rpx 6rpx;
         border: 1px solid red;
         color: red;
         transform: rotate(10deg);
-      }
-      .shopLogo{
-        width: 50rpx;
-        height: 50rpx;
-        border-radius: 50%;
-        margin-right: 4rpx;
-      }
-    }
-    .merchantItem_info_top{
-      .shop-nameAndLogo{
-        display: flex;
-        align-items: center;
-      }
-    }
-    .merchantItem_info_middle{
-      .product-name,.product-limit,.product-desc{
-        margin-top: 6rpx;
       }
     }
     .handleApply {
@@ -518,6 +502,7 @@
       color: #fff;
     }
   }
+  .already-upRack-item {}
 </style>
 <style lang="less" src="../../../mixins/less/btn.less">
 
