@@ -1,0 +1,288 @@
+<template>
+	<view class="integralDetail_wrapper">
+		<view class="integralDetail_top">
+			<view class="date">{{fatherDate}} 当日合计{{totalNumbers}}份</view>
+			<view class="select">
+				<image src="../../../images/shaixuan.png" mode="scaleToFill" lazy-load="false" class="selectIcon"></image>
+				<picker @change="bindPickerChange" value="{{pickindex}}" range="{{pickerArray}}" range-key="name">
+					<view class="picker">
+						{{pickerArray[pickindex].name}}
+					</view>
+				</picker>
+			</view>
+		</view>
+		<view class="integralDetail_bottom">
+			<scroll-view scroll-y scroll-with-animation style="height:{{winHeight}}rpx">
+				<view wx:if="{{pageType==='advertMe' || pageType==='drainageFri'}}">
+					<view class="list">
+						<view class="item">发生时间</view>
+						<view class="item">友商名称</view>
+					</view>
+					<repeat for="{{recordData}}" key="index" index="index" item="item">
+						<view class="list">
+							<view class="item">{{item.milliTime}}</view>
+							<view class="item">{{item.storename}}</view>
+						</view>
+					</repeat>
+				</view>
+				<view wx:else>
+					<view class="list">
+						<view class="item">发生时间</view>
+						<view class="item">访客头像</view>
+						<view class="item">友客来源</view>
+					</view>
+					<repeat for="{{recordData}}" key="index" index="index" item="item">
+						<view class="list">
+							<view class="hasVisitorItem">{{item.milliTime}}</view>
+							<view class="hasVisitorItem">
+								<image src="{{item.headimgurl}}" class="avatarIcon"></image>
+							</view>
+							<view class="hasVisitorItem">{{item.storename}}</view>
+						</view>
+					</repeat>
+				</view>
+			</scroll-view>
+		</view>
+	</view>
+</template>
+
+<script>
+	import wepy from 'wepy'
+	import util from '../../../utils/utils.js'
+	export default class mutualAdvertiseDetail extends wepy.page {
+		config = {
+			navigationBarTitleText: '详情'
+		};
+		data = {
+			fatherDate: "",
+			pickindex: 0,
+			totalNumbers: 0,
+			pageType: "",
+			integralType: "积分",
+			titleHeadName: "收礼",
+			pickerArray: [{
+				name: "全部",
+				id: "all"
+			}, ],
+			allTypesData: [],
+			winHeight: "",
+			recordData: [],
+			selectAllData: [],
+		};
+		methods = {
+			bindPickerChange(e) {
+				this.pickindex = e.detail.value
+				console.log(this.pickerArray[parseInt(e.detail.value)])
+				var dataType = this.pickerArray[parseInt(e.detail.value)].id
+				console.log("dataType----", dataType)
+				//  else if (this.pageType === "exchangeGift") {
+				//   dataType = this.pickerArray[parseInt(e.detail.value)].name
+				// } else if (this.pageType === "givenGift") {
+				//   dataType = this.pickerArray[parseInt(e.detail.value)].name
+				// }
+				this._judgeIntegralType(this.pageType, dataType)
+			}
+		};
+		_judgeIntegralType(pageType, dataType) {
+			this.recordData = []
+			this.totalNumbers = 0
+			if (dataType === "全部" || dataType === "all") {
+				this.recordData = this.selectAllData
+				this.recordData.forEach(item => {
+					this.totalNumbers += 1
+				})
+				this.$apply()
+				return
+			}
+			this.allTypesData.forEach(item => {
+				// if (pageType === "advertMe" || pageType === "drainageFri") {
+					if (item.storename === dataType) {
+						this.totalNumbers += 1
+						this.recordData.push(item)
+					}
+				// }
+			})
+			this.$apply()
+		}
+		_handleItem(tempTitleArr, item, type) {
+			if (type === "advertMe" || type === "drainageFri") { //友商宣传我
+				item.milliTime = util.timestampToTime(item.time).slice(10)
+				this.recordData.push(item)
+			} else if (type === "friGetCoupon" || type === "friCheckout") { //
+				item.milliTime = util.timestampToTime(item.time).slice(10)
+				this.recordData.push(item)
+			}
+			tempTitleArr.push({
+				name: item.storename,
+				id: item.storename
+			})
+			console.log("this.recordData-------", this.recordData)
+		}
+		//友商宣传我 和 我为友商宣传
+		_loadDetaildAvertMe(url, type) {
+			wx.showLoading({
+				title: '加载中',
+				mask: true
+			})
+			var tempTitleArr = []
+			util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
+				console.log("res 友商宣传我----------", res)
+				if (res.errCode === 0) {
+					wx.hideLoading()
+					this.allTypesData = res.dataStat
+					this.allTypesData.forEach((item, index) => {
+						this._handleItem(this.pickerArray, item, type)
+						this.totalNumbers += 1
+					})
+					this.selectAllData = this.recordData
+				}
+				var pickArr = []
+				pickArr = this._delSameItem(this.pickerArray)
+				this.pickerArray = pickArr
+				console.log("this.pickerArray------", this.pickerArray)
+				this.$apply()
+			})
+		};
+		//友商领我券和友商到店
+		_loadDetailFriAboutCoupon(url, type) {
+			wx.showLoading({
+				title: '加载中',
+				mask: true
+			})
+			var tempTitleArr = []
+			util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
+				console.log("res 友商优惠券----------", res)
+				if (res.errCode === 0) {
+					wx.hideLoading()
+					this.allTypesData = res.dataStat
+					this.allTypesData.forEach((item, index) => {
+						this._handleItem(this.pickerArray, item, type)
+						this.totalNumbers += 1
+					})
+					this.selectAllData = this.recordData
+				}
+				var pickArr = []
+				pickArr = this._delSameItem(this.pickerArray)
+				this.pickerArray = pickArr
+				console.log("this.pickerArray------", this.pickerArray)
+				this.$apply()
+			})
+		};
+		//数组去重
+		_delSameItem(arr) {
+			var newArr = [];
+			var obj = {};
+			for (var i = 0; i < arr.length; i++) {
+				if (!obj[arr[i].name]) {
+					newArr.push(arr[i]);
+					obj[arr[i].name] = true;
+				}
+			}
+			return newArr
+		};
+		_transformName(name) {
+			if (name === "beer") {
+				name = "啤酒"
+			} else if (name === "flower") {
+				name = "鲜花"
+			} else if (name === "house") {
+				name = "别墅"
+			} else if (name === "boat") {
+				name = "邮轮"
+			}
+			return name
+		}
+		events = {};
+		async onLoad(e) {
+			this.pickerArray = [{
+				name: "全部",
+				id: "all"
+			}, ];
+			this.fatherDate = e.date
+			this.pageType = e.type
+			console.log("this.pageType----", this.pageType)
+			if (this.pageType === "advertMe") {
+				wx.setNavigationBarTitle({
+					title: '友商宣传我详情'
+				});
+				let url = `${this.$parent.globalData.commonUrl}/api/loadAllianceFriToMeDetail?date=${this.fatherDate}&tk=${this.$parent.globalData.tk}`
+				this._loadDetaildAvertMe(url, this.pageType)
+			} else if (this.pageType === "drainageFri") {
+				wx.setNavigationBarTitle({
+					title: '我为友商引流详情'
+				});
+				let url = `${this.$parent.globalData.commonUrl}/api/loadAllianceMeToFriDetail?date=${this.fatherDate}&tk=${this.$parent.globalData.tk}`
+				this._loadDetaildAvertMe(url, this.pageType)
+			} else if (this.pageType === "friGetCoupon") {
+				wx.setNavigationBarTitle({
+					title: '友客领我券详情'
+				});
+				let url = `${this.$parent.globalData.commonUrl}/api/loadAllianceCouponDetail?date=${this.fatherDate}&tk=${this.$parent.globalData.tk}`
+				this._loadDetailFriAboutCoupon(url, this.pageType)
+			} else if (this.pageType === "friCheckout") {
+				wx.setNavigationBarTitle({
+					title: '友客核销券详情'
+				});
+				let url = `${this.$parent.globalData.commonUrl}/api/loadAllianceSetOffCouponDetail?date=${this.fatherDate}&tk=${this.$parent.globalData.tk}`
+				this._loadDetailFriAboutCoupon(url, this.pageType)
+			}
+			this.winHeight = util.getScrollHeight(80)
+		}
+	}
+</script>
+
+<style lang="less">
+	.integralDetail_wrapper {
+		.integralDetail_top {
+			background-color: #fff;
+			height: 80rpx;
+			line-height: 80rpx;
+			position: relative;
+			.date {
+				width: 100%;
+				text-align: left;
+				height: 80rpx;
+				line-height: 80rpx;
+				padding-left: 24rpx;
+			}
+			.select {
+				position: absolute;
+				top: 0;
+				right: 12rpx;
+				display: flex;
+				.selectIcon {
+					width: 40rpx;
+					height: 40rpx;
+					padding-top: 16rpx;
+				}
+				.selectText {}
+				.picker {
+					color: red;
+					text-decoration: underline;
+				}
+			}
+		}
+		.integralDetail_bottom {
+			.list {
+				display: flex;
+				margin: 30rpx 0;
+				.item,
+				.hasVisitorItem {
+					width: 50%;
+					text-align: center;
+					height: 80rpx;
+					line-height: 80rpx;
+				}
+				.avatarIcon {
+					width: 80rpx;
+					height: 80rpx;
+					border-radius: 50%;
+				}
+				.hasVisitorItem {
+					width: 33.333%;
+					text-align: center;
+				}
+			}
+		}
+	}
+</style>

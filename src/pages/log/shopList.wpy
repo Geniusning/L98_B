@@ -145,7 +145,7 @@
               this.$parent.globalData.shopInfo = res;
               console.log("店铺信息---------", this.$parent.globalData)
               wx.switchTab({
-                url: '/pages/mine/mine'
+                url: '/pages/member/member'
               })
             })
           }, 500);

@@ -119,6 +119,8 @@
         }
         util.interface_post(url, data, this.$parent.globalData.StoreId).then(res => {
           console.log('店长推荐成功-----------------------', res);
+          this.isShowRecommendContent = false;
+          this.$parent.globalData.recommendPrize = {};
           if (res.errCode === 0) {
             wx.showToast({
               title: '保存成功',
@@ -143,6 +145,9 @@
       }
     };
     events = {};
+    onLoad(){
+      this.$parent.globalData.recommendPrize = {};
+    };
     onShow() {
       console.log(this.$parent.globalData);
       var tempObj = this.$parent.globalData.recommendPrize;

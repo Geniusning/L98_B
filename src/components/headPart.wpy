@@ -10,7 +10,7 @@
         <view class="shopInfo-right">
             <view class="shopInfo">
                 <text class="shopName">行业：{{sonShopInfo.industryType}}</text>
-                <text class="staffName">上级：{{superior.name}}13129177665</text>
+                <text class="staffName">名称：{{superior.name}}13129177665</text>
             </view>
         </view>
     </view>

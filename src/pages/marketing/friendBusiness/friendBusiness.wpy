@@ -11,15 +11,15 @@
         <form>
           <view class='itemBox'>
             <view class='itemname'>第二步：活动名称</view>
-            <input maxlength="6" class='input_Area' name='originPrice' @blur="setName" placeholder='请输入活动名称' value="{{name}}"></input>
+            <input maxlength="6" class='input_Area' name='originPrice' @input="setName" placeholder='请输入活动名称' value="{{name}}"></input>
           </view>
           <view class='itemBox'>
             <view class='itemname'>第三步：限制条件</view>
-            <input maxlength="6" class='input_Area' name='originPrice' @blur="setLimit" placeholder='请输入限制条件' value="{{limit}}"></input>
+            <input maxlength="6" class='input_Area' name='originPrice' @input="setLimit" placeholder='请输入限制条件' value="{{limit}}"></input>
           </view>
           <view class='itemBox'>
             <view class='itemname'>第四步：优惠券内容摘要</view>
-            <input maxlength="6" class='input_Area' name='limit' @blur="setContent" placeholder='请输入优惠券内容摘要' value="{{content}}"></input>
+            <input maxlength="6" class='input_Area' name='limit' @input="setContent" placeholder='请输入优惠券内容摘要' value="{{content}}"></input>
           </view>
           <view class='itemBox'>
             <view class='itemname'>第五步：赠送友商客户优惠券</view>
@@ -62,6 +62,7 @@
           content: this.content,
           couponID: this.couponId,
         }
+        console.log("data---",data)
         let url = `${this.$parent.globalData.commonUrl}/api/createResAlliance?tk=${this.$parent.globalData.tk}`
         util.interface_post(url, data, this.$parent.globalData.StoreId).then(res => {
           console.log(res)
@@ -71,18 +72,28 @@
               icon: 'success',
               duration: 2000
             });
+            this.imgUrl = '../../../images/add_pic.png'
+            this.name = ""
+            this.limit = ""
+            this.content = ""
+            this.isShowDiscountContent = false;
             this.$parent.globalData.leaglePrize = {}
+            this.$apply()
           }
         })
       },
       setName(e) {
+        console.log(e.detail.value)
         this.name = e.detail.value
+        console.log("this name",this.name)
       },
       setLimit(e) {
         this.limit = e.detail.value
+        console.log("this name",this.limit)
       },
       setContent(e) {
         this.content = e.detail.value
+         console.log("this name",this.content)
       },
       //选择照片
       chooseImage: function() {
@@ -124,6 +135,7 @@
     onShow() {
       var tempObj = this.$parent.globalData.leaglePrize;
       let leagleEditInfo = this.$parent.globalData.leagleEditInfo;
+      if(Object.keys(leagleEditInfo).length > 0){
         this.fbId = leagleEditInfo.id
         this.uploadImgUrl = leagleEditInfo.image
         this.imgUrl = leagleEditInfo.image
@@ -132,6 +144,7 @@
         this.content = leagleEditInfo.content
         this.couponId = leagleEditInfo.couponID
         this.leaglePrize.content = leagleEditInfo.content
+      }
       console.log("leagleEditInfo-----------", leagleEditInfo)
       if (Object.keys(this.$parent.globalData.leaglePrize).length > 0) {
         this.isShowDiscountContent = true;

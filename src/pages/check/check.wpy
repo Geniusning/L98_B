@@ -182,7 +182,7 @@
       ]
     };
     _loadChenkedCouponList() {
-      //拉取核销列表
+      //拉取待核销列表
       let url = `${this.$parent.globalData.commonUrl}/api/loadLaunchSetOffUserCoupon?tk=${this.$parent.globalData.tk}`
       util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
         console.log("待核销-------",res)
@@ -257,7 +257,7 @@
           success: res => {
             console.log(res);
             wx.request({
-              url: res.result + '&tk=' + _this.$parent.globalData.tk,
+              url: res.result + '&tk=' + _this.$parent.globalData.tk+"&storeId="+_this.$parent.globalData.StoreId,
               success: res => {
                 if (res.data.errCode === 0) {
                   wx.showToast({

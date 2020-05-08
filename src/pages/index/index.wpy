@@ -307,45 +307,45 @@
           </view>
           <!-- top -->
           <view class="lockAndExpand-Part">
-            <navigator url="/pages/index/youShangXuanChuan/youShangXuanChuan" hover-class="none" class="lockAndExpand-Part-item">
+            <navigator url="/pages/index/mutualAdvertise/mutualAdvertiseStat?type=advertMe" hover-class="none" class="lockAndExpand-Part-item">
               <view class="item">
-                <text class="name">友商宣传我：</text><text class="content big">8</text>
+                <text class="name">友商宣传我：</text><text class="content big">{{mutualFri.allianceDayStat[0].dayFriToMeStat}}</text>
               </view>
               <view class="accumulated">
                 <text class="name"><text class='letterSpace'>累</text>计：</text>
-                <text class="content">999次</text>
+                <text class="content">{{mutualFri.friToMeStat}}次</text>
               </view>
             </navigator>
             <view class="line"></view>
-            <navigator url="/pages/index/youKeLingQuan/youKeLingQuan" hover-class="none" class="lockAndExpand-Part-item">
+            <navigator url="/pages/index/mutualAdvertise/mutualAdvertiseStat?type=drainageFri" hover-class="none" class="lockAndExpand-Part-item">
               <view class="item">
-                <text class="name">我为友商引流：</text><text class="content big">8</text>
+                <text class="name">我为友商引流：</text><text class="content big">{{mutualFri.allianceDayStat[0].dayMeToFriStat}}</text>
               </view>
               <view class="accumulated">
                 <text class="name"><text class='letterSpace'>累</text>计：</text>
-                <text class="content">88人</text>
+                <text class="content">{{mutualFri.meToFriStat}}人</text>
               </view>
             </navigator>
           </view>
           <!-- bottom -->
           <view class="lockAndExpand-Part bottomPart">
-            <navigator url="/pages/index/yinLiuBenHao/yinLiuBenHao" hover-class="none" class="lockAndExpand-Part-item">
+            <navigator url="/pages/index/mutualAdvertise/mutualAdvertiseStat?type=friGetCoupon" hover-class="none" class="lockAndExpand-Part-item">
               <view class="item">
-                <text class="name">友客领我券：</text><text class="content big">8</text>
+                <text class="name">友客领我券：</text><text class="content big">{{mutualFri.allianceDayStat[0].dayGetCouponStat}}</text>
               </view>
               <view class="accumulated">
                 <text class="name"><text class='letterSpace'>累</text>计：</text>
-                <text class="content">88次</text>
+                <text class="content">{{mutualFri.getCouponStat}}次</text>
               </view>
             </navigator>
             <view class="line"></view>
-            <navigator url="/pages/index/yinLiuYouShang/yinLiuYouShang" hover-class="none" class="lockAndExpand-Part-item">
+            <navigator url="/pages/index/mutualAdvertise/mutualAdvertiseStat?type=friCheckout" hover-class="none" class="lockAndExpand-Part-item">
               <view class="item">
-                <text class="name">友客到我店：</text><text class="content big">8</text>
+                <text class="name">友客核销：</text><text class="content big">{{mutualFri.allianceDayStat[0].daySetOffStat}}</text>
               </view>
               <view class="accumulated">
                 <text class="name"><text class='letterSpace'>累</text>计：</text>
-                <text class="content">88次</text>
+                <text class="content">{{mutualFri.setOffStat}}次</text>
               </view>
             </navigator>
           </view>
@@ -376,6 +376,7 @@
       communityStat: {}, //社群活动
       mutualStat: {}, //门店与客人
       integralStat: {}, //积分统计
+      mutualFri: {}, //友商统计
       show: false,
       userInfo: {},
       shopInfo: {},
@@ -439,6 +440,7 @@
       this.selectTodayCommunityStat(startDate, endState)
       this.selectYestodayBookingStat(startDate, endState)
       this.selectYestodayJiFen(startDate, endState)
+      this.selectYestodayMutaualFri(startDate, endState)
     }
     //锁客拓客用户
     selectTodayUserStat(startDate, endDate) {
@@ -570,6 +572,32 @@
         this.$apply();
       });
     };
+    //友商互推统计昨天用户
+    selectYestodayMutaualFri(startDate, endDate) {
+      let url = `${this.$parent.globalData.commonUrl}/api/loadAllianceDaySummary?tk=${this.$parent.globalData.tk}&startDate=${startDate}&endDate=${endDate}`;
+      util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
+        console.log('友商互推统计---------------', res);
+        if (res.dataStat.length > 1) {
+          var tempData = {
+            date: 1578758400,
+            dayFriToMeStat: 0,
+            dayMeToFriStat: 0,
+            dayGetCouponStat: 0,
+            daySetOffStat: 0
+          }
+          res.dataStat.forEach(data => {
+            tempData.dayFriToMeStat += data.dayFriToMeStat
+            tempData.dayMeToFriStat += data.dayMeToFriStat
+            tempData.dayGetCouponStat += data.dayGetCouponStat
+            tempData.daySetOffStat += data.daySetOffStat
+          })
+          this.mutualFri.allianceDayStat = [tempData]
+        } else {
+          this.mutualFri.allianceDayStat = res.dataStat;
+        }
+        this.$apply();
+      });
+    };
     // 获取全部数据
     getDataStat(res) {
       let _this = this;
@@ -602,6 +630,7 @@
       this.communityStat = resultData.dataStat.communityStat; //社群活跃度
       this.mutualStat = resultData.dataStat.MutualStat //门店与客人
       this.integralStat = resultData.dataStat.integralStat //积分统计
+      this.mutualFri = resultData.dataStat.allianceStat //友商互推
       this.$apply();
     };
   }

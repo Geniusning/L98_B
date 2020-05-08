@@ -129,6 +129,8 @@
         let _this = this;
         console.log(e.detail.value)
         let formData = e.detail.value;
+        this.isShowRecommendContent = false;
+       
         wx.request({
           url: `${this.$parent.globalData.commonUrl}/api/createRecommend?tk=${this.$parent.globalData.tk}&storeId=${this.$parent.globalData.StoreId}`,
           data: {
@@ -147,6 +149,7 @@
           method: 'POST',
           success: res => {
             console.log('店长推荐成功-----------------------', res);
+             this.$parent.globalData.recommendPrize = {};
             if (res.data.errCode === 0) {
               wx.showToast({
                 title: '保存成功',
@@ -166,6 +169,9 @@
       }
     };
     events = {};
+    onLoad(){
+      this.$parent.globalData.recommendPrize = {};
+    };
     onShow() {
       var tempObj = this.$parent.globalData.recommendPrize;
       var editInfo = this.$parent.globalData.editInfo;
@@ -185,11 +191,7 @@
         this.preferentialPrice = editInfo.discountPrice
         this.Itemcontent = editInfo.subtopic
         this.id = editInfo.id
-      }
-      console.log("Object.keys(this.$parent.globalData.recommendPrize)", Object.keys(this.$parent.globalData.recommendPrize))
-    
-     
-     
+      } 
     };
   }
 </script>

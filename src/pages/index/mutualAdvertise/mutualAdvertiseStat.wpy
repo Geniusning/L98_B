@@ -1,0 +1,194 @@
+<template>
+	<view class="mutualAdt_wrapper">
+		<view class="time-box">
+			<view class="time-box-left">
+				<picker mode="date" value="{{date}}" start="2015-09-01" end="2029-09-01" @change="bindStartDateChange">
+					<view class="picker">{{startDate}}</view>
+				</picker>
+			</view>
+			<view class="line"></view>
+			<view class="time-box-right">
+				<picker mode="date" value="{{date}}" start="2015-09-01" end="2029-09-01" @change="bindEndDateChange">
+					<view class="picker">{{endDate}}</view>
+				</picker>
+			</view>
+			<view class="time-box-btn">
+				<text class="btn" @tap="selecData">确定</text>
+			</view>
+			<view class="total_box">
+				积分合计:{{topTotal}}
+			</view>
+		</view>
+		<view class="content_wrapper">
+			<scroll-view scroll-y scroll-with-animation style="height:{{winHeight}}rpx">
+				<view class="list">
+					<view class="item">日期</view>
+					<view class="item">当天小计(积分)</view>
+					<view class="item">详情</view>
+				</view>
+				<repeat for="{{recordData}}" key="index" index="index" item="item">
+					<view class="list">
+						<view class="item">{{item.date}}</view>
+						<view class="item">{{item.totalData}}</view>
+						<view class="item">
+							<text wx:if="{{item.totalData=='0'}}" @tap="stop" decode class="item" style="text-decoration: underline;color:red">详情&gt;&gt;</text>
+							<text wx:else @tap="intoDetail({{item.date}})" decode class="item" style="text-decoration: underline;color:red">详情&gt;&gt;</text>
+						</view>
+					</view>
+				</repeat>
+			</scroll-view>
+		</view>
+	</view>
+</template>
+
+<script>
+	import wepy from 'wepy';
+	import util from '../../../utils/utils.js';
+	export default class mutualAdvertiseStat extends wepy.page {
+		config = {
+			navigationBarTitleText: '友商宣传我'
+		};
+		data = {
+			endDate: '',
+			startDate: '',
+			winHeight: '',
+			recordData: [],
+			topTotal: 0,
+			url: ''
+		};
+		methods = {
+			stop() {
+				wx.showToast({
+					title: '今日无数据',
+					icon: 'none',
+					duration: 2000
+				});
+			},
+			bindStartDateChange(e) {
+				this.startDate = e.detail.value;
+				let flag = util.compareDate(this.startDate, this.endDate);
+				if (!flag) {
+					wx.showToast({
+						title: '不能大于结束日期',
+						icon: 'none',
+						duration: 2000
+					});
+					this.startDate = util.someDayLater(util.nowDate(), -30, '-');
+				}
+			},
+			bindEndDateChange(e) {
+				this.endDate = e.detail.value;
+				let flag = util.compareDate(this.startDate, this.endDate);
+				if (!flag) {
+					wx.showToast({
+						title: '不能小于开始日期',
+						icon: 'none',
+						duration: 2000
+					});
+					this.endDate = util.nowDate();
+				}
+			},
+			selecData() {
+				this.topTotal = 0;
+				this._getIntrgralByDay(this.url);
+			},
+			intoDetail(date) {
+				wx.navigateTo({
+					url: `/pages/index/mutualAdvertise/mutualAdvertiseDetail?date=${date}&type=${this.pageType}`
+				});
+			}
+		};
+		_getIntrgralByDay() {
+			let url = `${this.$parent.globalData.commonUrl}/api/loadAllianceDaySummary?startDate=${this.startDate}&endDate=${this.endDate}&tk=${this.$parent.globalData.tk}`;
+			util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
+				console.log('res-------', res);
+				if (this.pageType === 'advertMe') { //获得系统赠送积分
+					this.recordData = res.dataStat.map(item => {
+						item.date = util.timestampToTime(item.date).slice(0, 10);
+						item.totalData = item.dayFriToMeStat;
+						this.topTotal += item.totalData;
+						return item;
+					}).reverse();
+					console.log('this.recordData--------', this.recordData);
+				} else if (this.pageType === 'drainageFri') { //消耗兑换
+					//积分消耗兑换优惠券
+					this.recordData = res.dataStat.map(item => {
+						item.date = util.timestampToTime(item.date).slice(0, 10);
+						item.totalData = item.dayMeToFriStat;
+						this.topTotal += item.totalData;
+						return item;
+					}).reverse();
+				} else if (this.pageType === 'friGetCoupon') { //积分转增
+					this.recordData = res.dataStat.map(item => {
+						item.date = util.timestampToTime(item.date).slice(0, 10);
+						item.totalData = item.dayGetCouponStat;
+						this.topTotal += item.totalData;
+						return item;
+					}).reverse();
+				} else if (this.pageType === 'friCheckout') { //积分转增
+					this.recordData = res.dataStat.map(item => {
+						item.date = util.timestampToTime(item.date).slice(0, 10);
+						item.totalData = item.daySetOffStat;
+						this.topTotal += item.totalData;
+						return item;
+					}).reverse();
+				}
+				this.$apply();
+			});
+		}
+		events = {};
+		onLoad(e) {
+			this.endDate = util.nowDate();
+			this.startDate = util.someDayLater(util.nowDate(), -30, '-');
+			this.pageType = e.type;
+			this.activityType = e.activity;
+			switch (this.pageType) {
+				case 'advertMe':
+					wx.setNavigationBarTitle({
+						title: '友商宣传我'
+					});
+					break;
+				case 'drainageFri':
+					wx.setNavigationBarTitle({
+						title: '我为友商引流'
+					});
+					break;
+				case 'friGetCoupon':
+					wx.setNavigationBarTitle({
+						title: '友客领我券'
+					});
+					break;
+				case 'friCheckout':
+					wx.setNavigationBarTitle({
+						title: '友客到我店'
+					});
+					break;
+				default:
+					break;
+			}
+			this._getIntrgralByDay()
+			this.winHeight = util.getScrollHeight(120);
+		}
+		// Other properties
+	}
+</script>
+
+<style lang="less">
+	.mutualAdt_wrapper {
+		.total_box {
+			margin-left: 50rpx;
+			line-height: 50rpx;
+		}
+		.content_wrapper {
+			.list {
+				display: flex;
+				.item {
+					width: 33.333%;
+					text-align: center;
+					height: 80rpx;
+					line-height: 80rpx;
+				}
+			}
+		}
+	}
+</style>

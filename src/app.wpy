@@ -50,10 +50,8 @@
         'pages/index/systemInform/systemInform',
         'pages/index/dianYuanYuKeTalk/dianYuanYuKeTalk',
         'pages/index/dianYuanYuKeTalk/dianYuanYuKeTalkDetail',
-        'pages/index/yinLiuBenHao/yinLiuBenHao',
-        'pages/index/yinLiuYouShang/yinLiuYouShang',
-        'pages/index/youKeLingQuan/youKeLingQuan',
-        'pages/index/youShangXuanChuan/youShangXuanChuan',
+        'pages/index/mutualAdvertise/mutualAdvertiseDetail',
+        'pages/index/mutualAdvertise/mutualAdvertiseStat',
         'pages/index/dianWaiShangXian/dianWaiShangXian',
         'pages/index/yingXiaoHuoDongModule/yingXiaoHuoDongModule',
         'pages/index/yingXiaoHuoDongModule/marketingAct',
@@ -208,17 +206,6 @@
           }
         }
       });
-    }
-    sleep(s) {
-      return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          resolve('promise resolved');
-        }, s * 1000);
-      });
-    }
-    async testAsync() {
-      const data = await this.sleep(3);
-      console.log(data);
     }
   }
 </script>

@@ -14,25 +14,25 @@
           <radio-group @change="seletStoreId">
             <repeat for="{{shopList}}" key="index" index="index" item="item">
               <label class="item-lable" style="display:flex">
-                  <radio color="#FFBA00" class="check-box" value="{{item.storeId}}" checked="{{item.checked}}" />
-                  <view class='merchantItem'>
-                    <view class='merchantItem_logo'>
-                      <image src='{{item.image}}' class='logo'></image>
-                    </view>
-                    <view class='merchantItem_info'>
-                      <view class='merchantItem_info_top'>
-                        <text class='shopName'>{{item.name}}</text>
-                        <text wx:if="{{item.allianceState==='Ready'}}" class="status">已结盟</text>
-                        <!-- <text  class="status">已撤销</text> -->
-                        <text decode="{{true}}" class='distant'>{{item.distance}}</text>
+                      <radio color="#FFBA00" class="check-box" value="{{item.storeId}}" checked="{{item.checked}}" />
+                      <view class='merchantItem'>
+                        <view class='merchantItem_logo'>
+                          <image src='{{item.image}}' class='logo'></image>
+                        </view>
+                        <view class='merchantItem_info'>
+                          <view class='merchantItem_info_top'>
+                            <text class='shopName'>{{item.name}}</text>
+                            <text wx:if="{{item.allianceState==='Ready'}}" class="status">已结盟</text>
+                            <!-- <text  class="status">已撤销</text> -->
+                            <text decode="{{true}}" class='distant'>{{item.distance}}</text>
+                          </view>
+                          <view class='merchantItem_info_bottom'>
+                            <text class='fans'>粉丝数：{{item.fanNumber}}</text>
+                            <text class='visitor'>昨日访问量：{{item.lastVisitNum}}</text>
+                          </view>
+                        </view>
                       </view>
-                      <view class='merchantItem_info_bottom'>
-                        <text class='fans'>粉丝数：{{item.fanNumber}}</text>
-                        <text class='visitor'>昨日访问量：{{item.lastVisitNum}}</text>
-                      </view>
-                    </view>
-                  </view>
-                </label>
+                    </label>
             </repeat>
           </radio-group>
         </scroll-view>
@@ -114,46 +114,29 @@
               </view>
               <view class="already-upRack-item" wx:else>
                 <view class="shopInfo">
-                  <image src="{{}}" lazy-load="false" class="shop-logo"></image>
-                  <text class="shop-name"></text>
-                  <text class="shop-distance"></text>
+                  <view class="shopNameAndLogo">
+                    <image src="{{item.image}}" lazy-load="false" class="shop-logo"></image>
+                    <text class="shop-name">{{item.name}}</text>
+                  </view>
+                  <text class="shop-distance">{{item.distance}}</text>
                 </view>
                 <view class="resInfo-box">
                   <view class="res-img">
-                    <image src="{{}}" mode="scaleToFill" lazy-load="false" class="img"></image>
+                    <image src="{{item.res.image}}" mode="scaleToFill" lazy-load="false" class="img"></image>
                   </view>
                   <view class="res-info">
-                    <text class="res-name"></text>
-                    <text class="res-limit"></text>
-                    <text class="res-desc"></text>
-                    <text></text>
+                    <text class="res-name">{{item.res.name}}</text>
+                    <text class="res-limit">{{item.res.limit}}</text>
+                    <text class="res-desc">{{item.res.content}}</text>
                   </view>
                 </view>
                 <view class="handle">
-                  <text class="fans">粉丝数:</text>
-                  <text class="lastVisitNum">昨日访问量:</text>
+                  <text class="fans">粉丝数:{{item.fanNumber}}</text>
+                  <text class="lastVisitNum">昨日访问量:{{item.lastVisitNum}}</text>
+                  <text class="undo" @tap="downRack({{item}})">下架商品</text>
+                  <text class="undo" @tap="undoAlliance({{item}})">撤销联盟</text>
                 </view>
               </view>
-              <!-- <view style="margin-top:-16rpx;background:#ffba00">
-                  <view class='merchantItem' style="margin-top:-16rpx;background:#ffba00;color:#fff" wx:if="{{item.res != null}}">
-                    <view class='merchantItem_logo'>
-                      <image src='{{item.res.image}}' class='logo'></image>
-                    </view>
-                    <view class='merchantItem_info'>
-                      <view class='merchantItem_info_top'>
-                        <text class='shopName'>项目名称：{{item.res.name}}</text>
-                        <text class='distant'>限制：{{item.res.limit}}</text>
-                      </view>
-                      <view class='merchantItem_info_bottom'>
-                        <text class='fans'>项目摘要：{{item.res.content}}</text>
-                        <text class='visitor'>我店上架项目详情</text>
-                      </view>
-                    </view>
-                  </view>
-                  <view wx:else class="goods-desc">
-                    暂无项目，请选择上架
-                  </view>
-                </view> -->
             </repeat>
           </scroll-view>
         </view>
@@ -213,6 +196,21 @@
           url: `/pages/marketing/friendBusiness/friendBusinessM?type=upRack&storeID=${goods.storeId}`
         })
       },
+      //下架物品
+      downRack(goods){
+        let url = `${this.$parent.globalData.commonUrl}/api/downRack?tk=${this.$parent.globalData.tk}&friStoreId=${goods.storeId}`
+        util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
+        console.log("下架物品结果----", res)
+        if (res.errCode === 0) {
+          wx.showToast({
+              title: '下架成功',
+              icon: 'success',
+              duration: 2000
+            })
+          this._getAreadyAlliance()
+        }
+      });
+      },
       //撤销结盟
       undoAlliance(goods) {
         let url = `${this.$parent.globalData.commonUrl}/api/undoAlliance?tk=${this.$parent.globalData.tk}`
@@ -229,6 +227,7 @@
               duration: 2000
             })
             this._getAreadyAlliance()
+            this._loadNearbyShops()
             this.$apply()
           }
         })
@@ -249,7 +248,9 @@
               duration: 2000
             })
             this._loadInviteMeAlliance()
+            this._loadMeInviteAlliance()
             this._getAreadyAlliance()
+            this._loadNearbyShops()
             this.$apply()
           }
         })
@@ -271,6 +272,7 @@
               duration: 2000
             })
             this._loadInviteMeAlliance()
+            this._loadNearbyShops()
             this.$apply()
           }
         })
@@ -339,6 +341,7 @@
     };
     //拉取已结盟商家
     _getAreadyAlliance() {
+      this.leagleedShop = [];
       var url = `${this.$parent.globalData.commonUrl}/api/getAreadyAlliance?tk=${this.$parent.globalData.tk}`;
       util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
         console.log("拉取已结盟商家----", res)
@@ -368,6 +371,7 @@
     };
     //加载我邀请结盟消息
     _loadMeInviteAlliance() {
+      this.meInviteRecList = [];
       var url = `${this.$parent.globalData.commonUrl}/api/loadMeInviteAlliance?tk=${this.$parent.globalData.tk}&cursor=${this.meInviteCursor}&count=${this.meInviteCount}`;
       util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
         console.log("我邀请结盟消息----", res)
@@ -382,6 +386,7 @@
       });
     };
     _loadNearbyShops() {
+      this.shopList = []
       var url = `${this.$parent.globalData.commonUrl}/api/loadNearbyStore?tk=${this.$parent.globalData.tk}`;
       util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
         console.log("拉取附近商家", res)
@@ -502,7 +507,62 @@
       color: #fff;
     }
   }
-  .already-upRack-item {}
+  .already-upRack-item {
+    display: flex;
+    flex-direction: column;
+    padding: 20rpx;
+    background-color: #fff;
+    margin-bottom: 10rpx;
+    .shopInfo {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10rpx;
+      .shopNameAndLogo{
+        display: flex;
+        align-items: center;
+      }
+      .shop-logo {
+        width: 50rpx;
+        height: 50rpx;
+        border-radius: 50%;
+        margin-right: 10rpx;
+      }
+      .shop-name {}
+      .shop-distance {}
+    }
+    .resInfo-box {
+      display: flex;
+      margin-bottom: 6rpx;
+      .res-img {
+        .img {
+          width: 150rpx;
+          height: 150rpx;
+          border-radius: 6rpx;
+          margin-right: 20rpx
+        }
+      }
+      .res-info {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        .res-name {}
+        .res-limit {}
+        .res-desc {}
+      }
+    }
+    .handle {
+      display: flex;
+      justify-content: space-between;
+      .fans {}
+      .lastVisitNum {}
+      .undo {
+        display: inline-block;
+        padding: 4rpx 6rpx;
+        background-color: #ffba00;
+        color: #fff;
+      }
+    }
+  }
 </style>
 <style lang="less" src="../../../mixins/less/btn.less">
 

@@ -271,6 +271,9 @@
         }
         usersArr.forEach(element => {
           element.visitTime = util.timestampToTime(element.visitTime);
+          if(element.visitType===10){
+            element.waiter = decodeURI(element.waiter)
+          }
           this._judgeVisitType(element) //判断访问类型
         });
         switch (this.loadType) {
@@ -382,6 +385,9 @@
           break
         case 9:
           element.visitType = "游戏大厅分享"
+          break;
+        case 10:
+          element.visitType = "友商"
           break;
         default:
           element.visitType = "其他"
