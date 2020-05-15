@@ -183,15 +183,10 @@
     _loadDetailIntegral(type) {
       this.totalNumbers = 0;
       let url = `${this.$parent.globalData.commonUrl}/api/getIntegralStat?date=${this.fatherDate}&tk=${this.$parent.globalData.tk}`
-      wx.showLoading({
-        title: '加载中',
-        mask: true
-      })
       var tempTitleArr = []
       util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
         console.log("res _loadDetailIntegral----------", res)
         if (res.errCode === 0) {
-          wx.hideLoading()
           this.allTypesData = res.everyDayIntegralForUser
           this.allTypesData.forEach((item, index) => {
             this._handleItem(this.pickerArray, item, type)

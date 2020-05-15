@@ -66,9 +66,6 @@
       },
       //查看下一层员工信息资料
       goToFurther(phone) {
-        wx.showLoading({
-          title: "加载中"
-        })
         this.showBackBtn = true;
         let storeUrl = `${this.$parent.globalData.commonUrl}/api/loadShopList?tk=${this.$parent.globalData.tk}&phone=${phone}`
         let staffUrl = `${this.$parent.globalData.commonUrl}/api/loadAllStaff?tk=${this.$parent.globalData.tk}&phone=${phone}`
@@ -86,7 +83,6 @@
           this.staffList = staff.sort(util.sortByKey("number"));
           console.log("员工列表", this.staffList)
           this.$apply();
-          wx.hideLoading()
         })
       },
       transferStaff() {
@@ -145,7 +141,7 @@
               this.$parent.globalData.shopInfo = res;
               console.log("店铺信息---------", this.$parent.globalData)
               wx.switchTab({
-                url: '/pages/member/member'
+                url: '/pages/mine/mine'
               })
             })
           }, 500);

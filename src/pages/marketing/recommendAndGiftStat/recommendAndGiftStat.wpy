@@ -17,17 +17,17 @@
           <text class="btn" @tap="selecData">确定</text>
         </view>
         <!-- <view class="total_box" style="margin-top: 10rpx;margin-left:268rpx;position:absolute;top:82rpx;font-weight:900">
-            合计份数{{totalTimes}};合计积分{{totalData}}
-          </view> -->
+                  合计份数{{totalTimes}};合计积分{{totalData}}
+                </view> -->
       </view>
       <!-- <view class="select">
-          <image src="../../../images/shaixuan.png" mode="scaleToFill" lazy-load="false" class="selectIcon"></image>
-          <picker @change="bindPickerChange" value="{{pickindex}}" range="{{recommendTitle}}" range-key="name">
-            <view class="picker">
-              {{recommendTitle[pickindex].name}}
-            </view>
-          </picker>
-        </view> -->
+                <image src="../../../images/shaixuan.png" mode="scaleToFill" lazy-load="false" class="selectIcon"></image>
+                <picker @change="bindPickerChange" value="{{pickindex}}" range="{{recommendTitle}}" range-key="name">
+                  <view class="picker">
+                    {{recommendTitle[pickindex].name}}
+                  </view>
+                </picker>
+              </view> -->
     </view>
     <view class="integralDetail_bottom">
       <scroll-view scroll-y scroll-with-animation style="height:{{winHeight}}rpx">
@@ -44,7 +44,6 @@
               {{item.setoffTimes}}
             </view>
             <view class="item" style="color:red;text-decoration:underline;" @tap="gotoUnconvertDetail({{item.date}},{{item.convertTimes}})">{{item.convertTimes}}</view>
-            <!-- <view class="item"  style="text-decoration:underline;color:red">详情&gt;&gt;</view> -->
           </view>
         </repeat>
       </scroll-view>
@@ -81,10 +80,15 @@
           })
           return
         }
-        wx.navigateTo({
-          url: `/pages/marketing/recommendAndGiftStat/recommendAndGiftStatDetail?date=${date}&type=${this.itemType}`,
-        })
-        
+        if (this.itemType == 'leagle') {
+          wx.navigateTo({
+            url: `/pages/index/mutualAdvertise/mutualAdvertiseDetail?date=${date}&type=friCheckout`
+          });
+        } else {
+          wx.navigateTo({
+            url: `/pages/marketing/recommendAndGiftStat/recommendAndGiftStatDetail?date=${date}&type=${this.itemType}`,
+          })
+        }
         console.log(count, date)
       },
       gotoUnconvertDetail(date, count) {
@@ -96,11 +100,15 @@
           })
           return
         }
-        
-        wx.navigateTo({
-          url: `/pages/marketing/recommendAndGiftStat/recommendAndGiftUnconvert?date=${date}&type=${this.itemType}`,
-        })
-        
+        if (this.itemType == 'leagle') {
+          wx.navigateTo({
+            url: `/pages/index/mutualAdvertise/mutualAdvertiseDetail?date=${date}&type=friGetCoupon`
+          });
+        } else {
+          wx.navigateTo({
+            url: `/pages/marketing/recommendAndGiftStat/recommendAndGiftUnconvert?date=${date}&type=${this.itemType}`,
+          })
+        }
         console.log(count, date)
       },
       bindStartDateChange(e) {
@@ -133,7 +141,7 @@
     };
     _loadCheckNumAndIngegral(dataType) {
       let url = `${this.$parent.globalData.commonUrl}/api/loadDateConvertAndSetoff?startDate=${this.startDate}&endDate=${this.endDate}&tk=${this.$parent.globalData.tk}&dataType=${dataType}`
-      util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
+      util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
         console.log("data----", res)
         if (res.errCode === 0) {
           this.recordData = res.dateCheckNumArr
@@ -145,29 +153,48 @@
         this.$apply()
       })
     }
+    _loadLeagleStat() {
+      let url = `${this.$parent.globalData.commonUrl}/api/loadAllianceDaySummary?startDate=${this.startDate}&endDate=${this.endDate}&tk=${this.$parent.globalData.tk}`;
+      util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
+        console.log('res-------', res);
+        this.recordData = res.dataStat.map(item => {
+          item.date = util.timestampToTime(item.date).slice(0, 10)
+          item['convertTimes'] = item.dayGetCouponStat
+          item['setoffTimes'] = item.daySetOffStat
+          return item
+        }).reverse()
+        this.$apply();
+      });
+    }
     events = {};
     async onLoad(e) {
+      this.endDate = util.nowDate();
+      this.startDate = util.someDayLater(util.nowDate(), -30, '-');
       this.winHeight = util.getScrollHeight(144)
       this.itemType = e.type
       if (this.itemType === "gift") {
         wx.setNavigationBarTitle({
           title: '积分换礼品项目详情'
         });
-      }else if (this.itemType ==="aiCoupon"){
+      } else if (this.itemType === "aiCoupon") {
         wx.setNavigationBarTitle({
           title: 'AI项目详情'
         });
-      }else if (this.itemType ==="inviteCoupon"){
+      } else if (this.itemType === "inviteCoupon") {
         wx.setNavigationBarTitle({
           title: '邀新有礼项目详情'
         });
-      }else if (this.itemType ==="vip"){
+      } else if (this.itemType === "vip") {
         wx.setNavigationBarTitle({
           title: 'vip卡券项目详情'
         });
+      } else if (this.itemType === "leagle") {
+        wx.setNavigationBarTitle({
+          title: '友商卡券项目详情'
+        });
+        this._loadLeagleStat()
+        return
       }
-      this.endDate = util.nowDate();
-      this.startDate = util.someDayLater(util.nowDate(), -30, '-');
       this._loadCheckNumAndIngegral(this.itemType)
     }
   }

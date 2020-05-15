@@ -3,7 +3,6 @@
     <view class='main'>
       <!-- 店长推荐 -->
       <view class='recommend-container'>
-        <view class='title'>友商互推</view>
         <view class='itemBox'>
           <text class='name'>第一步：在友商推图</text>
           <image src='{{imgUrl}}' class='addPic' catchtap='chooseImage'></image>
@@ -25,7 +24,7 @@
             <view class='itemname'>第五步：赠送友商客户优惠券</view>
             <navigator url="/pages/marketing/cardList/cardList?type=leagle" class="chooseDiscount">{{isShowDiscountContent?leaglePrize.content:"选择优惠券"}}</navigator>
           </view>
-          <button @tap="save" class="center-btn">提交</button>
+          <button @tap="save" class="center-btn">保存</button>
         </form>
       </view>
     </view>
@@ -37,7 +36,7 @@
   import util from '../../../utils/utils.js'
   export default class friendBusiness extends wepy.page {
     config = {
-      navigationBarTitleText: '友商互推'
+      navigationBarTitleText: '设置拟在友商派送的项目'
     };
     data = {
       picArr: [],
@@ -51,6 +50,8 @@
       couponId: "",
       uploadImgUrl: "",
       fbId: "",
+      leagleGoods:{},
+      modify:false,
     };
     methods = {
       save() {
@@ -62,8 +63,13 @@
           content: this.content,
           couponID: this.couponId,
         }
-        console.log("data---",data)
-        let url = `${this.$parent.globalData.commonUrl}/api/createResAlliance?tk=${this.$parent.globalData.tk}`
+        console.log("data---", data)
+        var url 
+        if(this.modify){
+           url = `${this.$parent.globalData.commonUrl}/api/updateResAlliance?tk=${this.$parent.globalData.tk}`
+        }else{
+           url = `${this.$parent.globalData.commonUrl}/api/createResAlliance?tk=${this.$parent.globalData.tk}`
+        }
         util.interface_post(url, data, this.$parent.globalData.StoreId).then(res => {
           console.log(res)
           if (res.errCode === 0) {
@@ -78,6 +84,9 @@
             this.content = ""
             this.isShowDiscountContent = false;
             this.$parent.globalData.leaglePrize = {}
+            wx.redirectTo({
+              url: '/pages/marketing/businessLeagle/businessLeagle'
+            });
             this.$apply()
           }
         })
@@ -85,15 +94,15 @@
       setName(e) {
         console.log(e.detail.value)
         this.name = e.detail.value
-        console.log("this name",this.name)
+        console.log("this name", this.name)
       },
       setLimit(e) {
         this.limit = e.detail.value
-        console.log("this name",this.limit)
+        console.log("this name", this.limit)
       },
       setContent(e) {
         this.content = e.detail.value
-         console.log("this name",this.content)
+        console.log("this name", this.content)
       },
       //选择照片
       chooseImage: function() {
@@ -131,21 +140,30 @@
         });
       }
     };
-    events = {};
+    _loadResAlliance() {
+      let url = `${this.$parent.globalData.commonUrl}/api/loadResAlliance?tk=${this.$parent.globalData.tk}`
+      util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
+        console.log("_loadResAlliance----------", res)
+        if(res.info.coupon.couponID != ''){
+          this.modify = true
+          this.leagleGoods = res.info
+          this.imgUrl = this.leagleGoods.res.image
+          this.uploadImgUrl = this.leagleGoods.res.image
+          this.name = this.leagleGoods.res.name
+          this.limit = this.leagleGoods.res.limit
+          this.content = this.leagleGoods.res.content
+          this.couponId = this.leagleGoods.coupon.couponID
+          this.leaglePrize = {content:util.returnDiscountContent(this.leagleGoods.coupon)}
+          this.isShowDiscountContent = true;
+        }
+      this.$apply()
+      })
+    }
+    onLoad(e){
+      this._loadResAlliance()
+    }
     onShow() {
       var tempObj = this.$parent.globalData.leaglePrize;
-      let leagleEditInfo = this.$parent.globalData.leagleEditInfo;
-      if(Object.keys(leagleEditInfo).length > 0){
-        this.fbId = leagleEditInfo.id
-        this.uploadImgUrl = leagleEditInfo.image
-        this.imgUrl = leagleEditInfo.image
-        this.name = leagleEditInfo.name
-        this.limit = leagleEditInfo.limit
-        this.content = leagleEditInfo.content
-        this.couponId = leagleEditInfo.couponID
-        this.leaglePrize.content = leagleEditInfo.content
-      }
-      console.log("leagleEditInfo-----------", leagleEditInfo)
       if (Object.keys(this.$parent.globalData.leaglePrize).length > 0) {
         this.isShowDiscountContent = true;
         tempObj.content = util.returnDiscountContentNoType(tempObj)

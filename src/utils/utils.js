@@ -1,3 +1,9 @@
+/*
+ * @Author: liuning 
+ * @Date: 2020-05-11 11:14:58 
+ * @Last Modified by: liuning
+ * @Last Modified time: 2020-05-15 10:58:29
+ */
 
 //获取当天日期
 const nowDate = () => {
@@ -154,45 +160,58 @@ const returnDiscountContentNoType = (coupon) => {
   }
 }
 const interface_post = (url, data, storeId) => {
-  return new Promise((resolve, reject) => {
-    wx.request({
-      url: url + "&storeId=" + storeId,
-      data: data,
-      header: {
-        'content-type': 'application/json'
-      },
-      method: 'POST',
-      success: res => {
-        // console.log('post_res----------', res)
-        if (res.statusCode === 200) {
-          resolve(res.data);
-        } else {
-          reject(res.data)
+  wx.showLoading({
+    title: '加载中',
+    mask: true
+  })
+    return new Promise((resolve, reject) => {
+      wx.request({
+        url: url + "&storeId=" + storeId,
+        data: data,
+        header: {
+          'content-type': 'application/json'
+        },
+        method: 'POST',
+        success: res => {
+          // console.log('post_res----------', res)
+          wx.hideLoading()
+          if (res.statusCode === 200) {
+            resolve(res.data);
+          } else {
+            reject(res.data)
+          }
         }
-      }
+      })
+  
     })
 
-  })
 }
 const interface_get = (url, storeId) => {
-  return new Promise((resolve, reject) => {
-    wx.request({
-      url: url + "&storeId=" + storeId,
-      success: res => {
-        if (res.statusCode === 200) {
-          // console.log(res)
-          resolve(res.data)
-        } else {
-          wx.showToast({
-            title: '暂无数据',
-            icon: 'none',
-            duration: 2000
-          })
-        }
-      }
-    })
-
+  wx.showLoading({
+    title: '加载中',
+    mask: true
   })
+
+    return new Promise((resolve, reject) => {
+      wx.request({
+        url: url + "&storeId=" + storeId,
+        success: res => {
+          wx.hideLoading()
+          if (res.statusCode === 200) {
+            // console.log(res)
+            
+            resolve(res.data)
+          } else {
+            wx.showToast({
+              title: '暂无数据',
+              icon: 'none',
+              duration: 2000
+            })
+          }
+        }
+      })
+  
+    })
 }
 //获取滚动的高度
 const getScrollHeight = (height) => {
@@ -314,7 +333,32 @@ const _judgeRole = (role) => {
   } else {
     return "运营主管"
   }
-};
+}
+// 判断是否过期 格式(2020-01-01)，过期返回true,没有过去返回false
+const isExpired = (date)=> {
+  var normalizeDate = date.split("-");
+  console.log(normalizeDate)
+  var Month = new Date().getMonth() + 1;
+  var year = new Date().getFullYear();
+  var day = new Date().getDate();
+  if (normalizeDate[0] < year) {
+    return true
+  } else if (normalizeDate[0] == year) {
+    if (normalizeDate[1] < Month) {
+      return true;
+    } else if (normalizeDate[1] == Month) {
+      if (normalizeDate[2] < day) {
+        return true;
+      } else {
+        return false;
+      };
+    } else {
+      return false;
+    };
+  } else {
+    return false;
+  };
+}
 //压缩上传图片
 // const compressUploadImg = (this,showImgUrl,uploadImgUrl)=>{
 //   if(typeof showImgUrl =="object"){
@@ -354,5 +398,6 @@ module.exports = {
   getLastSundayTimeStamp,
   getThisMonth1,
   returnDiscountContentNoType,
-  delSameItem
+  delSameItem,
+  isExpired
 }

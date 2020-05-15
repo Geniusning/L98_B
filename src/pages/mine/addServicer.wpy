@@ -34,29 +34,29 @@
     data = {
       winHeight: "",
       servicerList: [{
-        id: "1",
-        name: "liuning",
-        beginTime: "2018-10-1 20:00",
-        duration: "8小时"
-      },
-      {
-        id: "1",
-        name: "geniusning",
-        beginTime: "2018-10-1 20:00",
-        duration: "8小时"
-      },
-      {
-        id: "1",
-        name: "liuyirun",
-        beginTime: "2018-10-1 20:00",
-        duration: "正在值班"
-      }
+          id: "1",
+          name: "liuning",
+          beginTime: "2018-10-1 20:00",
+          duration: "8小时"
+        },
+        {
+          id: "1",
+          name: "geniusning",
+          beginTime: "2018-10-1 20:00",
+          duration: "8小时"
+        },
+        {
+          id: "1",
+          name: "liuyirun",
+          beginTime: "2018-10-1 20:00",
+          duration: "正在值班"
+        }
       ]
     };
     methods = {
       addClientService() {
         let url = `${this.$parent.globalData.commonUrl}/api/addClientService?tk=${this.$parent.globalData.tk}`;
-        util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
+        util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
           console.log(res);
           if (res.errCode === 0) {
             wx.showToast({
@@ -76,6 +76,12 @@
               icon: 'none',
               duration: 2000
             })
+          } else {
+            wx.showToast({
+              title: res.errCode + res.errMsg,
+              icon: 'none',
+              duration: 1000
+            })
           }
           this.$apply();
           this._loadClientServiceLog();
@@ -83,11 +89,17 @@
       },
       delClientService() {
         let url = `${this.$parent.globalData.commonUrl}/api/delClientService?tk=${this.$parent.globalData.tk}`;
-        util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
+        util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
           console.log(res);
           if (res.errCode === 0) {
             wx.showToast({
               title: '解绑客服成功',
+              icon: 'none',
+              duration: 1000
+            })
+          } else {
+            wx.showToast({
+              title: res.errCode + res.errMsg,
               icon: 'none',
               duration: 1000
             })
@@ -100,12 +112,19 @@
     //加载值班记录
     _loadClientServiceLog() {
       let url = `${this.$parent.globalData.commonUrl}/api/loadClientServiceLog?tk=${this.$parent.globalData.tk}`;
-      util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
+      util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
         console.log(res);
-        this.servicerList = res
-        this._formatClientData(this.servicerList)
-        this.$apply();
-        console.log("this.servicerList------------", this.servicerList)
+        if (res.errCode != 0) {
+          wx.showToast({
+            title: res.errCode + res.errMsg,
+            icon: 'none',
+            duration: 1000
+          })
+        } else {
+          this.servicerList = res
+          this._formatClientData(this.servicerList)
+          this.$apply();
+        }
       })
     }
     _formatClientData(clients) {

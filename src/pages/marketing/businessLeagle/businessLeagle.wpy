@@ -1,6 +1,6 @@
 <template>
   <view class="businessLeagle-wrapper">
-    <Search :placeholder.sync="placeholder" :searchValue.sync="searchValue"></Search>
+    <Search wx:if="{{currentTab==0}}" :placeholder.sync="placeholder" :searchValue.sync="searchValue"></Search>
     <view class='subTab-wrapper'>
       <view class="subTab-item line {{currentTab==0?'active':''}}" data-current="0" @tap="swichNav">附近商家</view>
       <view class="subTab-item line {{currentTab==1?'active':''}}" data-current="1" @tap="swichNav">邀我结盟</view>
@@ -11,30 +11,34 @@
       <!-- 附近商家 -->
       <swiper-item>
         <scroll-view scroll-y="true" class="scoll-h">
-          <radio-group @change="seletStoreId">
-            <repeat for="{{shopList}}" key="index" index="index" item="item">
-              <label class="item-lable" style="display:flex">
-                      <radio color="#FFBA00" class="check-box" value="{{item.storeId}}" checked="{{item.checked}}" />
-                      <view class='merchantItem'>
-                        <view class='merchantItem_logo'>
-                          <image src='{{item.image}}' class='logo'></image>
-                        </view>
-                        <view class='merchantItem_info'>
-                          <view class='merchantItem_info_top'>
-                            <text class='shopName'>{{item.name}}</text>
-                            <text wx:if="{{item.allianceState==='Ready'}}" class="status">已结盟</text>
-                            <!-- <text  class="status">已撤销</text> -->
-                            <text decode="{{true}}" class='distant'>{{item.distance}}</text>
-                          </view>
-                          <view class='merchantItem_info_bottom'>
-                            <text class='fans'>粉丝数：{{item.fanNumber}}</text>
-                            <text class='visitor'>昨日访问量：{{item.lastVisitNum}}</text>
-                          </view>
-                        </view>
-                      </view>
-                    </label>
-            </repeat>
-          </radio-group>
+          <repeat for="{{shopList}}" key="index" index="index" item="item">
+            <view class="already-upRack-item">
+              <view class="shopInfo">
+                <view class="shopNameAndLogo">
+                  <image src="{{item.storeInfo.image}}" lazy-load="false" class="shop-logo"></image>
+                  <text class="shop-name">{{item.storeInfo.name}}</text>
+                </view>
+                <text class="shop-distance">{{item.distance}}</text>
+              </view>
+              <view class="resInfo-box">
+                <view class="res-img">
+                  <image src="{{item.resInfo.image}}" mode="scaleToFill" lazy-load="false" class="img"></image>
+                </view>
+                <view class="res-info">
+                  <text class="res-name">{{item.resInfo.name}}</text>
+                  <text class="res-limit">{{item.resInfo.limit}}</text>
+                  <text class="res-desc">{{item.resInfo.content}}</text>
+                  <text wx:if="{{item.allianceState==='Ready'}}" class="status">已结盟</text>
+                  <text wx:else class="status" style="border:1px solid gray;color:gray;">已撤销</text>
+                </view>
+              </view>
+              <view class="handle">
+                <text class="fans">粉丝数:{{item.storeInfo.fanNumber}}</text>
+                <text class="lastVisitNum">昨日访问量:{{item.storeInfo.lastVisitNum}}</text>
+                <text class="undo" wx:if="{{item.allianceState !='Ready'}}" @tap="makeLeagle({{item.storeInfo.storeId}})">申请结盟</text>
+              </view>
+            </view>
+          </repeat>
         </scroll-view>
       </swiper-item>
       <!-- 邀我结盟 -->
@@ -42,21 +46,29 @@
         <scroll-view scroll-y="true" class="scoll-h">
           <view wx:if="{{inviteMeRecList.length}}">
             <repeat for="{{inviteMeRecList}}" key="index" index="index" item="item">
-              <view class='merchantItem'>
-                <view class='merchantItem_logo'>
-                  <image src='{{item.storeImage}}' class='logo'></image>
+              <view class="already-upRack-item">
+                <view class="shopInfo">
+                  <view class="shopNameAndLogo">
+                    <image src="{{item.storeInfo.image}}" lazy-load="false" class="shop-logo"></image>
+                    <text class="shop-name">{{item.storeInfo.name}}</text>
+                  </view>
+                  <text class="shop-distance">{{item.distance}}</text>
                 </view>
-                <view class='merchantItem_info'>
-                  <view class='merchantItem_info_top'>
-                    <text class='shopName'>{{item.storeName}}</text>
-                    <text class='distant'>{{item.distance}}</text>
+                <view class="resInfo-box">
+                  <view class="res-img">
+                    <image src="{{item.resInfo.image}}" mode="scaleToFill" lazy-load="false" class="img"></image>
                   </view>
-                  <view class='merchantItem_info_bottom'>
-                    <text class='fans'>粉丝数：{{item.fanNumber}}</text>
-                    <text class='visitor'>昨日访问量：{{item.lastVisitNum}}</text>
-                    <text class='handleApply' @tap="agreeLeagle({{item}})">同意</text>
-                    <text class='handleApply' @tap="rejectLeagle({{item}})">拒绝</text>
+                  <view class="res-info">
+                    <text class="res-name">{{item.resInfo.name}}</text>
+                    <text class="res-limit">{{item.resInfo.limit}}</text>
+                    <text class="res-desc">{{item.resInfo.content}}</text>
                   </view>
+                </view>
+                <view class="handle">
+                  <text class="fans">粉丝数:{{item.storeInfo.fanNumber}}</text>
+                  <text class="lastVisitNum">昨日访问量:{{item.storeInfo.lastVisitNum}}</text>
+                  <text class='undo' @tap="rejectLeagle({{item}})">拒绝</text>
+                  <text class='undo' @tap="agreeLeagle({{item}})">同意</text>
                 </view>
               </view>
             </repeat>
@@ -69,19 +81,27 @@
         <scroll-view scroll-y="true" class="scoll-h">
           <view wx:if="{{meInviteRecList.length}}">
             <repeat for="{{meInviteRecList}}" key="index" index="index" item="item">
-              <view class='merchantItem'>
-                <view class='merchantItem_logo'>
-                  <image src='{{item.storeImage}}' class='logo'></image>
+              <view class="already-upRack-item">
+                <view class="shopInfo">
+                  <view class="shopNameAndLogo">
+                    <image src="{{item.storeInfo.image}}" lazy-load="false" class="shop-logo"></image>
+                    <text class="shop-name">{{item.storeInfo.name}}</text>
+                  </view>
+                  <text class="shop-distance">{{item.distance}}</text>
                 </view>
-                <view class='merchantItem_info'>
-                  <view class='merchantItem_info_top'>
-                    <text class='shopName'>{{item.storeName}}</text>
-                    <text class='distant'>{{item.distance}}</text>
+                <view class="resInfo-box">
+                  <view class="res-img">
+                    <image src="{{item.resInfo.image}}" mode="scaleToFill" lazy-load="false" class="img"></image>
                   </view>
-                  <view class='merchantItem_info_bottom'>
-                    <text class='fans'>粉丝数：{{item.fanNumber}}</text>
-                    <text class='visitor'>昨日访问量：{{item.lastVisitNum}}</text>
+                  <view class="res-info">
+                    <text class="res-name">{{item.resInfo.name}}</text>
+                    <text class="res-limit">{{item.resInfo.limit}}</text>
+                    <text class="res-desc">{{item.resInfo.content}}</text>
                   </view>
+                </view>
+                <view class="handle" style="justify-content: space-around">
+                  <text class="fans">粉丝数:{{item.storeInfo.fanNumber}}</text>
+                  <text class="lastVisitNum">昨日访问量:{{item.storeInfo.lastVisitNum}}</text>
                 </view>
               </view>
             </repeat>
@@ -94,46 +114,27 @@
         <view wx:if="{{leagleedShop.length}}">
           <scroll-view scroll-y="true" class="scoll-h">
             <repeat for="{{leagleedShop}}" key="index" index="index" item="item">
-              <view class='merchantItem' wx:if="{{item.res == null}}">
-                <view class='merchantItem_logo'>
-                  <image src='{{item.image}}' class='logo'></image>
-                </view>
-                <view class='merchantItem_info'>
-                  <view class='merchantItem_info_top'>
-                    <text class='shopName'>{{item.name}}</text>
-                    <text class='fans' wx:if="{{item.res == null}}" style="">粉丝数：{{item.fanNumber}}</text>
-                    <text class='distant'>{{item.distance}}</text>
-                  </view>
-                  <view class='merchantItem_info_bottom'>
-                    <text class='fans' wx:if="{{!(item.res == null)}}" style="">粉丝数：{{item.fanNumber}}</text>
-                    <text class='visitor' style="">昨日访问量：{{item.lastVisitNum}}</text>
-                    <text @tap="undoAlliance({{item}})" class='handleApply' style="">撤销结盟</text>
-                    <text @tap="upRack({{item}})" wx:if="{{item.res == null}}" class='handleApply' style="">上架我方物品</text>
-                  </view>
-                </view>
-              </view>
-              <view class="already-upRack-item" wx:else>
+              <view class="already-upRack-item">
                 <view class="shopInfo">
                   <view class="shopNameAndLogo">
-                    <image src="{{item.image}}" lazy-load="false" class="shop-logo"></image>
-                    <text class="shop-name">{{item.name}}</text>
+                    <image src="{{item.storeInfo.image}}" lazy-load="false" class="shop-logo"></image>
+                    <text class="shop-name">{{item.storeInfo.name}}</text>
                   </view>
                   <text class="shop-distance">{{item.distance}}</text>
                 </view>
                 <view class="resInfo-box">
                   <view class="res-img">
-                    <image src="{{item.res.image}}" mode="scaleToFill" lazy-load="false" class="img"></image>
+                    <image src="{{item.resInfo.image}}" mode="scaleToFill" lazy-load="false" class="img"></image>
                   </view>
                   <view class="res-info">
-                    <text class="res-name">{{item.res.name}}</text>
-                    <text class="res-limit">{{item.res.limit}}</text>
-                    <text class="res-desc">{{item.res.content}}</text>
+                    <text class="res-name">{{item.resInfo.name}}</text>
+                    <text class="res-limit">{{item.resInfo.limit}}</text>
+                    <text class="res-desc">{{item.resInfo.content}}</text>
                   </view>
                 </view>
                 <view class="handle">
-                  <text class="fans">粉丝数:{{item.fanNumber}}</text>
-                  <text class="lastVisitNum">昨日访问量:{{item.lastVisitNum}}</text>
-                  <text class="undo" @tap="downRack({{item}})">下架商品</text>
+                  <text class="fans">粉丝数:{{item.storeInfo.fanNumber}}</text>
+                  <text class="lastVisitNum">昨日访问量:{{item.storeInfo.lastVisitNum}}</text>
                   <text class="undo" @tap="undoAlliance({{item}})">撤销联盟</text>
                 </view>
               </view>
@@ -143,7 +144,6 @@
         <view wx:else class="noData">暂无数据</view>
       </swiper-item>
     </swiper>
-    <button wx:if="{{showLeagleBtn}}" @tap="makeLeagle" class="center-btn" style="width:100%">邀请结盟</button>
   </view>
 </template>
 
@@ -190,33 +190,12 @@
       ]
     };
     methods = {
-      //上架物品
-      upRack(goods) {
-        wx.navigateTo({
-          url: `/pages/marketing/friendBusiness/friendBusinessM?type=upRack&storeID=${goods.storeId}`
-        })
-      },
-      //下架物品
-      downRack(goods){
-        let url = `${this.$parent.globalData.commonUrl}/api/downRack?tk=${this.$parent.globalData.tk}&friStoreId=${goods.storeId}`
-        util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
-        console.log("下架物品结果----", res)
-        if (res.errCode === 0) {
-          wx.showToast({
-              title: '下架成功',
-              icon: 'success',
-              duration: 2000
-            })
-          this._getAreadyAlliance()
-        }
-      });
-      },
       //撤销结盟
       undoAlliance(goods) {
         let url = `${this.$parent.globalData.commonUrl}/api/undoAlliance?tk=${this.$parent.globalData.tk}`
         let data = {
           astoreID: this.$parent.globalData.StoreId,
-          bstoreID: goods.storeId
+          bstoreID: goods.storeInfo.storeId
         }
         util.interface_post(url, data, this.$parent.globalData.StoreId).then(res => {
           console.log("撤销结盟----", res)
@@ -236,7 +215,7 @@
       agreeLeagle(item) {
         let url = `${this.$parent.globalData.commonUrl}/api/agreeAlliance?tk=${this.$parent.globalData.tk}`
         let data = {
-          inviterID: item.inviterID,
+          InviterID: item.storeInfo.storeId,
           inviteesID: this.$parent.globalData.StoreId,
         }
         util.interface_post(url, data, this.$parent.globalData.StoreId).then(res => {
@@ -259,8 +238,7 @@
       rejectLeagle(item) {
         let url = `${this.$parent.globalData.commonUrl}/api/rejectAlliance?tk=${this.$parent.globalData.tk}`
         let data = {
-          inviterID: item.inviterID,
-          inviteesID: this.$parent.globalData.StoreId,
+          id: item.storeInfo.storeId
         }
         util.interface_post(url, data, this.$parent.globalData.StoreId).then(res => {
           this.inviteMeRecList = []
@@ -277,14 +255,13 @@
           }
         })
       },
-      seletStoreId(e) {
-        this.inviteesId = e.detail.value
-        console.log('inviteesId', this.inviteesId)
-      },
-      makeLeagle() {
+      // seletStoreId(e) {
+      //   this.inviteesId = e.detail.value
+      //   console.log('inviteesId', this.inviteesId)
+      // },
+      makeLeagle(inviteesId) {
         let data = {
-          InviterID: this.$parent.globalData.StoreId,
-          inviteesID: this.inviteesId,
+          id: inviteesId
         }
         let url = `${this.$parent.globalData.commonUrl}/api/inviteAlliance?tk=${this.$parent.globalData.tk}`
         util.interface_post(url, data, this.$parent.globalData.StoreId).then(res => {
@@ -493,12 +470,6 @@
     .merchantItem_info_bottom {
       display: flex;
       justify-content: space-between;
-      .status {
-        padding: 5rpx 6rpx;
-        border: 1px solid red;
-        color: red;
-        transform: rotate(10deg);
-      }
     }
     .handleApply {
       display: inline-block;
@@ -517,7 +488,7 @@
       display: flex;
       justify-content: space-between;
       margin-bottom: 10rpx;
-      .shopNameAndLogo{
+      .shopNameAndLogo {
         display: flex;
         align-items: center;
       }
@@ -527,12 +498,11 @@
         border-radius: 50%;
         margin-right: 10rpx;
       }
-      .shop-name {}
-      .shop-distance {}
     }
     .resInfo-box {
       display: flex;
       margin-bottom: 6rpx;
+        position: relative;
       .res-img {
         .img {
           width: 150rpx;
@@ -545,16 +515,20 @@
         display: flex;
         flex-direction: column;
         justify-content: space-around;
-        .res-name {}
-        .res-limit {}
-        .res-desc {}
+        .status {
+          padding: 5rpx 6rpx;
+          border: 1px solid red;
+          color: red;
+          transform: rotate(10deg);
+          position: absolute;
+          right: 20rpx;
+          bottom: 20rpx;
+        }
       }
     }
     .handle {
       display: flex;
       justify-content: space-between;
-      .fans {}
-      .lastVisitNum {}
       .undo {
         display: inline-block;
         padding: 4rpx 6rpx;

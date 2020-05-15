@@ -2,7 +2,7 @@
 	<view class="integralDetail_wrapper">
 		<view class="integralDetail_top">
 			<view class="date">{{fatherDate}} 当日合计{{totalNumbers}}份</view>
-			<view class="select">
+			<view class="select" wx:if="{{pageType!='advertMe' && pageType !='drainageFri'}}">
 				<image src="../../../images/shaixuan.png" mode="scaleToFill" lazy-load="false" class="selectIcon"></image>
 				<picker @change="bindPickerChange" value="{{pickindex}}" range="{{pickerArray}}" range-key="name">
 					<view class="picker">
@@ -15,13 +15,13 @@
 			<scroll-view scroll-y scroll-with-animation style="height:{{winHeight}}rpx">
 				<view wx:if="{{pageType==='advertMe' || pageType==='drainageFri'}}">
 					<view class="list">
-						<view class="item">发生时间</view>
 						<view class="item">友商名称</view>
+						<view class="item">引流次数</view>
 					</view>
-					<repeat for="{{recordData}}" key="index" index="index" item="item">
+					<repeat for="{{advertList}}" key="index" index="index" item="item">
 						<view class="list">
-							<view class="item">{{item.milliTime}}</view>
 							<view class="item">{{item.storename}}</view>
+							<view class="item">{{item.count}}</view>
 						</view>
 					</repeat>
 				</view>
@@ -54,6 +54,7 @@
 			navigationBarTitleText: '详情'
 		};
 		data = {
+			advertList:[], //宣传次数
 			fatherDate: "",
 			pickindex: 0,
 			totalNumbers: 0,
@@ -75,11 +76,6 @@
 				console.log(this.pickerArray[parseInt(e.detail.value)])
 				var dataType = this.pickerArray[parseInt(e.detail.value)].id
 				console.log("dataType----", dataType)
-				//  else if (this.pageType === "exchangeGift") {
-				//   dataType = this.pickerArray[parseInt(e.detail.value)].name
-				// } else if (this.pageType === "givenGift") {
-				//   dataType = this.pickerArray[parseInt(e.detail.value)].name
-				// }
 				this._judgeIntegralType(this.pageType, dataType)
 			}
 		};
@@ -96,15 +92,19 @@
 			}
 			this.allTypesData.forEach(item => {
 				// if (pageType === "advertMe" || pageType === "drainageFri") {
-					if (item.storename === dataType) {
-						this.totalNumbers += 1
-						this.recordData.push(item)
-					}
+				if (item.storename === dataType) {
+					this.totalNumbers += 1
+					this.recordData.push(item)
+				}
 				// }
 			})
 			this.$apply()
 		}
 		_handleItem(tempTitleArr, item, type) {
+			tempTitleArr.push({
+				name: item.storename,
+				id: item.storename
+			})
 			if (type === "advertMe" || type === "drainageFri") { //友商宣传我
 				item.milliTime = util.timestampToTime(item.time).slice(10)
 				this.recordData.push(item)
@@ -112,48 +112,58 @@
 				item.milliTime = util.timestampToTime(item.time).slice(10)
 				this.recordData.push(item)
 			}
-			tempTitleArr.push({
-				name: item.storename,
-				id: item.storename
-			})
 			console.log("this.recordData-------", this.recordData)
 		}
 		//友商宣传我 和 我为友商宣传
 		_loadDetaildAvertMe(url, type) {
-			wx.showLoading({
-				title: '加载中',
-				mask: true
-			})
 			var tempTitleArr = []
 			util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
 				console.log("res 友商宣传我----------", res)
 				if (res.errCode === 0) {
-					wx.hideLoading()
 					this.allTypesData = res.dataStat
-					this.allTypesData.forEach((item, index) => {
-						this._handleItem(this.pickerArray, item, type)
-						this.totalNumbers += 1
-					})
-					this.selectAllData = this.recordData
+					if(type === "friGetCoupon" || type === "friCheckout"){
+						this.allTypesData.forEach((item, index) => {
+							this._handleItem(this.pickerArray, item, type)
+							this.totalNumbers += 1
+						})
+						this.selectAllData = this.recordData
+					}else{
+						this.allTypesData.forEach(item=>{
+							this.totalNumbers += 1
+							this.advertList.push(item)
+						})
+					}
 				}
 				var pickArr = []
 				pickArr = this._delSameItem(this.pickerArray)
 				this.pickerArray = pickArr
 				console.log("this.pickerArray------", this.pickerArray)
+				// //客户端 处理友商宣传我 和 我为友商引流数据，需求更改，不更改服务器代码 只修改客户端
+				// if(type === "advertMe" || type === "drainageFri"){
+				// 	let i ,j
+				// 	for (i = 1;i < this.pickerArray.length; i++) {
+				// 		const element_i = this.pickerArray[i];
+				// 		element_i["times"] = 0
+				// 		for ( j = 0; j < this.recordData.length; j++) {
+				// 			const element_j = this.recordData[j];
+				// 			if(element_i.name ===element_j.storename){
+				// 				element_i["times"]++
+				// 			}
+				// 		}
+				// 		this.advertList.push(element_i)
+				// 		console.log("this.advertList------",this.advertList)
+				// 	}
+				// }
 				this.$apply()
 			})
 		};
 		//友商领我券和友商到店
 		_loadDetailFriAboutCoupon(url, type) {
-			wx.showLoading({
-				title: '加载中',
-				mask: true
-			})
 			var tempTitleArr = []
 			util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
 				console.log("res 友商优惠券----------", res)
 				if (res.errCode === 0) {
-					wx.hideLoading()
+					
 					this.allTypesData = res.dataStat
 					this.allTypesData.forEach((item, index) => {
 						this._handleItem(this.pickerArray, item, type)

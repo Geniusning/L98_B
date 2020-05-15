@@ -94,13 +94,8 @@
       }
     };
     _loadVipCard() {
-      // wx.showLoading({
-      //   title: "加载中",
-      //   mask: true
-      // })
       let url = `${this.$parent.globalData.commonUrl}/api/loadVipCard?tk=${this.$parent.globalData.tk}`
       util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
-        wx.hideLoading()
         console.log("_loadVipCard----------", res)
         this.vipCardList = res
         this.vipCardList.forEach(item => {

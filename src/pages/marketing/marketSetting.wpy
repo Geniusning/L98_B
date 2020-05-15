@@ -1,6 +1,6 @@
 <template>
-<!-- wx:if='{{show}}' -->
-  <view  class="marketing-container">
+  <!-- wx:if='{{show}}' -->
+  <view class="marketing-container">
     <view class='item'>
       <view class='item-left'>
         <image class='pic' src='../../images/ticket.png'></image>
@@ -71,7 +71,7 @@
       </view>
     </view>
     <!-- 在友商派送项目 -->
-    <view class='item'>
+    <!-- <view class='item'>
       <view class='item-left'>
         <image class='pic' src='../../images/AI.png'></image>
         <view class='desc-box'>
@@ -82,7 +82,7 @@
         <navigator hover-class="none" url='/pages/marketing/friendBusiness/friendBusinessM?type=managerLeagle' class='setting'>管理</navigator>
         <navigator hover-class="none" url='/pages/marketing/friendBusiness/friendBusiness' class='setting'>设置</navigator>
       </view>
-    </view>
+    </view> -->
     <!-- 友商结盟 -->
     <view class='item'>
       <view class='item-left'>
@@ -92,7 +92,10 @@
         </view>
       </view>
       <view class='item-right'>
-        <navigator hover-class="none" url='/pages/marketing/businessLeagle/businessLeagle' class='setting'>结盟</navigator>
+        <navigator  hover-class="none" url='/pages/marketing/friendBusiness/friendBusiness' class='setting'>设置</navigator>
+        <navigator hover-class="none" url='/pages/marketing/recommendAndGiftStat/recommendAndGiftStat?type=leagle' class='setting'>统计</navigator>
+        <view wx:if="{{isgotoCreateGoods}}" @tap="CreateLeagleGoods" class='setting'>结盟</view>
+        <navigator wx:else   hover-class="none" url='/pages/marketing/businessLeagle/businessLeagle' class='setting'>结盟</navigator>
       </view>
     </view>
     <!-- 店长推荐 -->
@@ -109,7 +112,7 @@
         <navigator hover-class='none' url='/pages/marketing/shopmanRecommend/shopmanRecommend' class='setting'>设置</navigator>
       </view>
     </view>
-     <!-- 礼品换积分 -->
+    <!-- 礼品换积分 -->
     <view class='item'>
       <view class='item-left'>
         <image class='pic' src='../../images/AI.png'></image>
@@ -118,12 +121,12 @@
         </view>
       </view>
       <view class='item-right'>
-         <navigator hover-class="none" url='/pages/marketing/jiFenHuanLiPin/managerGift' class='setting'>管理</navigator>
-         <navigator hover-class="none" url='/pages/marketing/recommendAndGiftStat/recommendAndGiftStat?type=gift' class='setting'>统计</navigator>
+        <navigator hover-class="none" url='/pages/marketing/jiFenHuanLiPin/managerGift' class='setting'>管理</navigator>
+        <navigator hover-class="none" url='/pages/marketing/recommendAndGiftStat/recommendAndGiftStat?type=gift' class='setting'>统计</navigator>
         <navigator hover-class='none' url='/pages/marketing/jiFenHuanLiPin/jiFenHuanLiPin' class='setting'>设置</navigator>
       </view>
     </view>
-     <view class='item'>
+    <view class='item'>
       <view class='item-left'>
         <image class='pic' src='../../images/AI.png'></image>
         <view class='desc-box'>
@@ -131,7 +134,7 @@
         </view>
       </view>
       <view class='item-right'>
-         <navigator hover-class="none" url='/pages/marketing/integral2Vip/managerVip' class='setting'>管理</navigator>
+        <navigator hover-class="none" url='/pages/marketing/integral2Vip/managerVip' class='setting'>管理</navigator>
         <navigator hover-class="none" url='/pages/marketing/recommendAndGiftStat/recommendAndGiftStat?type=vip' class='setting'>统计</navigator>
         <navigator hover-class='none' url='/pages/marketing/integral2Vip/integral2VipSet' class='setting'>设置</navigator>
       </view>
@@ -164,84 +167,101 @@
     </view>
   </view>
   <!-- <view wx:else class='noPermission'>
-    <text class='text'>暂无权限</text>
-  </view> -->
+        <text class='text'>暂无权限</text>
+      </view> -->
 </template>
 
 <script>
-import wepy from 'wepy';
-export default class marketing extends wepy.page {
-  config = {
-    navigationBarTitleText: '营销'
-  };
-  data={
-    show:false
-  };
-  methods =  {
+  import wepy from 'wepy';
+  import util from '../../utils/utils.js'
+  export default class marketSetting extends wepy.page {
+    config = {
+      navigationBarTitleText: '营销'
+    };
+    data = {
+      show: false,
+      isgotoCreateGoods:false
+    };
+    methods = {
       intoTable() {
         wx.showToast({
           title: '功能暂未开放',
           icon: 'none',
           duration: 2000
         })
+      },
+      CreateLeagleGoods() {
+        wx.navigateTo({
+          url: '/pages/marketing/friendBusiness/friendBusiness'
+        });
       }
-  };
-  onLoad(){
-    // this.show = !!(this.$parent.globalData.userInfo.permission&8)
+    };
+    _loadResAlliance() {
+        let url = `${this.$parent.globalData.commonUrl}/api/loadResAlliance?tk=${this.$parent.globalData.tk}`
+        util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
+          console.log("_loadResAlliance----------", res)
+          if(res.info.coupon.couponID==""){
+            this.isgotoCreateGoods = true
+          }
+        })
+      }
+      onShow() {
+        this._loadResAlliance()
+        // this.show = !!(this.$parent.globalData.userInfo.permission&8)
+      }
   }
-}
 </script>
 <style lang="less">
-.noPermission {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-  .text {
-    font-weight: 900;
-    font-size: 40rpx;
-    color: #ccc;
+  .noPermission {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    .text {
+      font-weight: 900;
+      font-size: 40rpx;
+      color: #ccc;
+    }
   }
-}
-.marketing-container {
-  padding: 10rpx 30rpx;
-  font-size: 28rpx;
-}
-.marketing-container .item {
-  background: #fff;
-  box-sizing: border-box;
-  padding: 20rpx;
-  margin-top: 20rpx;
-  display: flex;
-  justify-content: space-between;
-}
-.item .item-left {
-  display: flex;
-}
-.item-left .pic {
-  width: 100rpx;
-  height: 100rpx;
-}
-.item-left .desc-box {
-  margin-left: 20rpx;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-}
-.desc-box .name {
-  font-size: 34rpx;
-  font-weight: 700;
-  color: #333;
-}
-.desc-box .content {
-  font-size: 30rpx;
-  color: #888;
-}
-.item .item-right {
-  display: flex;
-  padding-top: 26rpx;
-}
-.item-right .setting {
-  margin-left: 40rpx;
-}
+  .marketing-container {
+    padding: 10rpx 30rpx;
+    font-size: 28rpx;
+  }
+  .marketing-container .item {
+    background: #fff;
+    box-sizing: border-box;
+    padding: 20rpx;
+    margin-top: 20rpx;
+    display: flex;
+    justify-content: space-between;
+  }
+  .item .item-left {
+    display: flex;
+  }
+  .item-left .pic {
+    width: 100rpx;
+    height: 100rpx;
+  }
+  .item-left .desc-box {
+    margin-left: 20rpx;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+  }
+  .desc-box .name {
+    font-size: 34rpx;
+    font-weight: 700;
+    color: #333;
+  }
+  .desc-box .content {
+    font-size: 30rpx;
+    color: #888;
+  }
+  .item .item-right {
+    display: flex;
+    padding-top: 26rpx;
+  }
+  .item-right .setting {
+    margin-left: 40rpx;
+  }
 </style>

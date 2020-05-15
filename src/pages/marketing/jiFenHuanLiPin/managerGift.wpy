@@ -5,21 +5,22 @@
         <radio-group @change="checkboxGiftAct">
           <repeat for="{{integralGiftList}}" key="index" index="index" item="item">
             <label class="checkbox" class="label_wrapper">
-                        <radio color="#FFBA00" value="{{item.goods.id}}" class="checkbox"/>
-                        <view class="list_item">
-                          <view class="list_item_left">
-                            <image class="itemPic" src="{{item.goods.image}}" mode="scaleToFill"
-                              lazy-load="false">
-                            </image>
+                          <radio color="#FFBA00" value="{{item.goods.id}}" class="checkbox"/>
+                          <view class="list_item">
+                            <view class="list_item_left">
+                              <image class="itemPic" src="{{item.goods.image}}" mode="scaleToFill"
+                                lazy-load="false">
+                              </image>
+                            </view>
+                            <view class="list_item_right">
+                              <text class="item">{{item.goods.name}}</text>
+                              <text class="item">{{item.goods.limit}}</text>
+                              <text class="item">{{item.goods.subtopic}}</text>
+                              <text class="item">原价:{{item.goods.discountPrice}}  积分：{{item.goods.integral}}</text>
+                              <text class="isExpired" wx:if="{{item.isExpired}}">已过期</text>
+                            </view>
                           </view>
-                          <view class="list_item_right">
-                            <text class="item">{{item.goods.name}}</text>
-                            <text class="item">{{item.goods.limit}}</text>
-                            <text class="item">{{item.goods.subtopic}}</text>
-                            <text class="item">原价:{{item.goods.discountPrice}}  积分：{{item.goods.integral}}</text>
-                          </view>
-                        </view>
-                      </label>
+                        </label>
           </repeat>
           <view wx:if="{{!integralGiftList.length}}" class="noData">暂无活动数据</view>
         </radio-group>
@@ -82,7 +83,7 @@
           return
         }
         let url = `${this.$parent.globalData.commonUrl}/api/delIntegralGift?tk=${this.$parent.globalData.tk}&giftId=${this.giftId}`
-        util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
+        util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
           if (res.errCode === 0) {
             console.log("del result-----", res)
             wx.showToast({
@@ -96,25 +97,23 @@
       }
     };
     _loadIntegralGift() {
-       wx.showLoading({
-          title: "加载中",
-          mask: true
-      })
       let url = `${this.$parent.globalData.commonUrl}/api/loadGoods?tk=${this.$parent.globalData.tk}`
-      util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
-         wx.hideLoading()
+      util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
         console.log("_loadIntegralGift----------", res)
         this.integralGiftList = res
-        this.integralGiftList.forEach(item=>{
-         item["checked"] = false
+        this.integralGiftList.forEach(item => {
+          item["checked"] = false
+          item["isExpired"] = util.isExpired(item.coupInfo.endTime)
         })
         this.$apply()
       })
     }
     events = {};
+    onShow() {
+      this._loadIntegralGift()
+    };
     onLoad() {
       this.winHeight = util.getScrollHeight(110);
-      this._loadIntegralGift()
     }
     // Other properties
   }
@@ -147,6 +146,16 @@
             display: flex;
             flex-direction: column;
             justify-content: space-around;
+            position: relative;
+            .isExpired {
+              position: absolute;
+              padding: 4rpx 6rpx;
+              border: 1px red solid;
+              color: red;
+              right: 16rpx;
+              bottom: 40rpx;
+              transform: rotate(-30deg);
+            }
             .item {
               color: #333;
             }
@@ -163,4 +172,6 @@
     }
   }
 </style>
-<style lang="less" src="../../../mixins/less/btn.less"></style>
+<style lang="less" src="../../../mixins/less/btn.less">
+
+</style>

@@ -342,7 +342,6 @@
           this.waitCheckOutList = [];
           return false;
         }
-        wx.stopPullDownRefresh()
         this.waitCheckOutList = res.data.launchSetOffUserCoupons;
         // this.waitCheckOutList[0].launchTime = util.timestampToTime(this.waitCheckOutList[0].launchTime)
         this.waitCheckOutList.forEach(item => {

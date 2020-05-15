@@ -16,6 +16,7 @@
                   <text class="item">{{item.goods.limit}}</text>
                   <text class="item">{{item.goods.subtopic}}</text>
                   <text class="item">原价:{{item.goods.discountPrice}} 积分：{{item.goods.integral}}</text>
+                  <text class="isExpired" wx:if="{{item.isExpired}}">已过期</text>
                 </view>
               </view>
             </label>
@@ -95,17 +96,14 @@
       }
     };
     _loadShopRecommend() {
-      wx.showLoading({
-        title: "加载中",
-        mask: true
-      })
+
       let url = `${this.$parent.globalData.commonUrl}/api/loadRecommends?tk=${this.$parent.globalData.tk}`
       util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
-        wx.hideLoading()
         console.log("_loadShopRecommend----------", res)
         this.shopRecList = res
         this.shopRecList.forEach(item => {
           item["checked"] = false
+          item["isExpired"] = util.isExpired(item.coupInfo.endTime)
         })
         this.$apply()
       })

@@ -50,13 +50,6 @@
           </view>
           <image src='../../images/arrow_right.png'></image>
         </navigator>
-        <!-- <navigator  url='/pages/mine/myStaff/myStaff' class='item'>
-            <view class='name-box'>
-              <image class='icon' src='../../images/shop1.png' style='width:34rpx;height:32rpx;'></image>
-              <text class='settingName'>我的下属管理</text>
-            </view>
-            <image src='../../images/arrow_right.png'></image>
-          </navigator> -->
       </view>
       <!-- 管理员模块 -->
       <view class='mine_admin_module' wx:if="{{noAuth}}">
@@ -89,7 +82,7 @@
           </view>
           <image src='../../images/arrow_right.png'></image>
         </navigator>
-        <navigator url='/pages/marketing/marketing' class='item'>
+        <navigator url='/pages/marketing/marketSetting' class='item'>
           <view class='name-box'>
             <image class='icon' src='../../images/about.png' style='width:34rpx;height:34rpx;'></image>
             <text class='settingName'>营销活动设置</text>

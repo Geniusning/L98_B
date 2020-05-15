@@ -16,7 +16,6 @@
         'pages/rank/rank',
         'pages/mine/setting/setting',
         'pages/mine/setting/shopInfo/shopInfo',
-        'pages/marketing/marketing',
         'pages/marketing/integral2Vip/integral2VipSet',
         'pages/marketing/integral2Vip/managerVip',
         'pages/marketing/makeDiscount/makeDiscount',
@@ -33,6 +32,7 @@
         'pages/marketing/friendBusiness/friendBusinessM',
         'pages/marketing/businessLeagle/businessLeagle',
         'pages/marketing/shopmanRecommend/shopmanRecommend',
+        'pages/marketing/marketSetting',
         'pages/marketing/shopmanRecommend/managerShopRec',
         'pages/marketing/allTypeIntegraRec',
         'pages/marketing/allTypeIntegraRecDetail',
@@ -152,7 +152,6 @@
       city: '',
       StoreName: "",
       StoreId:"",
-      leagleEditInfo:{}
     };
     constructor() {
       super();

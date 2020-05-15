@@ -309,7 +309,7 @@
         let _this = this;
         wx.clearStorage();
         var params = {
-          // storeId: this.storeId,
+          storeId: this.$parent.globalData.StoreId,
           name: this.shopName,
           city: this.city,
           address: this.shopAdr,
@@ -443,7 +443,7 @@
     uploadImgFile(filePath) {
       let _this = this
       wx.uploadFile({
-        url: `${_this.$parent.globalData.commonUrl}/api/photoUpload?tk=${_this.$parent.globalData.tk}`,
+        url: `${_this.$parent.globalData.commonUrl}/api/photoUpload?tk=${_this.$parent.globalData.tk}&storeId=${this.$parent.globalData.StoreId}`,
         filePath: filePath,
         name: "file",
         header: {

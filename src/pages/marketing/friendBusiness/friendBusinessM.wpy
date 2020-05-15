@@ -149,13 +149,8 @@
       }
     };
     _loadResAlliance() {
-      wx.showLoading({
-        title: "加载中",
-        mask: true
-      })
       let url = `${this.$parent.globalData.commonUrl}/api/loadResAlliance?tk=${this.$parent.globalData.tk}`
       util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
-        wx.hideLoading()
         console.log("_loadResAlliance----------", res)
         this.shopRecList = res.info
         this.shopRecList.forEach(item => {
