@@ -191,9 +191,9 @@
           return false;
         }
         this.waitCheckOutList = res.launchSetOffUserCoupons;
-        // this.waitCheckOutList[0].launchTime = util.timestampToTime(this.waitCheckOutList[0].launchTime)
+        // this.waitCheckOutList[0].launchTime = util.timestampToTime_line(this.waitCheckOutList[0].launchTime)
         this.waitCheckOutList.forEach(item => {
-          item.launchTime = util.timestampToTime(item.launchTime)
+          item.launchTime = util.timestampToTime_line(item.launchTime)
           let tempItem = item.userCoupon.coupon;
           this.handleCard(tempItem)
         })
@@ -210,7 +210,7 @@
           this.CheckOutListRecord = res.loadSetOffRecord;
           this.CheckOutListRecord.forEach(item => {
             let tempItem = item.UserCoupon.coupon;
-            item.OperationTime = util.timestampToTime(item.OperationTime);
+            item.OperationTime = util.timestampToTime_line(item.OperationTime);
             this.handleCard(tempItem)
           })
           this.$apply();
@@ -343,9 +343,9 @@
           return false;
         }
         this.waitCheckOutList = res.data.launchSetOffUserCoupons;
-        // this.waitCheckOutList[0].launchTime = util.timestampToTime(this.waitCheckOutList[0].launchTime)
+        // this.waitCheckOutList[0].launchTime = util.timestampToTime_line(this.waitCheckOutList[0].launchTime)
         this.waitCheckOutList.forEach(item => {
-          item.launchTime = util.timestampToTime(item.launchTime)
+          item.launchTime = util.timestampToTime_line(item.launchTime)
           let tempItem = item.userCoupon.coupon;
           this.handleCard(tempItem)
         })

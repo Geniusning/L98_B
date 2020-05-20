@@ -1,11 +1,7 @@
 <template>
 	<view class="myStall_wrapper">
 		<view class="add_staff_content">
-			<view class="add_staff_title">新增下属</view>
-			<view class="add_staff_info">
-				<text class="info_desc">工号:</text>
-				<input @input="getWorkNum" placeholder="请输入下属工号" class="inputArea" />
-			</view>
+			<!-- <view class="add_staff_title">新增帐号</view> -->
 			<view class="add_staff_info">
 				<text class="info_desc">姓名:</text>
 				<input @input="getName" placeholder="请输入下属姓名" class="inputArea" />
@@ -108,7 +104,7 @@
 	import util from '../../../utils/utils.js'
 	export default class myStaff extends wepy.page {
 		config = {
-			navigationBarTitleText: '我的下属列表'
+			navigationBarTitleText: '新增帐号'
 		};
 		data = {
 			allCheck: false,
@@ -126,7 +122,6 @@
 			password: "",
 			role: "",
 			permission: 0,
-			workNumber: "",
 			winHeight: "",
 			phone: "",
 			name: "",
@@ -315,9 +310,6 @@
 			},
 			getName(e) {
 				this.name = e.detail.value
-			},
-			getWorkNum(e) {
-				this.workNumber = e.detail.value;
 			},
 			addStaff() {
 				// if (this.isShowAuthList == "noAllow") { //如果不允许则清空参数

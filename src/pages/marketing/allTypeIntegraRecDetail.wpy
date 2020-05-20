@@ -1,7 +1,8 @@
 <template>
   <view class="integralDetail_wrapper">
     <view class="integralDetail_top">
-      <view class="date">{{fatherDate}} 当日合计{{totalNumbers}}份,合计{{totalIntegral}}积分</view>
+      <!-- 当日合计{{totalNumbers}}份, -->
+      <view class="date">{{fatherDate}} 合计{{totalIntegral}}积分</view>
       <view class="select">
         <image src="../../images/shaixuan.png" mode="scaleToFill" lazy-load="false" class="selectIcon"></image>
         <picker @change="bindPickerChange" value="{{pickindex}}" range="{{pickerArray}}" range-key="name">
@@ -190,7 +191,6 @@
           this.allTypesData = res.everyDayIntegralForUser
           this.allTypesData.forEach((item, index) => {
             this._handleItem(this.pickerArray, item, type)
-            this.totalNumbers += 1
           })
           this.selectAllData = this.recordData
           
