@@ -7,49 +7,6 @@
             <label data-test="{{item.content}}" class="checkbox">
                   <radio color="#FFBA00" checked="{{item.checked}}" value="{{item.couponID}}"/>
                    <cardListCom :item="item" ></cardListCom>
-                    <!-- <view class="discountItem">
-                      <view class="discountItem-left">
-                        <text decode="{{true}}" space="{{true}}"  class="title" wx:if="{{item.type==0}}">({{item.theme}})--{{item.value+"元"}}</text>
-                        <text decode="{{true}}" space="{{true}}"  class="title" wx:elif="{{item.type==1}}">({{item.theme}})--{{item.content}}</text>
-                        <text decode="{{true}}" space="{{true}}"  class="title" wx:elif="{{item.type==2}}">({{item.theme}})--{{item.value+"折"}}</text>
-                        <text decode="{{true}}" space="{{true}}"  class="title" wx:elif="{{item.type==3}}">({{item.theme}})--{{item.content}}</text>
-                        <text decode="{{true}}" space="{{true}}"  class="title" wx:elif="{{item.type==4}}">({{item.theme}})--{{item.content}}</text>
-                        <text decode="{{true}}" space="{{true}}"  class="title" wx:elif="{{item.type==5}}">({{item.theme}})--{{item.content}}</text>
-                        <text decode="{{true}}" space="{{true}}"  class="title" wx:elif="{{item.type==6}}">({{item.theme}})--{{item.content}}</text>
-                        <view style="display:flex;justify-content:space-between;">
-                          <text class="limit">{{item.limit}}--</text>
-                          <text class="limit">剩余{{item.number}}张</text>
-                        </view>
-                      </view>
-                      <view class="discountItem-right" wx:if="{{item.type==0}}">
-                        <text>现金券</text>
-                        <text>{{item.endTime}}</text>
-                      </view>
-                      <view class="discountItem-right" wx:if="{{item.type==1}}">
-                        <text>实物券</text>
-                         <text>{{item.endTime}}</text>
-                      </view>
-                      <view class="discountItem-right" wx:if="{{item.type==2}}">
-                        <text>折扣券</text>
-                        <text>{{item.endTime}}</text>
-                      </view>
-                      <view class="discountItem-right" wx:if="{{item.type==3}}">
-                        <text>兑换券</text>
-                        <text>{{item.endTime}}</text>
-                      </view>
-                      <view class="discountItem-right" wx:if="{{item.type==4}}">
-                        <text>满减券</text>
-                        <text>{{item.endTime}}</text>
-                      </view>
-                      <view class="discountItem-right" wx:if="{{item.type==5}}">
-                        <text>月卡券</text>
-                        <text>{{item.endTime}}</text>
-                      </view>
-                      <view class="discountItem-right" wx:if="{{item.type==6}}">
-                        <text>次卡券</text>
-                        <text>{{item.endTime}}</text>
-                      </view>
-                    </view> -->
                   </label>
           </repeat>
         </radio-group>

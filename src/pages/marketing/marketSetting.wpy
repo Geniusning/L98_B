@@ -53,7 +53,7 @@
       </view>
       <view class='item-right'>
         <navigator hover-class="none" url='/pages/index/yingXiaoHuoDongModule/yingXiaoHuoDongModule?type=0' class='setting'>统计</navigator>
-        <navigator hover-class="none" url='/pages/marketing/AIdiscount/AIdiscount?type=1' class='setting'>设置</navigator>
+        <navigator hover-class="none" url='/pages/marketing/staffDiscount/staffDiscount' class='setting'>设置</navigator>
       </view>
     </view>
     <!-- 游戏统计 -->
@@ -150,6 +150,19 @@
       <view class='item-right'>
         <navigator hover-class='none' url='/pages/marketing/activityNotice/activityNoticeStat?type=activity' class='setting'>统计</navigator>
         <navigator hover-class='none' url='/pages/marketing/activityNotice/activityNotice' class='setting'>设置</navigator>
+      </view>
+    </view>
+    <!-- 群发通知 -->
+    <view class='item'>
+      <view class='item-left'>
+        <image class='pic' src='../../images/game.png'></image>
+        <view class='desc-box'>
+          <text class='name'>群发通知</text>
+        </view>
+      </view>
+      <view class='item-right'>
+        <navigator hover-class="none" url='/pages/marketing/groupNotice/groupNotice' class='setting'>设置</navigator>
+        <!-- <image class='arrow' src='../../images/arrow_right.png'></image> -->
       </view>
     </view>
     <!-- 短信营销 -->

@@ -25,6 +25,8 @@
         'pages/marketing/game/singleGameList',
         'pages/marketing/game/game',
         'pages/marketing/AIdiscount/AIdiscount',
+        'pages/marketing/staffDiscount/staffDiscount',
+        'pages/marketing/groupNotice/groupNotice',
         'pages/marketing/AIdiscount/managerAIdiscount',
         'pages/marketing/inviteDiscount/inviteDiscount',
         'pages/marketing/inviteDiscount/managerInviteDiscount',

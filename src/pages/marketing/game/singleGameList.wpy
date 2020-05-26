@@ -209,9 +209,6 @@
       return conditionType
     };
     async onShow() {
-      // let gameListData = await this.getGameList();
-      // console.log('单场游戏列表：', gameListData)
-      // this.getHandledGameList(gameListData);
     }
     async onLoad(e) {
       //获取屏幕高度
@@ -347,13 +344,7 @@
                 text-overflow: ellipsis;
                 width: 300rpx;
               }
-            } // .discountContentRight{
-            //   display: flex;
-            //   flex-direction: column;
-            //   justify-content: space-between;
-            //   .lineOne{}
-            //   .lineTwo{}
-            // }
+            }
           }
         }
       }
@@ -372,7 +363,6 @@
     }
     .btn-wrapper {
       margin-top: 30rpx;
-      .delete {}
     }
   }
 </style>

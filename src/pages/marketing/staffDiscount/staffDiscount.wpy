@@ -1,0 +1,217 @@
+<template>
+  <view class="AI-wrapper">
+    <!-- 第1步 -->
+    <view class="stepTwo-wrapper">
+      <view class="title">第二步：选择优惠券</view>
+      <scroll-view scroll-y class="scrollView">
+        <radio-group @change="checkboxCoupon">
+          <repeat for="{{cardList}}" key="index">
+            <label class="label_tag">
+                      <radio color="#FFBA00"   checked="{{item.checked}}" value="{{item.couponID}}"/>
+                      <cardListCom :item="item"></cardListCom>
+                  </label>
+          </repeat>
+        </radio-group>
+      </scroll-view>
+    </view>
+    <!-- 第2步 -->
+    <view class="stepFour-wrapper">
+      <view class="title">第二步：发布时间</view>
+      <view class="customTime-box">
+        <picker mode="date" value="{{date}}" start="{{startDate}}" end="2030-09-01" @change="bindStartDateChange">
+          <view class="picker">开始时间: {{startDate}}</view>
+        </picker>
+      </view>
+    </view>
+    <!-- 按钮 -->
+    <view class="btn-wrapper">
+      <button @tap="dispatchDiscount" class="center-btn">发布</button>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  const util = require('../../../utils/utils.js');
+  import cardListCom from '../../../components/cardList'
+  export default class staffDiscount extends wepy.page {
+    config = {
+      navigationBarTitleText: '员工送券'
+    };
+    components = {
+      cardListCom: cardListCom
+    };
+    data = {
+      cardList: [],
+      cardId: "",
+      startDate: '2019-01-01',
+      selectedCouponIds: [],
+      userTypeNumList: [],
+      userIDs: [],
+      conditonType: "",
+      AItheme: ""
+    };
+    methods = {
+      //发布优惠券
+      dispatchDiscount() {
+        wx.showToast({
+          title: '功能暂未开放',
+          icon: 'none',
+          duration: 2000
+        })
+      },
+      // 优惠券选择
+      checkboxCoupon(e) {
+        this.cardId = e.detail.value;
+        console.log(this.cardId)
+      },
+      // 时间选择
+      bindStartDateChange: function(e) {
+        console.log(e.detail.value)
+        this.startDate = e.detail.value;
+      }
+    };
+    events = {};
+    onLoad(e) {
+      this.startDate = util.nowDate();
+      //拉取优惠券列表
+      var cardListUrl = `${this.$parent.globalData.commonUrl}/api/loadCoupons?tk=${this.$parent.globalData.tk}`;
+      util.interface_get(cardListUrl, this.$parent.globalData.StoreId).then(res => {
+        this.cardList = res;
+        this.cardList.forEach(item => {
+          item["checked"] = false;
+        })
+        console.log("_this.cardList-------", this.cardList)
+        this.$apply();
+      });
+    }
+  }
+</script>
+
+<style lang="less">
+  //修改默认radio样式
+  //   radio .wx-radio-input{ 
+  //   /* 自定义样式.... */
+  //     height: 40rpx; 
+  //     width: 40rpx;
+  //     margin-top: 40rpx;
+  //     border-radius: 3rpx;
+  //     border: 2rpx solid #ccc;
+  //  }
+  //  radio .wx-radio-input.wx-radio-input-checked {
+  //       height: 40rpx; 
+  //       width: 40rpx;
+  //       border: 2rpx solid #ccc;
+  // }
+  //  /* 选中后的的√ */
+  // radio .wx-radio-input.wx-radio-input-checked::before{
+  //       color: #FFBA00;
+  // }
+  .AI-wrapper {
+    padding: 20rpx;
+    padding-bottom: 88rpx;
+    position: relative;
+  }
+  .stepOne-wrapper {
+    background: #fff;
+    padding: 10rpx;
+    margin-bottom: 20rpx;
+  }
+  .select-box {
+    margin-top: 20rpx;
+    height: 80rpx;
+    .select-item {
+      float: left;
+      display: flex;
+      margin-bottom: 8rpx;
+    }
+    .my-check {}
+    .userType-Name {}
+  }
+  .allClient {
+    margin: 20rpx 0;
+    width: 150rpx;
+    padding: 10rpx;
+    border: 1px solid #ccc;
+  }
+  /* 第二步 */
+  .stepTwo-wrapper {
+    background: #fff;
+    padding: 10rpx;
+  }
+  .scrollView {
+    height: 500rpx;
+    margin-top: 20rpx;
+  }
+  .label_tag {
+    display: flex;
+    margin-bottom: 20rpx;
+  }
+  .step2Checkbox {
+    padding-top: 50rpx;
+  }
+  .title {
+    font-weight: 700;
+    color: #333;
+    font-size: 30rpx;
+  }
+  .discountItem {
+    /* width: 400rpx; */
+    flex: 1;
+    height: 150rpx;
+    padding: 0 20rpx;
+    border: 1px solid #ccc;
+    display: flex;
+    justify-content: space-between;
+  }
+  .discountItem-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+  }
+  .discountItem-left .title {
+    font-size: 38rpx;
+    color: #ffba00;
+  }
+  .discountItem-left .time {
+    font-size: 32rpx;
+    color: #333;
+  }
+  .discountItem-right {
+    padding: 16rpx 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    text-align: center;
+  }
+  .btn-wrapper {
+    margin-top: 20rpx;
+    display: flex;
+    justify-content: space-between;
+  }
+  .btn-wrapper button {
+    width: 100%
+  }
+  /* 第三步第四部 */
+  .stepThree-wrapper,
+  .stepFour-wrapper {
+    margin-top: 20rpx;
+    background: #fff;
+    padding: 10rpx;
+  }
+  .select-channel {
+    margin-top: 20rpx;
+  }
+  .selectModel,
+  .customTime-box {
+    margin-top: 20rpx;
+    .picker {
+      background-color: #ccc;
+      color: #fff;
+      width: 300rpx;
+    }
+  }
+</style>
+<style lang="less" src="../../../mixins/less/btn.less">
+
+</style>
