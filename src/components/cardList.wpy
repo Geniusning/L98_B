@@ -15,31 +15,31 @@
     </view>
     <view class="discountItem-right" wx:if="{{item.type==0}}">
       <text>现金券</text>
-      <text>{{item.endTime}}</text>
+      <text>{{item.startTimeOption===1?'获得后'+item.intervals+'天内有效':item.endTime}}</text>
     </view>
     <view class="discountItem-right" wx:if="{{item.type==1}}">
       <text>实物券</text>
-      <text>{{item.endTime}}</text>
+      <text>{{item.startTimeOption===1?'获得后'+item.intervals+'天内有效':item.endTime}}</text>
     </view>
     <view class="discountItem-right" wx:if="{{item.type==2}}">
       <text>折扣券</text>
-      <text>{{item.endTime}}</text>
+      <text>{{item.startTimeOption===1?'获得后'+item.intervals+'天内有效':item.endTime}}</text>
     </view>
     <view class="discountItem-right" wx:if="{{item.type==3}}">
       <text>兑换券</text>
-      <text>{{item.endTime}}</text>
+      <text>{{item.startTimeOption===1?'获得后'+item.intervals+'天内有效':item.endTime}}</text>
     </view>
     <view class="discountItem-right" wx:if="{{item.type==4}}">
       <text>满减券</text>
-      <text>{{item.endTime}}</text>
+      <text>{{item.startTimeOption===1?'获得后'+item.intervals+'天内有效':item.endTime}}</text>
     </view>
     <view class="discountItem-right" wx:if="{{item.type==5}}">
       <text>月卡券</text>
-      <text>{{item.endTime}}</text>
+      <text>会员特权</text>
     </view>
     <view class="discountItem-right" wx:if="{{item.type==6}}">
       <text>次卡券</text>
-      <text>{{item.endTime}}</text>
+      <text>会员特权</text>
     </view>
   </view>
 </template>

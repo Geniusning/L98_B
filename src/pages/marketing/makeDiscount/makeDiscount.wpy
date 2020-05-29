@@ -21,41 +21,21 @@
       <view class='cardContent'>
         <text class='titleName'>第三步：卡券内容：</text>
         <!-- 现金券 -->
-        <view class='cashCard-box' wx:if="{{discountTypeIndex==='0'}}">
-          <text>现金券</text>
-          <input type='number' maxlength='12'  @input="inputMoney" class='cashInpur' placeholder='请输入金额'></input>
+        <view class='cashCard-box' wx:if="{{discountTypeIndex===0}}">
+          <text>{{couponTypeName}}</text>
+          <input type='number' maxlength='4' @input="inputNumber" class='cashInpur' placeholder='{{placeHolder}}'></input>
           <text>元</text>
         </view>
-        <!-- 实物券 -->
-        <view class='cashCard-box' wx:elif="{{discountTypeIndex==='1'}}">
-          <text>实物券</text>
-          <input type='text'  maxlength='12' @input='inputGoods' class='cashInpur' placeholder='请输入礼物名'></input>
-        </view>
         <!-- 折扣券 -->
-        <view class='cashCard-box' wx:elif="{{discountTypeIndex==='2'}}">
-          <text>折扣券</text>
-          <input type='number' maxlength='12'  @input='inputDiscount' class='cashInpur' placeholder='请输入折扣数'></input>
+        <view class='cashCard-box' wx:elif="{{discountTypeIndex===2}}">
+          <text>{{couponTypeName}}</text>
+          <input type='number' maxlength='2' @input='inputNumber' class='cashInpur' placeholder='{{placeHolder}}'></input>
           <text>折</text>
         </view>
-        <!-- 兑换券 -->
-        <view class='cashCard-box' wx:elif="{{discountTypeIndex==='3'}}">
-          <text>兑换券</text>
-          <input type='text' maxlength='12'  @input='inputGoods' class='cashInpur' placeholder='请输入兑换物品'></input>
-        </view>
-        <!-- 满减券 -->
-        <view class='cashCard-box' wx:elif="{{discountTypeIndex==='4'}}">
-          <text>满减券</text>
-          <input type='text' maxlength='12'  @input='inputGoods' class='cashInpur' placeholder='请输入满减内容'></input>
-        </view>
-        <!-- 月卡 -->
-        <view class='cashCard-box' wx:elif="{{discountTypeIndex==='5'}}">
-          <text>月卡</text>
-          <input type='text' maxlength='12'  @input='inputGoods' class='cashInpur' placeholder='请输入月卡特权'></input>
-        </view>
-        <!-- 次卡 -->
-        <view class='cashCard-box' wx:elif="{{discountTypeIndex==='6'}}">
-          <text>次卡</text>
-          <input type='text' maxlength='12'  @input='inputGoods' class='cashInpur' placeholder='请输入次卡特权'></input>
+        <!-- 实物券 -->
+        <view class='cashCard-box' wx:else>
+          <text>{{couponTypeName}}</text>
+          <input type='text' maxlength='6' @input='inputGoods' class='cashInpur' placeholder='{{placeHolder}}'></input>
         </view>
       </view>
       <!-- 优惠券限制条件 -->
@@ -73,160 +53,131 @@
         </view>
       </view>
       <!-- 优惠券生效时间 -->
-      <view class='cardType'>
+      <view class='cardType' wx:if="{{!isVipCoupon}}">
         <text class='titleName'>第六步：券生效时间:</text>
         <radio-group style='margin-top:20rpx;margin-bottom:20rpx' class="radio-group" @change="radioChangeBeginTime">
           <repeat class="radio" for="{{beginTimesTtems}}">
-            <radio color='orange' value="{{item.id}}" checked="{{item.checked}}" />{{item.value}}
+            <label class="label_tag">
+                    <radio color='orange' value="{{item.id}}" checked="{{item.checked}}" />{{item.value}}
+                    </label>
           </repeat>
         </radio-group>
-        <picker wx:if="{{beginTimeShow=='3'}}" mode="date" value="{{starDate}}" start="{{starDate}}" end="2027-09-01" @change="bindStartDateChange">
+        <picker wx:if="{{startTimeOption=='2'}}" mode="date" value="{{startDate}}" start="{{startDate}}" end="2027-09-01" @change="bindStartDateChange">
           <view class="picker">
-            <text class='pickerbg'>请选择生效时间：{{starDate}}</text>
+            <text class='pickerbg'>请选择生效时间：{{startDate}}</text>
           </view>
         </picker>
       </view>
       <!-- 优惠券过期时间 -->
-      <view class='cardType'>
+      <view class='cardType' wx:if="{{!isVipCoupon}}">
         <view class='titleName'>第七步：券失效时间：</view>
         <!-- 时间选择 -->
         <view class='timeBox'>
           <radio-group class="radio-group" @change="radioChangeEndTime">
-            <repeat class="radio" for="{{endTimesTtems}}">
+            <repeat class="radio" for="{{endTimesList}}">
               <label class="label_tag">
-                <radio class="radio" color='orange' value="{{item.id}}" checked="{{item.checked}}" />
-                <view class="day">{{item.value}}</view>
-              </label>
+                              <radio class="radio" color='orange' value="{{item.id}}" checked="{{item.checked}}" />
+                              <view class="day">{{item.value}}</view>
+                      </label>
             </repeat>
           </radio-group>
         </view>
-        <picker wx:if="{{endTimeShow=='custom'}}" mode="date" value="{{endPickerDate}}" start="{{starDate}}" end="2029-09-01" @change="bindEndDateChange">
+        <picker wx:if="{{endTimeShow=='custom'}}" mode="date" value="{{endDate}}" start="{{startDate}}" end="2029-09-01" @change="bindEndDateChange">
           <view class="endDatepicker">
             {{endDate}}
           </view>
         </picker>
         <!-- <text wx:else class='twnowDate'>{{nowDate}}</text> -->
       </view>
+      <button class='btn center-btn' @tap.stop='makeDiscardBtn'>确定</button>
     </view>
-    <button class='btn center-btn' @tap.stop='makeDiscardBtn'>确定</button>
   </view>
   </view>
 </template>
 
 <script>
-import wepy from 'wepy';
-const util = require('../../../utils/utils.js');
-export default class makeDiscount extends wepy.page {
-  config = {
-    navigationBarTitleText: '制作卡券'
-  };
-  data = {
-    couponTypeList: [
-      '现金券',
-      '实物券',
-      '折扣券',
-      '兑换券',
-      '满减券',
-      '月卡',
-      '次卡'
-    ],
-    discountTypeIndex: '0',
-    starDate: '',
-    endDate: '',
-    endPickerDate: '',
-    moneyValue: '',
-    goodsValue: '',
-    themeValue: '',
-    discountValue: '',
-    limitValue: '',
-    discountNum: 1,
-    beginTimeShow: 1,
-    endTimeShow: '2',
-    nowDate: '',
-
-    beginTimesTtems: [
-      {
-        id: '1',
-        value: '即刻生效',
-        checked: 'true'
-      },
-      // {
-      //   id: '2',
-      //   value: '24小时'
-      // },
-      {
-        id: '3',
-        value: '自定义'
-      }
-    ],
-    // {
-    //     id: '2',
-    //     value: '24小时',
-    //     checked: 'true'
-    //   },
-    endTimesTtems: [
-      {
-        id: '3',
-        value: '3天'
-      },
-      {
-        id: '7',
-        value: '7天'
-      },
-      {
-        id: '15',
-        value: '15天'
-      },
-      {
-        id: '30',
-        value: '30天'
-      },
-      {
-        id: '60',
-        value: '60天'
-      },
-      {
-        id: 'custom',
-        value: '自定义'
-      }
-    ]
-  };
-  methods = {
-    makeDiscardBtn() {
-      var discountTypeIndex = Number(this.discountTypeIndex); //类型
-      console.log('discountTypeIndex------------', discountTypeIndex);
-      switch (discountTypeIndex) {
-        case 0:
-          var moneyValue = Number(this.moneyValue); //现金
-          break;
-        case 2:
-          var moneyValue = Number(this.discountValue); //折扣
-          break;
-        default:
-          break;
-      }
-      //金额
-      var number = Number(this.discountNum); //数量
-      wx.request({
-        url: `${this.$parent.globalData.commonUrl}/api/createCoupon?tk=${this.$parent.globalData.tk}&storeId=${this.$parent.globalData.StoreId}`,
-        data: {
-          type: discountTypeIndex,
-          content: this.goodsValue,
-          value: moneyValue,
+  import wepy from 'wepy';
+  const util = require('../../../utils/utils.js');
+  export default class makeDiscount extends wepy.page {
+    config = {
+      navigationBarTitleText: '制作卡券'
+    };
+    data = {
+      couponTypeList: [
+        '现金券',
+        '实物券',
+        '折扣券',
+        '兑换券',
+        '满减券',
+        '月卡',
+        '次卡'
+      ],
+      couponTypeName: '现金券',
+      discountTypeIndex: 0,
+      placeHolder: "请输入内容",
+      startDate: '',
+      endDate: '',
+      endPickerDate: '',
+      moneyValue: '',
+      goodsContent: '',
+      themeValue: '',
+      discountValue: '',
+      limitValue: '',
+      discountNum: 1,
+      startTimeOption: "1",
+      endTimeShow: '',
+      isVipCoupon: false,
+      intervals: 3,
+      beginTimesTtems: [{
+          id: '1',
+          value: '即刻生效',
+          checked: 'true'
+        },
+        {
+          id: '2',
+          value: '自定义'
+        }
+      ],
+      endTimesList: [{
+          id: '3',
+          value: '3天'
+        },
+        {
+          id: '7',
+          value: '7天'
+        },
+        {
+          id: '15',
+          value: '15天'
+        },
+        {
+          id: '30',
+          value: '30天'
+        },
+        {
+          id: '60',
+          value: '60天'
+        }
+      ]
+    };
+    methods = {
+      makeDiscardBtn() {
+        let data = {
+          type: this.discountTypeIndex,
+          content: this.goodsContent,
+          value: this.moneyValue,
           limit: this.limitValue,
-          startTime: this.starDate,
-          endTime: this.endDate,
-          number: number,
+          startTime: this.startTimeOption === '1' ? '' : this.startDate,
+          endTime: this.startTimeOption === '1' ? '' : this.endDate,
+          number: this.discountNum,
           theme: this.themeValue,
-          startTimeOption: Number(this.beginTimeShow)
-        },
-        header: {
-          'content-type': 'application/json'
-        },
-        method: 'POST',
-        success: function(res) {
+          intervals: Number(this.intervals),
+          startTimeOption: Number(this.startTimeOption) //1即时  2自定义
+        }
+        let url = `${this.$parent.globalData.commonUrl}/api/createCoupon?tk=${this.$parent.globalData.tk}`
+        util.interface_post(url, data, this.$parent.globalData.StoreId).then(res => {
           console.log(res);
-          if (res.data.errCode == 0) {
+          if (res.errCode == 0) {
             wx.showToast({
               title: '制作成功',
               icon: 'success',
@@ -234,172 +185,219 @@ export default class makeDiscount extends wepy.page {
             });
           } else {
             wx.showToast({
-              title: '请填写完整信息',
+              title: `${res.errCode}网络错误`,
               icon: 'none',
               duration: 2000
             });
           }
+        })
+      },
+      // 生效时间模式选择
+      radioChangeBeginTime(e) {
+        let detailValue = e.detail.value;
+        console.log("生效时间----------", detailValue)
+        this.startTimeOption = detailValue;
+        if (this.startTimeOption === '2') {
+          this.endTimesList.push({
+            id: 'custom',
+            value: '自定义'
+          })
+        } else {
+          this.endTimesList.pop()
+          this.endTimeShow = false
         }
-      });
-    },
-    // 生效时间
-    radioChangeBeginTime(e) {
-      let detailValue = e.detail.value;
-      this.beginTimeShow = detailValue;
-    },
-    //失效时间
-    radioChangeEndTime(e) {
-      console.log(e.detail.value);
-      let detailValue = e.detail.value;
-      let day = detailValue === '2' ? '1' : detailValue;
-      console.log('day', day);
-      this.endDate = util.someDayLater(util.nowDate(), Number(day), '-');
-      this.nowDate = day + '天后';
-      if (day === '1') {
-        this.endTimeShow = '2';
-      } else {
-        this.endTimeShow = day;
-      }
-    },
-    // 生效时间
-    bindStartDateChange(e) {
-      console.log(e.detail.value);
-      this.starDate = e.detail.value;
-    },
-    //失效自定义的时间
-    bindEndDateChange(e) {
-      this.endDate = e.detail.value;
-    },
-    //输入金额触发
-    inputMoney(e) {
-      this.moneyValue = e.detail.value;
-    },
-    //输入主题 themeValue
-    inputTheme(e) {
-      this.themeValue = e.detail.value;
-    },
-    //输入实物券内容
-    inputGoods(e) {
-      this.goodsValue = e.detail.value;
-    },
-    //输入折扣
-    inputDiscount(e) {
-      this.discountValue = e.detail.value;
-      console.log('折扣-----------------', this.discountValue);
-    },
-    //输入限制条件
-    inputLimitContidaion(e) {
-      this.limitValue = e.detail.value;
-      console.log('限制条件:', this.limitValue);
-    },
-    //输入优惠券数量
-    inputDiscountNumber(e) {
-      console.log('输入优惠券数量---', e);
-      this.discountNum = e.detail.value;
-    },
-    //优惠券类型选择
-    bindPickerChange(e) {
-      this.discountTypeIndex = e.detail.value;
-      console.log(this.discountTypeIndex);
-      if (this.discountTypeIndex == '0') {
-        this.goodsValue = '';
-        this.discountValue = '';
-      }
-      if (this.discountTypeIndex == '1') {
+      },
+      //失效时间模式选择
+      radioChangeEndTime(e) {
+        console.log("失效时间--------", e.detail.value);
+        if (this.startTimeOption === '1') { //即时生效模式
+          this.intervals = Number(e.detail.value)
+          return
+        }
+        if (e.detail.value === 'custom') {
+          this.endTimeShow = 'custom'
+          return
+        } else {
+          this.endTimeShow = e.detail.value
+        }
+        this.intervals = Number(e.detail.value)
+        this.endDate = util.someDayLater(this.startDate, this.intervals, '-');
+        console.log("this.endDate----", this.endDate)
+      },
+      // 生效自定义时间
+      bindStartDateChange(e) {
+        this.startDate = e.detail.value;
+        this.endDate = util.someDayLater(this.startDate, this.intervals, '-');
+        console.log("this.startDate", this.startDate)
+        console.log("this.endDate", this.endDate)
+      },
+      //失效自定义的时间
+      bindEndDateChange(e) {
+        this.endDate = e.detail.value;
+        let flag = util.compareDate(this.startDate, this.endDate)
+        if (!flag) {
+          wx.showToast({
+            title: "不能小于开始日期",
+            icon: 'none',
+            duration: 2000
+          })
+          this.endDate = util.someDayLater(this.startDate, this.intervals, '-');
+        }
+      },
+      //输入金额触发
+      inputNumber(e) {
+        this.moneyValue = Number(e.detail.value);
+      },
+      //输入主题 themeValue
+      inputTheme(e) {
+        this.themeValue = e.detail.value;
+      },
+      //输入实物券内容
+      inputGoods(e) {
+        this.goodsContent = e.detail.value;
+      },
+      //输入限制条件
+      inputLimitContidaion(e) {
+        this.limitValue = e.detail.value;
+        console.log('限制条件:', this.limitValue);
+      },
+      //输入优惠券数量
+      inputDiscountNumber(e) {
+        this.discountNum = Number(e.detail.value);
+        console.log('输入优惠券数量---', this.discountNum);
+      },
+      //优惠券类型选择
+      bindPickerChange(e) {
+        this.discountTypeIndex = Number(e.detail.value);
+        this.couponTypeName = this.couponTypeList[this.discountTypeIndex]
+        switch (this.discountTypeIndex) {
+          case 0:
+            this.placeHolder = '请输入金额'
+            this.isVipCoupon = false
+            break;
+          case 1:
+            this.placeHolder = '请输入礼物名'
+            this.isVipCoupon = false
+            break;
+          case 2:
+            this.placeHolder = '请输入折扣数'
+            this.isVipCoupon = false
+            break;
+          case 3:
+            this.placeHolder = '请输入兑换物品'
+            this.isVipCoupon = false
+            break;
+          case 4:
+            this.placeHolder = '请输入满减内容'
+            this.isVipCoupon = false
+            break;
+          case 5:
+            this.placeHolder = '请输入月卡特权'
+            this.isVipCoupon = true
+            this.startDate = ""
+            this.endDate = ""
+            this.intervals = 1
+            break;
+          case 6:
+            this.placeHolder = '请输入次卡特权'
+            this.isVipCoupon = true
+            this.startDate = ""
+            this.endDate = ""
+            this.intervals = 1
+            break;
+          default:
+            break;
+        }
+        this.goodsContent = '';
         this.moneyValue = '';
-        this.discountValue = '';
+        console.log('优惠券类型--------', this.discountTypeIndex);
       }
-      if (this.discountTypeIndex == '2') {
-        this.moneyValue = '';
-        this.goodsValue = '';
-      }
-      if (this.discountTypeIndex == '3') {
-        this.moneyValue = '';
-        this.discountValue = '';
-      }
+    };
+    onShow() {
+      this.endDate = util.someDayLater(util.nowDate(), 2, '-');
+      this.startDate = util.someDayLater(util.nowDate(), 1, '-');
+      // this.endPickerDate = util.nowDate()
     }
-  };
-  onShow() {
-    this.endDate = util.someDayLater(util.nowDate(), 1, '-');
-    this.starDate = util.nowDate();
-    this.endPickerDate = this.starDate
   }
-}
 </script>
 
 <style lang="less">
-.makeDiscount-wrapper {
-  background: #fff;
-}
-.edit-box {
-  height: 100%;
-  padding: 10rpx 30rpx 10rpx 10rpx;
-  box-sizing: border-box;
-  font-size: 30rpx;
-  border-radius: 20rpx;
-}
-.timeBox {
-  margin: 20rpx 0;
-  .radio-group {
-    display: flex;
+  .makeDiscount-wrapper {
+    background: #fff;
+    margin: 10rpx;
+    border-radius: 4rpx;
+    height: 100%;
   }
-  .label_tag {
-    display: flex;
-    .radio {
-      height: 54rpx;
+  .edit-box {
+    height: 100%;
+    padding: 10rpx 30rpx 10rpx 10rpx;
+    box-sizing: border-box;
+    font-size: 30rpx;
+    border-radius: 20rpx;
+  }
+  .timeBox {
+    margin: 20rpx 0;
+    .radio-group {
+      display: flex;
+      flex-wrap: wrap;
     }
-    .day {
-      // padding-top: 10rpx;
+    .label_tag {
+      display: flex;
+      .radio {
+        height: 54rpx;
+      }
+      .day {
+        margin-right: 10rpx;
+      }
     }
   }
-}
-.titleName {
-  font-weight: 700;
-  color: #333;
-}
-.picker,
-.limitContidion {
-  margin: 30rpx 0;
-}
-.cardType .picker {
-  color: #fff;
-}
-.endDatepicker {
-  display: inline-block;
-  box-sizing: border-box;
-  background-color: #ccc;
-  color: #fff;
-  margin: 0;
-}
-.pickerbg {
-  background-color: #ccc;
-  display: inline-block;
-}
-.cardContent {
-  margin: 20rpx 0;
-}
-.cashCard-box {
-  display: flex;
-  margin: 20rpx 0;
-}
-.cardContent .cashInpur {
-  border: 1px solid #ccc;
-  width: 300rpx;
-}
-.cardContent text {
-  padding-top: 8rpx;
-}
-.btn {
-  margin-top: 30rpx;
-}
-.timeItem {
-  border: 1px solid #ccc;
-  padding: 10rpx 10rpx;
-  margin-right: 10rpx;
-}
-.active {
-  color: #fff;
-  background-color: #ccc;
-}
+  .titleName {
+    font-weight: 700;
+    color: #333;
+  }
+  .picker,
+  .limitContidion {
+    margin: 30rpx 0;
+  }
+  .cardType .picker {
+    color: #fff;
+  }
+  .endDatepicker {
+    display: inline-block;
+    box-sizing: border-box;
+    background-color: #ccc;
+    color: #fff;
+    margin: 0;
+  }
+  .pickerbg {
+    background-color: #ccc;
+    display: inline-block;
+  }
+  .cardContent {
+    margin: 20rpx 0;
+  }
+  .cashCard-box {
+    display: flex;
+    align-items: center;
+    margin: 20rpx 0;
+  }
+  .cardContent .cashInpur {
+    border: 1px solid #ccc;
+    width: 300rpx;
+  }
+  .btn {
+    margin-top: 30rpx;
+  }
+  .timeItem {
+    border: 1px solid #ccc;
+    padding: 10rpx 10rpx;
+    margin-right: 10rpx;
+  }
+  .active {
+    color: #fff;
+    background-color: #ccc;
+  }
 </style>
-<style lang="less" src="../../../mixins/less/btn.less"></style>
+<style lang="less" src="../../../mixins/less/btn.less">
+
+</style>

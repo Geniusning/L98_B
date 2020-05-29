@@ -2,13 +2,13 @@
   <view class="cardList-container">
     <view wx:if="{{cardList.length}}">
       <view class="stepTwo-wrapper">
-        <view class="title">优惠券列表</view>
+        <view class="title">多选</view>
         <scroll-view scroll-y class="scrollView" style="height:{{winHeight}}rpx;">
           <checkbox-group @change="checkboxCoupon">
             <repeat for="{{cardList}}" key="index">
               <label data-test="{{item.content}}" class="checkbox">
                 <checkbox color="#FFBA00" checked="{{item.checked}}" value="{{item.couponID}}"/>
-                  <cardListCom :item="item" ></cardListCom>
+                  <cardListCom  :item="item" ></cardListCom>
               </label>
             </repeat>
           </checkbox-group>

@@ -312,19 +312,6 @@
 				this.name = e.detail.value
 			},
 			addStaff() {
-				// if (this.isShowAuthList == "noAllow") { //如果不允许则清空参数
-				//     this.subStaffList = [];
-				//     this.paramStoreList = []
-				// }
-				if (!this.isSelectStore &&
-					this.$parent.globalData.userInfo.role == 'k98_operation_front' &&
-					this.$parent.globalData.userInfo.role == 'k98_store_boss') {
-					wx.showToast({
-						title: '请选择门店',
-						icon: "none",
-						duration: 2000
-					})
-				}
 				this.password = this.phone.slice(5, 11);
 				let url = `${this.$parent.globalData.commonUrl}/api/addStaff?tk=${this.$parent.globalData.tk}`;
 				var params = {
@@ -333,12 +320,8 @@
 					phone: this.phone,
 					password: this.password,
 					parentId: this.$parent.globalData.userInfo.phone,
-					// phone: '8888',
-					// password: '8888',
 					role: this.role,
-					permission: this.permission,
-					subStaffList: this.subStaffList, //授权管理员工给下属
-					storeList: this.paramStoreList, //授权管理门店给下属
+				
 				};
 				if (this.phone.length != 11) {
 					wx.showToast({

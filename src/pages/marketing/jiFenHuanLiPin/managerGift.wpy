@@ -103,7 +103,13 @@
         this.integralGiftList = res
         this.integralGiftList.forEach(item => {
           item["checked"] = false
-          item["isExpired"] = util.isExpired(item.coupInfo.endTime)
+           if(item.coupInfo.startTimeOption===1){
+            item["isExpired"] = false
+          }else if(!item.coupInfo){
+            item["isExpired"] = true
+          }else{
+            item["isExpired"] = util.isExpired(item.coupInfo.endTime)
+          }
         })
         this.$apply()
       })

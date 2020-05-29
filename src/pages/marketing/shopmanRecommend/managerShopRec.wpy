@@ -41,6 +41,7 @@
     };
     data = {
       AIIDs: [],
+      aaa:111,
       winHeight: "",
       shopRecList: [],
       recommendId: "",
@@ -96,14 +97,19 @@
       }
     };
     _loadShopRecommend() {
-
       let url = `${this.$parent.globalData.commonUrl}/api/loadRecommends?tk=${this.$parent.globalData.tk}`
       util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
         console.log("_loadShopRecommend----------", res)
         this.shopRecList = res
         this.shopRecList.forEach(item => {
           item["checked"] = false
-          item["isExpired"] = util.isExpired(item.coupInfo.endTime)
+          if(item.coupInfo.startTimeOption===1){
+            item["isExpired"] = false
+          }else if(!item.coupInfo){
+            item["isExpired"] = true
+          }else{
+            item["isExpired"] = util.isExpired(item.coupInfo.endTime)
+          }
         })
         this.$apply()
       })
@@ -111,6 +117,9 @@
     events = {};
     onLoad() {
       this.winHeight = util.getScrollHeight(110);
+      console.log("aaa",this.aaa)
+    }
+    onShow(){
       this._loadShopRecommend()
     }
     // Other properties
