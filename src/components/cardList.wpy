@@ -47,10 +47,8 @@
 <script>
   import wepy from 'wepy';
   export default class cardListCom extends wepy.component {
-    // Other properties
     data = {
-      // shopInfo:{},
-      // staffName:{}
+      item:[]
     };
     props = {
       item: {
@@ -58,6 +56,13 @@
         default: ""
       },
     };
+    events = {
+      'cardList': (param1) => {
+        console.log("param1----",param1)
+        this.item = param1
+        this.$apply()
+      }
+    }
     onLoad() {
       console.log("this.item--------", this.item)
     }
@@ -93,5 +98,8 @@
     flex-direction: column;
     justify-content: space-between;
     text-align: center;
+    text {
+      text-align: right;
+    }
   }
 </style>

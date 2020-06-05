@@ -534,7 +534,7 @@ export default class game extends wepy.page {
       this.thirdPrize = tempObj;
     }
     var gameBeginTime = new Date().getTime();
-    this.startTime = util.timestampToTime(gameBeginTime);
+    this.startTime = util.timestampToTime_space(gameBeginTime);
   }
   onReady() {
     //设置比赛当前日期

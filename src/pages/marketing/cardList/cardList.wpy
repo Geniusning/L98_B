@@ -7,9 +7,9 @@
           <checkbox-group @change="checkboxCoupon">
             <repeat for="{{cardList}}" key="index">
               <label data-test="{{item.content}}" class="checkbox">
-                <checkbox color="#FFBA00" checked="{{item.checked}}" value="{{item.couponID}}"/>
-                  <cardListCom  :item="item" ></cardListCom>
-              </label>
+                  <checkbox color="#FFBA00" checked="{{item.checked}}" value="{{item.couponID}}"/>
+                    <cardListCom  :item="item" ></cardListCom>
+                </label>
             </repeat>
           </checkbox-group>
         </scroll-view>
@@ -58,7 +58,7 @@
       // 确定优惠券
       save() {
         let pageState = getCurrentPages()
-        console.log("pageState--------",pageState)
+        console.log("pageState--------", pageState)
         if (this.selectedCouponId.length > 0) {
           wx.navigateBack({
             delta: 1
@@ -136,17 +136,19 @@
             let tempCoupon = this.cardList.filter(item => {
               return item['couponID'] == this.selectedCouponId[0];
             });
+            console.log('tempCoupon----------', tempCoupon)
             if (this.typeIndex == 1) { //一等奖
               this.$parent.globalData.singleGameFirstPrize = tempCoupon[0];
             } else if (this.typeIndex == 2) { //二等奖
               this.$parent.globalData.singleGameSecondPrize = tempCoupon[0];
             } else if (this.typeIndex == 'leagle') {
               this.$parent.globalData.leaglePrize = tempCoupon[0];
-              console.log(" console.log(this.$parent.globalData);----",this.$parent.globalData)
+              console.log(" console.log(this.$parent.globalData);----", this.$parent.globalData)
             } else if (this.typeIndex == 'recommend') {
               this.$parent.globalData.recommendPrize = tempCoupon[0];
             } else if (this.typeIndex == 'CouponA') {
               this.$parent.globalData.CouponA = tempCoupon[0];
+              console.log('this.$parent.globalData.CouponA---', this.$parent.globalData.CouponA)
             } else if (this.typeIndex == 'CouponB') {
               this.$parent.globalData.CouponB = tempCoupon[0];
             } else { //二等奖
@@ -194,8 +196,16 @@
         default:
           break;
       }
-      this.cardList = await this.getCardList();
-      console.log("cardList-------------", this.cardList)
+      console.log("this.typeIndex-------", this.typeIndex)
+      var result = await this.getCardList();
+      for (let i = 0; i < result.length; i++) {
+        const element = result[i];
+        element['checked'] = false
+        if ((element.type === 5 || element.type === 6) && this.typeIndex != 'showList') { //过滤会员卡券
+          continue
+        }
+        this.cardList.push(element)
+      }
       this.$apply();
     }
     onShow() {

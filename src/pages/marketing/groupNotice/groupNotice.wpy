@@ -6,11 +6,11 @@
       <radio-group @change="checkboxAct" class="radio-group">
         <repeat for="{{activityList}}" key="index" item="item">
           <label class="label_tag">
-            <view class="radio-circle">
-              <radio color="#FFBA00" value='{{item.id}}' disabled='{{item.disabled}}' />
-            </view>
-            <view class="radio-text">{{item.name}}</view>
-          </label>
+              <view class="radio-circle">
+                <radio color="#FFBA00" value='{{item.id}}' disabled='{{item.disabled}}' />
+              </view>
+              <view class="radio-text">{{item.name}}</view>
+            </label>
         </repeat>
       </radio-group>
     </view>
@@ -21,11 +21,11 @@
       <checkbox-group @change="checkboxClient" class="radio-group">
         <repeat for="{{usersTypeList}}" key="index" item="item">
           <label class="label_tag" data-usersTypeId="{{item.checked}}" @tap="getUserTypeId({{index}})">
-            <view class="radio-circle">
-              <checkbox color="#FFBA00" checked="{{item.checked}}" value="{{item.id}}" data-usersTypeId="{{item.id}}" />
-            </view>
-            <view class="radio-text">{{item.value}}</view>
-          </label>
+              <view class="radio-circle">
+                <checkbox color="#FFBA00" checked="{{item.checked}}" value="{{item.id}}" data-usersTypeId="{{item.id}}" />
+              </view>
+              <view class="radio-text">{{item.value}}</view>
+            </label>
         </repeat>
       </checkbox-group>
     </view>
@@ -35,11 +35,11 @@
       <radio-group @change="checkboxSex" class="radio-group">
         <repeat for="{{sexList}}" key="index" item="item">
           <label class="label_tag">
-            <view class="radio-circle">
-              <radio color="#FFBA00" value='{{item.id}}' />
-            </view>
-            <view class="radio-text">{{item.name}}</view>
-          </label>
+              <view class="radio-circle">
+                <radio color="#FFBA00" value='{{item.id}}' />
+              </view>
+              <view class="radio-text">{{item.name}}</view>
+            </label>
         </repeat>
       </radio-group>
     </view>
@@ -49,11 +49,11 @@
       <radio-group @change="checkboxVip" class="radio-group">
         <repeat for="{{vipList}}" key="index" item="item">
           <label class="label_tag">
-            <view class="radio-circle">
-              <radio color="#FFBA00" value='{{item.id}}' />
-            </view>
-            <view class="radio-text">{{item.name}}</view>
-          </label>
+              <view class="radio-circle">
+                <radio color="#FFBA00" value='{{item.id}}' />
+              </view>
+              <view class="radio-text">{{item.name}}</view>
+            </label>
         </repeat>
       </radio-group>
     </view>
@@ -63,11 +63,11 @@
       <radio-group @change="checkboxStaff" class="radio-group">
         <repeat for="{{staffList}}" key="index" item="item">
           <label class="label_tag">
-            <view class="radio-circle">
-              <radio color="#FFBA00" value='{{item.id}}' />
-            </view>
-            <view class="radio-text">{{item.name}}</view>
-          </label>
+              <view class="radio-circle">
+                <radio color="#FFBA00" value='{{item.id}}' />
+              </view>
+              <view class="radio-text">{{item.name}}</view>
+            </label>
         </repeat>
       </radio-group>
     </view>
@@ -98,8 +98,7 @@
       vipType: 0,
       adminType: 0,
       isAllChecked: false,
-      activityList: [
-        {
+      activityList: [{
           name: '活动告示板',
           disabled: false,
           type: 'activityIsOline',
@@ -124,23 +123,33 @@
           id: 4
         }
       ],
-      vipList: [
-        { name: '不限', id: 0 },
-        { name: '会员卡', id: 1 },
-        { name: '非会员', id: 2 }
-      ],
-      staffList: [
+      vipList: [{
+          name: '不限',
+          id: 0
+        },
         {
-          name: '不通知员工',
+          name: '会员卡',
           id: 1
         },
         {
-          name: '通知员工',
+          name: '非会员',
           id: 2
         }
       ],
-      sexList: [
+      staffList: [
         {
+          name: '通知客人和员工',
+          id: 0
+        },{
+          name: '只通知客人',
+          id: 1
+        },
+        {
+          name: '只通知员工',
+          id: 2
+        }
+      ],
+      sexList: [{
           name: '全部',
           id: 0
         },
@@ -153,35 +162,34 @@
           id: 2
         }
       ],
-      usersTypeList: [
-        {
+      usersTypeList: [{
           id: '1',
           value: '新客',
           checked: false
         },
         {
           id: '2',
-          value: '低频',
+          value: '本月低频',
           checked: false
         },
         {
           id: '4',
-          value: '中频',
+          value: '本月中频',
           checked: false
         },
         {
           id: '8',
-          value: '高频',
+          value: '本月高频',
           checked: false
         },
         {
           id: '16',
-          value: '60天未到店',
+          value: '本月未到店',
           checked: false
         },
         {
           id: '0',
-          value: '未到店',
+          value: '从未到店',
           checked: false
         },
       ],
@@ -191,14 +199,17 @@
         vipType: null,
         adminType: null
       },
-      resultPerpon: false
+      resultPerpon: false,
+      cusAndSub: {}
     };
     watch = {
       filterCondition(newValue) {
         console.log('newValue--------', newValue)
         if (newValue.sortType != null && newValue.sexType != null && newValue.vipType != null && newValue.adminType != null) {
           this.resultPerpon = true
-          this._getUsersForNotice()
+          setTimeout(() => {
+            this._getUsersForNotice()
+          }, 200);
         } else {
           this.resultPerpon = false
         }
@@ -207,7 +218,6 @@
         //     const element = newValue[key];
         //     if (element) {
         //     } else {
-
         //     }
         //   }
         // }
@@ -220,25 +230,23 @@
         this.noticeType = Number(e.detail.value)
       },
       checkboxVip(e) {
-        console.log("vip------", e)
-        console.log("vip------", e.detail.value)
         this.filterCondition.vipType = Number(e.detail.value)
       },
       checkboxSex(e) {
-        console.log("sex------", e.detail.value)
+    
         this.filterCondition.sexType = Number(e.detail.value)
       },
       checkboxStaff(e) {
-        console.log("Staff------", e.detail.value)
         this.filterCondition.adminType = Number(e.detail.value)
       },
       //发布群通知
       dispatchGroupN() {
-        wx.showToast({
-          title: '功能暂未开放',
-          icon: 'none',
-          duration: 2000
-        })
+        this._startNotice()
+        // wx.showToast({
+        //   title: '功能暂未开放',
+        //   icon: 'none',
+        //   duration: 2000
+        // })
       },
       selectAll(e) {
         console.log("全选---", e)
@@ -281,23 +289,30 @@
         this.$apply()
       },
       // 选择客户
-      checkboxClient: function (e) {
+      checkboxClient: function(e) {
         console.log("选择客户----------", e.detail.value)
         this.$apply()
       },
     };
     //startNotice 群发通知
     _startNotice() {
+      // let data = Object.assign(this.cusAndSub,{
+      //   type: this.noticeType
+      // }) 
       let data = {
         type: this.noticeType,
-        conformUsers: [],
-        subscribeUsers: [],
+        conformUsers:['oqWlD1h6Zurgr6YZVTYAqe5JL9oM','oqWlD1pcdc0dyrxMn7cH_oKTNfFU'],
+        subscribeUsers:['oqWlD1h6Zurgr6YZVTYAqe5JL9oM','oqWlD1pcdc0dyrxMn7cH_oKTNfFU']
       }
       let url = `${this.$parent.globalData.commonUrl}/api/startNotice?tk=${this.$parent.globalData.tk}`
       util.interface_post(url, data, this.$parent.globalData.StoreId).then(res => {
-        console.log("符合人数---", res)
+        console.log("通知结果---", res)
         if (res.errCode === 0) {
-
+           wx.showToast({
+            title: `发布成功`,
+            icon: 'none',
+            duration: 2000
+          })
         } else {
           wx.showToast({
             title: `网络错误${res.errMsg}`,
@@ -306,13 +321,16 @@
           })
         }
       })
+      this.$apply()
     }
     _getUsersForNotice() {
       let url = `${this.$parent.globalData.commonUrl}/api/getUsersForNotice?tk=${this.$parent.globalData.tk}`
       util.interface_post(url, this.filterCondition, this.$parent.globalData.StoreId).then(res => {
         console.log("符合人数---", res)
         if (res.errCode === 0) {
-
+          this.cusAndSub = res.info
+          this.subscribeNum = this.cusAndSub.subscribeUsers.length
+          this.limitedNum = this.cusAndSub.conformUsers.length
         } else {
           wx.showToast({
             title: `网络错误${res.errMsg}`,
@@ -320,6 +338,7 @@
             duration: 2000
           })
         }
+      this.$apply()
       })
     }
     //获得在线活动
@@ -339,7 +358,9 @@
             duration: 2000
           })
         }
+        this.$apply()
       })
+      
     }
     events = {};
     onLoad(e) {
@@ -371,10 +392,8 @@
           display: flex;
           align-items: center;
           margin: 10rpx 10rpx 10rpx 0;
-          .radio-circle {
-          }
-          .radio-text {
-          }
+          .radio-circle {}
+          .radio-text {}
         }
       }
     }
@@ -383,12 +402,9 @@
         // margin-bottom: 10rpx;
       }
     }
-    .group-step3-wrapper {
-    }
-    .group-step4-wrapper {
-    }
-    .group-step5-wrapper {
-    }
+    .group-step3-wrapper {}
+    .group-step4-wrapper {}
+    .group-step5-wrapper {}
     .group-show-wrapper {
       margin: 20rpx 0;
       .result-text {
@@ -399,5 +415,7 @@
     }
   }
 </style>
+
 <style lang="less" src="../../../mixins/less/btn.less">
+
 </style>

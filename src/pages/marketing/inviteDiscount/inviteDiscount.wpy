@@ -294,12 +294,12 @@
       //选择A优惠券
       SelectPrizeA() {
         wx.navigateTo({
-          url: '/pages/marketing/cardList/cardList?singletype=CouponA'
+          url: '/pages/marketing/cardList/cardList?type=CouponA'
         });
       },
       SelectPrizeB() {
         wx.navigateTo({
-          url: '/pages/marketing/cardList/cardList?singletype=CouponB'
+          url: '/pages/marketing/cardList/cardList?type=CouponB'
         });
       },
       // 发布渠道
@@ -362,17 +362,17 @@
       }
     }
     onLoad() {
-      let _this = this;
-      wx.request({
-        url: `${this.$parent.globalData.commonUrl}/api/loadCoupons?tk=${this.$parent.globalData.tk}&storeId=${this.$parent.globalData.StoreId}`,
-        success: function(res) {
-          if (res.statusCode === 200) {
-            _this.cardListA = res.data;
-            _this.cardListB = res.data;
-            _this.$apply();
-          }
-        }
-      })
+      // let _this = this;
+      // wx.request({
+      //   url: `${this.$parent.globalData.commonUrl}/api/loadCoupons?tk=${this.$parent.globalData.tk}&storeId=${this.$parent.globalData.StoreId}`,
+      //   success: function(res) {
+      //     if (res.statusCode === 200) {
+      //       _this.cardListA = res.data;
+      //       _this.cardListB = res.data;
+      //       _this.$apply();
+      //     }
+      //   }
+      // })
     }
     // Other properties
   }

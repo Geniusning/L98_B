@@ -245,7 +245,7 @@
     }
   }
   .scrollView {
-    height: 500rpx;
+    height: 344rpx;
     margin-top: 20rpx;
   }
   .label_tag {

@@ -16,18 +16,7 @@
         <view class="time-box-btn">
           <text class="btn" @tap="selecData">确定</text>
         </view>
-        <!-- <view class="total_box" style="margin-top: 10rpx;margin-left:268rpx;position:absolute;top:82rpx;font-weight:900">
-                  合计份数{{totalTimes}};合计积分{{totalData}}
-                </view> -->
       </view>
-      <!-- <view class="select">
-                <image src="../../../images/shaixuan.png" mode="scaleToFill" lazy-load="false" class="selectIcon"></image>
-                <picker @change="bindPickerChange" value="{{pickindex}}" range="{{recommendTitle}}" range-key="name">
-                  <view class="picker">
-                    {{recommendTitle[pickindex].name}}
-                  </view>
-                </picker>
-              </view> -->
     </view>
     <view class="integralDetail_bottom">
       <scroll-view scroll-y scroll-with-animation style="height:{{winHeight}}rpx">

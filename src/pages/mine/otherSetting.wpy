@@ -16,6 +16,10 @@
       <text class="setting_left">开通积分充值功能</text>
       <switch checked="{{integralConvertOpen}}" color="#ffba00" @change="change_topUp"/>
     </view>
+    <view class="setting_item">
+      <text class="setting_left">限制游客（找朋友页）看到其他游客功能</text>
+      <switch checked="{{friConvertOpen}}" color="#ffba00" @change="change_fri"/>
+    </view>
     <!-- <button>保存</button> -->
   </view>
 </template>
@@ -33,6 +37,7 @@ export default class otherSetting extends wepy.page {
     shopItemConvertOpen:false,
     giftItemConvertOpen:false,
     integralConvertOpen:false,
+    friConvertOpen:false
   };
   methods = {
     //重摇积分
@@ -58,15 +63,45 @@ export default class otherSetting extends wepy.page {
     },
     //开通积分充值功能
     change_topUp(e){
-       console.log('开通积分充值功能，携带值为', e.detail.value)
+      console.log('开通积分充值功能，携带值为', e.detail.value)
       this.integralConvertOpen = e.detail.value
       this._L98OtherSetting(this.shopItemConvertOpen,this.giftItemConvertOpen,this.integralConvertOpen)
+    },
+    //限制游客看其他游客功能
+    change_fri(e){
+      console.log('开通积分充值功能，携带值为', e.detail.value)
+      this.friConvertOpen = e.detail.value
+      this._L98OtherSetting(this.shopItemConvertOpen,this.giftItemConvertOpen,this.integralConvertOpen,this.friConvertOpen)
     }
   };
-  _L98OtherSetting(shopflag,giftflag,integralfalg){
-     let url = `${this.$parent.globalData.commonUrl}/api/L98otherSetting?tk=${this.$parent.globalData.tk}&shopItemFlag=${shopflag}&giftItemFlag=${giftflag}&integralItemFlag=${integralfalg}`  
-      util.interface_get(url,this.$parent.globalData.StoreId).then(res=>{
+  _L98OtherSetting(pshopflag,pgiftflag,pintegralfalg,pfriItemFlag){
+     let data = {
+       shopItemConvertOpen:pshopflag,
+       giftItemConvertOpen:pgiftflag,
+       integralConvertOpen:pintegralfalg,
+       friConverOpen:pfriItemFlag
+     }
+    //  let url = `${this.$parent.globalData.commonUrl}/api/L98otherSetting?tk=${this.$parent.globalData.tk}&shopItemFlag=${shopflag}&giftItemFlag=${giftflag}&integralItemFlag=${integralfalg}`  
+     let url = `${this.$parent.globalData.commonUrl}/api/L98otherSetting?tk=${this.$parent.globalData.tk}`  
+      util.interface_post(url,data,this.$parent.globalData.StoreId).then(res=>{
         console.log("设置结果-------",res)
+        if(res.errCode===0){
+          wepy.showToast({
+            title: '设置成功', //提示的内容,
+            icon: 'success', //图标,
+            duration: 2000, //延迟时间,
+            mask: true, //显示透明蒙层，防止触摸穿透,
+            success: res => {}
+          });
+        }else{
+            wepy.showToast({
+            title: `设置失败${res.errMsg}`, //提示的内容,
+            icon: 'success', //图标,
+            duration: 2000, //延迟时间,
+            mask: true, //显示透明蒙层，防止触摸穿透,
+            success: res => {}
+          });
+        }
       })
   }
   _loadL98OtherSetting(){

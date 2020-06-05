@@ -6,7 +6,7 @@
           <checkbox-group @change="checkboxGame">
             <repeat for="{{gameList}}" key='index'>
               <label data-test="{{item.content}}" class="checkbox">
-                        <checkbox style="padding-top:60rpx" checked='{{item.checked}}' value="{{item.arenaID}}" />
+                        <checkbox color="#FFBA00" style="padding-top:60rpx" checked='{{item.checked}}' value="{{item.arenaID}}" />
                         <view class='gameList'>
                             <view class='gameItem'>
                                 <view class='isFinishTrue' wx:if="{{item.isFinish}}">已结束</view>

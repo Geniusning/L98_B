@@ -52,7 +52,8 @@
         </view>
       </view>
       <view class='item-right'>
-        <navigator hover-class="none" url='/pages/index/yingXiaoHuoDongModule/yingXiaoHuoDongModule?type=0' class='setting'>统计</navigator>
+        <navigator hover-class="none" url='/pages/marketing/AIdiscount/managerAIdiscount' class='setting'>管理</navigator>
+        <navigator hover-class="none" url='/pages/marketing/recommendAndGiftStat/recommendAndGiftStat?type=staffDiscount' class='setting'>统计</navigator>
         <navigator hover-class="none" url='/pages/marketing/staffDiscount/staffDiscount' class='setting'>设置</navigator>
       </view>
     </view>

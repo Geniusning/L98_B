@@ -2,7 +2,7 @@
  * @Author: liuning 
  * @Date: 2020-05-11 11:14:58 
  * @Last Modified by: liuning
- * @Last Modified time: 2020-05-18 14:36:26
+ * @Last Modified time: 2020-06-02 15:58:26
  */
 
 //获取当天日期
@@ -13,7 +13,29 @@ const nowDate = () => {
   const day = date.getDate() >= 10 ? date.getDate() : "0" + date.getDate()
   return year + "-" + month + "-" + day
 }
-//时间戳转时间
+//时间戳转时间  有空格
+const timestampToTime_space = (timestamp) => {
+  if (timestamp.toString().length > 11) {
+    var date = new Date(timestamp); //时间戳为10位需*1000，时间戳为13位的话不需乘1000
+    var Y = date.getFullYear() + '-';
+    var M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
+    var D = (date.getDate() < 10) ? '0' + date.getDate()+' ' : date.getDate()+' ';
+    var h = (date.getHours() < 10 ? '0' + date.getHours() : date.getHours()) + ':';
+    var m = (date.getMinutes() < 10) ? '0' + date.getMinutes() + ":" : date.getMinutes() + ':';
+    var s = (date.getSeconds() < 10) ? '0' + date.getSeconds() : date.getSeconds();
+    return Y + M + D + h + m + s;
+  } else {
+    var date = new Date(timestamp * 1000); //时间戳为10位需*1000，时间戳为13位的话不需乘1000
+    var Y = date.getFullYear() + '-';
+    var M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
+    var D = (date.getDate() < 10) ? '0' + date.getDate()+' ' : date.getDate()+' ';
+    var h = (date.getHours() < 10 ? '0' + date.getHours() : date.getHours()) + ':';
+    var m = (date.getMinutes() < 10) ? '0' + date.getMinutes() + ":" : date.getMinutes() + ':';
+    var s = (date.getSeconds() < 10) ? '0' + date.getSeconds() : date.getSeconds();
+    return Y + M + D + h + m + s;
+  }
+}
+//时间戳转时间 无空格
 const timestampToTime = (timestamp) => {
   if (timestamp.toString().length > 11) {
     var date = new Date(timestamp); //时间戳为10位需*1000，时间戳为13位的话不需乘1000
@@ -408,6 +430,7 @@ module.exports = {
   nowDate,
   timestampToTime,
   timestampToTime_line,
+  timestampToTime_space,
   someDayLater,
   interface_post,
   interface_get,
