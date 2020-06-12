@@ -32,7 +32,7 @@
     <view class="handle_box">
       <button class="btn left-btn" @tap="up">上架</button>
       <button class="btn center-btn" @tap="down">下架</button>
-      <button class="btn right-btn" @tap="delete">删除</button>
+      <button class="btn right-btn" @tap="del">删除</button>
     </view>
   </view>
 </template>
@@ -116,7 +116,7 @@
           }
         })
       },
-      delete() {
+      del() {
         if (!this.activityId) {
           wx.showToast({
             title: '请选择活动',
@@ -143,6 +143,12 @@
               duration: 2000
             })
             this._loadInviteActList()
+          }else{
+             wx.showToast({
+              title: `${res.errMsg}`,
+              icon: 'none',
+              duration: 2000
+            })
           }
         })
       }

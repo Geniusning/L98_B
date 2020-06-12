@@ -234,7 +234,7 @@
         if (this.isAllChecked) {
           this.usersTypeList.forEach(item => {
             item.checked = true
-            this.userIDs = ['1', '2', '4', '8', '16', '0']
+            this.userIDs = [1, 2, 4, 8, 16,0]
           })
         } else {
           this.usersTypeList.forEach(item => {
@@ -257,7 +257,7 @@
             this.isAllChecked = true
           }
           if (item.checked) {
-            this.userIDs.push(item.id)
+            this.userIDs.push(Number(item.id))
           }
         })
         console.log('this.userIDs', this.userIDs)

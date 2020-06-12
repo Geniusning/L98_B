@@ -324,6 +324,12 @@
             this.dateOfTotalTimes += item.joinTimes,
             item.date = util.timestampToTime(item.date).slice(0,11)
           })
+        }else{
+          wx.showToast({
+          title: `${res.errMsg}`,
+          duration: 2000,
+          icon: "none"
+        })
         }
         this.$apply()
       })

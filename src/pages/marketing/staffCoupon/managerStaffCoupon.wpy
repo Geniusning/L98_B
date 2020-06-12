@@ -1,0 +1,192 @@
+<template>
+	<view class="managerAIDiscount_wrapper">
+		<view class="AIDiscount_list">
+			<scroll-view scroll-y scroll-with-animation style="height:{{winHeight}}rpx">
+				<radio-group @change="checkboxAICard">
+					<repeat for="{{staffCouponList}}" key="index" index="index" item="item">
+						<label class="checkbox" class="label_wrapper">
+											<radio color="#FFBA00" value="{{item.activityId}}" checked="{{item.checked}}"  class="checkbox"/>
+											<view class="list_item">
+													<view class="list_item_top">
+															<view class='isFinishTrue' wx:if="{{item.isPutAway}}">上架中</view>
+															<view class='isFinishFalse' wx:else>已下架</view>
+															<view class="theme">主题：{{item.couponInfo.theme}}</view>
+															<view class="clientTag">客户：新客、低频</view>
+													</view>
+													<view class="list_item_middle">
+															<view class="discount_content">{{item.couponInfo.content}}</view>
+															<view class="conditon">条件：{{item.couponInfo.limit}}</view>
+													</view>
+													<view class="list_item_bottom">
+															<view class="time">
+																	开始时间：{{item.startDate}}
+															</view>
+													</view>
+											</view>
+									</label>
+					</repeat>
+					<view wx:if="{{!staffCouponList.length}}" class="noData">暂无数据</view>
+				</radio-group>
+			</scroll-view>
+		</view>
+		<view class="handle_box">
+			<button class="btn left-btn" @tap="up">上架</button>
+			<button class="btn center-btn" @tap="down">下架</button>
+			<button class="btn right-btn" @tap="deleteAICard">删除</button>
+		</view>
+	</view>
+</template>
+
+<script>
+	import wepy from 'wepy';
+	import util from '../../../utils/utils.js'
+	export default class managerAIdiscount extends wepy.page {
+		config = {
+			navigationBarTitleText: '管理员工发券活动'
+		};
+		data = {
+			AIIDs: [],
+			winHeight: "",
+			staffCouponList: [],
+			activityId: "",
+			couponInfo: []
+		};
+		methods = {
+			checkboxAICard(e) {
+				this.activityId = e.detail.value;
+				this.AIIDs[0] = e.detail.value
+				this.couponInfo = this.staffCouponList.filter(item => {
+					return item.activityId === this.activityId
+				})
+				console.log("this.couponInfo--------", this.couponInfo)
+				console.log(this.activityId)
+			},
+			//上架
+			up() {
+				let upFlag
+				this.staffCouponList.forEach(item => {
+					if (item.isPutAway) {
+						upFlag = true
+					}
+				})
+				if (upFlag) {
+					wx.showToast({
+						title: '请下架当前活动',
+						icon: 'none',
+						duration: 2000
+					})
+					return
+				}
+				if (!this.activityId) {
+					wx.showToast({
+						title: '请选择活动',
+						icon: 'none',
+						duration: 2000
+					})
+					return
+				}
+				let url = `${this.$parent.globalData.commonUrl}/api/putAwayStaffCoupon?tk=${this.$parent.globalData.tk}&activityId=${this.activityId}&isPutAway=${true}`
+				util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
+					if (res.errCode === 0) {
+						wx.showToast({
+							title: '上架成功',
+							icon: 'none',
+							duration: 2000
+						})
+						this.getStaffCoupondList()
+					}
+				})
+			},
+			down() {
+				if (!this.activityId) {
+					wx.showToast({
+						title: '请选择活动',
+						icon: 'none',
+						duration: 2000
+					})
+					return
+				}
+				let url = `${this.$parent.globalData.commonUrl}/api/putAwayStaffCoupon?tk=${this.$parent.globalData.tk}&activityId=${this.activityId}&isPutAway=${false}`
+				util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
+					if (res.errCode === 0) {
+						wx.showToast({
+							title: '下架成功',
+							icon: 'none',
+							duration: 2000
+						})
+						this.getStaffCoupondList()
+					}
+				})
+			},
+			deleteAICard() {
+				if (!this.activityId) {
+					wx.showToast({
+						title: '请选择活动',
+						icon: 'none',
+						duration: 2000
+					})
+					return
+				}
+				if (this.couponInfo[0].isPutAway) {
+					wx.showToast({
+						title: '请下架后删除',
+						icon: 'none',
+						duration: 2000
+					})
+					return
+				}
+				let url = `${this.$parent.globalData.commonUrl}/api/delStaffCouponAct?tk=${this.$parent.globalData.tk}&activityId=${this.activityId}`
+				util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
+					console.log("删除ai优惠券--------", res)
+					if (res.errCode === 0) {
+						wx.showToast({
+							title: '删除成功',
+							icon: 'none',
+							duration: 2000
+						})
+					} else {
+						wx.showToast({
+							title: `${res.errMsg}`,
+							icon: 'none',
+							duration: 2000
+						})
+					}
+					this.getStaffCoupondList()
+				})
+			}
+		};
+		getStaffCoupondList() {
+			let url = `${this.$parent.globalData.commonUrl}/api/loadStaffCouponList?tk=${this.$parent.globalData.tk}`
+			util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
+				console.log(res)
+				this.staffCouponList = res.coupon
+				this.staffCouponList.forEach(item => {
+					//   let nowDateStamp = new Date(util.nowDate()).getTime();
+					//   let itemDateStamp = new Date(item.startDate).getTime();
+					//   if (nowDateStamp > itemDateStamp) {
+					//     item['isFinish'] = true;
+					//   } else {
+					//     item['isFinish'] = false;
+					//   }
+					item["checked"] = false
+					item.couponInfo.content = util.returnDiscountContent(item.couponInfo);
+				})
+				console.log("ai优惠券列表---------", this.staffCouponList)
+				this.$apply();
+			})
+		};
+		events = {};
+		onLoad() {
+			this.winHeight = util.getScrollHeight(110);
+			this.getStaffCoupondList()
+		}
+		// Other properties
+	}
+</script>
+
+<style lang="less" src="../AIdiscount/AIdiscout.less">
+
+</style>
+<style lang="less" src="../../../mixins/less/btn.less">
+
+</style>

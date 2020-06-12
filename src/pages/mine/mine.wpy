@@ -148,7 +148,7 @@
       this.shopInfo = this.$parent.globalData.shopInfo;
       this.staff = this.$parent.globalData.userInfo;
       console.log("this.staff-------", this.staff)
-      if (this.staff.permission == 0) {
+      if (this.$parent.globalData.lever == "low") {
         this.noAuth = false
       }
       console.log(this.noAuth)

@@ -11,90 +11,61 @@
 				<input type="number" @input="getPhoneNumr" placeholder="请输入手机号码" class="inputArea" />
 			</view>
 			<view class="add_staff_info">
+				<text class="info_desc">工牌号:</text>
+				<input type="number" @input="getJobNum" placeholder="输入工牌号" class="inputArea" />
+			</view>
+			<view class="add_staff_info">
 				<text class="info_desc">密码:</text>
 				<input type="number" disabled placeholder="默认手机号码后六位，不用输入" class="inputArea" />
 			</view>
-			<view class="add_staff_info">
-				<text class="info_desc">角色:</text>
+			<view class="setting_item">
+				<text class="setting_left">是否创建岗位</text>
+				<switch checked="{{isCreatePos}}" color="#ffba00" @change="changePosition" />
+			</view>
+			<view class="add_staff_info" wx:if="{{!isCreatePos}}">
+				<scroll-view style="height:400rpx;background:#ccc;" scroll-y scroll-with-animation @scroll="">
+					<radio-group @change="checkboxPos">
+						<repeat wx:if="{{emptyStaffRoleArr.length}}" for="{{emptyStaffRoleArr}}" key="index" index="index" item="item">
+							<label  class="checkbox" class="label_wrapper">
+									<radio color="#FFBA00" value="{{item.roleID}}"  class="checkbox"/>
+									<view class="position_wrapper">
+										<view class="pos_top">
+											<view class="poi_name"><text>岗位名称：</text>{{item.role}}</view>
+											<view class="poi_parent"><text>上级：</text>{{item.parent.staffName}}</view>
+										</view>
+										<view class="pos_bot">
+											<view class="pos_duty"><text>岗位权限：</text>{{item.permission===1?"可查看可编辑":"仅查看"}}</view>
+										</view>
+										<view class="storeList" wx:if="{{item.stores.length}}">
+											<text class="title">运营门店列表：</text>
+											<repeat for="{{item.stores}}" key="storeIndex" index="storeIndex" item="store">
+													<text class="storeName">{{store.storeName+"  "}}</text>
+											</repeat>
+										</view>
+									</view>
+							</label>
+						</repeat>
+						<view class="noStaffRole">暂无空岗位，请选择创建</view>
+					</radio-group>
+				</scroll-view>
+			</view>
+			<view class="add_staff_info" wx:if="{{isCreatePos}}">
+				<text class="info_desc">岗位名称:</text>
 				<picker @change="bindRoleChange" value="{{roleIndex}}" range="{{arrayRole}}" range-key="name">
 					<view style="color:#808080;padding-top:4rpx">
 						{{arrayRole[roleIndex].name}}
 					</view>
 				</picker>
 			</view>
-			<view class="add_staff">
-				<view @tap="checkboxAuth" class="info_desc">点开授权Ta可看到的门店或下属</view>
-			</view>
-			<!-- 选择添加账号归属的门店  -->
-			<view class="add_staff" style="display:block" wx:if="{{arrayRole=='k98_operation_front'}}">
-				<view class="info_desc">请选择为哪个门店新增账号:</view>
-				<repeat for="{{storeList}}" key="index" index="index" item="item">
-					<view class="shop" @tap="intoShop({{item.port}},{{item.id}},{{index}})">
-						<view class="shop_left {{currentTab==index?'active':''}}">
-							<image src="../../../images/shopListIcon.png" class="shopIcon"></image>
-							<text class="name">{{item.name}}</text>
-						</view>
+			<view class="add_staff_info" wx:if="{{isCreatePos}}">
+				<text class="info_desc">岗位权限:</text>
+				<picker @change="bindPermissionChange" value="{{permissionIndex}}" range="{{arrayPermission}}" range-key="name">
+					<view style="color:#808080;padding-top:4rpx">
+						{{arrayPermission[permissionIndex].name}}
 					</view>
-				</repeat>
+				</picker>
 			</view>
 			<button class="addBtn" @tap="addStaff">新增</button>
-		</view>
-		<!-- 改绑模态框 -->
-		<view class="bind_modal" wx:if="{{showBindModal}}">
-			<view class="modal_content">
-				<view class="add_staff_info">
-					<text class="info_desc">手机号:</text>
-					<input value="12345678954" type="number" placeholder="请输入手机号码" class="inputArea" />
-				</view>
-				<view class="add_staff_info">
-					<text class="info_desc">姓名:</text>
-					<input value="damao" placeholder="请输入下属姓名" class="inputArea" />
-				</view>
-				<view class="btn_content">
-					<button class="addBtn" @tap="closeModal">取消</button>
-					<button class="addBtn">改绑</button>
-				</view>
-			</view>
-		</view>
-		<!-- 筛选门店或者店员 -->
-		<view wx:if="{{showAuthorModal}}" class="author_modal">
-			<checkbox-group class="checkBox_groupAll" @change="selectAll">
-				<label class="checkBox">
-	          <checkbox class="top_checkbox_item" value="all" checked="{{allCheck}}" color="orange" />
-						<view class="allSelect">
-								全选
-						</view>
-				</label>
-			</checkbox-group>
-			<!-- 门店列表 -->
-			<view class="author_modal_title" wx:if="{{storeList.length}}">门店列表</view>
-			<checkbox-group wx:if="{{storeList.length}}" class="checkBox_group" @change="changeStore">
-				<repeat for="{{storeList}}" key="index" item="item">
-					<label class="checkBox" @tap="selectStore" data-id="{{item.id}}">
-	                        <checkbox class="checkbox_item" color="orange" value="{{item.id}}" checked="{{item.checked}}" />
-	                        <view class="username">
-	                            <text>{{item.name}}</text>
-	                        </view>
-	                    </label>
-				</repeat>
-			</checkbox-group>
-			<!-- 下属列表 -->
-			<view class="author_modal_title" wx:if="{{userList.length}}">下属列表</view>
-			<checkbox-group wx:if="{{userList.length}}" class="checkBox_group" @change="changeUser">
-				<repeat for="{{userList}}" key="index" item="item">
-					<label class="checkBox" @tap="selectAuthor" data-id="{{item.phone}}">
-	                        <checkbox class="checkbox_item" color="orange" value="{{item.id}}" checked="{{item.checked}}" />
-	                        <view class="username">
-	                            <text>{{item.name}}</text>
-	                        </view>
-	                    </label>
-				</repeat>
-			</checkbox-group>
-			<view wx:else class="noUserList">暂无下属</view>
-			<view class="handle_content">
-				<button class="cancle left-btn" @tap="cancle">取消</button>
-				<button class="add center-btn" @tap="closeAuthorMldal">确定</button>
-			</view>
 		</view>
 	</view>
 </template>
@@ -107,221 +78,95 @@
 			navigationBarTitleText: '新增帐号'
 		};
 		data = {
-			allCheck: false,
+			emptyStaffRoleArr: [],
 			arrayRole: [{
-				name: "运营主管",
-				id: "k98_operation_manager"
+				name: "运营后台",
+				id: "k98_operation_behind"
 			}],
-			currentTab: null,
-			userList: [],
-			subStaffList: [],
-			storeList: [],
-			paramStoreList: [],
+			arrayPermission: [{
+					name: "编辑和查看",
+					id: 1
+				},
+				{
+					name: "仅查看",
+					id: 2
+				}
+			],
+			isCreatePos: true,
 			roleIndex: 0,
+			permissionIndex: 0,
 			phone: "",
 			password: "",
-			role: "",
-			permission: 0,
+			roleId: "",
 			winHeight: "",
 			phone: "",
 			name: "",
-			showBindModal: false,
-			showAuthorModal: false,
-			isShowAuthList: "noAllow",
-			userIds: [],
-			storeIds: [],
-			isSelectStore: false,
+			JobNumber: "",
+			roleInfo: {
+				id: "",
+				role: "",
+				permission: 1,
+				staffPhone: "",
+				parentRoleID: "",
+				belongStore: ""
+			},
 		};
-		onUnload() {
-			wx.removeStorage({
-				key: 'userList',
-				success(res) {
-					console.log(res)
-				}
-			})
-			wx.removeStorage({
-				key: 'storeList',
-				success(res) {
-					console.log(res)
-				}
-			})
-		};
+		onUnload() {};
 		methods = {
-			intoShop(port, storeId, index) {
-				this.isSelectStore = true;
-				this.currentTab = index
-				let setGrpcPortUrl = `${this.$parent.globalData.commonUrl}/api/setGrpcPort?tk=${this.$parent.globalData.tk}&port=${port}&storeId=${storeId}`;
-				util.interface_get(setGrpcPortUrl, this.$parent.globalData.StoreId).then(res => {
-					console.log("链接成功")
-				})
-			},
-			//允许权限
-			selectAuthor(e) {
-				console.log("自定义属性---", e.currentTarget.dataset.id)
-				let index = e.currentTarget.dataset.id;
-				this.userList = this.userList.map(user => {
-					if (index == user.phone) {
-						user["checked"] = !user["checked"]
-					}
-					if (user["checked"] && this.subStaffList.indexOf(user.phone) == -1) {
-						this.subStaffList.push(user.phone)
-					} else if (!user["checked"] && this.subStaffList.indexOf(user.phone) >= 0) {
-						this.subStaffList.splice(this.subStaffList.indexOf(user.phone), 1)
-					}
-					return user
-				})
-			},
-			//允许权限
-			selectStore(e) {
-				console.log("自定义属性---", e.currentTarget.dataset.id)
-				let index = e.currentTarget.dataset.id;
-				this.storeList = this.storeList.map(store => {
-					if (index == store.id) {
-						store["checked"] = !store["checked"]
-					}
-					if (store["checked"] && this.paramStoreList.indexOf(store.id) == -1) {
-						this.paramStoreList.push(store.id)
-					} else if (!store["checked"] && this.paramStoreList.indexOf(store.id) >= 0) {
-						this.paramStoreList.splice(this.paramStoreList.indexOf(store.id), 1)
-					}
-					return store
-				})
-			},
-			//全选
-			selectAll(e) {
-				let isAll = e.detail.value[0]
-				this.subStaffList = [];
-				console.log("isAll----------", isAll)
-				if (isAll === "all") {
-					this.userList = this.userList.map(user => {
-						user["checked"] = true;
-						this.allCheck = true;
-						this.subStaffList.push(user.phone)
-						return user
-					})
-					this.storeList = this.storeList.map(store => {
-						store["checked"] = true;
-						this.allCheck = true;
-						this.paramStoreList.push(store.id)
-						return store
-					})
-				} else {
-					this.userList = this.userList.map(user => {
-						user["checked"] = false;
-						this.allCheck = false;
-						return user
-					})
-					this.storeList = this.storeList.map(store => {
-						store["checked"] = false;
-						this.allCheck = false;
-						return store
-					})
-				}
-				this.$apply()
-			},
-			changeUser(e) {
-				this.userIds = e.detail.value;
-				if (this.storeIds.length + this.userIds.length == this.userList.length + this.storeList.length) {
-					this.allCheck = true;
-					this.$apply()
+			//控制是否创建职位的开关
+			changePosition(e) {
+				this.isCreatePos = e.detail.value
+				console.log("this.isCreatePos------", this.isCreatePos)
+				if(!this.emptyStaffRoleArr.length){
 					return
 				}
-				this.allCheck = false;
-			},
-			changeStore(e) {
-				this.storeIds = e.detail.value;
-				if (this.storeIds.length + this.userIds.length == this.userList.length + this.storeList.length) {
-					this.allCheck = true;
-					this.$apply()
-					return
+				if (!this.isCreatePos) {
+					wx.showToast({
+						title: '请勾选岗位',
+						icon: "none",
+						duration: 2000
+					})
 				}
-				this.allCheck = false;
 			},
-			checkboxAuth() {
-				// console.log(e.detail.value)
-				// this.isShowAuthList = e.detail.value
-				// if (this.isShowAuthList == "allow") {
-				this.showAuthorModal = true;
-				let _this = this;
-				wx.getStorage({
-					key: 'userList',
-					success(res) {
-						_this.userList = JSON.parse(res.data)
-					}
-				})
-				wx.getStorage({
-					key: 'storeList',
-					success(res) {
-						_this.storeList = JSON.parse(res.data)
-					}
-				})
-				this.$apply()
-				console.log("_this.userList----", _this.userList)
-				console.log("_this.storeList----", _this.storeList)
-				// }
+			//职位权限选择
+			bindPermissionChange(e) {
+				this.permissionIndex = e.detail.value
+				this.roleInfo.permission = this.arrayPermission[Number(e.detail.value)].id
+				console.log("this.roleInfo-------", this.roleInfo)
 			},
-			cancle() {
-				this.showAuthorModal = false;
-			},
-			closeAuthorMldal() {
-				wx.setStorage({
-					key: "userList",
-					data: JSON.stringify(this.userList)
-				})
-				wx.setStorage({
-					key: "storeList",
-					data: JSON.stringify(this.storeList)
-				})
-				this.showAuthorModal = false;
-				//数组去重
-				// if (this.subStaffList.length != 0) {
-				// 	let staffs = [this.subStaffList[0]]
-				// 	for (let i = 0; i < this.subStaffList.length; i++) {
-				// 		const element = this.subStaffList[i];
-				// 		if (staffs.indexOf(element) == -1) {
-				// 			staffs.push(element)
-				// 		}
-				// 	}
-				// 	this.subStaffList = staffs;
-				// }
-				// if (this.paramStoreList.length != 0) {
-				// 	let stores = [this.paramStoreList[0]]
-				// 	for (let i = 0; i < this.paramStoreList.length; i++) {
-				// 		const element = this.paramStoreList[i];
-				// 		if (stores.indexOf(element) == -1) {
-				// 			stores.push(element)
-				// 		}
-				// 	}
-				// 	this.paramStoreList = stores;
-				// }
-				console.log("subStaffList-------", this.subStaffList)
-				console.log("this.paramStoreList-------", this.paramStoreList)
-			},
+			//职位选择
 			bindRoleChange(e) {
 				this.roleIndex = e.detail.value;
-				this.role = this.arrayRole[Number(e.detail.value)].id;
-				console.log('this.role', this.role);
-				if (this.role == "k98_operation_middle" || this.role == "k98_operation_behind" || this.role == "k98_operation_front") {
-					this.permission = 1 //修改门店权限 1，其余0
-				}
+				this.roleInfo.role = this.arrayRole[Number(e.detail.value)].name;
+				this.roleInfo.parentRoleID = this.$parent.globalData.userRoleInfo.roleID
+				console.log("this.roleInfo-------", this.roleInfo)
 			},
 			getPhoneNumr(e) {
 				this.phone = e.detail.value;
+				this.roleInfo.staffPhone = e.detail.value
+			},
+			getJobNum(e) {
+				this.JobNumber = e.detail.value
 			},
 			getName(e) {
 				this.name = e.detail.value
+			},
+			checkboxPos(e) {
+				this.roleId = e.detail.value
+				console.log("岗位id----", this.roleId)
 			},
 			addStaff() {
 				this.password = this.phone.slice(5, 11);
 				let url = `${this.$parent.globalData.commonUrl}/api/addStaff?tk=${this.$parent.globalData.tk}`;
 				var params = {
 					name: this.name || "临时工",
-					number: this.workNumber,
+					nick: "",
+					jobNumber: this.JobNumber,
 					phone: this.phone,
 					password: this.password,
-					parentId: this.$parent.globalData.userInfo.phone,
-					role: this.role,
-				
+					roleID: this.roleId,
+					headImgUrl: "",
+					roleInfo: this.roleId ? null : this.roleInfo
 				};
 				if (this.phone.length != 11) {
 					wx.showToast({
@@ -352,43 +197,38 @@
 							icon: 'none',
 							duration: 2000
 						})
+					} else {
+						wx.showToast({
+							title: `${res.errMsg}`,
+							icon: 'none',
+							duration: 2000
+						})
 					}
+					this.roleId = ""
 				})
 				this.$apply()
 			},
-			show() {
-				this.showBindModal = !this.showBindModal;
-			},
-			closeModal() {
-				this.showBindModal = !this.showBindModal;
-			}
 		};
 		_handleArrayRole(role) {
 			if (role == "k98_operation_manager") {
 				return [{
-					name: "本部员工",
-					id: "k98_center_staff"
-				}, {
 					name: "运营后台",
 					id: "k98_operation_behind"
 				}]
-			} else if (role == "k98_operation_behind") {
+			} else if (role == "运营后台") {
 				return [{
-					name: "城市合伙老板",
-					id: "k98_city_boss"
+					name: "本部员工",
+					id: "k98_center_staff"
 				}, {
 					name: "运营中台",
 					id: "k98_operation_middle"
 				}]
-			}else if (role == "k98_operation_middle") {
+			} else if (role == "运营中台") {
 				return [{
 					name: "运营前台",
 					id: "k98_operation_front"
-				}, {
-					name: "门店老板",
-					id: "k98_store_boss"
 				}]
-			} else if (role == "k98_operation_front") {
+			} else if (role == "运营前台") {
 				return [{
 					name: "店长",
 					id: "k98_store_manager"
@@ -398,47 +238,34 @@
 				}]
 			} else {
 				return [{
-					name: "运营主管",
-					id: "k98_operation_manager"
+					name: "运营后台",
+					id: "k98_operation_behind"
 				}]
 			}
 		};
-		_loadAllStaff() {
-			let _this = this;
-			wx.request({
-				url: `${this.$parent.globalData.commonUrl}/api/loadAllStaff?tk=${this.$parent.globalData.tk}&phone=${this.$parent.globalData.userInfo.phone}&storeId=${this.$parent.globalData.StoreId}`,
-				success: res => {
-					console.log('拉取的员工------------------------', res);
-					if (res.data.errCode === 0) {
-						let staff = res.data.staff;
-						staff.forEach(item => {
-							item.role_cn = util._judgeRole(item.role)
-						})
-						_this.userList = staff.sort(util.sortByKey("number"));
-						console.log("员工列表", _this.userList)
-						_this.$apply();
-					}
-				}
-			})
-		};
-		_loadShopList() {
-			let url = `${this.$parent.globalData.commonUrl}/api/loadShopList?tk=${this.$parent.globalData.tk}&phone=${this.$parent.globalData.userInfo.phone}`
+		//加载空员工的职位
+		_loadEmptyStaffRole() {
+			let url = `${this.$parent.globalData.commonUrl}/api/loadEmptyStaffRole?tk=${this.$parent.globalData.tk}`
 			util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
-				this.storeList = res
-				this.storeList.forEach(store => {
-					store["checked"] = false
-				})
-				console.log("店铺列表信息-----", this.storeList)
+				if (res.errCode === 0) {
+					console.log("空职位的岗位列表---------", res)
+					this.emptyStaffRoleArr = res.info
+				} else {
+					wx.showToast({
+						title: `${res.errMsg}`,
+						duration: 2000,
+						icon: "none"
+					})
+				}
 				this.$apply()
 			})
-		};
+		}
 		events = {};
 		onLoad() {
-			this.arrayRole = this._handleArrayRole(this.$parent.globalData.userInfo.role)
+			this.arrayRole = this._handleArrayRole(this.$parent.globalData.userRoleInfo.role)
 			this.role = this.arrayRole[0].id
 			this.winHeight = util.getScrollHeight(730);
-			this._loadAllStaff();
-			this._loadShopList()
+			this._loadEmptyStaffRole()
 		}
 		// Other properties
 	}
@@ -454,12 +281,6 @@
 			margin-bottom: 30rpx;
 			background-color: #fff;
 			padding: 10rpx 10rpx;
-			.add_staff_title {
-				font-size: 20px;
-				color: #333;
-				font-weight: 800;
-				text-align: center;
-			}
 			.add_staff_info {
 				padding: 10rpx 0;
 				display: flex;
@@ -468,9 +289,8 @@
 					display: inline-block;
 					width: 124rpx;
 					padding-top: 7rpx;
-					margin-left: 10rpx;
 					margin-right: 20rpx;
-					text-align: right;
+					text-align: left;
 				}
 				.mypicker {
 					padding-top: 4rpx;
@@ -478,6 +298,73 @@
 				.inputArea {
 					border-bottom: 1rpx solid #f1f1f1;
 					flex: 1;
+				}
+				.position_list {
+					height: 400rpx;
+				}
+				.label_wrapper {
+					display: flex;
+					padding: 8rpx 0;
+					background-color: #fff;
+					margin: 6rpx;
+					.checkbox {
+						margin: 20rpx;
+					}
+					.position_wrapper {
+						display: flex;
+						flex-direction: column;
+						justify-content: space-around;
+						flex: 1;
+						.pos_top {
+							display: flex;
+							.poi_name,
+							.poi_parent {
+								font-size: 14px;
+								color: #333;
+								text {
+									font-weight: 900;
+								}
+							}
+							.poi_parent {
+								margin-left: 40rpx;
+							}
+						}
+						.pos_bot {
+							justify-content: space-between;
+							justify-content: flex-start;
+							.pos_duty {
+								font-size: 14px;
+								color: #333;
+								text {
+									font-weight: 900;
+								}
+							}
+						}
+						.storeList {
+							.title {
+								font-size: 14px;
+								color: #333;
+								font-weight: 900;
+							}
+							.storeName {}
+						}
+					}
+				}
+				.noStaffRole{
+					text-align: center;
+					color: #fff;
+					font-size: 16px;
+					margin-top: 200rpx;
+				}
+			}
+			.setting_item {
+				display: flex;
+				justify-content: space-between;
+				background-color: #fff;
+				margin-bottom: 20rpx;
+				.setting_left {
+					line-height: 1;
+					padding-top: 20rpx;
 				}
 			}
 			.add_staff {
@@ -507,135 +394,6 @@
 						background-color: #ffba00;
 					}
 				}
-			}
-		}
-		.add_staff_list {
-			background: #fff;
-			padding: 10rpx 6rpx;
-			.add_staff_title {
-				font-size: 20px;
-				color: #333;
-				font-weight: 800;
-				text-align: center;
-			}
-			.staffList {
-				.infoItem {
-					display: flex;
-					justify-content: space-between;
-					margin-bottom: 20rpx;
-					height: 96rpx;
-					.name {
-						width: 134rpx;
-						height: 90;
-						padding-top: 38rpx;
-						word-break: break-word;
-					}
-					.handleBox {
-						// display: flex;
-						// justify-content: space-between;
-						height: 90rpx;
-						text-align: right;
-						width: 132rpx;
-						padding-top: 32rpx;
-					}
-					.handle {
-						color: red;
-						text-decoration: underline;
-					}
-				}
-			}
-		}
-		.bind_modal {
-			position: absolute;
-			left: 0;
-			right: 0;
-			top: 0;
-			bottom: 0;
-			background: rgba(0, 0, 0, 0.6);
-			z-index: 1;
-			.modal_content {
-				position: absolute;
-				margin-left: -250rpx;
-				width: 500rpx;
-				height: 240rpx;
-				top: 25%;
-				left: 50%;
-				background: #fff;
-				.add_staff_info {
-					padding: 10rpx 0;
-					display: flex;
-					.info_desc {
-						box-sizing: border-box;
-						display: inline-block;
-						width: 100rpx;
-						padding-top: 7rpx;
-						margin-right: 20rpx;
-						text-align: right;
-					}
-					.inputArea {
-						border-bottom: 1rpx solid #f1f1f1;
-						flex: 1;
-					}
-				}
-				.btn_content {
-					display: flex;
-					justify-content: space-around;
-					.addBtn {
-						width: 200rpx;
-						height: 70rpx;
-						font-size: 28rpx;
-					}
-				}
-			}
-		}
-		.author_modal {
-			position: fixed;
-			z-index: 3;
-			top: 0;
-			right: 0;
-			bottom: 0;
-			left: 0;
-			background-color: #fff;
-			overflow: auto;
-			display: flex;
-			flex-direction: column;
-			.close {
-				width: 56rpx;
-				height: 56rpx;
-				position: absolute;
-				right: 20rpx;
-				top: 20rpx;
-			}
-			.author_modal_title {
-				margin: 40rpx 40rpx 0 40rpx;
-				color: #ffba00;
-			}
-			.checkBox_groupAll {
-				.checkBox {
-					display: flex;
-					margin: 40rpx 40rpx 0 40rpx;
-					.allSelect {
-						color: #333;
-					}
-				}
-			}
-			.checkBox_group {
-				// flex: 1;
-				.checkBox {
-					display: flex;
-					margin: 40rpx;
-					.username {
-						color: #333;
-					}
-				}
-			}
-			.noUserList {
-				color: #fff;
-				margin: 40% auto;
-			}
-			.handle_content {
-				display: flex;
-				justify-content: space-around;
 			}
 		}
 	}

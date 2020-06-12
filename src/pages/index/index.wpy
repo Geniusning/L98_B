@@ -1,7 +1,7 @@
 <template>
   <view class="data_wrapper">
-    <!-- <view wx:if='{{show}}' class="home-container"> -->
-    <view class="home-container">
+    <view wx:if='{{show}}' class="home-container">
+      <!-- <view class="home-container"> -->
       <view wx:if="{{userStat}}">
         <!-- 门店信息 -->
         <view class="shopInfo-wrapper">
@@ -305,7 +305,7 @@
               <text class="subTitle">友商互推</text>
             </view>
           </view>
-          <!-- top -->
+          <!-- top  -->
           <view class="lockAndExpand-Part">
             <navigator url="/pages/index/mutualAdvertise/mutualAdvertiseStat?type=advertMe" hover-class="none" class="lockAndExpand-Part-item">
               <view class="item">
@@ -353,8 +353,8 @@
       </view>
       <!-- loading -->
       <!-- <view wx:else class="image_box" style="text-align:center">
-                                  <image class="loading_icon" src="../../images/loading.gif" mode="scaleToFill"></image>
-                                </view> -->
+                                    <image class="loading_icon" src="../../images/loading.gif" mode="scaleToFill"></image>
+                                  </view> -->
     </view>
   </view>
 </template>
@@ -445,7 +445,7 @@
     //锁客拓客用户
     selectTodayUserStat(startDate, endDate) {
       let url = `${this.$parent.globalData.commonUrl}/api/loadUserDayStats?tk=${this.$parent.globalData.tk}&startDate=${startDate}&endDate=${endDate}`;
-      util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
+      util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
         console.log('访客数据---------------', res);
         if (res.userDayStats.length > 1) {
           var tempUserDayStat = {
@@ -471,7 +471,7 @@
     //营销活动用户
     selectTodayCouponStat(startDate, endDate) {
       let url = `${this.$parent.globalData.commonUrl}/api/loadMarketingDaySummary?tk=${this.$parent.globalData.tk}&startDate=${startDate}&endDate=${endDate}`;
-      util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
+      util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
         console.log('营销活动数据---------------', res);
         if (res.dataStat.length > 1) {
           var tempDataStat = {
@@ -497,7 +497,7 @@
     //社区活跃度用户
     selectTodayCommunityStat(startDate, endDate) {
       let url = `${this.$parent.globalData.commonUrl}/api/loadCommunityDayStats?tk=${this.$parent.globalData.tk}&startDay=${startDate}&endDay=${endDate}`;
-      util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
+      util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
         console.log('社区活跃度数据---------------', res);
         if (res.coumnityDayStats.length > 1) {
           var tempCom = {
@@ -523,7 +523,7 @@
     //服务监控
     selectYestodayBookingStat(startDate, endDate) {
       let url = `${this.$parent.globalData.commonUrl}/api/loadMutualDaySummary?tk=${this.$parent.globalData.tk}&startDate=${startDate}&endDate=${endDate}`;
-      util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
+      util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
         console.log('服务监控---------------', res);
         if (res.dataStat.length > 1) {
           var tempData = {
@@ -549,7 +549,7 @@
     //积分统计昨天用户
     selectYestodayJiFen(startDate, endDate) {
       let url = `${this.$parent.globalData.commonUrl}/api/loadIntegralDaySummary?tk=${this.$parent.globalData.tk}&startDate=${startDate}&endDate=${endDate}`;
-      util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
+      util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
         console.log('积分统计---------------', res);
         if (res.dataStat.length > 1) {
           var tempData = {
@@ -575,7 +575,7 @@
     //友商互推统计昨天用户
     selectYestodayMutaualFri(startDate, endDate) {
       let url = `${this.$parent.globalData.commonUrl}/api/loadAllianceDaySummary?tk=${this.$parent.globalData.tk}&startDate=${startDate}&endDate=${endDate}`;
-      util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
+      util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
         console.log('友商互推统计---------------', res);
         if (res.dataStat.length > 1) {
           var tempData = {
@@ -604,9 +604,8 @@
       return new Promise((resolve, reject) => {
         wx.request({
           url: `${this.$parent.globalData.commonUrl}/api/dataStat?tk=${this.$parent.globalData.tk}&storeId=${this.$parent.globalData.StoreId}`,
-          success: function (res) {
+          success: function(res) {
             if (res.statusCode === 200) {
-              _this.show = !!(_this.$parent.globalData.userInfo.permission & 1);
               resolve(res.data);
             } else {
               reject(err)
@@ -631,6 +630,12 @@
       this.mutualStat = resultData.dataStat.MutualStat //门店与客人
       this.integralStat = resultData.dataStat.integralStat //积分统计
       this.mutualFri = resultData.dataStat.allianceStat //友商互推
+      if (this.$parent.globalData.lever === "low") {
+        this.show = false
+      }else{
+         this.show = true
+      }
+      console.log("this.show------",this.show)
       this.$apply();
     };
   }
@@ -671,10 +676,8 @@
             background-color: #ffba00;
             color: #fff;
           }
-          .today {
-          }
-          .week {
-          }
+          .today {}
+          .week {}
         }
         .rank_selection_right {
           display: flex;
