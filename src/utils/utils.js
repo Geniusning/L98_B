@@ -2,7 +2,7 @@
  * @Author: liuning 
  * @Date: 2020-05-11 11:14:58 
  * @Last Modified by: liuning
- * @Last Modified time: 2020-06-02 15:58:26
+ * @Last Modified time: 2020-06-17 11:08:23
  */
 
 //获取当天日期
@@ -203,11 +203,15 @@ const returnDiscountContentNoType = (coupon) => {
     return coupon.content
   }
 }
+var needLoadingRequestCount = 0
 const interface_post = (url, data, storeId) => {
-  wx.showLoading({
-    title: '加载中',
-    mask: true
-  })
+  if (needLoadingRequestCount===0){
+    wx.showLoading({
+      title: '加载中',
+      mask: true
+    })
+  }
+  needLoadingRequestCount++
     return new Promise((resolve, reject) => {
       wx.request({
         url: url + "&storeId=" + storeId,
@@ -218,7 +222,10 @@ const interface_post = (url, data, storeId) => {
         method: 'POST',
         success: res => {
           // console.log('post_res----------', res)
-          wx.hideLoading()
+          needLoadingRequestCount--
+          if (needLoadingRequestCount===0){
+            wx.hideLoading()
+          }
           if (res.statusCode === 200) {
             resolve(res.data);
           } else {
@@ -231,16 +238,21 @@ const interface_post = (url, data, storeId) => {
 
 }
 const interface_get = (url, storeId) => {
-  wx.showLoading({
-    title: '加载中',
-    mask: true
-  })
-
+  if (needLoadingRequestCount===0){
+    wx.showLoading({
+      title: '加载中',
+      mask: true
+    })
+  }
+  needLoadingRequestCount++
     return new Promise((resolve, reject) => {
       wx.request({
         url: url + "&storeId=" + storeId,
         success: res => {
-          wx.hideLoading()
+          needLoadingRequestCount--
+          if (needLoadingRequestCount===0){
+            wx.hideLoading()
+          }
           if (res.statusCode === 200) {
             // console.log(res)
             
@@ -270,6 +282,49 @@ const getScrollHeight = (height) => {
     }
   });
   return scrollHeight
+}
+//授权获得用户信息
+const authorGetUserInfo = (successFun, failFun) => {
+  wx.getSetting({
+    success(res) {
+      if (!res.authSetting['scope.userInfo']) {
+        wx.authorize({
+          scope: 'scope.userInfo',
+          success: function () {
+            successFun && successFun()
+          },
+          fail: function (res) {
+            wx.hideLoading()
+            wx.showModal({
+              title: '提示',
+              content: "小程序需要您的微信授权，是否授权？",
+              showCancel: true,
+              cancelText: "否",
+              confirmText: "是",
+              success: function (res2) {
+                if (res2.confirm) { //用户点击确定'
+                  wx.openSetting({
+                    success: (res3) => {
+                      if (res3.authSetting['scope.userInfo']) {
+                        //已授权
+                        successFun && successFun()
+                      } else {
+                        failFun && failFun()
+                      }
+                    }
+                  })
+                } else {
+                  failFun && failFun()
+                }
+              }
+            });
+          }
+        })
+      } else {
+        successFun && successFun()
+      }
+    }
+  })
 }
 const writePhotosAlbum = (successFun, failFun) => {
   wx.getSetting({
@@ -436,6 +491,7 @@ module.exports = {
   interface_get,
   returnDiscountType,
   writePhotosAlbum,
+  authorGetUserInfo,
   getDate,
   getScrollHeight,
   compareDate,

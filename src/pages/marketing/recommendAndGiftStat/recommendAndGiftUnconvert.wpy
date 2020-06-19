@@ -2,9 +2,9 @@
   <view class="integralDetail_wrapper">
     <view class="integralDetail_top">
       <view class="total_box" style="margin-top: 10rpx;margin-left:14rpx;position:absolute;top:5rpx;">
-        合计份数：{{totalTimes}} <text wx:if="{{pageType != 'aiCoupon' && pageType !='inviteCoupon'}}">合计积分：{{totalIngegral}}</text>
+        合计份数：{{totalTimes}} <text wx:if="{{pageType != 'aiCoupon' && pageType !='inviteCoupon'&& pageType !='staffCoupon'}}">合计积分：{{totalIngegral}}</text>
       </view>
-      <view class="select">
+      <view class="select" wx:if="{{pageType !='staffCoupon'}}">
         <image src="../../../images/shaixuan.png" mode="scaleToFill" lazy-load="true" class="selectIcon"></image>
         <picker class="pickerbox" @change="bindPickerChange" value="{{pickindex}}" range="{{pickerArray}}" range-key="name">
           <view class="picker">
@@ -14,7 +14,7 @@
       </view>
     </view>
     <view class="integralDetail_bottom">
-      <scroll-view scroll-y scroll-with-animation style="height:{{winHeight}}rpx">
+      <scroll-view wx:if="{{pageType !='staffCoupon'}}" scroll-y scroll-with-animation style="height:{{winHeight}}rpx">
         <view class="list">
           <view class="item">发生日期</view>
           <view class="item">兑换人</view>
@@ -29,6 +29,24 @@
             </view>
             <view class="item">{{item.couponName}}</view>
             <view class="item" wx:if="{{pageType != 'aiCoupon' && pageType !='inviteCoupon'}}">{{item.integral}}</view>
+          </view>
+        </repeat>
+      </scroll-view>
+      <scroll-view wx:else scroll-y scroll-with-animation style="height:{{winHeight}}rpx">
+        <view class="list">
+          <view class="item">发生日期</view>
+          <view class="item">收券人</view>
+          <view class="item">送券人</view>
+        </view>
+        <repeat for="{{recordData}}" key="index" index="index" item="item">
+          <view class="list">
+            <view class="item">{{item.milliTime}}</view>
+            <view class="item">
+              <image class="avatarIcon" src="{{item.toUserInfo.headImgUrl}}" mode="scaleToFill" lazy-load="false"></image>
+            </view>
+            <view class="item">
+              <image class="avatarIcon" src="{{item.fromUserInfo.headImgUrl}}" mode="scaleToFill" lazy-load="false"></image>
+            </view>
           </view>
         </repeat>
       </scroll-view>
@@ -116,6 +134,12 @@
           id: item["couponName"]
         })
         return
+      } else if (type === "staffCoupon") {
+        item["milliTime"] = util.timestampToTime(item.milliTime).slice(10)
+        this.totalTimes++
+        this.recordData.push(item)
+         console.log("this.recordData------",this.recordData)
+        return
       }
       item["milliTime"] = util.timestampToTime(item.time).slice(10)
       item["integral"] = item.good.integral
@@ -128,27 +152,33 @@
       item["couponName"] = util.returnDiscountContentNoType(coupon)
       item.couponType = util.returnDiscountType(item.couponType)
       this.totalTimes++
-        this.totalIngegral += item["integral"]
+      this.totalIngegral += item["integral"]
       this.recordData.push(item)
       tempPickArray.push({
         name: item["couponName"],
         id: item["couponName"]
       })
+      console.log("this.recordData------",this.recordData)
     };
     _loadUnConvertItemDetail(date, couponOriginType) {
       let url = `${this.$parent.globalData.commonUrl}/api/loadUnconvertCoupon?tk=${this.$parent.globalData.tk}&date=${date}&dataType=${couponOriginType}`
       util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
         console.log("data----", res)
         if (res.errCode === 0) {
-          if (couponOriginType != "vip") {
+          if (couponOriginType == "staffCoupon") {
+            this.allTypesData = res.staffCouponDetailUser.sort(util.sortByKey("milliTime"))
+            this.allTypesData.forEach(item => {
+            this._handleItem(this.pickerArray, item, couponOriginType)
+            })
+          } else if (couponOriginType != "vip") {
             this.allTypesData = res.unConverCoupons.sort(util.sortByKey("time"))
             this.allTypesData.forEach(item => {
-              this._handleItem(this.pickerArray, item, this.pageType)
+              this._handleItem(this.pickerArray, item, couponOriginType)
             })
           } else {
             this.allTypesData = res.marketCouponDetailUser.sort(util.sortByKey("milliTime"))
             this.allTypesData.forEach(item => {
-              this._handleItem(this.pickerArray, item, this.pageType)
+              this._handleItem(this.pickerArray, item, couponOriginType)
             })
           }
           this.selectAllData = this.recordData;

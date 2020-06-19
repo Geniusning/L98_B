@@ -1,13 +1,19 @@
 <template>
     <view class='qrCodeSetting_wrapper'>
-        <navigator url='/pages/mine/QRcode/deskQrCode' hover-class="none" class='qrCodeBtn'>
-            桌贴二维码
+        <navigator url='/pages/mine/QRcode/deskQrCode?type=focusOn' hover-class="none" class='qrCodeBtn'>
+            桌贴二维码<text style="font-size:11px">(适用开通关注有礼)</text>
+        </navigator>
+        <navigator url='/pages/mine/QRcode/deskQrCode?type=friend' hover-class="none" class='qrCodeBtn'>
+            交友桌贴二维码<text style="font-size:11px">(适用偏重交友场景)</text>
+        </navigator>
+        <navigator url='/pages/mine/QRcode/deskQrCode?type=game' hover-class="none" class='qrCodeBtn'>
+            游戏桌贴二维码<text style="font-size:11px">(适用开通无噪音骰子，喝酒场景)</text>
         </navigator>
         <navigator url='/pages/mine/QRcode/checkQrCode' hover-class="none" class='qrCodeBtn'>
-            核销二维码
+            核销二维码<text style="font-size:11px">(适用收银台快捷核销)</text>
         </navigator>
         <navigator url='/pages/mine/QRcode/weChatQrCode' hover-class="none" class='qrCodeBtn'>
-            公众号二维码
+            公众号二维码<text style="font-size:11px">(用于宣扬推广，印名片)</text>
         </navigator>
     </view>
 </template>

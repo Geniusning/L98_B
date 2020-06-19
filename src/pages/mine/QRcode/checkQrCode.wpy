@@ -1,6 +1,6 @@
 <template>
   <view class="checkQrCode_wrapper">
-    <image class="canvas" style="width: 200px; height: 200px;" src="{{checkQrCode}}"></image>
+    <image class="canvas" style="width: 240px; height: 240px;" src="{{checkQrCode}}"></image>
     <button @tap="savePic">下载到本机相册</button>
   </view>
 </template>
@@ -74,7 +74,7 @@ export default class checkQrCode extends wepy.page {
     var _this = this
     let url = `${this.$parent.globalData.commonUrl}/api/loadCouponPageQrcode?tk=${this.$parent.globalData.tk}`
     let param = {
-      imageUrl:`${this.$parent.globalData.commonUrl}/k98/card?visitType=1&isScan=true`
+      url:`/k98/card?visitType=1&isScan=true`
     }
     util.interface_post(url,param,this.$parent.globalData.StoreId).then(res=>{
       console.log("二维码-------------",res)

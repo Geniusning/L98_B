@@ -9,7 +9,7 @@
       <input type='password' class='password_input' @blur='bindPassword' placeholder="请输入密码" />
     </view>
     <view class='btn-container'>
-      <button @tap='_login' class='btn'>登录</button>
+      <button open-type="getUserInfo" bindgetuserinfo='_login' class='btn'>登录</button>
       <!-- <button open-type="share" class='btn'>测试</button> -->
       <!-- <button open-type="getPhoneNumber" @getphonenumber="getPhoneNumber">获取手机号</button> -->
     </view>
@@ -43,10 +43,31 @@
         this.password = e.detail.value;
         console.log(this.password);
       },
-      _login() {
+      _login(e) {
+        console.log("e", e.detail.userInfo)
+        let headImgUrl = e.detail.userInfo.avatarUrl
+        let nick = e.detail.userInfo.nickName
         let _this = this;
         console.log('账号：', this.account);
         console.log('密码：', this.password);
+        wx.getSetting({
+          success(res) {
+            console.log("getting", res)
+            if (!res.authSetting["scope.userInfo"]) {
+              wx.authorize({
+                scope: "scope.userInfo",
+                success(res) {
+                  console.log("authorize-res",res)
+                  // wx.getUserInfo({
+                  //   success(res) {
+                  //     console.log("else用户信息为----", res)
+                  //   }
+                  // })
+                }
+              })
+            }
+          }
+        })
         wx.login({
           success: function(res) {
             if (res.code) {
@@ -56,7 +77,9 @@
                 url: `${_this.$parent.globalData.commonUrl}/wechatAppLogin`,
                 data: {
                   phone: _this.account,
-                  password: _this.password
+                  password: _this.password,
+                  headImgUrl:headImgUrl,
+                  nick:nick
                 },
                 header: {
                   'content-type': 'application/json'
@@ -88,7 +111,26 @@
       }
     };
     events = {};
-    onLoad() {}
+    onLoad() {
+      wx.getSetting({
+        success(res) {
+          console.log("getting", res)
+          if (!res.authSetting["scope.userInfo"]) {
+            wx.getUserInfo({
+              success(res) {
+                // console.log("if用户信息为----", res)
+              }
+            })
+          } else {
+            wx.getUserInfo({
+              success(res) {
+                // console.log("else用户信息为----", res)
+              }
+            })
+          }
+        }
+      })
+    }
     // Other properties
   }
 </script>

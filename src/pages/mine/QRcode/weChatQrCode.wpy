@@ -24,7 +24,6 @@ export default class weChatQrCode extends wepy.page {
   };
   downLoadImages() {
     var _this = this;
-    console.log(_this.$parent.globalData.commonUrl)
     util.writePhotosAlbum(
       function success() {
         wx.showLoading({
@@ -53,7 +52,7 @@ export default class weChatQrCode extends wepy.page {
       wx.downloadFile({
         url: url,
         success: function (res) {
-          console.log(res)
+          console.log("downloadFile---",res)
           var temp = res.tempFilePath
           wx.saveImageToPhotosAlbum({
             filePath: temp,

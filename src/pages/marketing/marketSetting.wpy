@@ -53,7 +53,7 @@
       </view>
       <view class='item-right'>
         <navigator hover-class="none" url='/pages/marketing/staffCoupon/managerStaffCoupon' class='setting'>管理</navigator>
-        <navigator hover-class="none" url='/pages/marketing/recommendAndGiftStat/recommendAndGiftStat?type=staffDiscount' class='setting'>统计</navigator>
+        <navigator hover-class="none" url='/pages/marketing/recommendAndGiftStat/recommendAndGiftStat?type=staffCoupon' class='setting'>统计</navigator>
         <navigator hover-class="none" url='/pages/marketing/staffCoupon/staffCoupon' class='setting'>设置</navigator>
       </view>
     </view>

@@ -20,6 +20,10 @@
       <text class="setting_left">限制游客（找朋友页）看到其他游客功能</text>
       <switch checked="{{friConvertOpen}}" color="#ffba00" @change="change_fri"/>
     </view>
+    <view class="setting_item">
+      <text class="setting_left">是否开通员工评价</text>
+      <switch checked="{{staffCommentOpen}}" color="#ffba00" @change="change_staffComment"/>
+    </view>
     <!-- <button>保存</button> -->
   </view>
 </template>
@@ -37,7 +41,8 @@ export default class otherSetting extends wepy.page {
     shopItemConvertOpen:false,
     giftItemConvertOpen:false,
     integralConvertOpen:false,
-    friConvertOpen:false
+    friConvertOpen:false,
+    staffCommentOpen:false,
   };
   methods = {
     //重摇积分
@@ -53,33 +58,39 @@ export default class otherSetting extends wepy.page {
     change_shopRecommend(e){
       console.log('开通积分换门店项目，携带值为', e.detail.value)
       this.shopItemConvertOpen = e.detail.value
-      this._L98OtherSetting(this.shopItemConvertOpen,this.giftItemConvertOpen,this.integralConvertOpen)
+      this._L98OtherSetting()
     },
     //开通积分换礼品项目
     change_giftIntegral(e){
        console.log('开通积分换礼品项目，携带值为', e.detail.value)
       this.giftItemConvertOpen = e.detail.value
-      this._L98OtherSetting(this.shopItemConvertOpen,this.giftItemConvertOpen,this.integralConvertOpen)
+      this._L98OtherSetting()
     },
     //开通积分充值功能
     change_topUp(e){
       console.log('开通积分充值功能，携带值为', e.detail.value)
       this.integralConvertOpen = e.detail.value
-      this._L98OtherSetting(this.shopItemConvertOpen,this.giftItemConvertOpen,this.integralConvertOpen)
+      this._L98OtherSetting()
     },
     //限制游客看其他游客功能
     change_fri(e){
-      console.log('开通积分充值功能，携带值为', e.detail.value)
       this.friConvertOpen = e.detail.value
-      this._L98OtherSetting(this.shopItemConvertOpen,this.giftItemConvertOpen,this.integralConvertOpen,this.friConvertOpen)
+      this._L98OtherSetting()
+    },
+    //员工评价开关
+    change_staffComment(e){
+      console.log('员工评价开关', e.detail.value)
+      this.staffCommentOpen = e.detail.value
+      // this._L98OtherSetting()
     }
   };
-  _L98OtherSetting(pshopflag,pgiftflag,pintegralfalg,pfriItemFlag){
+  _L98OtherSetting(){
      let data = {
-       shopItemConvertOpen:pshopflag,
-       giftItemConvertOpen:pgiftflag,
-       integralConvertOpen:pintegralfalg,
-       friConverOpen:pfriItemFlag
+       shopItemConvertOpen:this.shopItemConvertOpen,
+       giftItemConvertOpen:this.giftItemConvertOpen,
+       integralConvertOpen:this.integralConvertOpen,
+       friConverOpen:this.friConvertOpen,
+       staffCommentOpen:this.staffCommentOpen,
      }
     //  let url = `${this.$parent.globalData.commonUrl}/api/L98otherSetting?tk=${this.$parent.globalData.tk}&shopItemFlag=${shopflag}&giftItemFlag=${giftflag}&integralItemFlag=${integralfalg}`  
      let url = `${this.$parent.globalData.commonUrl}/api/L98otherSetting?tk=${this.$parent.globalData.tk}`  
@@ -111,6 +122,8 @@ export default class otherSetting extends wepy.page {
         this.integralConvertOpen = res.integralConvertOpen
         this.giftItemConvertOpen = res.giftItemConvertOpen
         this.shopItemConvertOpen = res.shopItemConvertOpen
+        this.friConvertOpen = res.friConverOpen
+        this.staffCommentOpen = res.staffCommentOpen
         this.$apply()
      })
   }

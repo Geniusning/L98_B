@@ -34,12 +34,11 @@
           <view wx:if="{{item.staffName}}" class="shop_right">
             <text class="author" @tap.stop="showAuthor({{item.phone}})">授权</text>
             <text class="author" @tap.stop="untieRole({{item.phone}})">解绑</text>
-            <text class="author" @tap.stop="modify">修改</text>
+            <text class="author" @tap.stop="modify({{item.phone}})">修改</text>
           </view>
           <view wx:else class="shop_right">
             <text class="author" @tap.stop="bindPosition({{item.roleID}})">绑定</text>
           </view>
-
         </view>
       </view>
     </repeat>
@@ -50,19 +49,19 @@
           <text class="name" style="font-size:13px">{{item.staffName}}-{{item.phone}}</text>
         </view>
         <!-- <view wx:if="{{item.staffName}}" class="shop_right">
-            <text class="author" @tap.stop="showAuthor({{item.phone}})">授权</text>
-            <text class="author" @tap.stop="untieRole({{item.phone}})">解绑</text>
-            <text class="author" @tap.stop="modify">修改</text>
-          </view>
-          <view wx:else class="shop_right">
-            <text class="author">绑定</text>
-          </view> -->
+                    <text class="author" @tap.stop="showAuthor({{item.phone}})">授权</text>
+                    <text class="author" @tap.stop="untieRole({{item.phone}})">解绑</text>
+                    <text class="author" @tap.stop="modify">修改</text>
+                  </view>
+                  <view wx:else class="shop_right">
+                    <text class="author">绑定</text>
+                  </view> -->
       </view>
     </repeat>
     <!-- 授权弹框 -->
-    <view class="author_modal" style="height:850rpx;margin-top:-500rpx;" wx:if="{{authorFlag}}">
+    <view class="author_modal" style="height:940rpx;margin-top:-550rpx;" wx:if="{{authorFlag}}">
       <image src="../../images/close.png" mode="scaleToFill" class="close" @tap="closeModal"></image>
-      <scroll-view class="scroll" style="height:250rpx" scroll-y scroll-with-animation @scroll="">
+      <scroll-view class="scroll" style="height:340rpx" scroll-y scroll-with-animation @scroll="">
         <view class="title">授权门店</view>
         <radio-group @change="checkboxShopAuthor">
           <repeat for="{{shopList.stores}}" key="index" index="index" item="item">
@@ -85,11 +84,11 @@
         <button class="left-btn" @tap="authorizedOperate">授权Ta运营</button>
         <button class="right-btn" @tap="authorizedViewStore">授权Ta查看门店</button>
       </view>
-      <scroll-view class="scroll" style="height:250rpx;margin-top:40rpx;border-top: 1px solid #fff" scroll-y scroll-with-animation @scroll="">
+      <scroll-view class="scroll" style="height:340rpx;margin-top:40rpx;border-top: 1px solid #fff" scroll-y scroll-with-animation @scroll="">
         <view class="title">授权员工岗位</view>
         <radio-group @change="checkboxStaffAuthor">
           <repeat for="{{shopList.subStaffs}}" key="index" index="index" item="item">
-            <label wx:if="{{item.roleID != staffRoleInfo.roleID}}" class="checkbox" class="label_wrapper">
+            <label wx:if="{{item.roleID != staffRoleInfo.roleID && item.staffName != ''}}" class="checkbox" class="label_wrapper">
               <radio color="#FFBA00" value="{{item.roleID}}"  class="checkbox"/>
               <view class="shop author_shop">
                 <view class="shop_left">
@@ -108,32 +107,6 @@
         <button class="right-btn" @tap="authorizedViewRole">授权Ta查看岗位</button>
       </view>
     </view>
-    <!-- 绑定职位弹框 -->
-    <!-- <view class="author_modal" wx:if="{{positionFlag}}">
-      <image src="../../images/close.png" mode="scaleToFill" class="close" @tap="closeModal"></image>
-      <scroll-view class="scroll" scroll-y scroll-with-animation @scroll="">
-        <radio-group @change="checkboxPos">
-          <repeat for="{{emptyStaffRoleArr}}" key="index" index="index" item="item">
-            <label class="checkbox" class="label_wrapper">
-                      <radio color="#FFBA00" value="{{item.phone}}"  class="checkbox"/>
-                      <view class="position_wrapper">
-                        <view class="pos_top">
-                          <view class="poi_name"><text>岗位名称：</text>{{item.role}}</view>
-                          <view class="poi_parent"><text>上级：</text>{{item.parentName}}</view>
-                        </view>
-                        <view class="pos_bot">
-                          <view class="pos_duty"><text>岗位权限：</text>{{item.permission===1?"可查看可编辑":"仅查看"}}</view>
-                        </view>
-                      </view>
-                    </label>
-          </repeat>
-        </radio-group>
-      </scroll-view>
-      <view class="btn_wrapper">
-        <button class="left-btn">绑定</button>
-        <button class="right-btn">解绑</button>
-      </view>
-    </view> -->
     <!-- 选择空岗位的员工绑定 -->
     <view class="author_modal" wx:if="{{selectStaffFlag}}">
       <image src="../../images/close.png" mode="scaleToFill" class="close" @tap="closeModal"></image>
@@ -141,17 +114,17 @@
         <radio-group @change="checkboxStaff">
           <repeat for="{{emptyStaffRoleArr}}" key="index" index="index" item="item">
             <label class="checkbox" class="label_wrapper">
-                  <radio color="#FFBA00" value="{{item.phone}}"  class="checkbox"/>
-                    <view class="shop author_shop">
-                      <view class="shop_left">
-                        <image src="../../images/staff_icon.png" class="shopIcon"></image>
-                        <text class="name">{{item.name}}</text>
-                      </view>
-                      <view class="shop_right">
-                        <text class="author"></text>
-                      </view>
-                    </view>
-                </label>
+              <radio color="#FFBA00" value="{{item.phone}}"  class="checkbox"/>
+                <view class="shop author_shop">
+                  <view class="shop_left">
+                    <image src="../../images/staff_icon.png" class="shopIcon"></image>
+                    <text class="name">{{item.name}}</text>
+                  </view>
+                  <view class="shop_right">
+                    <text class="author"></text>
+                  </view>
+                </view>
+            </label>
           </repeat>
         </radio-group>
       </scroll-view>
@@ -159,7 +132,7 @@
         <button class="right-btn" @tap="bindingRole">确定</button>
       </view>
     </view>
-    <view @tap="intoAddStaff" class="addStaff">新增</view>
+    <view @tap="intoAddStaff" class="addStaff" wx:if="{{shopList.role !='k98_operation_front'}}">新增</view>
     <view @tap="goBack" wx:if="{{showBackBtn}}" class="goBack">返回</view>
   </view>
 </template>
@@ -201,19 +174,20 @@
       //授权运营
       authorizedOperate() {
         let data = {
-          fromRoleid: this.$parent.globalData.userRoleInfo.roleID, //原来运营门店的岗位id
-          toRoleid: this.staffRoleInfo.roleID, //现在运营门店的岗位id
-          storeid: this.authorStoreId //门店id
+          fromRoleID: this.$parent.globalData.userRoleInfo.roleID, //原来运营门店的岗位id
+          toRoleID: this.staffRoleInfo.roleID, //现在运营门店的岗位id
+          storeID: this.authorStoreId //门店id
         }
         let url = `${this.$parent.globalData.commonUrl}/api/authorizedOperation?tk=${this.$parent.globalData.tk}`
         util.interface_post(url, data, "").then(res => {
           if (res.errCode === 0) {
-            console.log("授权运营结果-------", res)
-            wx.showToast({
-              title: `授权运营成功`,
-              icon: 'none',
-              duration: 2000
-            })
+            setTimeout(() => {
+              wx.showToast({
+                title: `授权运营成功`,
+                icon: 'none',
+                duration: 2000
+              })
+            }, 500);
           } else {
             wx.showToast({
               title: `${res.errMsg}`,
@@ -221,9 +195,8 @@
               duration: 2000
             })
           }
+          this._loadRole();
         })
-        this.authorStoreId = ""
-        this._loadRole();
       },
       //授权查看门店
       authorizedViewStore() {
@@ -235,12 +208,13 @@
         let url = `${this.$parent.globalData.commonUrl}/api/authorizedViewStore?tk=${this.$parent.globalData.tk}`
         util.interface_post(url, data, "").then(res => {
           if (res.errCode === 0) {
-            console.log("授权某职位查看某门店-------", res)
-            wx.showToast({
-              title: `授权成功`,
-              icon: 'none',
-              duration: 2000
-            })
+            setTimeout(() => {
+              wx.showToast({
+                title: `授权查看成功`,
+                icon: 'none',
+                duration: 2000
+              })
+            }, 500);
           } else {
             wx.showToast({
               title: `${res.errMsg}`,
@@ -248,10 +222,10 @@
               duration: 2000
             })
           }
-          this.authorStoreId = ""
+          // this.authorStoreId = ""
           this.$apply()
+          this._loadRole();
         })
-        this._loadRole();
       },
       // 授权查看职位
       authorizedViewRole() {
@@ -263,12 +237,13 @@
         let url = `${this.$parent.globalData.commonUrl}/api/authorizedViewRole?tk=${this.$parent.globalData.tk}`
         util.interface_post(url, data, "").then(res => {
           if (res.errCode === 0) {
-            console.log("授权某职位查看某职位-------", res)
-            wx.showToast({
-              title: `授权成功`,
-              icon: 'none',
-              duration: 2000
-            })
+            setTimeout(() => {
+              wx.showToast({
+                title: `授权查看成功`,
+                icon: 'none',
+                duration: 2000
+              })
+            }, 500);
           } else {
             wx.showToast({
               title: `${res.errMsg}`,
@@ -276,8 +251,8 @@
               duration: 2000
             })
           }
+          this._loadRole();
         })
-        this._loadRole();
       },
       //选择授权运营/查看门店的id
       checkboxShopAuthor(e) {
@@ -327,12 +302,15 @@
         console.log("this.staffRoleInfo---------", this.staffRoleInfo)
         this.$apply()
       },
-      modify() {
+      modify(phone) {
         wx.showToast({
           title: `功能暂未完成`,
           icon: 'none',
           duration: 2000
         })
+        wx.navigateTo({
+          url: `/pages/log/modifyUserPos?phone=${phone}`
+        });
       },
       //绑定指定职位
       bindingRole() {
@@ -407,6 +385,7 @@
         this.$parent.globalData.StoreName = storeName
         this.$parent.globalData.StoreId = storeId
         console.log("lever----------", lever)
+        console.log("this.$parent.globalData.StoreId----------", this.$parent.globalData.StoreId)
         this.$parent.globalData.lever = lever
         let storeSettingUrl = `${this.$parent.globalData.commonUrl}/api/loadStoreSetting?tk=${this.$parent.globalData.tk}`;
         setTimeout(() => {
@@ -417,7 +396,7 @@
               url: "/pages/mine/mine"
             })
           })
-        }, 500)
+        }, 1000)
       },
       // Other properties
     }
@@ -463,11 +442,15 @@
         util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
           console.log("加载当前帐号的职位信息------", res)
           if (res.errCode === 0) {
-            resolve(res.info)
             this.$parent.globalData.userRoleInfo = res.info
             this.shopList = res.info
-            console.log("this.shopList------", this.shopList)
-            console.log("this.$parent.globalData-----", this.$parent.globalData)
+            this.shopList.stores.forEach(shop=>{
+              shop["checked"] = false
+            })
+            this.shopList.subStaffs.forEach(staff=>{
+              staff["checked"] = false
+            })
+            resolve(this.shopList)
           } else {
             wx.showToast({
               title: `${res.errMsg}`,
@@ -639,7 +622,7 @@
         }
       }
       .btn_wrapper {
-        margin-top: 48rpx;
+        margin-top: 10rpx;
         display: flex;
         justify-content: space-around;
       }

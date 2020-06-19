@@ -1,0 +1,298 @@
+<template>
+    <view class="modifyUser-wrapper">
+        <view class="userInfo-name">
+            <text class="name">姓名:</text>
+            <input @input="changeName" type="text" class="inputName" value="{{roleInfo.staffName}}" />
+        </view>
+        <view class="userInfo-jobNumber">
+            <text class="jonNumber">工牌号:</text>
+            <input @input="changeJobNUmber" type="text" class="inputJob" value="{{roleInfo.jobNumber}}" />
+        </view>
+        <view class="stores-list">
+            <view class="title">直营门店</view>
+            <scroll-view wx:if="{{roleInfo.stores.length>0}}" class="scroll" style="height:250rpx" scroll-y scroll-with-animation @scroll="">
+                <repeat for="{{roleInfo.stores}}" key="index" index="index" item="store">
+                    <view class="store-info">
+                        <text class="store-name">{{store.storeName}}</text>
+                        <text class="store-handle" @tap="cancelOperation({{store.storeID}})">取消运营</text>
+                    </view>
+                </repeat>
+            </scroll-view>
+            <view wx:else class="noData">暂无数据</view>
+        </view>
+        <view class="stores-list">
+            <view class="title">可查看门店</view>
+            <scroll-view wx:if="{{roleInfo.viewstores.length>0}}" class="scroll" style="height:250rpx" scroll-y scroll-with-animation @scroll="">
+                <repeat for="{{roleInfo.viewstores}}" key="index" index="index" item="store">
+                    <view class="store-info">
+                        <text class="store-name">{{store.storeName}}</text>
+                        <text class="store-handle" @tap="cancelViewStore({{store.storeID}})">取消查看</text>
+                    </view>
+                </repeat>
+            </scroll-view>
+            <view wx:else class="noData">暂无数据</view>
+        </view>
+        <view class="stores-list">
+            <view class="title">可查看下级</view>
+            <scroll-view wx:if="{{roleInfo.viewStaffs.length>0}}" class="scroll" style="height:250rpx" scroll-y scroll-with-animation @scroll="">
+                <repeat for="{{roleInfo.viewStaffs}}" key="index" index="index" item="staff">
+                    <view class="store-info">
+                        <text class="store-name">{{staff.staffName}}</text>
+                        <text class="store-handle" @tap="cancelViewRole({{staff.roleID}})">取消查看</text>
+                    </view>
+                </repeat>
+            </scroll-view>
+            <view wx:else class="noData">暂无数据</view>
+        </view>
+        <button class="center-btn" style="margin-top:20rpx;" @tap="saveStaff">保存</button>
+    </view>
+</template>
+<script>
+    import wepy from 'wepy';
+    const util = require('../../utils/utils.js')
+    export default class modifyUser extends wepy.page {
+        config = {
+            navigationBarTitleText: '修改员工岗位'
+        };
+        data = {
+            roleInfo: null,
+            name: "",
+            jobNumber: "",
+            staffPhone: "",
+            stores: [{
+                    name: "1号门店"
+                },
+                {
+                    name: "2号门店"
+                },
+            ],
+            staffs: [{
+                    name: "A员工"
+                },
+                {
+                    name: "B员工"
+                }
+            ]
+        };
+        methods = {
+            changeName(e) {
+                this.name = e.detail.value;
+                console.log(this.name)
+            },
+            changeJobNUmber(e) {
+                this.jobNumber = e.detail.value
+                console.log(this.jobNumber)
+            },
+            //保存用户资料
+            saveStaff() {
+                let data = {
+                    phone: this.staffPhone,
+                    name: this.name,
+                    jobNumber: this.jobNumber
+                }
+                let url = `${this.$parent.globalData.commonUrl}/api/saveStaff?tk=${this.$parent.globalData.tk}`
+                util.interface_post(url, data, "").then(async res => {
+                    console.log("保存个人信息------", res)
+                    if (res.errCode === 0) {
+                        setTimeout(() => {
+                            wx.showToast({
+                                title: `保存成功`,
+                                icon: 'success',
+                                duration: 2000
+                            })
+                        }, 500);
+                        this.roleInfo = await this._loadRoleByPhone(this.staffPhone)
+                    } else {
+                        wx.showToast({
+                            title: `${res.errMsg}`,
+                            icon: 'none',
+                            duration: 2000
+                        })
+                    }
+                    this.$apply()
+                })
+            },
+            //取消运营门店
+            cancelOperation(storeId) {
+                let data = {
+                    roleID: this.roleInfo.roleID,
+                    storeID: storeId
+                }
+                let url = `${this.$parent.globalData.commonUrl}/api/cancelOperation?tk=${this.$parent.globalData.tk}`
+                util.interface_post(url, data, "").then(async res => {
+                    console.log("取消运营------", res)
+                    if (res.errCode === 0) {
+                        wx.showToast({
+                            title: `取消成功`,
+                            icon: 'success',
+                            duration: 2000
+                        })
+                        this.roleInfo = await this._loadRoleByPhone(this.staffPhone)
+                    } else {
+                        wx.showToast({
+                            title: `${res.errMsg}`,
+                            icon: 'none',
+                            duration: 2000
+                        })
+                    }
+                    this.$apply()
+                })
+            },
+            //取消查看门店
+            cancelViewStore(storeId) {
+                let data = {
+                    roleID: this.roleInfo.roleID,
+                    viewStoreID: storeId
+                }
+                let url = `${this.$parent.globalData.commonUrl}/api/cancelViewStore?tk=${this.$parent.globalData.tk}`
+                util.interface_post(url, data, "").then(async res => {
+                    console.log("取消查看门店------", res)
+                    if (res.errCode === 0) {
+                        wx.showToast({
+                            title: `取消成功`,
+                            icon: 'success',
+                            duration: 2000
+                        })
+                        this.roleInfo = await this._loadRoleByPhone(this.staffPhone)
+                    } else {
+                        wx.showToast({
+                            title: `${res.errMsg}`,
+                            icon: 'none',
+                            duration: 2000
+                        })
+                    }
+                    this.$apply()
+                })
+            },
+            //取消查看下级
+            cancelViewRole(roleId) {
+                let data = {
+                    roleID: this.roleInfo.roleID,
+                    viewRoleID: roleId
+                }
+                let url = `${this.$parent.globalData.commonUrl}/api/cancelViewRole?tk=${this.$parent.globalData.tk}`
+                util.interface_post(url, data, "").then(async res => {
+                    console.log("取消查看门店------", res)
+                    if (res.errCode === 0) {
+                        wx.showToast({
+                            title: `取消成功`,
+                            icon: 'success',
+                            duration: 2000
+                        })
+                        this.roleInfo = await this._loadRoleByPhone(this.staffPhone)
+                    } else {
+                        wx.showToast({
+                            title: `${res.errMsg}`,
+                            icon: 'none',
+                            duration: 2000
+                        })
+                    }
+                    this.$apply()
+                })
+            }
+        };
+        //通过手机号查岗位
+        _loadRoleByPhone(phone) {
+            let url = `${this.$parent.globalData.commonUrl}/api/loadRoleByPhone?tk=${this.$parent.globalData.tk}&phone=${phone}`
+            return new Promise((resolve, reject) => {
+                util.interface_get(url, "").then(res => {
+                    console.log("加载被选择员工岗位------", res)
+                    if (res.errCode === 0) {
+                        resolve(res.info)
+                    } else {
+                        wx.showToast({
+                            title: `${res.errMsg}`,
+                            icon: 'none',
+                            duration: 2000
+                        })
+                    }
+                })
+            })
+        };
+        async onLoad(e) {
+            console.log(e.phone)
+            this.staffPhone = e.phone
+            this.roleInfo = await this._loadRoleByPhone(this.staffPhone)
+            this.jobNumber = this.roleInfo.jobNumber;
+            this.name = this.roleInfo.staffName;
+            this.$apply()
+            console.log("this.roleInfo -------", this.roleInfo)
+        }
+    }
+</script>
+
+<style lang="less">
+    .modifyUser-wrapper {
+        height: 100%;
+        background: #f1f1f1;
+        padding: 20rpx;
+        .userInfo-name {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            margin-bottom: 20rpx;
+            .name {
+                font-size: 14px;
+                width: 100rpx;
+            }
+            .inputName {
+                font-size: 14px;
+                margin-left: 20rpx;
+                background-color: #fff;
+                color: #333;
+                flex: 1;
+            }
+        }
+        .userInfo-jobNumber {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            .jonNumber {
+                font-size: 14px;
+                width: 100rpx;
+            }
+            .inputJob {
+                font-size: 14px;
+                margin-left: 20rpx;
+                background-color: #fff;
+                flex: 1;
+                color: #333;
+            }
+        }
+        .stores-list {
+            margin-top: 20rpx;
+            background-color: #fff;
+            height: 250rpx;
+            .title {
+                font-size: 14px;
+                font-weight: 900;
+                color: #333;
+            }
+            .noData {
+                font-weight: 700;
+                font-size: 30rpx;
+                color: #ccc;
+                text-decoration: underline;
+                margin: 5% auto;
+                text-align: center;
+            }
+            .scroll {
+                padding: 10rpx;
+                box-sizing: border-box;
+                .store-info {
+                    margin-top: 20rpx;
+                    display: flex;
+                    justify-content: space-between;
+                    .store-name {}
+                    .store-handle {
+                        padding: 6rpx 8rpx;
+                        border: 1px solid #ccc;
+                    }
+                }
+            }
+        }
+    }
+</style>
+<style lang="less" src="../../mixins/less/btn.less">
+
+</style>

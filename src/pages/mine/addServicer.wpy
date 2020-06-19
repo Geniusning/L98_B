@@ -33,25 +33,7 @@
     };
     data = {
       winHeight: "",
-      servicerList: [{
-          id: "1",
-          name: "liuning",
-          beginTime: "2018-10-1 20:00",
-          duration: "8小时"
-        },
-        {
-          id: "1",
-          name: "geniusning",
-          beginTime: "2018-10-1 20:00",
-          duration: "8小时"
-        },
-        {
-          id: "1",
-          name: "liuyirun",
-          beginTime: "2018-10-1 20:00",
-          duration: "正在值班"
-        }
-      ]
+      servicerList: []
     };
     methods = {
       addClientService() {
@@ -114,16 +96,16 @@
       let url = `${this.$parent.globalData.commonUrl}/api/loadClientServiceLog?tk=${this.$parent.globalData.tk}`;
       util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
         console.log(res);
-        if (res.errCode != 0) {
+        if (res.errCode === 0) {
+          this.servicerList = res.worklog
+          this._formatClientData(this.servicerList)
+          this.$apply();
+        } else {
           wx.showToast({
             title: res.errCode + res.errMsg,
             icon: 'none',
             duration: 1000
           })
-        } else {
-          this.servicerList = res
-          this._formatClientData(this.servicerList)
-          this.$apply();
         }
       })
     }
@@ -134,7 +116,7 @@
         } else {
           client["durationTime"] = parseInt((client.endTime - client.startTime) / 3600) === 0 ? "值班小于1小时" : parseInt((client.endTime - client.startTime) / 3600) + "小时"
         }
-        client.startTime = util.timestampToTime(client.startTime).slice(0, 16)
+        client.startTime = util.timestampToTime_line(client.startTime)
       })
     }
     events = {};
@@ -172,7 +154,7 @@
         .title {
           margin: 30rpx 0 0 0;
           width: 33.333%;
-          text-align: center;
+          text-align: left;
         }
       }
     }

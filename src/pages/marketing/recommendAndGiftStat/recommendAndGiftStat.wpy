@@ -163,26 +163,30 @@
       this.itemType = e.type
       if (this.itemType === "gift") {
         wx.setNavigationBarTitle({
-          title: '积分换礼品项目详情'
+          title: '积分换礼品优惠券详情'
         });
       } else if (this.itemType === "aiCoupon") {
         wx.setNavigationBarTitle({
-          title: 'AI项目详情'
+          title: 'AI优惠券详情'
         });
       } else if (this.itemType === "inviteCoupon") {
         wx.setNavigationBarTitle({
-          title: '邀新有礼项目详情'
+          title: '邀新有礼优惠券详情'
         });
       } else if (this.itemType === "vip") {
         wx.setNavigationBarTitle({
-          title: 'vip卡券项目详情'
+          title: 'vip优惠券详情'
         });
       } else if (this.itemType === "leagle") {
         wx.setNavigationBarTitle({
-          title: '友商卡券项目详情'
+          title: '友商优惠券详情'
         });
         this._loadLeagleStat()
         return
+      } else if (this.itemType === "staffCoupon") {
+        wx.setNavigationBarTitle({
+          title: '员工送券优惠券详情'
+        });
       }
       this._loadCheckNumAndIngegral(this.itemType)
     }

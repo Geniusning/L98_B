@@ -1,10 +1,10 @@
 <template>
   <view class="integralDetail_wrapper">
     <view class="integralDetail_top">
-      <view class="total_box" style="margin-top: 10rpx;margin-left:14rpx;position:absolute;top:5rpx;">
-        合计份数：{{totalTimes}} <text wx:if="{{pageType != 'aiCoupon' && pageType !='inviteCoupon'}}">合计积分：{{totalIngegral}}</text>
+      <view  class="total_box" style="margin-top: 10rpx;margin-left:14rpx;position:absolute;top:5rpx;">
+        合计数：{{totalTimes}} <text wx:if="{{pageType != 'aiCoupon' && pageType !='inviteCoupon' && pageType !='staffCoupon'}}">合计积分：{{totalIngegral}}</text>
       </view>
-      <view class="select">
+      <view wx:if="{{pageType !='staffCoupon'}}" class="select">
         <image src="../../../images/shaixuan.png" mode="scaleToFill" lazy-load="true" class="selectIcon"></image>
         <picker class="pickerbox" @change="bindPickerChange" value="{{pickindex}}" range="{{pickerArray}}" range-key="name">
           <view class="picker">
@@ -14,7 +14,7 @@
       </view>
     </view>
     <view class="integralDetail_bottom">
-      <scroll-view scroll-y scroll-with-animation style="height:{{winHeight}}rpx">
+      <scroll-view wx:if="{{pageType !='staffCoupon'}}" scroll-y scroll-with-animation style="height:{{winHeight}}rpx">
         <view class="list">
           <view class="item">发生日期</view>
           <view class="item">兑换人</view>
@@ -29,6 +29,24 @@
             </view>
             <view class="item">{{item.couponName}}</view>
             <view class="item" wx:if="{{pageType != 'aiCoupon' && pageType !='inviteCoupon'}}">{{item.integral}}</view>
+          </view>
+        </repeat>
+      </scroll-view>
+      <scroll-view wx:else scroll-y scroll-with-animation style="height:{{winHeight}}rpx">
+        <view class="list">
+          <view class="item">发生日期</view>
+          <view class="item">核券人</view>
+          <view class="item">送券人</view>
+        </view>
+        <repeat for="{{recordData}}" key="index" index="index" item="item">
+          <view class="list">
+            <view class="item">{{item.milliTime}}</view>
+            <view class="item">
+              <image class="avatarIcon" src="{{item.headUrl}}" mode="scaleToFill" lazy-load="false"></image>
+            </view>
+            <view class="item">
+              <image class="avatarIcon" src="{{item.senderHeadUrl}}"></image>
+            </view>
           </view>
         </repeat>
       </scroll-view>
@@ -124,12 +142,15 @@
       item["couponName"] = util.returnDiscountContentNoType(item.UserCoupon.coupon)
       if (item.UserCoupon.couponOrigin == this.pageType) {
         this.totalTimes++
-          this.totalIngegral += item.UserCoupon.coupon.integral
+        this.totalIngegral += item.UserCoupon.coupon.integral
         this.recordData.push(item)
         tempPickArray.push({
           name: item["couponName"],
           id: item["couponName"]
         })
+      }
+      if(this.pageType === "staffCoupon"){
+        item["senderHeadUrl"] = item.UserCoupon.coupon.senderHeadImage
       }
     };
     _loadCheckItemDetail(date) {
@@ -156,6 +177,7 @@
       this.paramDate = e.date
       this.pageType = e.type
       console.log("date-----", this.paramDate)
+      console.log("pageType-----", this.pageType)
       this._loadCheckItemDetail(this.paramDate)
     }
   }
