@@ -28,7 +28,7 @@
 										<view class="shop author_shop">
 										<view class="shop_left">
 											<image src="../../../images/shopListIcon.png" class="shopIcon"></image>
-											<text class="name">{{item.name}}</text>
+											<text class="name">{{item.storeName}}</text>
 										</view>
 										</view>
 									</label>
@@ -75,7 +75,7 @@
 					</view>
 				</picker>
 			</view>
-			<view class="add_staff_info" wx:if="{{isCreatePos && userRoleInfo.role !='运营前台'}}">
+			<view class="add_staff_info" wx:if="{{isCreatePos && userRoleInfo.role !='k98_operation_front'}}">
 				<text class="info_desc">岗位权限:</text>
 				<picker @change="bindPermissionChange" value="{{permissionIndex}}" range="{{arrayPermission}}" range-key="name">
 					<view style="color:#808080;padding-top:4rpx">
@@ -145,6 +145,8 @@
 			//为店员选择所属门店
 			checkboxShop(e) {
 				this.belongStoreId = e.detail.value
+				this.roleInfo.belongStore = this.belongStoreId
+				this.roleInfo.permission = 0
 				console.log("this.belongStoreId-------", this.belongStoreId)
 			},
 			//控制是否创建职位的开关

@@ -175,8 +175,8 @@
     //         wx.request({
     //           url: `${_this.globalData.commonUrl}/wechatAppLogin`,
     //           data: {
-    //             phone: '15014063033',
-    //             password: '063033'
+    //             phone: '00000000000',
+    //             password: '000000'
     //           },
     //           header: {
     //             'content-type': 'application/json'

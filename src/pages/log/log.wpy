@@ -57,7 +57,7 @@
               wx.authorize({
                 scope: "scope.userInfo",
                 success(res) {
-                  console.log("authorize-res",res)
+                  console.log("authorize-res", res)
                   // wx.getUserInfo({
                   //   success(res) {
                   //     console.log("else用户信息为----", res)
@@ -78,8 +78,8 @@
                 data: {
                   phone: _this.account,
                   password: _this.password,
-                  headImgUrl:headImgUrl,
-                  nick:nick
+                  headImgUrl: headImgUrl,
+                  nick: nick
                 },
                 header: {
                   'content-type': 'application/json'
@@ -91,9 +91,26 @@
                     let loginWechatAppletReply = res.data.loginWechatAppletReply;
                     _this.$parent.globalData.tk = loginWechatAppletReply.tk;
                     _this.$parent.globalData.userInfo = loginWechatAppletReply.staff;
-                    wx.redirectTo({
-                      url: '../log/shopList'
-                    });
+                    if (_this.$parent.globalData.userInfo.role === "k98_store_staff" || _this.$parent.globalData.userInfo.role === "k98_store_manager") {
+                      _this.$parent.globalData.userRoleInfo = await _this._loadRoleByPhone(_this.$parent.globalData.userInfo.phone)
+                      console.log("roleInfo---", _this.$parent.globalData.userRoleInfo)
+                      _this.$parent.globalData.StoreId = _this.$parent.globalData.userRoleInfo.belongStore.storeID
+                      let storeSettingUrl = `${_this.$parent.globalData.commonUrl}/api/loadStoreSetting?tk=${_this.$parent.globalData.tk}`;
+                      util.interface_get(storeSettingUrl, _this.$parent.globalData.StoreId).then(res => {
+                        _this.$parent.globalData.shopInfo = res;
+                        console.log("店铺信息---------", _this.$parent.globalData)
+                      })
+                      setTimeout(() => {
+                        wx.switchTab({
+                          url: '/pages/member/member'
+                        });
+                      }, 500);
+                    } else {
+                      wx.redirectTo({
+                        url: '../log/shopList'
+                      });
+                    }
+                    console.log("_this.$parent.globalData.userInfo----", _this.$parent.globalData.userInfo)
                   } else {
                     wx.showToast({
                       title: '账号或密码错误',
@@ -109,6 +126,23 @@
           }
         });
       }
+    };
+    _loadRoleByPhone(phone) {
+      let url = `${this.$parent.globalData.commonUrl}/api/loadRoleByPhone?tk=${this.$parent.globalData.tk}&phone=${phone}`
+      return new Promise((resolve, reject) => {
+        util.interface_get(url, "").then(res => {
+          console.log("加载被选择员工岗位------", res)
+          if (res.errCode === 0) {
+            resolve(res.info)
+          } else {
+            wx.showToast({
+              title: `${res.errMsg}`,
+              icon: 'none',
+              duration: 2000
+            })
+          }
+        })
+      })
     };
     events = {};
     onLoad() {

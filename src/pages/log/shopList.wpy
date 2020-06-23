@@ -132,7 +132,7 @@
         <button class="right-btn" @tap="bindingRole">确定</button>
       </view>
     </view>
-    <view @tap="intoAddStaff" class="addStaff" wx:if="{{shopList.role !='k98_operation_front'}}">新增</view>
+    <view @tap="intoAddStaff" class="addStaff" wx:if="{{shopList.role !='k98_store_staff' && shopList.role !='k98_store_manager'}}">新增</view>
     <view @tap="goBack" wx:if="{{showBackBtn}}" class="goBack">返回</view>
   </view>
 </template>

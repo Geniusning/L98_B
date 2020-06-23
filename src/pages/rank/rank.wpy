@@ -95,8 +95,21 @@
           </repeat>
         </scroll-view>
       </view>
-      <!-- 销卡 -->
+      <!-- 游戏 -->
       <view wx:elif="{{typeIndex==4}}" class="rank_scrollView">
+        <TitleList :titleList.sync="titleList"></TitleList>
+        <scroll-view scroll-y class="rank_scroll_list">
+          <repeat for="{{sharetList}}" key="index" index="index" item="item">
+            <view class="scroll_item">
+              <text class="staffInfo timeLine">{{index+1}}</text>
+              <text class="staffInfo timeLine">{{item.clerkInfo.name}}</text>
+              <text class="staffInfo timeLine">{{item.firstLineNum}}</text>
+            </view>
+          </repeat>
+        </scroll-view>
+      </view>
+      <!-- 送券 -->
+      <view wx:elif="{{typeIndex==5}}" class="rank_scrollView">
         <TitleList :titleList.sync="titleList"></TitleList>
         <scroll-view scroll-y class="rank_scroll_list">
           <repeat for="{{sharetList}}" key="index" index="index" item="item">
@@ -134,7 +147,7 @@
       endDay: "",
       tuoKeClientList: [],
       sharetList: [],
-      typeRank: ["拓客", "分享", "销卡", "对话", "游戏"]
+      typeRank: ["拓客", "分享", "销卡", "对话", "游戏","送券"]
     };
     //拓客
     _getTuoKeRankList() {
@@ -147,9 +160,9 @@
         this.$apply();
       })
     };
-    //分享
+    //分享  loadClerkOtherRank
     _getShareRankList() {
-      let url = `${this.$parent.globalData.commonUrl}/api/loadClerkShareFriAndLineRank?tk=${this.$parent.globalData.tk}&startDate=${this.startDay}&endDate=${this.endDay}&dataType=${this.pageType}`;
+      let url = `${this.$parent.globalData.commonUrl}/api/loadClerkOtherRank?tk=${this.$parent.globalData.tk}&startDate=${this.startDay}&endDate=${this.endDay}&dataType=${this.pageType}`;
       util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
         console.log("-------", res);
         if (res.errCode === 0) {
@@ -242,6 +255,11 @@
           case '4':
             this.pageType = "game"
             this.titleList = ['排名', '昵称', '与客游戏次数']
+            this.$apply()
+            break;
+          case '5':
+            this.pageType = "sendCoupon" //员工送券
+            this.titleList = ['排名', '昵称', '送券给客张数']
             this.$apply()
             break;
 

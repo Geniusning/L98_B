@@ -165,7 +165,7 @@
     };
     _handleItem(tempPickArray, item, type) {
       if (type === "check") {
-        item["milliTime"] = util.timestampToTime(item.OperationTime).slice(11)
+        item["milliTime"] = util.timestampToTime(item.OperationTime).slice(10)
         item["name"] = util.returnDiscountType(item.UserCoupon.coupon.type)
         item["couponTypeInt"] = item.UserCoupon.coupon.type
         item["headUrl"] = item.CouponUser.userHeadURI
@@ -176,7 +176,7 @@
           id: item["couponName"]
         })
       } else if (type === "coupon" || type === "vip") {
-        item["milliTime"] = util.timestampToTime(item.milliTime).slice(11)
+        item["milliTime"] = util.timestampToTime(item.milliTime).slice(10)
         item["name"] = util.returnDiscountType(item.couponTypeInt)
         item["couponTypeInt"] = item.couponTypeInt
         item["headUrl"] = item.userInfo.headImgUrl
@@ -188,7 +188,7 @@
           id: item["couponName"]
         })
       } else if (type === "activity") {
-        item["milliTime"] = util.timestampToTime(item.milliTime).slice(11)
+        item["milliTime"] = util.timestampToTime(item.milliTime).slice(10)
         item["headUrl"] = item.userInfo.headImgUrl
         item["name"] = item.ActivityName
         this.detailData.push(item)

@@ -81,7 +81,7 @@ export default class otherSetting extends wepy.page {
     change_staffComment(e){
       console.log('员工评价开关', e.detail.value)
       this.staffCommentOpen = e.detail.value
-      // this._L98OtherSetting()
+      this._L98OtherSetting()
     }
   };
   _L98OtherSetting(){
