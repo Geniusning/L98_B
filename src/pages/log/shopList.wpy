@@ -1,10 +1,24 @@
 <template>
   <view class="shopList_wrapper">
-    <Search :placeholder.sync="placeholder" :searchValue.sync="searchValue"></Search>
-    <repeat for="{{shopList.stores}}" key="storeIndex" index="storeIndex" item="store">
-      <view class="shop" @tap="intoShop({{store.storeID}},{{store.storeName}},'high')">
+    <Search
+      :placeholder.sync="placeholder"
+      :searchValue.sync="searchValue"
+    ></Search>
+    <repeat
+      for="{{shopList.stores}}"
+      key="storeIndex"
+      index="storeIndex"
+      item="store"
+    >
+      <view
+        class="shop"
+        @tap="intoShop({{store.storeID}},{{store.storeName}},'high')"
+      >
         <view class="shop_left">
-          <image src="../../images/shopListIcon.png" class="shopIcon"></image>
+          <image
+            src="../../images/shopListIcon.png"
+            class="shopIcon"
+          ></image>
           <text class="name">{{store.storeName}}</text>
         </view>
         <view class="shop_right">
@@ -12,10 +26,21 @@
         </view>
       </view>
     </repeat>
-    <repeat for="{{shopList.viewstores}}" key="storeIndex" index="storeIndex" item="store">
-      <view class="shop" @tap="intoShop({{store.storeID}},{{store.storeName}},'low')">
+    <repeat
+      for="{{shopList.viewstores}}"
+      key="storeIndex"
+      index="storeIndex"
+      item="store"
+    >
+      <view
+        class="shop"
+        @tap="intoShop({{store.storeID}},{{store.storeName}},'low')"
+      >
         <view class="shop_left">
-          <image src="../../images/shopListIcon.png" class="shopIcon"></image>
+          <image
+            src="../../images/shopListIcon.png"
+            class="shopIcon"
+          ></image>
           <text class="name">{{store.storeName}}</text>
         </view>
         <view class="shop_right">
@@ -23,30 +48,81 @@
         </view>
       </view>
     </repeat>
-    <repeat for="{{shopList.subStaffs}}" key="index" index="index" item="item">
-      <view class="shop" @tap="goToFurther({{item.phone}})">
+    <repeat
+      for="{{shopList.subStaffs}}"
+      key="index"
+      index="index"
+      item="item"
+    >
+      <view
+        class="shop"
+        @tap="goToFurther({{item.phone}})"
+      >
         <view class="shop_left">
-          <image src="../../images/staff_icon.png" class="shopIcon"></image>
-          <text wx:if="{{item.staffName}}" class="name" style="font-size:13px">{{item.staffName}}-{{item.phone}}</text>
-          <text wx:else class="name" style="font-size:13px">空岗位，待绑定</text>
+          <image
+            src="../../images/staff_icon.png"
+            class="shopIcon"
+          ></image>
+          <text
+            wx:if="{{item.staffName}}"
+            class="name"
+            style="font-size:13px"
+          >{{item.staffName}}-{{item.phone}}</text>
+          <text
+            wx:else
+            class="name"
+            style="font-size:13px"
+          >空岗位，待绑定</text>
         </view>
         <view wx:if="{{!showBackBtn}}">
-          <view wx:if="{{item.staffName}}" class="shop_right">
-            <text class="author" @tap.stop="showAuthor({{item.phone}})">授权</text>
-            <text class="author" @tap.stop="untieRole({{item.phone}})">解绑</text>
-            <text class="author" @tap.stop="modify({{item.phone}})">修改</text>
+          <view
+            wx:if="{{item.staffName}}"
+            class="shop_right"
+          >
+            <text
+              class="author"
+              @tap.stop="showAuthor({{item.phone}})"
+            >授权</text>
+            <text
+              class="author"
+              @tap.stop="untieRole({{item.phone}})"
+            >解绑</text>
+            <text
+              class="author"
+              @tap.stop="modify({{item.phone}})"
+            >修改</text>
           </view>
-          <view wx:else class="shop_right">
-            <text class="author" @tap.stop="bindPosition({{item.roleID}})">绑定</text>
+          <view
+            wx:else
+            class="shop_right"
+          >
+            <text
+              class="author"
+              @tap.stop="bindPosition({{item.roleID}})"
+            >绑定</text>
           </view>
         </view>
       </view>
     </repeat>
-    <repeat for="{{shopList.viewStaffs}}" key="index" index="index" item="item">
-      <view class="shop" @tap="goToFurther({{item.phone}})">
+    <repeat
+      for="{{shopList.viewStaffs}}"
+      key="index"
+      index="index"
+      item="item"
+    >
+      <view
+        class="shop"
+        @tap="goToFurther({{item.phone}})"
+      >
         <view class="shop_left">
-          <image src="../../images/staff_icon.png" class="shopIcon"></image>
-          <text class="name" style="font-size:13px">{{item.staffName}}-{{item.phone}}</text>
+          <image
+            src="../../images/staff_icon.png"
+            class="shopIcon"
+          ></image>
+          <text
+            class="name"
+            style="font-size:13px"
+          >{{item.staffName}}-{{item.phone}}</text>
         </view>
         <!-- <view wx:if="{{item.staffName}}" class="shop_right">
                     <text class="author" @tap.stop="showAuthor({{item.phone}})">授权</text>
@@ -59,40 +135,98 @@
       </view>
     </repeat>
     <!-- 授权弹框 -->
-    <view class="author_modal" style="height:940rpx;margin-top:-550rpx;" wx:if="{{authorFlag}}">
-      <image src="../../images/close.png" mode="scaleToFill" class="close" @tap="closeModal"></image>
-      <scroll-view class="scroll" style="height:340rpx" scroll-y scroll-with-animation @scroll="">
+    <view
+      class="author_modal"
+      style="height:940rpx;margin-top:-550rpx;"
+      wx:if="{{authorFlag}}"
+    >
+      <image
+        src="../../images/close.png"
+        mode="scaleToFill"
+        class="close"
+        @tap="closeModal"
+      ></image>
+      <scroll-view
+        class="scroll"
+        style="height:340rpx"
+        scroll-y
+        scroll-with-animation
+        @scroll=""
+      >
         <view class="title">授权门店</view>
         <radio-group @change="checkboxShopAuthor">
-          <repeat for="{{shopList.stores}}" key="index" index="index" item="item">
-            <label class="checkbox" class="label_wrapper">
-                <radio color="#FFBA00" value="{{item.storeID}}"  class="checkbox"/>
-                <view class="shop author_shop">
-                  <view class="shop_left">
-                    <image src="../../images/shopListIcon.png" class="shopIcon"></image>
-                    <text class="name">{{item.storeName}}</text>
-                  </view>
-                  <view class="shop_right">
-                    <text class="author"></text>
-                  </view>
+          <repeat
+            for="{{shopList.stores}}"
+            key="index"
+            index="index"
+            item="item"
+          >
+            <label
+              class="checkbox"
+              class="label_wrapper"
+            >
+              <radio
+                color="#FFBA00"
+                value="{{item.storeID}}"
+                class="checkbox"
+              />
+              <view class="shop author_shop">
+                <view class="shop_left">
+                  <image
+                    src="../../images/shopListIcon.png"
+                    class="shopIcon"
+                  ></image>
+                  <text class="name">{{item.storeName}}</text>
                 </view>
+                <view class="shop_right">
+                  <text class="author"></text>
+                </view>
+              </view>
             </label>
           </repeat>
         </radio-group>
       </scroll-view>
       <view class="btn_wrapper">
-        <button class="left-btn" @tap="authorizedOperate">授权Ta运营</button>
-        <button class="right-btn" @tap="authorizedViewStore">授权Ta查看门店</button>
+        <button
+          class="left-btn"
+          @tap="authorizedOperate"
+        >授权Ta运营</button>
+        <button
+          class="right-btn"
+          @tap="authorizedViewStore"
+        >授权Ta查看门店</button>
       </view>
-      <scroll-view class="scroll" style="height:340rpx;margin-top:40rpx;border-top: 1px solid #fff" scroll-y scroll-with-animation @scroll="">
+      <scroll-view
+        class="scroll"
+        style="height:340rpx;margin-top:40rpx;border-top: 1px solid #fff"
+        scroll-y
+        scroll-with-animation
+        @scroll=""
+      >
         <view class="title">授权员工岗位</view>
         <radio-group @change="checkboxStaffAuthor">
-          <repeat for="{{shopList.subStaffs}}" key="index" index="index" item="item">
-            <label wx:if="{{item.roleID != staffRoleInfo.roleID && item.staffName != ''}}" class="checkbox" class="label_wrapper">
-              <radio color="#FFBA00" value="{{item.roleID}}"  class="checkbox"/>
+          <repeat
+            for="{{shopList.subStaffs}}"
+            key="index"
+            index="index"
+            item="item"
+          >
+            <label
+              wx:if="{{item.roleID != staffRoleInfo.roleID && item.staffName != ''}}"
+              class="checkbox"
+              class="label_wrapper"
+            >
+              <radio
+                color="#FFBA00"
+                value="{{item.roleID}}"
+                class="checkbox"
+              />
               <view class="shop author_shop">
                 <view class="shop_left">
-                  <image src="../../images/staff_icon.png" class="shopIcon"></image>
+                  <image
+                    src="../../images/staff_icon.png"
+                    class="shopIcon"
+                  ></image>
                   <text class="name">{{item.staffName}}</text>
                 </view>
                 <view class="shop_right">
@@ -104,36 +238,78 @@
         </radio-group>
       </scroll-view>
       <view class="btn_wrapper">
-        <button class="right-btn" @tap="authorizedViewRole">授权Ta查看岗位</button>
+        <button
+          class="right-btn"
+          @tap="authorizedViewRole"
+        >授权Ta查看岗位</button>
       </view>
     </view>
     <!-- 选择空岗位的员工绑定 -->
-    <view class="author_modal" wx:if="{{selectStaffFlag}}">
-      <image src="../../images/close.png" mode="scaleToFill" class="close" @tap="closeModal"></image>
-      <scroll-view class="scroll" scroll-y scroll-with-animation @scroll="">
+    <view
+      class="author_modal"
+      wx:if="{{selectStaffFlag}}"
+    >
+      <image
+        src="../../images/close.png"
+        mode="scaleToFill"
+        class="close"
+        @tap="closeModal"
+      ></image>
+      <scroll-view
+        class="scroll"
+        scroll-y
+        scroll-with-animation
+        @scroll=""
+      >
         <radio-group @change="checkboxStaff">
-          <repeat for="{{emptyStaffRoleArr}}" key="index" index="index" item="item">
-            <label class="checkbox" class="label_wrapper">
-              <radio color="#FFBA00" value="{{item.phone}}"  class="checkbox"/>
-                <view class="shop author_shop">
-                  <view class="shop_left">
-                    <image src="../../images/staff_icon.png" class="shopIcon"></image>
-                    <text class="name">{{item.name}}</text>
-                  </view>
-                  <view class="shop_right">
-                    <text class="author"></text>
-                  </view>
+          <repeat
+            for="{{emptyStaffRoleArr}}"
+            key="index"
+            index="index"
+            item="item"
+          >
+            <label
+              class="checkbox"
+              class="label_wrapper"
+            >
+              <radio
+                color="#FFBA00"
+                value="{{item.phone}}"
+                class="checkbox"
+              />
+              <view class="shop author_shop">
+                <view class="shop_left">
+                  <image
+                    src="../../images/staff_icon.png"
+                    class="shopIcon"
+                  ></image>
+                  <text class="name">{{item.name}}</text>
                 </view>
+                <view class="shop_right">
+                  <text class="author"></text>
+                </view>
+              </view>
             </label>
           </repeat>
         </radio-group>
       </scroll-view>
       <view class="btn_wrapper">
-        <button class="right-btn" @tap="bindingRole">确定</button>
+        <button
+          class="right-btn"
+          @tap="bindingRole"
+        >确定</button>
       </view>
     </view>
-    <view @tap="intoAddStaff" class="addStaff" wx:if="{{shopList.role !='k98_store_staff' && shopList.role !='k98_store_manager'}}">新增</view>
-    <view @tap="goBack" wx:if="{{showBackBtn}}" class="goBack">返回</view>
+    <view
+      @tap="intoAddStaff"
+      class="addStaff"
+      wx:if="{{shopList.role !='k98_store_staff' && shopList.role !='k98_store_manager'}}"
+    >新增</view>
+    <view
+      @tap="goBack"
+      wx:if="{{showBackBtn}}"
+      class="goBack"
+    >返回</view>
   </view>
 </template>
 <script>
@@ -156,11 +332,11 @@
       emptyStaffRoleArr: [],
       showBackBtn: false,
       shopList: [{
-          name: "一号店铺",
-        },
-        {
-          name: "2号店铺",
-        }
+        name: "一号店铺",
+      },
+      {
+        name: "2号店铺",
+      }
       ],
       placeholder: "请输入店铺名或下属名",
       searchValue: "",
@@ -276,6 +452,14 @@
       },
       //查看下一层员工信息资料
       goToFurther(phone) {
+        if (!phone) {
+          wx.showToast({
+            title: `空岗位，需绑定员工`,
+            icon: 'none',
+            duration: 2000
+          })
+          return
+        }
         this.showBackBtn = true;
         let url = `${this.$parent.globalData.commonUrl}/api/loadRoleByPhone?tk=${this.$parent.globalData.tk}&phone=${phone}`
         return new Promise((resolve, reject) => {
@@ -444,10 +628,10 @@
           if (res.errCode === 0) {
             this.$parent.globalData.userRoleInfo = res.info
             this.shopList = res.info
-            this.shopList.stores.forEach(shop=>{
+            this.shopList.stores.forEach(shop => {
               shop["checked"] = false
             })
-            this.shopList.subStaffs.forEach(staff=>{
+            this.shopList.subStaffs.forEach(staff => {
               staff["checked"] = false
             })
             resolve(this.shopList)
@@ -630,5 +814,4 @@
   }
 </style>
 <style lang="less" src="../../mixins/less/btn.less">
-
 </style>
