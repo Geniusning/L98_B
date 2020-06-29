@@ -1,6 +1,7 @@
 <template>
   <view class="shopList_wrapper">
     <Search :placeholder.sync="placeholder" :searchValue.sync="searchValue"></Search>
+    <text wx:if="{{shopList.stores.length}}" class="title">直营门店</text>
     <repeat for="{{shopList.stores}}" key="storeIndex" index="storeIndex" item="store">
       <view class="shop" @tap="intoShop({{store.storeID}},{{store.storeName}},'high')">
         <view class="shop_left">
@@ -12,6 +13,7 @@
         </view>
       </view>
     </repeat>
+    <text wx:if="{{shopList.viewstores.length}}" class="title">查看门店</text>
     <repeat for="{{shopList.viewstores}}" key="storeIndex" index="storeIndex" item="store">
       <view class="shop" @tap="intoShop({{store.storeID}},{{store.storeName}},'low')">
         <view class="shop_left">
@@ -23,39 +25,33 @@
         </view>
       </view>
     </repeat>
+    <text wx:if="{{shopList.subStaffs.length}}" class="title">直接下属</text>
     <repeat for="{{shopList.subStaffs}}" key="index" index="index" item="item">
       <view class="shop" @tap="goToFurther({{item.phone}})">
         <view class="shop_left">
           <image src="../../images/staff_icon.png" class="shopIcon"></image>
           <text wx:if="{{item.staffName}}" class="name" style="font-size:13px">{{item.staffName}}-{{item.phone}}</text>
-          <text wx:else class="name" style="font-size:13px">空岗位，待绑定</text>
+          <text wx:else class="name" style="font-size:13px">无值守岗位，待绑定上岗</text>
         </view>
         <view wx:if="{{!showBackBtn}}">
           <view wx:if="{{item.staffName}}" class="shop_right">
-            <text class="author" @tap.stop="showAuthor({{item.phone}})">授权</text>
-            <text class="author" @tap.stop="untieRole({{item.phone}})">解绑</text>
-            <text class="author" @tap.stop="modify({{item.phone}})">修改</text>
+            <!-- <text class="author" @tap.stop="showAuthor({{item.phone}})">授权</text> -->
+            <text class="author" @tap.stop="untieRole({{item.phone}})">下岗</text>
+            <text class="author" @tap.stop="modify({{item.phone}})">变更管辖</text>
           </view>
           <view wx:else class="shop_right">
-            <text class="author" @tap.stop="bindPosition({{item.roleID}})">绑定</text>
+            <text class="author" @tap.stop="bindPosition({{item.roleID}})">上岗</text>
           </view>
         </view>
       </view>
     </repeat>
+    <text wx:if="{{shopList.viewStaffs.length}}" class="title">可查看下属</text>
     <repeat for="{{shopList.viewStaffs}}" key="index" index="index" item="item">
       <view class="shop" @tap="goToFurther({{item.phone}})">
         <view class="shop_left">
           <image src="../../images/staff_icon.png" class="shopIcon"></image>
           <text class="name" style="font-size:13px">{{item.staffName}}-{{item.phone}}</text>
         </view>
-        <!-- <view wx:if="{{item.staffName}}" class="shop_right">
-                    <text class="author" @tap.stop="showAuthor({{item.phone}})">授权</text>
-                    <text class="author" @tap.stop="untieRole({{item.phone}})">解绑</text>
-                    <text class="author" @tap.stop="modify">修改</text>
-                  </view>
-                  <view wx:else class="shop_right">
-                    <text class="author">绑定</text>
-                  </view> -->
       </view>
     </repeat>
     <!-- 授权弹框 -->
