@@ -137,7 +137,7 @@
     //wx9b0a84128a900004   中新
     globalData = {
       userInfo: null,
-      userRoleInfo:null,
+      userRoleInfo: null,
       shopAddr: {},
       shopInfo: null,
       // commonUrl: 'https://llwant1.qianz.com', //老友
@@ -157,7 +157,7 @@
       city: '',
       StoreName: "",
       StoreId: "",
-      lever:"high"
+      lever: "high"
     };
     constructor() {
       super();
@@ -195,7 +195,7 @@
                     // });
                     wx.redirectTo({
                       url: '/pages/log/shopList'
-                      
+
                     });
                   }, 2000);
                 } else {

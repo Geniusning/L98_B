@@ -4,7 +4,7 @@
 			<!-- <view class="add_staff_title">新增帐号</view> -->
 			<view class="add_staff_info">
 				<text class="info_desc">姓名:</text>
-				<input @input="getName" placeholder="请输入下属姓名" class="inputArea" />
+				<input @input="getName" maxlength="4" placeholder="请输入下属姓名" class="inputArea" />
 			</view>
 			<view class="add_staff_info">
 				<text class="info_desc">手机号:</text>
@@ -12,7 +12,7 @@
 			</view>
 			<view class="add_staff_info">
 				<text class="info_desc">工牌号:</text>
-				<input type="number" @input="getJobNum" placeholder="输入工牌号" class="inputArea" />
+				<input type="number" maxlength="4" @input="getJobNum" placeholder="输入工牌号" class="inputArea" />
 			</view>
 			<view class="add_staff_info">
 				<text class="info_desc">密码:</text>
@@ -24,64 +24,91 @@
 					<radio-group @change="checkboxShop">
 						<repeat for="{{userRoleInfo.stores}}" key="index" index="index" item="item">
 							<label class="checkbox" class="label_wrapper">
-										<radio color="#FFBA00" value="{{item.storeID}}"  class="checkbox"/>
-										<view class="shop author_shop">
-										<view class="shop_left">
-											<image src="../../../images/shopListIcon.png" class="shopIcon"></image>
-											<text class="name">{{item.storeName}}</text>
-										</view>
-										</view>
-									</label>
+											<radio color="#FFBA00" value="{{item.storeID}}"  class="checkbox"/>
+											<view class="shop author_shop">
+											<view class="shop_left">
+												<image src="../../../images/shopListIcon.png" class="shopIcon"></image>
+												<text class="name">{{item.storeName}}</text>
+											</view>
+											</view>
+										</label>
 						</repeat>
 					</radio-group>
 				</scroll-view>
 			</view>
-			<view class="setting_item" wx:if="{{userRoleInfo.role !='运营前台'}}">
-				<text class="setting_left">是否创建岗位</text>
-				<switch checked="{{isCreatePos}}" color="#ffba00" @change="changePosition" />
+			<!-- wx:if="{{userRoleInfo.role !='k98_operation_front'}}" -->
+			<view class="setting_item" style="display:flex" >
+				<button type="default" @tap="switchPosOld">绑定旧岗位</button>
+				<button type="default" @tap="switchPosNew">创建新岗位</button>
 			</view>
 			<view class="add_staff_info" wx:if="{{!isCreatePos}}">
 				<scroll-view class="scrollpoi" style="height:400rpx;background:#ccc;" scroll-y scroll-with-animation @scroll="">
 					<radio-group wx:if="{{emptyStaffRoleArr.length}}" @change="checkboxPos">
 						<repeat for="{{emptyStaffRoleArr}}" key="index" index="index" item="item">
 							<label class="checkbox" class="label_wrapper">
-											<radio color="#FFBA00" value="{{item.roleID}}"  class="checkbox"/>
-											<view class="position_wrapper">
-												<view class="pos_top">
-													<view class="poi_name"><text>岗位名称：</text>{{item.znRole}}</view>
-													<view class="poi_parent"><text>上级：</text>{{item.parent.staffName}}</view>
+												<radio color="#FFBA00" value="{{item.roleID}}"  class="checkbox"/>
+												<view class="position_wrapper">
+													<view class="pos_top">
+														<view class="poi_name"><text>岗位名称：</text>{{item.znRole}}</view>
+														<view class="poi_parent"><text>上级：</text>{{item.parent.staffName}}</view>
+													</view>
+													<view class="pos_bot">
+														<view class="pos_duty"><text>岗位权限：</text>{{item.permission===1?"可查看可编辑":"仅查看"}}</view>
+													</view>
+													<view class="storeList" wx:if="{{item.stores.length}}">
+														<text class="title">运营门店列表：</text>
+														<repeat for="{{item.stores}}" key="storeIndex" index="storeIndex" item="store">
+																<text class="storeName">{{store.storeName+"  "}}</text>
+														</repeat>
+													</view>
 												</view>
-												<view class="pos_bot">
-													<view class="pos_duty"><text>岗位权限：</text>{{item.permission===1?"可查看可编辑":"仅查看"}}</view>
-												</view>
-												<view class="storeList" wx:if="{{item.stores.length}}">
-													<text class="title">运营门店列表：</text>
-													<repeat for="{{item.stores}}" key="storeIndex" index="storeIndex" item="store">
-															<text class="storeName">{{store.storeName+"  "}}</text>
-													</repeat>
-												</view>
-											</view>
-									</label>
+										</label>
 						</repeat>
 					</radio-group>
 					<view wx:else class="noStaffRole">暂无空岗位，请选择创建</view>
 				</scroll-view>
 			</view>
-			<view class="add_staff_info" wx:if="{{isCreatePos}}">
-				<text class="info_desc">岗位名称:</text>
-				<picker @change="bindRoleChange" value="{{roleIndex}}" range="{{arrayRole}}" range-key="name">
-					<view style="color:#808080;padding-top:4rpx">
-						{{arrayRole[roleIndex].name}}
-					</view>
-				</picker>
-			</view>
-			<view class="add_staff_info" wx:if="{{isCreatePos && userRoleInfo.role !='k98_operation_front'}}">
-				<text class="info_desc">岗位权限:</text>
-				<picker @change="bindPermissionChange" value="{{permissionIndex}}" range="{{arrayPermission}}" range-key="name">
-					<view style="color:#808080;padding-top:4rpx">
-						{{arrayPermission[permissionIndex].name}}
-					</view>
-				</picker>
+			<view class="add_staff_info newPos-wrapper" wx:if="{{isCreatePos}}">
+				<view style="display:flex">
+					<text class="info_desc">岗位名称:</text>
+					<picker @change="bindRoleChange" value="{{roleIndex}}" range="{{arrayRole}}" range-key="name">
+						<view style="background:#ccc;color:#808080;padding-top:4rpx">
+							{{arrayRole[roleIndex].name}}
+						</view>
+					</picker>
+				</view>
+				<scroll-view wx:if="{{userRoleInfo.stores.length}}" class="scroll" style="height:340rpx" scroll-y scroll-with-animation @scroll="">
+					<view class="title">授权门店</view>
+					<checkbox-group @change="checkboxShopAuthor">
+						<repeat for="{{userRoleInfo.stores}}" key="index" index="index" item="item">
+							<label class="checkbox" class="label_wrapper">
+											<checkbox  color="#FFBA00" value="{{item.storeID}}"  class="checkbox"/>
+											<view class="shop">
+													<view class="shop_left">
+															<image src="../../../images/shopListIcon.png" class="shopIcon"></image>
+															<text class="name">{{item.storeName}}</text>
+													</view>
+											</view>
+							</label>
+						</repeat>
+					</checkbox-group>
+				</scroll-view>
+				<scroll-view wx:if="{{userRoleInfo.subStaffs.length}}" class="scroll" style="height:340rpx" scroll-y scroll-with-animation @scroll="">
+					<view class="title">授权下属</view>
+					<checkbox-group @change="checkboxShopAuthor">
+						<repeat for="{{userRoleInfo.subStaffs}}" key="index" index="index" item="item">
+							<label wx:if="{{item.phone}}" class="checkbox" class="label_wrapper">
+											<checkbox  color="#FFBA00" value="{{item.phone}}"  class="checkbox"/>
+											<view class="shop">
+													<view class="shop_left">
+															<image src="../../../images/shopListIcon.png" class="shopIcon"></image>
+															<text class="name">{{item.staffName}}</text>
+													</view>
+											</view>
+							</label>
+						</repeat>
+					</checkbox-group>
+				</scroll-view>
 			</view>
 			<button class="addBtn" @tap="addStaff">新增</button>
 		</view>
@@ -111,18 +138,8 @@
 				name: "运营后台",
 				id: "k98_operation_behind"
 			}],
-			arrayPermission: [{
-					name: "编辑和查看",
-					id: 1
-				},
-				{
-					name: "仅查看",
-					id: 2
-				}
-			],
 			isCreatePos: true,
 			roleIndex: 0,
-			permissionIndex: 0,
 			phone: "",
 			password: "",
 			roleId: "",
@@ -142,11 +159,21 @@
 		};
 		onUnload() {};
 		methods = {
+			//授权门店
+			checkboxShopAuthor(e){
+				console.log("授权门店---,",e.detail.value)
+			},
+			switchPosOld() {
+				this.isCreatePos = false
+			},
+			switchPosNew() {
+				this.isCreatePos = true
+			},
 			//为店员选择所属门店
 			checkboxShop(e) {
 				this.belongStoreId = e.detail.value
 				this.roleInfo.belongStore = this.belongStoreId
-				this.roleInfo.permission = 0
+				this.roleInfo.permission = 2
 				console.log("this.belongStoreId-------", this.belongStoreId)
 			},
 			//控制是否创建职位的开关
@@ -163,12 +190,6 @@
 						duration: 2000
 					})
 				}
-			},
-			//职位权限选择
-			bindPermissionChange(e) {
-				this.permissionIndex = e.detail.value
-				this.roleInfo.permission = this.arrayPermission[Number(e.detail.value)].id
-				console.log("this.roleInfo-------", this.roleInfo)
 			},
 			//职位选择
 			bindRoleChange(e) {
@@ -359,7 +380,6 @@
 					box-sizing: border-box;
 					display: inline-block;
 					width: 124rpx;
-					padding-top: 7rpx;
 					margin-right: 20rpx;
 					text-align: left;
 				}
@@ -426,6 +446,7 @@
 				}
 				.scroll {
 					height: 430rpx;
+					background-color: #ffba00;
 					.label_wrapper {
 						display: flex;
 						padding: 8rpx 0;
@@ -477,6 +498,26 @@
 					color: #fff;
 					font-size: 16px;
 					margin-top: 200rpx;
+				}
+			}
+			.newPos-wrapper {
+				display: flex;
+				flex-direction: column;
+				.scroll {
+					margin-top: 10rpx;
+					.title {}
+					.label_wrapper {
+						display: flex;
+						.checkbox {}
+						.shop {
+							display: flex;
+							justify-content: flex-start;
+							.shop_left {
+								.shopIcon {}
+								.name {}
+							}
+						}
+					}
 				}
 			}
 			.setting_item {

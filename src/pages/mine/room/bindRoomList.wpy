@@ -17,7 +17,7 @@
                     <repeat for="{{roomList}}" key="index" item="item">
                         <label class="radio" style="justify-content: flex-start	">
                                     <checkbox  color="orange" value="{{item.id}}" checked="{{item.isSelect}}"/>
-                                    <view class="room_name">{{item.name}}-{{item.code}}{{'('+item.remark+')'}}</view>
+                                    <view class="room_name">{{item.name}}-{{item.code}}</view>
                                 </label>
                     </repeat>
                 </view>
@@ -29,7 +29,7 @@
                         <label class="radio" @tap="tapLabel"> 
                                 <checkbox  color="orange" value="{{item.id}}" checked="{{item.isSelect}}"/>
                                 <!-- <view style="display:flex">  -->
-                                    <view class="room_name">{{item.name}}-{{item.code}}号桌{{'('+item.remark+')'}}</view>
+                                    <view class="room_name">{{item.name}}-{{item.code}}号桌</view>
                                     <view class="remarks" @tap="showRemarkShow({{item.id}})">备注</view>
                                 <!-- </view>     -->
                             </label>

@@ -2,49 +2,75 @@
     <view class="modifyUser-wrapper">
         <view class="userInfo-name">
             <text class="name">姓名:</text>
-            <input @input="changeName" type="text" class="inputName" value="{{roleInfo.staffName}}" />
+            <input disabled type="text" class="inputName" value="{{roleInfo.staffName}}" />
         </view>
         <view class="userInfo-jobNumber">
             <text class="jonNumber">工牌号:</text>
-            <input @input="changeJobNUmber" type="text" class="inputJob" value="{{roleInfo.jobNumber}}" />
+            <input disabled type="text" class="inputJob" value="{{roleInfo.jobNumber}}" />
         </view>
         <view class="stores-list">
-            <view class="title">直营门店</view>
+            <view wx:if="{{loggerUserInfoRole.stores.length>0}}" class="title">增加门店管辖</view>
+            <scroll-view wx:if="{{loggerUserInfoRole.stores.length>0}}" class="scroll" style="height:250rpx" scroll-y scroll-with-animation @scroll="">
+                <radio-group @change="addShopAuthor">
+                    <repeat for="{{loggerUserInfoRole.stores}}" key="index" index="index" item="store">
+                        <label class="label-wrapper">
+                                        <radio color="#ffba00" value="{{store.storeID}}" />
+                                        <view class="store-info">
+                                            <text class="store-name">{{store.storeName}}</text>
+                                            <!-- <text class="store-handle" @tap="cancelOperation({{store.storeID}})">取消运营</text> -->
+                                        </view>
+                                    </label>
+                    </repeat>
+                </radio-group>
+            </scroll-view>
+            <view wx:if="{{loggerUserInfoRole.subStaffs.length>0}}" class="title">增加下属管辖</view>
+            <scroll-view wx:if="{{loggerUserInfoRole.subStaffs.length>0}}" class="scroll" style="height:250rpx" scroll-y scroll-with-animation @scroll="">
+                <radio-group @change="addStaffAuthor">
+                    <repeat for="{{loggerUserInfoRole.subStaffs}}" key="index" index="index" item="staff">
+                        <label class="label-wrapper" wx:if="{{staff.phone}}">
+                                        <radio color="#ffba00" value="{{staff.phone}}" />
+                                        <view class="store-info">
+                                            <text class="store-name">{{staff.staffName}}</text>
+                                            <!-- <text class="store-handle" @tap="cancelOperation({{store.storeID}})">取消运营</text> -->
+                                        </view>
+                                    </label>
+                    </repeat>
+                </radio-group>
+            </scroll-view>
+            <view wx:else class="noData">暂无数据</view>
+        </view>
+        <view class="stores-list">
+            <view wx:if="{{roleInfo.stores.length>0}}" class="title">取消门店管辖</view>
             <scroll-view wx:if="{{roleInfo.stores.length>0}}" class="scroll" style="height:250rpx" scroll-y scroll-with-animation @scroll="">
-                <repeat for="{{roleInfo.stores}}" key="index" index="index" item="store">
-                    <view class="store-info">
-                        <text class="store-name">{{store.storeName}}</text>
-                        <text class="store-handle" @tap="cancelOperation({{store.storeID}})">取消运营</text>
-                    </view>
-                </repeat>
+                <radio-group @change="cancleShopAuthor">
+                    <repeat for="{{roleInfo.stores}}" key="index" index="index" item="store">
+                        <label class="label-wrapper">
+                                    <radio color="#ffba00" value="{{store.storeID}}" />
+                                    <view class="store-info">
+                                        <text class="store-name">{{store.storeName}}</text>
+                                        <!-- <text class="store-handle" @tap="cancelOperation({{store.storeID}})">取消运营</text> -->
+                                    </view>
+                                </label>
+                    </repeat>
+                </radio-group>
             </scroll-view>
-            <view wx:else class="noData">暂无数据</view>
-        </view>
-        <view class="stores-list">
-            <view class="title">可查看门店</view>
-            <scroll-view wx:if="{{roleInfo.viewstores.length>0}}" class="scroll" style="height:250rpx" scroll-y scroll-with-animation @scroll="">
-                <repeat for="{{roleInfo.viewstores}}" key="index" index="index" item="store">
-                    <view class="store-info">
-                        <text class="store-name">{{store.storeName}}</text>
-                        <text class="store-handle" @tap="cancelViewStore({{store.storeID}})">取消查看</text>
-                    </view>
-                </repeat>
-            </scroll-view>
-            <view wx:else class="noData">暂无数据</view>
-        </view>
-        <view class="stores-list">
-            <view class="title">可查看下级</view>
+            <view wx:if="{{roleInfo.viewStaffs.length>0}}" class="title">取消下属管辖</view>
             <scroll-view wx:if="{{roleInfo.viewStaffs.length>0}}" class="scroll" style="height:250rpx" scroll-y scroll-with-animation @scroll="">
-                <repeat for="{{roleInfo.viewStaffs}}" key="index" index="index" item="staff">
-                    <view class="store-info">
-                        <text class="store-name">{{staff.staffName}}</text>
-                        <text class="store-handle" @tap="cancelViewRole({{staff.roleID}})">取消查看</text>
-                    </view>
-                </repeat>
+                <radio-group @change="cancleStaffAuthor">
+                    <repeat for="{{roleInfo.viewStaffs}}" key="index" index="index" item="staff">
+                        <label wx:if="{{staff.phone}}" class="label-wrapper">
+                                        <radio color="#ffba00" value="{{staff.phone}}" />
+                                        <view class="store-info">
+                                            <text class="store-name">{{staff.staffName}}</text>
+                                            <!-- <text class="store-handle" @tap="cancelOperation({{store.storeID}})">取消运营</text> -->
+                                        </view>
+                                    </label>
+                    </repeat>
+                </radio-group>
             </scroll-view>
             <view wx:else class="noData">暂无数据</view>
         </view>
-        <button class="center-btn" style="margin-top:20rpx;" @tap="saveStaff">保存</button>
+        <button class="center-btn" style="margin-top:20rpx;" @tap="saveStaff">完成</button>
     </view>
 </template>
 <script>
@@ -55,6 +81,7 @@
             navigationBarTitleText: '修改员工岗位'
         };
         data = {
+            loggerUserInfoRole: [],
             roleInfo: null,
             name: "",
             jobNumber: "",
@@ -75,32 +102,27 @@
             ]
         };
         methods = {
-            changeName(e) {
-                this.name = e.detail.value;
-                console.log(this.name)
+            addShopAuthor(e) {
+                console.log("增加门店授权---", e.detail.value)
             },
-            changeJobNUmber(e) {
-                this.jobNumber = e.detail.value
-                console.log(this.jobNumber)
+            addStaffAuthor(e) {
+                console.log("增加店员授权---", e.detail.value)
             },
-            //保存用户资料
-            saveStaff() {
+            cancleShopAuthor(e) {
+                console.log("取消门店授权----", e.detail.value)
                 let data = {
-                    phone: this.staffPhone,
-                    name: this.name,
-                    jobNumber: this.jobNumber
+                    roleID: this.roleInfo.roleID,
+                    storeID: e.detail.value
                 }
-                let url = `${this.$parent.globalData.commonUrl}/api/saveStaff?tk=${this.$parent.globalData.tk}`
+                let url = `${this.$parent.globalData.commonUrl}/api/cancelOperation?tk=${this.$parent.globalData.tk}`
                 util.interface_post(url, data, "").then(async res => {
-                    console.log("保存个人信息------", res)
+                    console.log("取消运营------", res)
                     if (res.errCode === 0) {
-                        setTimeout(() => {
-                            wx.showToast({
-                                title: `保存成功`,
-                                icon: 'success',
-                                duration: 2000
-                            })
-                        }, 500);
+                        wx.showToast({
+                            title: `取消成功`,
+                            icon: 'success',
+                            duration: 2000
+                        })
                         this.roleInfo = await this._loadRoleByPhone(this.staffPhone)
                     } else {
                         wx.showToast({
@@ -111,6 +133,43 @@
                     }
                     this.$apply()
                 })
+            },
+            cancleStaffAuthor(e) {
+                console.log("取消店员授权----", e.detail.value)
+            },
+            //保存用户资料
+            saveStaff() {
+                wx.showToast({
+                    title: `保存成功`,
+                    icon: 'success',
+                    duration: 2000
+                })
+                // let data = {
+                //     phone: this.staffPhone,
+                //     name: this.name,
+                //     jobNumber: this.jobNumber
+                // }
+                // let url = `${this.$parent.globalData.commonUrl}/api/saveStaff?tk=${this.$parent.globalData.tk}`
+                // util.interface_post(url, data, "").then(async res => {
+                //     console.log("保存个人信息------", res)
+                //     if (res.errCode === 0) {
+                //         setTimeout(() => {
+                //             wx.showToast({
+                //                 title: `保存成功`,
+                //                 icon: 'success',
+                //                 duration: 2000
+                //             })
+                //         }, 500);
+                //         this.roleInfo = await this._loadRoleByPhone(this.staffPhone)
+                //     } else {
+                //         wx.showToast({
+                //             title: `${res.errMsg}`,
+                //             icon: 'none',
+                //             duration: 2000
+                //         })
+                //     }
+                //     this.$apply()
+                // })
             },
             //取消运营门店
             cancelOperation(storeId) {
@@ -213,10 +272,12 @@
             console.log(e.phone)
             this.staffPhone = e.phone
             this.roleInfo = await this._loadRoleByPhone(this.staffPhone)
+            this.loggerUserInfoRole = this.$parent.globalData.userRoleInfo
             this.jobNumber = this.roleInfo.jobNumber;
             this.name = this.roleInfo.staffName;
             this.$apply()
             console.log("this.roleInfo -------", this.roleInfo)
+            console.log("this.loggerUserInfoRole -------", this.loggerUserInfoRole)
         }
     }
 </script>
@@ -261,8 +322,7 @@
         }
         .stores-list {
             margin-top: 20rpx;
-            background-color: #fff;
-            height: 250rpx;
+            background-color: #fff; // height: 250rpx;
             .title {
                 font-size: 14px;
                 font-weight: 900;
@@ -273,20 +333,25 @@
                 font-size: 30rpx;
                 color: #ccc;
                 text-decoration: underline;
+                padding: 30rpx 0;
                 margin: 5% auto;
+                padding: 20rpx;
                 text-align: center;
             }
             .scroll {
                 padding: 10rpx;
                 box-sizing: border-box;
-                .store-info {
-                    margin-top: 20rpx;
+                .label-wrapper {
                     display: flex;
-                    justify-content: space-between;
-                    .store-name {}
-                    .store-handle {
-                        padding: 6rpx 8rpx;
-                        border: 1px solid #ccc;
+                    margin-top: 20rpx;
+                    .store-info {
+                        display: flex;
+                        justify-content: space-between;
+                        .store-name {}
+                        .store-handle {
+                            padding: 6rpx 8rpx;
+                            border: 1px solid #ccc;
+                        }
                     }
                 }
             }

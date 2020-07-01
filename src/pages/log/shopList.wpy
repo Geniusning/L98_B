@@ -57,26 +57,26 @@
     <!-- 授权弹框 -->
     <view class="author_modal" style="height:940rpx;margin-top:-550rpx;" wx:if="{{authorFlag}}">
       <image src="../../images/close.png" mode="scaleToFill" class="close" @tap="closeModal"></image>
-      <scroll-view class="scroll" style="height:340rpx" scroll-y scroll-with-animation @scroll="">
+      <scroll-view wx:if="{{shopList.stores.length}}" class="scroll" style="height:340rpx" scroll-y scroll-with-animation @scroll="">
         <view class="title">授权门店</view>
         <radio-group @change="checkboxShopAuthor">
           <repeat for="{{shopList.stores}}" key="index" index="index" item="item">
             <label class="checkbox" class="label_wrapper">
-                <radio color="#FFBA00" value="{{item.storeID}}"  class="checkbox"/>
-                <view class="shop author_shop">
-                  <view class="shop_left">
-                    <image src="../../images/shopListIcon.png" class="shopIcon"></image>
-                    <text class="name">{{item.storeName}}</text>
+                  <radio color="#FFBA00" value="{{item.storeID}}"  class="checkbox"/>
+                  <view class="shop author_shop">
+                    <view class="shop_left">
+                      <image src="../../images/shopListIcon.png" class="shopIcon"></image>
+                      <text class="name">{{item.storeName}}</text>
+                    </view>
+                    <view class="shop_right">
+                      <text class="author"></text>
+                    </view>
                   </view>
-                  <view class="shop_right">
-                    <text class="author"></text>
-                  </view>
-                </view>
-            </label>
+              </label>
           </repeat>
         </radio-group>
       </scroll-view>
-      <view class="btn_wrapper">
+      <view wx:if="{{shopList.stores.length}}"  class="btn_wrapper">
         <button class="left-btn" @tap="authorizedOperate">授权Ta运营</button>
         <button class="right-btn" @tap="authorizedViewStore">授权Ta查看门店</button>
       </view>
@@ -85,17 +85,17 @@
         <radio-group @change="checkboxStaffAuthor">
           <repeat for="{{shopList.subStaffs}}" key="index" index="index" item="item">
             <label wx:if="{{item.roleID != staffRoleInfo.roleID && item.staffName != ''}}" class="checkbox" class="label_wrapper">
-              <radio color="#FFBA00" value="{{item.roleID}}"  class="checkbox"/>
-              <view class="shop author_shop">
-                <view class="shop_left">
-                  <image src="../../images/staff_icon.png" class="shopIcon"></image>
-                  <text class="name">{{item.staffName}}</text>
+                <radio color="#FFBA00" value="{{item.roleID}}"  class="checkbox"/>
+                <view class="shop author_shop">
+                  <view class="shop_left">
+                    <image src="../../images/staff_icon.png" class="shopIcon"></image>
+                    <text class="name">{{item.staffName}}</text>
+                  </view>
+                  <view class="shop_right">
+                    <text class="author"></text>
+                  </view>
                 </view>
-                <view class="shop_right">
-                  <text class="author"></text>
-                </view>
-              </view>
-            </label>
+              </label>
           </repeat>
         </radio-group>
       </scroll-view>
@@ -110,17 +110,17 @@
         <radio-group @change="checkboxStaff">
           <repeat for="{{emptyStaffRoleArr}}" key="index" index="index" item="item">
             <label class="checkbox" class="label_wrapper">
-              <radio color="#FFBA00" value="{{item.phone}}"  class="checkbox"/>
-                <view class="shop author_shop">
-                  <view class="shop_left">
-                    <image src="../../images/staff_icon.png" class="shopIcon"></image>
-                    <text class="name">{{item.name}}</text>
+                <radio color="#FFBA00" value="{{item.phone}}"  class="checkbox"/>
+                  <view class="shop author_shop">
+                    <view class="shop_left">
+                      <image src="../../images/staff_icon.png" class="shopIcon"></image>
+                      <text class="name">{{item.name}}</text>
+                    </view>
+                    <view class="shop_right">
+                      <text class="author"></text>
+                    </view>
                   </view>
-                  <view class="shop_right">
-                    <text class="author"></text>
-                  </view>
-                </view>
-            </label>
+              </label>
           </repeat>
         </radio-group>
       </scroll-view>
@@ -272,6 +272,14 @@
       },
       //查看下一层员工信息资料
       goToFurther(phone) {
+        if (!phone) {
+          wx.showToast({
+            title: `请先绑定岗位`,
+            icon: 'none',
+            duration: 2000
+          })
+          return
+        }
         this.showBackBtn = true;
         let url = `${this.$parent.globalData.commonUrl}/api/loadRoleByPhone?tk=${this.$parent.globalData.tk}&phone=${phone}`
         return new Promise((resolve, reject) => {
@@ -440,10 +448,10 @@
           if (res.errCode === 0) {
             this.$parent.globalData.userRoleInfo = res.info
             this.shopList = res.info
-            this.shopList.stores.forEach(shop=>{
+            this.shopList.stores.forEach(shop => {
               shop["checked"] = false
             })
-            this.shopList.subStaffs.forEach(staff=>{
+            this.shopList.subStaffs.forEach(staff => {
               staff["checked"] = false
             })
             resolve(this.shopList)
@@ -520,7 +528,7 @@
       }
     }
     .addStaff {
-      position: absolute;
+      position: fixed;
       width: 76rpx;
       height: 76rpx;
       text-align: center;
@@ -533,7 +541,7 @@
       border-radius: 50%;
     }
     .goBack {
-      position: absolute;
+      position: fixed;
       width: 76rpx;
       height: 76rpx;
       text-align: center;
@@ -585,37 +593,37 @@
         .checkbox {
           margin: 36rpx 0 36rpx 20rpx;
         }
-        .position_wrapper {
-          display: flex;
-          flex-direction: column;
-          justify-content: space-around;
-          flex: 1;
-          .pos_top {
-            display: flex;
-            .poi_name,
-            .poi_parent {
-              font-size: 14px;
-              color: #333;
-              text {
-                font-weight: 900;
-              }
-            }
-            .poi_parent {
-              margin-left: 40rpx;
-            }
-          }
-          .pos_bot {
-            justify-content: space-between;
-            justify-content: flex-start;
-            .pos_duty {
-              font-size: 14px;
-              color: #333;
-              text {
-                font-weight: 900;
-              }
-            }
-          }
-        }
+        // .position_wrapper {
+        //   display: flex;
+        //   flex-direction: column;
+        //   justify-content: space-around;
+        //   flex: 1;
+        //   .pos_top {
+        //     display: flex;
+        //     .poi_name,
+        //     .poi_parent {
+        //       font-size: 14px;
+        //       color: #333;
+        //       text {
+        //         font-weight: 900;
+        //       }
+        //     }
+        //     .poi_parent {
+        //       margin-left: 40rpx;
+        //     }
+        //   }
+        //   .pos_bot {
+        //     justify-content: space-between;
+        //     justify-content: flex-start;
+        //     .pos_duty {
+        //       font-size: 14px;
+        //       color: #333;
+        //       text {
+        //         font-weight: 900;
+        //       }
+        //     }
+        //   }
+        // }
       }
       .btn_wrapper {
         margin-top: 10rpx;
