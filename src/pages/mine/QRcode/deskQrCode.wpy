@@ -164,9 +164,19 @@
               room["imagesURL"] = room.friendImagesURL
             } else if (type === "game") {
               room["imagesURL"] = room.gameImagesURL
-             
+
             }
           })
+        }
+        this.$apply();
+      })
+    }
+    _loadStaffQRcode(){
+       let url = `${this.$parent.globalData.commonUrl}/api/loadStaffQRcodeForStore?tk=${this.$parent.globalData.tk}&targetPhone=15014063033`;
+      util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
+        console.log("员工二维码-------", res);
+        if (res.errCode === 0) {
+
         }
         this.$apply();
       })
@@ -174,6 +184,7 @@
     events = {};
     onLoad(e) {
       console.log("type------", e.type)
+      this._loadStaffQRcode()
       this._loadRoomList(e.type);
       switch (e.type) {
         case "focusOn":

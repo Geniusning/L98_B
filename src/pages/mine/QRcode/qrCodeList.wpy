@@ -9,6 +9,9 @@
         <navigator url='/pages/mine/QRcode/deskQrCode?type=game' hover-class="none" class='qrCodeBtn'>
             游戏桌贴二维码<text style="font-size:11px">(适用开通无噪音骰子，喝酒场景)</text>
         </navigator>
+        <navigator url='/pages/mine/QRcode/deskQrCode?type=staff' hover-class="none" class='qrCodeBtn'>
+            员工工号二维码<text style="font-size:11px"></text>
+        </navigator>
         <navigator url='/pages/mine/QRcode/checkQrCode' hover-class="none" class='qrCodeBtn'>
             核销二维码<text style="font-size:11px">(适用收银台快捷核销)</text>
         </navigator>

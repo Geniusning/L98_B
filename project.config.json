@@ -18,9 +18,9 @@
 			"disablePlugins": [],
 			"outputPath": ""
 		},
-		"useCompilerModule": true,
-		"userConfirmedUseCompilerModuleSwitch": false,
-		"useIsolateContext": true
+		"useIsolateContext": true,
+		"useCompilerModule": false,
+		"userConfirmedUseCompilerModuleSwitch": false
 	},
 	"compileType": "miniprogram",
 	"appid": "wx7179fe2f4f9fab26",

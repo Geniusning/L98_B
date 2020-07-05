@@ -1,13 +1,13 @@
 {
-    "editor.fontSize": 15,
-    // vetur 配置
-    "vetur.validation.template": false,
-    // 使用 VSCode 自带程序格式化 JS 文件
-    "vetur.format.defaultFormatter.js": "vscode-typescript",
-    // 使用 js-beautify-html 格式 HTML 模板
-    "vetur.format.defaultFormatter.html": "js-beautify-html",
-    "vetur.format.scriptInitialIndent": true,
-    "vetur.format.styleInitialIndent": true,
-    "editor.tabSize": 1,
-    "vetur.format.options.tabSize": 1,
+  "editor.fontSize": 15,
+  // vetur 配置
+  "vetur.validation.template": false,
+  // 使用 VSCode 自带程序格式化 JS 文件
+  "vetur.format.defaultFormatter.js": "vscode-typescript",
+  // 使用 js-beautify-html 格式 HTML 模板
+  // "vetur.format.defaultFormatter.html": "js-beautify-html",
+  "vetur.format.scriptInitialIndent": true,
+  "vetur.format.styleInitialIndent": true,
+  "editor.tabSize": 1,
+  "vetur.format.options.tabSize": 1,
 }

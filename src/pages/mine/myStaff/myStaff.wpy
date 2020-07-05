@@ -1,566 +1,748 @@
 <template>
-	<view class="myStall_wrapper">
-		<view class="add_staff_content">
-			<!-- <view class="add_staff_title">新增帐号</view> -->
-			<view class="add_staff_info">
-				<text class="info_desc">姓名:</text>
-				<input @input="getName" maxlength="4" placeholder="请输入下属姓名" class="inputArea" />
-			</view>
-			<view class="add_staff_info">
-				<text class="info_desc">手机号:</text>
-				<input type="number" @input="getPhoneNumr" placeholder="请输入手机号码" class="inputArea" />
-			</view>
-			<view class="add_staff_info">
-				<text class="info_desc">工牌号:</text>
-				<input type="number" maxlength="4" @input="getJobNum" placeholder="输入工牌号" class="inputArea" />
-			</view>
-			<view class="add_staff_info">
-				<text class="info_desc">密码:</text>
-				<input type="number" disabled placeholder="默认手机号码后六位，不用输入" class="inputArea" />
-			</view>
-			<view wx:if="{{userRoleInfo.role =='k98_operation_front'}}" style="font-size:14px;">请选择员工所属门店:</view>
-			<view class="add_staff_info" wx:if="{{userRoleInfo.role =='k98_operation_front'}}">
-				<scroll-view class="scroll" style="height:250rpx" scroll-y scroll-with-animation @scroll="">
-					<radio-group @change="checkboxShop">
-						<repeat for="{{userRoleInfo.stores}}" key="index" index="index" item="item">
-							<label class="checkbox" class="label_wrapper">
-											<radio color="#FFBA00" value="{{item.storeID}}"  class="checkbox"/>
-											<view class="shop author_shop">
-											<view class="shop_left">
-												<image src="../../../images/shopListIcon.png" class="shopIcon"></image>
-												<text class="name">{{item.storeName}}</text>
-											</view>
-											</view>
-										</label>
-						</repeat>
-					</radio-group>
-				</scroll-view>
-			</view>
-			<!-- wx:if="{{userRoleInfo.role !='k98_operation_front'}}" -->
-			<view class="setting_item" style="display:flex" >
-				<button type="default" @tap="switchPosOld">绑定旧岗位</button>
-				<button type="default" @tap="switchPosNew">创建新岗位</button>
-			</view>
-			<view class="add_staff_info" wx:if="{{!isCreatePos}}">
-				<scroll-view class="scrollpoi" style="height:400rpx;background:#ccc;" scroll-y scroll-with-animation @scroll="">
-					<radio-group wx:if="{{emptyStaffRoleArr.length}}" @change="checkboxPos">
-						<repeat for="{{emptyStaffRoleArr}}" key="index" index="index" item="item">
-							<label class="checkbox" class="label_wrapper">
-												<radio color="#FFBA00" value="{{item.roleID}}"  class="checkbox"/>
-												<view class="position_wrapper">
-													<view class="pos_top">
-														<view class="poi_name"><text>岗位名称：</text>{{item.znRole}}</view>
-														<view class="poi_parent"><text>上级：</text>{{item.parent.staffName}}</view>
-													</view>
-													<view class="pos_bot">
-														<view class="pos_duty"><text>岗位权限：</text>{{item.permission===1?"可查看可编辑":"仅查看"}}</view>
-													</view>
-													<view class="storeList" wx:if="{{item.stores.length}}">
-														<text class="title">运营门店列表：</text>
-														<repeat for="{{item.stores}}" key="storeIndex" index="storeIndex" item="store">
-																<text class="storeName">{{store.storeName+"  "}}</text>
-														</repeat>
-													</view>
-												</view>
-										</label>
-						</repeat>
-					</radio-group>
-					<view wx:else class="noStaffRole">暂无空岗位，请选择创建</view>
-				</scroll-view>
-			</view>
-			<view class="add_staff_info newPos-wrapper" wx:if="{{isCreatePos}}">
-				<view style="display:flex">
-					<text class="info_desc">岗位名称:</text>
-					<picker @change="bindRoleChange" value="{{roleIndex}}" range="{{arrayRole}}" range-key="name">
-						<view style="background:#ccc;color:#808080;padding-top:4rpx">
-							{{arrayRole[roleIndex].name}}
-						</view>
-					</picker>
-				</view>
-				<scroll-view wx:if="{{userRoleInfo.stores.length}}" class="scroll" style="height:340rpx" scroll-y scroll-with-animation @scroll="">
-					<view class="title">授权门店</view>
-					<checkbox-group @change="checkboxShopAuthor">
-						<repeat for="{{userRoleInfo.stores}}" key="index" index="index" item="item">
-							<label class="checkbox" class="label_wrapper">
-											<checkbox  color="#FFBA00" value="{{item.storeID}}"  class="checkbox"/>
-											<view class="shop">
-													<view class="shop_left">
-															<image src="../../../images/shopListIcon.png" class="shopIcon"></image>
-															<text class="name">{{item.storeName}}</text>
-													</view>
-											</view>
-							</label>
-						</repeat>
-					</checkbox-group>
-				</scroll-view>
-				<scroll-view wx:if="{{userRoleInfo.subStaffs.length}}" class="scroll" style="height:340rpx" scroll-y scroll-with-animation @scroll="">
-					<view class="title">授权下属</view>
-					<checkbox-group @change="checkboxShopAuthor">
-						<repeat for="{{userRoleInfo.subStaffs}}" key="index" index="index" item="item">
-							<label wx:if="{{item.phone}}" class="checkbox" class="label_wrapper">
-											<checkbox  color="#FFBA00" value="{{item.phone}}"  class="checkbox"/>
-											<view class="shop">
-													<view class="shop_left">
-															<image src="../../../images/shopListIcon.png" class="shopIcon"></image>
-															<text class="name">{{item.staffName}}</text>
-													</view>
-											</view>
-							</label>
-						</repeat>
-					</checkbox-group>
-				</scroll-view>
-			</view>
-			<button class="addBtn" @tap="addStaff">新增</button>
-		</view>
-	</view>
+  <view class="myStall_wrapper">
+    <view class="add_staff_content">
+      <!-- <view class="add_staff_title">新增帐号</view> -->
+      <view class="add_staff_info">
+        <text class="info_desc">姓名:</text>
+        <input
+          @input="getName"
+          maxlength="4"
+          placeholder="请输入下属姓名"
+          class="inputArea"
+        />
+      </view>
+      <view class="add_staff_info">
+        <text class="info_desc">手机号:</text>
+        <input
+          type="number"
+          @input="getPhoneNumr"
+          placeholder="请输入手机号码"
+          class="inputArea"
+        />
+      </view>
+      <view class="add_staff_info">
+        <text class="info_desc">工牌号:</text>
+        <input
+          type="number"
+          maxlength="4"
+          @input="getJobNum"
+          placeholder="输入工牌号"
+          class="inputArea"
+        />
+      </view>
+      <view class="add_staff_info">
+        <text class="info_desc">密码:</text>
+        <input
+          type="number"
+          disabled
+          placeholder="默认手机号码后六位，不用输入"
+          class="inputArea"
+        />
+      </view>
+      <!-- <view wx:if="{{loggerUserRoleInfo.role =='k98_operation_front'}}" style="font-size:14px;">请选择员工所属门店:</view>
+      <view class="add_staff_info" wx:if="{{loggerUserRoleInfo.role =='k98_operation_front'}}">
+        <scroll-view class="scroll" style="height:250rpx" scroll-y scroll-with-animation @scroll="">
+          <radio-group @change="checkboxShop">
+            <repeat for="{{unassignedStoreList}}" key="index" index="index" item="item">
+              <label class="checkbox" class="label_wrapper">
+                  <radio
+                    color="#FFBA00"
+                    value="{{item.storeID}}"
+                    class="checkbox"
+                  />
+                  <view class="shop author_shop">
+                    <view class="shop_left">
+                      <image
+                        src="../../../images/shopListIcon.png"
+                        class="shopIcon"
+                      ></image>
+                      <text class="name">{{item.storeName}}</text>
+                    </view>
+                  </view>
+                </label>
+            </repeat>
+          </radio-group>
+        </scroll-view>
+      </view> -->
+      <!-- wx:if="{{loggerUserRoleInfo.role !='k98_operation_front'}}" -->
+      <view
+        class="setting_item"
+        style="display:flex"
+      >
+        <button
+          type="default"
+          @tap="switchPosOld"
+        >绑定旧岗位</button>
+        <button
+          type="default"
+          @tap="switchPosNew"
+        >创建新岗位</button>
+      </view>
+      <view
+        class="add_staff_info"
+        wx:if="{{!isCreatePos}}"
+      >
+        <scroll-view
+          class="scrollpoi"
+          style="height:400rpx;background:#ccc;"
+          scroll-y
+          scroll-with-animation
+          @scroll=""
+        >
+          <radio-group
+            wx:if="{{emptyStaffRoleArr.length}}"
+            @change="checkboxPos"
+          >
+            <repeat
+              for="{{emptyStaffRoleArr}}"
+              key="index"
+              index="index"
+              item="item"
+            >
+              <label
+                class="checkbox"
+                class="label_wrapper"
+              >
+                <radio
+                  color="#FFBA00"
+                  value="{{item.roleID}}"
+                  class="checkbox"
+                />
+                <view class="position_wrapper">
+                  <view class="pos_top">
+                    <view class="poi_name"><text>岗位名称：</text>{{item.znRole}}</view>
+                    <view class="poi_parent"><text>上级：</text>{{item.parent.staffName}}</view>
+                  </view>
+                  <view class="pos_bot">
+                    <view class="pos_duty"><text>岗位权限：</text>{{item.permission===1?"可查看可编辑":"仅查看"}}</view>
+                  </view>
+                  <view
+                    class="storeList"
+                    wx:if="{{item.stores.length}}"
+                  >
+                    <text class="title">运营门店列表：</text>
+                    <repeat
+                      for="{{item.stores}}"
+                      key="storeIndex"
+                      index="storeIndex"
+                      item="store"
+                    >
+                      <text class="storeName">{{store.storeName+" "}}</text>
+                    </repeat>
+                  </view>
+                </view>
+              </label>
+            </repeat>
+          </radio-group>
+          <view
+            wx:else
+            class="noStaffRole"
+          >暂无空岗位，请选择创建</view>
+        </scroll-view>
+      </view>
+      <view
+        class="add_staff_info newPos-wrapper"
+        wx:if="{{isCreatePos}}"
+      >
+        <view style="display:flex">
+          <text class="info_desc">岗位名称:</text>
+          <picker
+            @change="bindRoleChange"
+            value="{{roleIndex}}"
+            range="{{arrayRole}}"
+            range-key="name"
+          >
+            <view style="background:#ccc;color:#808080;padding-top:4rpx">
+              {{arrayRole[roleIndex].name}}
+            </view>
+          </picker>
+        </view>
+        <scroll-view
+          wx:if="{{unassignedStoreList.length}}"
+          class="scroll"
+          style="height:340rpx"
+          scroll-y
+          scroll-with-animation
+          @scroll=""
+        >
+          <view class="title">授权门店</view>
+          <checkbox-group
+            wx:if="{{loggerUserRoleInfo.role !='k98_operation_front'}}"
+            @change="checkboxShopAuthor"
+          >
+            <repeat
+              for="{{unassignedStoreList}}"
+              key="index"
+              index="index"
+              item="store"
+            >
+              <label
+                class="checkbox"
+                class="label_wrapper"
+              >
+                <checkbox
+                  color="#FFBA00"
+                  value="{{store.storeID}}"
+                  class="checkbox"
+                />
+                <view class="shop">
+                  <view class="shop_left">
+                    <image
+                      src="../../../images/shopListIcon.png"
+                      class="shopIcon"
+                    ></image>
+                    <text class="name">{{store.storeName}}</text>
+                  </view>
+                </view>
+              </label>
+            </repeat>
+          </checkbox-group>
+          <radio-group
+            wx:else
+            @change="checkboxShopAuthor"
+          >
+            <repeat
+              for="{{unassignedStoreList}}"
+              key="index"
+              index="index"
+              item="store"
+            >
+              <label
+                class="checkbox"
+                class="label_wrapper"
+              >
+                <radio
+                  color="#FFBA00"
+                  value="{{store.storeID}}"
+                  class="checkbox"
+                />
+                <view class="shop">
+                  <view class="shop_left">
+                    <image
+                      src="../../../images/shopListIcon.png"
+                      class="shopIcon"
+                    ></image>
+                    <text class="name">{{store.storeName}}</text>
+                  </view>
+                </view>
+              </label>
+            </repeat>
+          </radio-group>
+        </scroll-view>
+        <scroll-view
+          wx:if="{{loggerUserRoleInfo.subStaffs.length}}"
+          class="scroll"
+          style="height:340rpx"
+          scroll-y
+          scroll-with-animation
+          @scroll=""
+        >
+          <view class="title">授权下属</view>
+          <checkbox-group @change="checkboxStaffAuthor">
+            <repeat
+              for="{{loggerUserRoleInfo.subStaffs}}"
+              key="index"
+              index="index"
+              item="item"
+            >
+              <label
+                wx:if="{{item.phone}}"
+                class="checkbox"
+                class="label_wrapper"
+              >
+                <checkbox
+                  color="#FFBA00"
+                  value="{{item.roleID}}"
+                  class="checkbox"
+                />
+                <view class="shop">
+                  <view class="shop_left">
+                    <image
+                      src="../../../images/shopListIcon.png"
+                      class="shopIcon"
+                    ></image>
+                    <text class="name">{{item.staffName}}</text>
+                  </view>
+                </view>
+              </label>
+            </repeat>
+          </checkbox-group>
+        </scroll-view>
+      </view>
+      <button
+        class="addBtn"
+        @tap="addStaff"
+      >新增</button>
+    </view>
+  </view>
 </template>
 
 <script>
-	import wepy from 'wepy';
-	import util from '../../../utils/utils.js'
-	export default class myStaff extends wepy.page {
-		config = {
-			navigationBarTitleText: '新增帐号'
-		};
-		data = {
-			userRoleInfo: {},
-			emptyStaffRoleArr: [],
-			stores: [{
-					name: "1号门店",
-					id: 111
-				},
-				{
-					name: "2号门店",
-					id: 111
-				}
-			],
-			arrayRole: [{
-				name: "运营后台",
-				id: "k98_operation_behind"
-			}],
-			isCreatePos: true,
-			roleIndex: 0,
-			phone: "",
-			password: "",
-			roleId: "",
-			winHeight: "",
-			phone: "",
-			name: "",
-			JobNumber: "",
-			roleInfo: {
-				id: "",
-				role: "",
-				permission: 1,
-				staffPhone: "",
-				parentRoleID: "",
-				belongStore: ""
-			},
-			belongStoreId: ""
-		};
-		onUnload() {};
-		methods = {
-			//授权门店
-			checkboxShopAuthor(e){
-				console.log("授权门店---,",e.detail.value)
-			},
-			switchPosOld() {
-				this.isCreatePos = false
-			},
-			switchPosNew() {
-				this.isCreatePos = true
-			},
-			//为店员选择所属门店
-			checkboxShop(e) {
-				this.belongStoreId = e.detail.value
-				this.roleInfo.belongStore = this.belongStoreId
-				this.roleInfo.permission = 2
-				console.log("this.belongStoreId-------", this.belongStoreId)
-			},
-			//控制是否创建职位的开关
-			changePosition(e) {
-				this.isCreatePos = e.detail.value
-				console.log("this.isCreatePos------", this.isCreatePos)
-				if (!this.emptyStaffRoleArr.length) {
-					return
-				}
-				if (!this.isCreatePos) {
-					wx.showToast({
-						title: '请勾选岗位',
-						icon: "none",
-						duration: 2000
-					})
-				}
-			},
-			//职位选择
-			bindRoleChange(e) {
-				this.roleIndex = e.detail.value;
-				this.roleInfo.role = this.arrayRole[Number(e.detail.value)].id;
-				this.roleInfo.parentRoleID = this.$parent.globalData.userRoleInfo.roleID
-				console.log("this.roleInfo-------", this.roleInfo)
-			},
-			getPhoneNumr(e) {
-				this.phone = e.detail.value;
-				this.roleInfo.staffPhone = e.detail.value
-			},
-			getJobNum(e) {
-				this.JobNumber = e.detail.value
-			},
-			getName(e) {
-				this.name = e.detail.value
-			},
-			checkboxPos(e) {
-				this.roleId = e.detail.value
-				console.log("岗位id----", this.roleId)
-			},
-			addStaff() {
-				this.password = this.phone.slice(5, 11);
-				let url = `${this.$parent.globalData.commonUrl}/api/addStaff?tk=${this.$parent.globalData.tk}`;
-				var params = {
-					name: this.name || "临时工",
-					nick: "",
-					jobNumber: this.JobNumber,
-					phone: this.phone,
-					password: this.password,
-					roleID: this.roleId,
-					headImgUrl: "",
-					roleInfo: this.roleId ? null : this.roleInfo
-				};
-				if (this.userRoleInfo.role === "k98_operation_front" && !this.belongStoreId) {
-					wx.showToast({
-						title: '帐号需选择所属门店',
-						icon: "none",
-						duration: 3000
-					})
-					return
-				}
-				if (this.phone.length != 11) {
-					wx.showToast({
-						title: '手机号格式错误',
-						icon: "none",
-						duration: 2000
-					})
-					return
-				}
-				console.log(params)
-				util.interface_post(url, params, this.$parent.globalData.StoreId).then(res => {
-					if (res.errCode == 0) {
-						wx.showToast({
-							title: '新增成功',
-							icon: 'success',
-							duration: 2000
-						})
-						// this._loadAllStaff();
-					} else if (res.errCode == 1091) {
-						wx.showToast({
-							title: '工号已存在',
-							icon: 'none',
-							duration: 2000
-						})
-					} else if (res.errCode == 1092) {
-						wx.showToast({
-							title: '手机号已存在',
-							icon: 'none',
-							duration: 2000
-						})
-					} else {
-						wx.showToast({
-							title: `${res.errMsg}`,
-							icon: 'none',
-							duration: 2000
-						})
-					}
-					this.roleId = ""
-				})
-				this.$apply()
-			},
-		};
-		_handleArrayRole(role) {
-			if (role == "k98_operation_manager") {
-				return [{
-					name: "运营后台",
-					id: "k98_operation_behind"
-				}]
-			} else if (role == "k98_operation_behind") {
-				return [{
-					name: "本部员工",
-					id: "k98_center_staff"
-				}, {
-					name: "运营中台",
-					id: "k98_operation_middle"
-				}]
-			} else if (role == "k98_operation_middle") {
-				return [{
-					name: "运营前台",
-					id: "k98_operation_front"
-				}]
-			} else if (role == "k98_operation_front") {
-				return [{
-					name: "店长",
-					id: "k98_store_manager"
-				}, {
-					name: "店员",
-					id: "k98_store_staff"
-				}]
-			} else {
-				return [{
-					name: "运营后台",
-					id: "k98_operation_behind"
-				}]
-			}
-		};
-		_handlerRoleName(role) {
-			var znRole = "测试岗"
-			switch (role) {
-				case "k98_operation_behind":
-					znRole = "运营后台"
-					break;
-				case "k98_center_staff":
-					znRole = "总部员工"
-					break;
-				case "k98_operation_middle":
-					znRole = "运营中台"
-					break;
-				case "k98_operation_front":
-					znRole = "运营前台"
-					break;
-				default:
-					break;
-			}
-			return znRole
-		}
-		//加载空员工的职位
-		_loadEmptyStaffRole() {
-			let url = `${this.$parent.globalData.commonUrl}/api/loadEmptyStaffRole?tk=${this.$parent.globalData.tk}`
-			util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
-				if (res.errCode === 0) {
-					console.log("空职位的岗位列表---------", res)
-					this.emptyStaffRoleArr = res.info
-					this.emptyStaffRoleArr.forEach(roleInfo => {
-						roleInfo["znRole"] = this._handlerRoleName(roleInfo.role)
-					})
-				} else {
-					wx.showToast({
-						title: `${res.errMsg}`,
-						duration: 2000,
-						icon: "none"
-					})
-				}
-				this.$apply()
-			})
-		}
-		events = {};
-		onLoad() {
-			this.arrayRole = this._handleArrayRole(this.$parent.globalData.userRoleInfo.role)
-			this.role = this.arrayRole[0].id
-			this.roleInfo.role = this.role
-			this.roleInfo.parentRoleID = this.$parent.globalData.userRoleInfo.roleID
-			this.userRoleInfo = this.$parent.globalData.userRoleInfo
-			console.log("this.roleInfo-------", this.roleInfo)
-			this.winHeight = util.getScrollHeight(730);
-			this._loadEmptyStaffRole()
-		}
-		// Other properties
-	}
+  import wepy from 'wepy';
+  import util from '../../../utils/utils.js'
+  export default class myStaff extends wepy.page {
+    config = {
+      navigationBarTitleText: '新增帐号'
+    };
+    data = {
+      loggerUserRoleInfo: {},
+      emptyStaffRoleArr: [],
+      stores: [{
+        name: "1号门店",
+        id: 111
+      },
+      {
+        name: "2号门店",
+        id: 111
+      }
+      ],
+      arrayRole: [{
+        name: "运营后台",
+        id: "k98_operation_behind"
+      }],
+      isCreatePos: true,
+      roleIndex: 0,
+      phone: "",
+      password: "",
+      roleId: "",
+      winHeight: "",
+      phone: "",
+      name: "",
+      JobNumber: "",
+      newRoleInfo: {
+        roleID: "",
+        role: "",
+        permission: 1, //1 运营 ，2 只查看
+        staffPhone: "",
+        manageRoleIDs: [],
+        manageStoreIDs: [],
+        belongStore: ""
+      },
+      // belongStoreId: "",
+      unassignedStoreList: []
+    };
+    onUnload() { };
+    methods = {
+      //授权下属
+      checkboxStaffAuthor(e) {
+        console.log("授权下属---,", e.detail.value)
+        this.newRoleInfo.manageRoleIDs = e.detail.value
+      },
+      //授权门店
+      checkboxShopAuthor(e) {
+        console.log("授权门店---,", e.detail.value)
+        this.newRoleInfo.manageStoreIDs = e.detail.value
+      },
+      switchPosOld() {
+        this.isCreatePos = false
+      },
+      switchPosNew() {
+        this.isCreatePos = true
+      },
+      //为店员选择所属门店
+      // checkboxShop(e) {
+      //   this.belongStoreId = e.detail.value
+      //   this.newRoleInfo.belongStore = this.belongStoreId
+      //   this.newRoleInfo.permission = 2
+      //   console.log("this.belongStoreId-------", this.belongStoreId)
+      // },
+      //控制是否创建职位的开关
+      changePosition(e) {
+        this.isCreatePos = e.detail.value
+        console.log("this.isCreatePos------", this.isCreatePos)
+        if (!this.emptyStaffRoleArr.length) {
+          return
+        }
+        if (!this.isCreatePos) {
+          wx.showToast({
+            title: '请勾选岗位',
+            icon: "none",
+            duration: 2000
+          })
+        }
+      },
+      //职位选择
+      bindRoleChange(e) {
+        this.roleIndex = e.detail.value;
+        this.newRoleInfo.role = this.arrayRole[Number(e.detail.value)].id;
+        console.log("this.newRoleInfo-------", this.newRoleInfo)
+      },
+      getPhoneNumr(e) {
+        this.phone = e.detail.value;
+        this.newRoleInfo.staffPhone = e.detail.value
+      },
+      getJobNum(e) {
+        this.JobNumber = e.detail.value
+      },
+      getName(e) {
+        this.name = e.detail.value
+      },
+      checkboxPos(e) {
+        this.newRoleInfo.roleID = e.detail.value
+        console.log("旧岗位id----", this.newRoleInfo)
+      },
+      addStaff() {
+        this.password = this.phone.slice(5, 11);
+        let url = `${this.$parent.globalData.commonUrl}/api/addStaff?tk=${this.$parent.globalData.tk}`;
+        var params = {
+          name: this.name || "临时工",
+          nick: "",
+          jobNumber: this.JobNumber,
+          phone: this.phone,
+          password: this.password,
+          headImgUrl: "",
+          roleInfo: this.newRoleInfo
+        };
+        if (this.phone.length != 11) {
+          wx.showToast({
+            title: '手机号格式错误',
+            icon: "none",
+            duration: 2000
+          })
+          return
+        }
+        console.log(params)
+        util.interface_post(url, params, this.$parent.globalData.StoreId).then(res => {
+          if (res.errCode == 0) {
+            wx.showToast({
+              title: '新增成功',
+              icon: 'success',
+              duration: 2000
+            })
+            // this._loadAllStaff();
+          } else if (res.errCode == 1091) {
+            wx.showToast({
+              title: '工号已存在',
+              icon: 'none',
+              duration: 2000
+            })
+          } else if (res.errCode == 1092) {
+            wx.showToast({
+              title: '手机号已存在',
+              icon: 'none',
+              duration: 2000
+            })
+          } else {
+            wx.showToast({
+              title: `${res.errMsg}`,
+              icon: 'none',
+              duration: 2000
+            })
+          }
+        })
+        this.$apply()
+      },
+    };
+    _handleArrayRole(role) {
+      if (role == "k98_operation_manager") {
+        return [{
+          name: "运营后台",
+          id: "k98_operation_behind"
+        }]
+      } else if (role == "k98_operation_behind") {
+        return [{
+          name: "本部员工",
+          id: "k98_center_staff"
+        }, {
+          name: "运营中台",
+          id: "k98_operation_middle"
+        }]
+      } else if (role == "k98_operation_middle") {
+        return [{
+          name: "运营前台",
+          id: "k98_operation_front"
+        }]
+      } else if (role == "k98_operation_front") {
+        return [{
+          name: "店长",
+          id: "k98_store_manager"
+        }, {
+          name: "店员",
+          id: "k98_store_staff"
+        }]
+      } else {
+        return [{
+          name: "运营后台",
+          id: "k98_operation_behind"
+        }]
+      }
+    };
+    _handlerRoleName(role) {
+      var znRole = "测试岗"
+      switch (role) {
+        case "k98_operation_behind":
+          znRole = "运营后台"
+          break;
+        case "k98_center_staff":
+          znRole = "总部员工"
+          break;
+        case "k98_operation_middle":
+          znRole = "运营中台"
+          break;
+        case "k98_operation_front":
+          znRole = "运营前台"
+          break;
+        default:
+          break;
+      }
+      return znRole
+    }
+    //加载空员工的岗位
+    _loadEmptyStaffRole() {
+      let url = `${this.$parent.globalData.commonUrl}/api/loadEmptyStaffRole?tk=${this.$parent.globalData.tk}`
+      util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
+        if (res.errCode === 0) {
+          console.log("空职位的岗位列表---------", res)
+          this.emptyStaffRoleArr = res.info
+          this.emptyStaffRoleArr.forEach(roleInfo => {
+            roleInfo["znRole"] = this._handlerRoleName(roleInfo.role)
+          })
+        } else {
+          wx.showToast({
+            title: `${res.errMsg}`,
+            duration: 2000,
+            icon: "none"
+          })
+        }
+        this.$apply()
+      })
+    }
+    //加载当前登录账号的职位的未分配下属员工管理的门店
+    _loadUnassignedStore() {
+      let url = `${this.$parent.globalData.commonUrl}/api/loadUnassignedStore?tk=${this.$parent.globalData.tk}`
+      util.interface_get(url, "").then(res => {
+        if (res.errCode === 0) {
+          this.unassignedStoreList = res.info
+        } else {
+          wx.showToast({
+            title: `${res.errMsg}`,
+            duration: 2000,
+            icon: "none"
+          })
+        }
+        this.$apply()
+        console.log("未分配下属员工管理的门店", res)
+      })
+    }
+    events = {};
+    onLoad() {
+      this.arrayRole = this._handleArrayRole(this.$parent.globalData.userRoleInfo.role)
+      // this.role = this.arrayRole[0].id
+      this.newRoleInfo.role = this.arrayRole[0].id
+      this.loggerUserRoleInfo = this.$parent.globalData.userRoleInfo
+      if (this.loggerUserRoleInfo.role === "k98_operation_front") { //如果是运营前台新增账号，自动为员工添加所属门店
+        this.newRoleInfo.belongStore = this.loggerUserRoleInfo.stores[0].storeID
+      }
+      this.winHeight = util.getScrollHeight(730);
+      this._loadEmptyStaffRole()
+      this._loadUnassignedStore()
+    }
+    // Other properties
+  }
 </script>
 
 <style lang="less">
-	.myStall_wrapper {
-		background: #f1f1f1;
-		padding: 10rpx 8rpx;
-		height: 100%;
-		box-sizing: border-box;
-		.add_staff_content {
-			margin-bottom: 30rpx;
-			background-color: #fff;
-			padding: 10rpx 10rpx;
-			.add_staff_info {
-				padding: 10rpx 0;
-				display: flex;
-				.info_desc {
-					box-sizing: border-box;
-					display: inline-block;
-					width: 124rpx;
-					margin-right: 20rpx;
-					text-align: left;
-				}
-				.mypicker {
-					padding-top: 4rpx;
-				}
-				.inputArea {
-					border-bottom: 1rpx solid #f1f1f1;
-					flex: 1;
-				}
-				.position_list {
-					height: 400rpx;
-				}
-				.scrollpoi {
-					height: 430rpx;
-					margin: 0 auto;
-					.title {
-						font-size: 14px;
-						color: #333;
-						margin-left: 6rpx;
-						margin-top: 8rpx;
-						font-weight: 900;
-					}
-					.label_wrapper {
-						display: flex;
-						height: 120rpx;
-						background-color: #fff;
-						margin: 6rpx;
-						.checkbox {
-							margin: 36rpx 0 36rpx 20rpx;
-						}
-						.position_wrapper {
-							display: flex;
-							flex-direction: column;
-							justify-content: space-around;
-							flex: 1;
-							.pos_top {
-								display: flex;
-								.poi_name,
-								.poi_parent {
-									font-size: 14px;
-									color: #333;
-									text {
-										font-weight: 900;
-									}
-								}
-								.poi_parent {
-									margin-left: 40rpx;
-								}
-							}
-							.pos_bot {
-								justify-content: space-between;
-								justify-content: flex-start;
-								.pos_duty {
-									font-size: 14px;
-									color: #333;
-									text {
-										font-weight: 900;
-									}
-								}
-							}
-						}
-					}
-				}
-				.scroll {
-					height: 430rpx;
-					background-color: #ffba00;
-					.label_wrapper {
-						display: flex;
-						padding: 8rpx 0;
-						background-color: #fff;
-						margin: 6rpx;
-						border: 1px solid #ccc;
-						.checkbox {
-							margin-top: 36rpx;
-							margin-left: 8rpx;
-						}
-						.shop {
-							margin-top: 0;
-							padding: 20rpx 30rpx;
-							background-color: #fff;
-							font-size: 16px;
-							display: flex;
-							justify-content: flex-start;
-							.shop_left {
-								display: flex;
-								.shopIcon {
-									width: 50rpx;
-									height: 50rpx;
-									margin-top: 14rpx;
-								}
-								.name {
-									line-height: 80rpx;
-									margin-left: 10rpx;
-								}
-							}
-							.shop_right {
-								font-size: 12px;
-								.author,
-								.tag {
-									line-height: 80rpx;
-									margin-left: 10rpx;
-									padding: 10rpx 10rpx;
-									color: red;
-									text-decoration: underline;
-								}
-								.tag {
-									text-decoration: none;
-								}
-							}
-						}
-					}
-				}
-				.noStaffRole {
-					text-align: center;
-					color: #fff;
-					font-size: 16px;
-					margin-top: 200rpx;
-				}
-			}
-			.newPos-wrapper {
-				display: flex;
-				flex-direction: column;
-				.scroll {
-					margin-top: 10rpx;
-					.title {}
-					.label_wrapper {
-						display: flex;
-						.checkbox {}
-						.shop {
-							display: flex;
-							justify-content: flex-start;
-							.shop_left {
-								.shopIcon {}
-								.name {}
-							}
-						}
-					}
-				}
-			}
-			.setting_item {
-				display: flex;
-				justify-content: space-between;
-				background-color: #fff;
-				margin-bottom: 20rpx;
-				.setting_left {
-					line-height: 1;
-					padding-top: 20rpx;
-				}
-			}
-			.add_staff {
-				margin-bottom: 20rpx;
-				display: flex;
-				.info_desc {
-					margin: 20rpx 0 20rpx 40rpx;
-				}
-				.label_tag {
-					display: flex;
-					margin-right: 20rpx;
-				}
-				.shop {
-					.shop_left {
-						display: flex;
-						margin-left: 62rpx;
-						margin-bottom: 10rpx;
-						.shopIcon {
-							width: 60rpx;
-							height: 60rpx;
-						}
-						.name {
-							padding-top: 20rpx;
-						}
-					}
-					.active {
-						background-color: #ffba00;
-					}
-				}
-			}
-		}
-	}
+  .myStall_wrapper {
+    background: #f1f1f1;
+    padding: 10rpx 8rpx;
+    height: 100%;
+    box-sizing: border-box;
+    .add_staff_content {
+      margin-bottom: 30rpx;
+      background-color: #fff;
+      padding: 10rpx 10rpx;
+      .add_staff_info {
+        padding: 10rpx 0;
+        display: flex;
+        .info_desc {
+          box-sizing: border-box;
+          display: inline-block;
+          width: 124rpx;
+          margin-right: 20rpx;
+          text-align: left;
+        }
+        .mypicker {
+          padding-top: 4rpx;
+        }
+        .inputArea {
+          border-bottom: 1rpx solid #f1f1f1;
+          flex: 1;
+        }
+        .position_list {
+          height: 400rpx;
+        }
+        .scrollpoi {
+          height: 430rpx;
+          margin: 0 auto;
+          .title {
+            font-size: 14px;
+            color: #333;
+            margin-left: 6rpx;
+            margin-top: 8rpx;
+            font-weight: 900;
+          }
+          .label_wrapper {
+            display: flex;
+            height: 120rpx;
+            background-color: #fff;
+            margin: 6rpx;
+            .checkbox {
+              margin: 36rpx 0 36rpx 20rpx;
+            }
+            .position_wrapper {
+              display: flex;
+              flex-direction: column;
+              justify-content: space-around;
+              flex: 1;
+              .pos_top {
+                display: flex;
+                .poi_name,
+                .poi_parent {
+                  font-size: 14px;
+                  color: #333;
+                  text {
+                    font-weight: 900;
+                  }
+                }
+                .poi_parent {
+                  margin-left: 40rpx;
+                }
+              }
+              .pos_bot {
+                justify-content: space-between;
+                justify-content: flex-start;
+                .pos_duty {
+                  font-size: 14px;
+                  color: #333;
+                  text {
+                    font-weight: 900;
+                  }
+                }
+              }
+            }
+          }
+        }
+        .scroll {
+          height: 430rpx;
+          background-color: #ffba00;
+          .label_wrapper {
+            display: flex;
+            padding: 8rpx 0;
+            background-color: #fff;
+            margin: 6rpx;
+            border: 1px solid #ccc;
+            .checkbox {
+              margin-top: 36rpx;
+              margin-left: 8rpx;
+            }
+            .shop {
+              margin-top: 0;
+              padding: 20rpx 30rpx;
+              background-color: #fff;
+              font-size: 16px;
+              display: flex;
+              justify-content: flex-start;
+              .shop_left {
+                display: flex;
+                .shopIcon {
+                  width: 50rpx;
+                  height: 50rpx;
+                  margin-top: 14rpx;
+                }
+                .name {
+                  line-height: 80rpx;
+                  margin-left: 10rpx;
+                }
+              }
+              .shop_right {
+                font-size: 12px;
+                .author,
+                .tag {
+                  line-height: 80rpx;
+                  margin-left: 10rpx;
+                  padding: 10rpx 10rpx;
+                  color: red;
+                  text-decoration: underline;
+                }
+                .tag {
+                  text-decoration: none;
+                }
+              }
+            }
+          }
+        }
+        .noStaffRole {
+          text-align: center;
+          color: #fff;
+          font-size: 16px;
+          margin-top: 200rpx;
+        }
+      }
+      .newPos-wrapper {
+        display: flex;
+        flex-direction: column;
+        .scroll {
+          margin-top: 10rpx;
+          .title {
+          }
+          .label_wrapper {
+            display: flex;
+            .checkbox {
+            }
+            .shop {
+              display: flex;
+              justify-content: flex-start;
+              .shop_left {
+                .shopIcon {
+                }
+                .name {
+                }
+              }
+            }
+          }
+        }
+      }
+      .setting_item {
+        display: flex;
+        justify-content: space-between;
+        background-color: #fff;
+        margin-bottom: 20rpx;
+        .setting_left {
+          line-height: 1;
+          padding-top: 20rpx;
+        }
+      }
+      .add_staff {
+        margin-bottom: 20rpx;
+        display: flex;
+        .info_desc {
+          margin: 20rpx 0 20rpx 40rpx;
+        }
+        .label_tag {
+          display: flex;
+          margin-right: 20rpx;
+        }
+        .shop {
+          .shop_left {
+            display: flex;
+            margin-left: 62rpx;
+            margin-bottom: 10rpx;
+            .shopIcon {
+              width: 60rpx;
+              height: 60rpx;
+            }
+            .name {
+              padding-top: 20rpx;
+            }
+          }
+          .active {
+            background-color: #ffba00;
+          }
+        }
+      }
+    }
+  }
 </style>
-<style lang="less" src="../../../mixins/less/btn.less">
 
+<style lang="less" src="../../../mixins/less/btn.less">
 </style>
