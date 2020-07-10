@@ -91,7 +91,7 @@
                     let loginWechatAppletReply = res.data.loginWechatAppletReply;
                     _this.$parent.globalData.tk = loginWechatAppletReply.tk;
                     _this.$parent.globalData.userInfo = loginWechatAppletReply.staff;
-                    if (_this.$parent.globalData.userInfo.role === "k98_store_staff" || _this.$parent.globalData.userInfo.role === "k98_store_manager") {
+                    if (_this.$parent.globalData.userInfo.roleInfo.role === "k98_store_staff" || _this.$parent.globalData.userInfo.roleInfo.role === "k98_store_manager") {
                       _this.$parent.globalData.userRoleInfo = await _this._loadRoleByPhone(_this.$parent.globalData.userInfo.phone)
                       console.log("roleInfo---", _this.$parent.globalData.userRoleInfo)
                       _this.$parent.globalData.StoreId = _this.$parent.globalData.userRoleInfo.belongStore.storeID

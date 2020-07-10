@@ -4,275 +4,165 @@
       <!-- <view class="add_staff_title">新增帐号</view> -->
       <view class="add_staff_info">
         <text class="info_desc">姓名:</text>
-        <input
-          @input="getName"
-          maxlength="4"
-          placeholder="请输入下属姓名"
-          class="inputArea"
-        />
+        <input @input="getName" maxlength="4" placeholder="请输入下属姓名" class="inputArea" />
       </view>
       <view class="add_staff_info">
         <text class="info_desc">手机号:</text>
-        <input
-          type="number"
-          @input="getPhoneNumr"
-          placeholder="请输入手机号码"
-          class="inputArea"
-        />
+        <input type="number" @input="getPhoneNumr" placeholder="请输入手机号码" class="inputArea" />
       </view>
       <view class="add_staff_info">
         <text class="info_desc">工牌号:</text>
-        <input
-          type="number"
-          maxlength="4"
-          @input="getJobNum"
-          placeholder="输入工牌号"
-          class="inputArea"
-        />
+        <input type="number" maxlength="4" @input="getJobNum" placeholder="输入工牌号" class="inputArea" />
       </view>
       <view class="add_staff_info">
         <text class="info_desc">密码:</text>
-        <input
-          type="number"
-          disabled
-          placeholder="默认手机号码后六位，不用输入"
-          class="inputArea"
-        />
+        <input type="number" disabled placeholder="默认手机号码后六位，不用输入" class="inputArea" />
       </view>
       <!-- <view wx:if="{{loggerUserRoleInfo.role =='k98_operation_front'}}" style="font-size:14px;">请选择员工所属门店:</view>
-      <view class="add_staff_info" wx:if="{{loggerUserRoleInfo.role =='k98_operation_front'}}">
-        <scroll-view class="scroll" style="height:250rpx" scroll-y scroll-with-animation @scroll="">
-          <radio-group @change="checkboxShop">
-            <repeat for="{{unassignedStoreList}}" key="index" index="index" item="item">
-              <label class="checkbox" class="label_wrapper">
-                  <radio
-                    color="#FFBA00"
-                    value="{{item.storeID}}"
-                    class="checkbox"
-                  />
-                  <view class="shop author_shop">
-                    <view class="shop_left">
-                      <image
-                        src="../../../images/shopListIcon.png"
-                        class="shopIcon"
-                      ></image>
-                      <text class="name">{{item.storeName}}</text>
-                    </view>
-                  </view>
-                </label>
-            </repeat>
-          </radio-group>
-        </scroll-view>
-      </view> -->
+          <view class="add_staff_info" wx:if="{{loggerUserRoleInfo.role =='k98_operation_front'}}">
+            <scroll-view class="scroll" style="height:250rpx" scroll-y scroll-with-animation @scroll="">
+              <radio-group @change="checkboxShop">
+                <repeat for="{{unassignedStoreList}}" key="index" index="index" item="item">
+                  <label class="checkbox" class="label_wrapper">
+                      <radio
+                        color="#FFBA00"
+                        value="{{item.storeID}}"
+                        class="checkbox"
+                      />
+                      <view class="shop author_shop">
+                        <view class="shop_left">
+                          <image
+                            src="../../../images/shopListIcon.png"
+                            class="shopIcon"
+                          ></image>
+                          <text class="name">{{item.storeName}}</text>
+                        </view>
+                      </view>
+                    </label>
+                </repeat>
+              </radio-group>
+            </scroll-view>
+          </view> -->
       <!-- wx:if="{{loggerUserRoleInfo.role !='k98_operation_front'}}" -->
-      <view
-        class="setting_item"
-        style="display:flex"
-      >
-        <button
-          type="default"
-          @tap="switchPosOld"
-        >绑定旧岗位</button>
-        <button
-          type="default"
-          @tap="switchPosNew"
-        >创建新岗位</button>
+      <view class="setting_item" style="display:flex" >
+        <button type="default" @tap="switchPosOld">绑定旧岗位</button>
+        <button type="default" wx:if="{{loggerUserRoleInfo.role != 'k98_operation_front'}}" @tap="switchPosNew">创建新岗位</button>
       </view>
-      <view
-        class="add_staff_info"
-        wx:if="{{!isCreatePos}}"
-      >
-        <scroll-view
-          class="scrollpoi"
-          style="height:400rpx;background:#ccc;"
-          scroll-y
-          scroll-with-animation
-          @scroll=""
-        >
-          <radio-group
-            wx:if="{{emptyStaffRoleArr.length}}"
-            @change="checkboxPos"
-          >
-            <repeat
-              for="{{emptyStaffRoleArr}}"
-              key="index"
-              index="index"
-              item="item"
-            >
-              <label
-                class="checkbox"
-                class="label_wrapper"
-              >
-                <radio
-                  color="#FFBA00"
-                  value="{{item.roleID}}"
-                  class="checkbox"
-                />
-                <view class="position_wrapper">
-                  <view class="pos_top">
-                    <view class="poi_name"><text>岗位名称：</text>{{item.znRole}}</view>
-                    <view class="poi_parent"><text>上级：</text>{{item.parent.staffName}}</view>
-                  </view>
-                  <view class="pos_bot">
-                    <view class="pos_duty"><text>岗位权限：</text>{{item.permission===1?"可查看可编辑":"仅查看"}}</view>
-                  </view>
-                  <view
-                    class="storeList"
-                    wx:if="{{item.stores.length}}"
-                  >
-                    <text class="title">运营门店列表：</text>
-                    <repeat
-                      for="{{item.stores}}"
-                      key="storeIndex"
-                      index="storeIndex"
-                      item="store"
-                    >
-                      <text class="storeName">{{store.storeName+" "}}</text>
-                    </repeat>
-                  </view>
-                </view>
-              </label>
+      <view class="add_staff_info" wx:if="{{!isCreatePos}}">
+        <scroll-view class="scrollpoi" style="height:400rpx;background:#ccc;" scroll-y scroll-with-animation @scroll="">
+          <radio-group wx:if="{{emptyStaffRoleArr.length}}" @change="checkboxPos">
+            <repeat for="{{emptyStaffRoleArr}}" key="index" index="index" item="item">
+              <label class="checkbox" class="label_wrapper">
+                    <radio
+                      color="#FFBA00"
+                      value="{{item.roleID}}"
+                      class="checkbox"
+                    />
+                    <view class="position_wrapper">
+                      <view class="pos_top">
+                        <view class="poi_name"><text>岗位名称：</text>{{item.znRole}}</view>
+                      </view>
+                      <view class="pos_bot">
+                        <view class="pos_duty"><text>岗位权限：</text>{{item.permission===1?"可查看可编辑":"仅查看"}}</view>
+                      </view>
+                      <view
+                        class="storeList"
+                        wx:if="{{item.stores.length}}"
+                      >
+                        <text class="title">运营门店列表：</text>
+                        <repeat
+                          for="{{item.stores}}"
+                          key="storeIndex"
+                          index="storeIndex"
+                          item="store"
+                        >
+                          <text class="storeName">{{store.storeName+" "}}</text>
+                        </repeat>
+                      </view>
+                    </view>
+                  </label>
             </repeat>
           </radio-group>
-          <view
-            wx:else
-            class="noStaffRole"
-          >暂无空岗位，请选择创建</view>
+          <view wx:else class="noStaffRole">暂无空岗位，请选择创建</view>
         </scroll-view>
       </view>
-      <view
-        class="add_staff_info newPos-wrapper"
-        wx:if="{{isCreatePos}}"
-      >
+      <view class="add_staff_info newPos-wrapper" wx:if="{{isCreatePos}}">
         <view style="display:flex">
           <text class="info_desc">岗位名称:</text>
-          <picker
-            @change="bindRoleChange"
-            value="{{roleIndex}}"
-            range="{{arrayRole}}"
-            range-key="name"
-          >
+          <picker @change="bindRoleChange" value="{{roleIndex}}" range="{{arrayRole}}" range-key="name">
             <view style="background:#ccc;color:#808080;padding-top:4rpx">
               {{arrayRole[roleIndex].name}}
             </view>
           </picker>
         </view>
-        <scroll-view
-          wx:if="{{unassignedStoreList.length}}"
-          class="scroll"
-          style="height:340rpx"
-          scroll-y
-          scroll-with-animation
-          @scroll=""
-        >
+        <scroll-view wx:if="{{unassignedStoreList.length&&!isShopStaff}}" class="scroll" style="height:340rpx" scroll-y scroll-with-animation>
           <view class="title">授权门店</view>
-          <checkbox-group
-            wx:if="{{loggerUserRoleInfo.role !='k98_operation_front'}}"
-            @change="checkboxShopAuthor"
-          >
-            <repeat
-              for="{{unassignedStoreList}}"
-              key="index"
-              index="index"
-              item="store"
-            >
-              <label
-                class="checkbox"
-                class="label_wrapper"
-              >
-                <checkbox
-                  color="#FFBA00"
-                  value="{{store.storeID}}"
-                  class="checkbox"
-                />
-                <view class="shop">
-                  <view class="shop_left">
-                    <image
-                      src="../../../images/shopListIcon.png"
-                      class="shopIcon"
-                    ></image>
-                    <text class="name">{{store.storeName}}</text>
-                  </view>
-                </view>
-              </label>
+          <checkbox-group wx:if="{{loggerUserRoleInfo.role !='k98_operation_front'}}" @change="checkboxShopAuthor">
+            <repeat for="{{unassignedStoreList}}" key="index" index="index" item="store">
+              <label class="checkbox" class="label_wrapper">
+                    <checkbox
+                      color="#FFBA00"
+                      value="{{store.storeID}}"
+                      class="checkbox"
+                    />
+                    <view class="shop">
+                      <view class="shop_left">
+                        <image
+                          src="../../../images/shopListIcon.png"
+                          class="shopIcon"
+                        ></image>
+                        <text class="name">{{store.storeName}}</text>
+                      </view>
+                    </view>
+                  </label>
             </repeat>
           </checkbox-group>
-          <radio-group
-            wx:else
-            @change="checkboxShopAuthor"
-          >
-            <repeat
-              for="{{unassignedStoreList}}"
-              key="index"
-              index="index"
-              item="store"
-            >
-              <label
-                class="checkbox"
-                class="label_wrapper"
-              >
-                <radio
-                  color="#FFBA00"
-                  value="{{store.storeID}}"
-                  class="checkbox"
-                />
-                <view class="shop">
-                  <view class="shop_left">
-                    <image
-                      src="../../../images/shopListIcon.png"
-                      class="shopIcon"
-                    ></image>
-                    <text class="name">{{store.storeName}}</text>
-                  </view>
-                </view>
-              </label>
+          <radio-group wx:else @change="checkboxShopAuthor">
+            <repeat for="{{unassignedStoreList}}" key="index" index="index" item="store">
+              <label class="checkbox" class="label_wrapper">
+                    <radio
+                      color="#FFBA00"
+                      value="{{store.storeID}}"
+                      class="checkbox"
+                    />
+                    <view class="shop">
+                      <view class="shop_left">
+                        <image
+                          src="../../../images/shopListIcon.png"
+                          class="shopIcon"
+                        ></image>
+                        <text class="name">{{store.storeName}}</text>
+                      </view>
+                    </view>
+                  </label>
             </repeat>
           </radio-group>
         </scroll-view>
-        <scroll-view
-          wx:if="{{loggerUserRoleInfo.subStaffs.length}}"
-          class="scroll"
-          style="height:340rpx"
-          scroll-y
-          scroll-with-animation
-          @scroll=""
-        >
+        <scroll-view wx:if="{{loggerUserRoleInfo.subStaffs.length&&!isShopStaff}}" class="scroll" style="height:340rpx" scroll-y scroll-with-animation>
           <view class="title">授权下属</view>
           <checkbox-group @change="checkboxStaffAuthor">
-            <repeat
-              for="{{loggerUserRoleInfo.subStaffs}}"
-              key="index"
-              index="index"
-              item="item"
-            >
-              <label
-                wx:if="{{item.phone}}"
-                class="checkbox"
-                class="label_wrapper"
-              >
-                <checkbox
-                  color="#FFBA00"
-                  value="{{item.roleID}}"
-                  class="checkbox"
-                />
-                <view class="shop">
-                  <view class="shop_left">
-                    <image
-                      src="../../../images/shopListIcon.png"
-                      class="shopIcon"
-                    ></image>
-                    <text class="name">{{item.staffName}}</text>
-                  </view>
-                </view>
-              </label>
+            <repeat for="{{loggerUserRoleInfo.subStaffs}}" key="index" index="index" item="item">
+              <label wx:if="{{item.phone}}" class="checkbox" class="label_wrapper">
+                    <checkbox
+                      color="#FFBA00"
+                      value="{{item.roleID}}"
+                      class="checkbox"
+                    />
+                    <view class="shop">
+                      <view class="shop_left">
+                        <image
+                          src="../../../images/shopListIcon.png"
+                          class="shopIcon"
+                        ></image>
+                        <text class="name">{{item.staffName}}</text>
+                      </view>
+                    </view>
+                  </label>
             </repeat>
           </checkbox-group>
         </scroll-view>
       </view>
-      <button
-        class="addBtn"
-        @tap="addStaff"
-      >新增</button>
+      <button class="addBtn" @tap="addStaff">新增</button>
     </view>
   </view>
 </template>
@@ -285,16 +175,17 @@
       navigationBarTitleText: '新增帐号'
     };
     data = {
+      isShopStaff:false, //判断是否新增的是店员或者店长
       loggerUserRoleInfo: {},
       emptyStaffRoleArr: [],
       stores: [{
-        name: "1号门店",
-        id: 111
-      },
-      {
-        name: "2号门店",
-        id: 111
-      }
+          name: "1号门店",
+          id: 111
+        },
+        {
+          name: "2号门店",
+          id: 111
+        }
       ],
       arrayRole: [{
         name: "运营后台",
@@ -321,7 +212,7 @@
       // belongStoreId: "",
       unassignedStoreList: []
     };
-    onUnload() { };
+    onUnload() {};
     methods = {
       //授权下属
       checkboxStaffAuthor(e) {
@@ -365,6 +256,9 @@
       bindRoleChange(e) {
         this.roleIndex = e.detail.value;
         this.newRoleInfo.role = this.arrayRole[Number(e.detail.value)].id;
+        if (this.newRoleInfo.role === "k98_store_staff" || this.newRoleInfo.role === "k98_center_staff" || this.newRoleInfo.role === "k98_store_manager") {
+          this.newRoleInfo.permission = 2
+        }
         console.log("this.newRoleInfo-------", this.newRoleInfo)
       },
       getPhoneNumr(e) {
@@ -441,7 +335,7 @@
         }]
       } else if (role == "k98_operation_behind") {
         return [{
-          name: "本部员工",
+          name: "总部员工",
           id: "k98_center_staff"
         }, {
           name: "运营中台",
@@ -530,8 +424,10 @@
       // this.role = this.arrayRole[0].id
       this.newRoleInfo.role = this.arrayRole[0].id
       this.loggerUserRoleInfo = this.$parent.globalData.userRoleInfo
+      console.log("loggerUserRoleInfo----", this.loggerUserRoleInfo)
       if (this.loggerUserRoleInfo.role === "k98_operation_front") { //如果是运营前台新增账号，自动为员工添加所属门店
         this.newRoleInfo.belongStore = this.loggerUserRoleInfo.stores[0].storeID
+        this.isShopStaff = true
       }
       this.winHeight = util.getScrollHeight(730);
       this._loadEmptyStaffRole()
@@ -683,20 +579,16 @@
         flex-direction: column;
         .scroll {
           margin-top: 10rpx;
-          .title {
-          }
+          .title {}
           .label_wrapper {
             display: flex;
-            .checkbox {
-            }
+            .checkbox {}
             .shop {
               display: flex;
               justify-content: flex-start;
               .shop_left {
-                .shopIcon {
-                }
-                .name {
-                }
+                .shopIcon {}
+                .name {}
               }
             }
           }
@@ -745,4 +637,5 @@
 </style>
 
 <style lang="less" src="../../../mixins/less/btn.less">
+
 </style>

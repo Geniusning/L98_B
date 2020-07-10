@@ -630,7 +630,7 @@
       this.mutualStat = resultData.dataStat.MutualStat //门店与客人
       this.integralStat = resultData.dataStat.integralStat //积分统计
       this.mutualFri = resultData.dataStat.allianceStat //友商互推
-      if (this.$parent.globalData.lever === "low") {
+      if (this.$parent.globalData.lever === "low" ||this.$parent.globalData.userRoleInfo.permission===2) {
         this.show = false
       }else{
          this.show = true

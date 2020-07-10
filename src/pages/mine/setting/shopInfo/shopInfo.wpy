@@ -59,7 +59,7 @@
           <repeat for="{{uploadImgArr}}" key='index' item="item">
             <view class='logoShopBox'>
               <image src="{{item}}" class='logoShop' mode="aspectFill"></image>
-              <image src='../../../../images/close.png' class='close' data-index='{{index}}' @tap.stop='close'></image>
+              <image src='../../../../images/close.png' class='close' data-index='{{index}}' @tap.stop='close({{item}})'></image>
             </view>
           </repeat>
           <image wx:if="{{isShow}}" @tap.stop='chooseOnePic' src="../../../../images/add_pic.png" class='logoShop'></image>
@@ -85,7 +85,6 @@
       uploadImgArr: [],
       isShow: true,
       city: "",
-      show: false,
       indexType: 0,
       indexArea: 0,
       indexCustom: 0,
@@ -126,19 +125,23 @@
     };
     normalizePickerChangeData() { };
     methods = {
-      close: function (e) {
-        let index = e.currentTarget.dataset.index;
-        console.log(index)
-        // this.picArr.splice(index, 1);
-        this.uploadImgArr.splice(index, 1);
-        console.log('删除后的uploadImgArr-----------', this.uploadImgArr)
-        if (this.uploadImgArr.length === 3) {
-          this.isShow = false;
-          this.picArr = this.picArr;
-        } else {
-          this.isShow = true;
-          this.picArr = this.picArr;
+      close: function (img) {
+        console.log("img------",img)
+        let url = `${this.$parent.globalData.commonUrl}/api/delAdvertisingPhoto?tk=${this.$parent.globalData.tk}`;
+        let data = {
+          url : img
         }
+        util.interface_post(url,data,this.$parent.globalData.StoreId).then(res=>{
+          console.log("删除结果---",res)
+          this._loadAdvertisingPhoto()
+          // if (this.uploadImgArr.length === 3) {
+          //   this.isShow = false;
+          //   this.picArr = this.picArr;
+          // } else {
+          //   this.isShow = true;
+          //   this.picArr = this.picArr;
+          // }
+        })
       },
       chooseOnePic: function () {
         var _this = this;
@@ -443,7 +446,7 @@
     uploadImgFile(filePath) {
       let _this = this
       wx.uploadFile({
-        url: `${_this.$parent.globalData.commonUrl}/api/photoUpload?tk=${_this.$parent.globalData.tk}&storeId=${this.$parent.globalData.StoreId}`,
+        url: `${_this.$parent.globalData.commonUrl}/api/uploadAdvertisingPhoto?tk=${_this.$parent.globalData.tk}&storeId=${this.$parent.globalData.StoreId}`,
         filePath: filePath,
         name: "file",
         header: {
@@ -451,13 +454,7 @@
         },
         success: res => {
           if (res.statusCode == 200) {
-            let uploadImgUrl = JSON.parse(res.data).photoURL;
-            _this.uploadImgArr.push(uploadImgUrl);
-            console.log('_this.uploadImgArr----------------', _this.uploadImgArr);
-            if (_this.uploadImgArr.length === 3) {
-              _this.isShow = false;
-            }
-            _this.$apply();
+            _this._loadAdvertisingPhoto()
           }
         }
       })
@@ -498,8 +495,7 @@
       // this.lng = this.$parent.globalData.shopAddr.longitude;
       console.log('纬度---------------', this.lat)
     };
-    onLoad() {
-      this.show = !!(this.$parent.globalData.userInfo.permission & 32);
+    _loadAdvertisingPhoto(){
       let _this = this;
       wx.request({
         url: `${this.$parent.globalData.commonUrl}/api/loadAdvertisingPhoto?tk=${this.$parent.globalData.tk}&storeId=${this.$parent.globalData.StoreId}`,
@@ -509,12 +505,17 @@
             _this.uploadImgArr = res.data.adPhotoURL ? res.data.adPhotoURL : [];
             if (_this.uploadImgArr.length > 3 || _this.uploadImgArr.length === 3) {
               _this.isShow = false;
+            }else{
+              _this.isShow = true;
             }
             _this.$apply()
           }
         }
       })
-      wx.request({
+    }
+    _loadStoreSetting(){
+      let _this = this;
+        wx.request({
         url: `${this.$parent.globalData.commonUrl}/api/loadStoreSetting?tk=${this.$parent.globalData.tk}&storeId=${this.$parent.globalData.StoreId}`,
         success: res => {
           console.log(res)
@@ -557,6 +558,10 @@
           }
         }
       })
+    }
+    onLoad() {
+      this._loadAdvertisingPhoto()
+      this._loadStoreSetting()
     }
     // Other properties
   }

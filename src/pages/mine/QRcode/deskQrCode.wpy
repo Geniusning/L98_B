@@ -15,10 +15,16 @@
       <view class="bottom_wrapper">
         <checkbox-group wx:if="{{roomList.length}}" class="checkBox_group" @change="changeDesk">
           <repeat for="{{roomList}}" key="index" item="item">
-            <label class="checkBox">
+            <label class="checkBox" wx:if="{{pageType !='staff'}}">
                 <checkbox class="checkbox_item"  color="orange" value="{{item.imagesURL}}" checked="{{item.isSelect}}" />
                 <view class="room_image">
                     <image class='qrcode_pic' src='{{item.imagesURL}}'></image>
+                </view>
+            </label>
+            <label class="checkBox" wx:else>
+                <checkbox class="checkbox_item"  color="orange" value="{{item}}"  />
+                <view class="room_image">
+                    <image class='qrcode_pic' src='{{item}}'></image>
                 </view>
             </label>
           </repeat>
@@ -41,6 +47,7 @@
       Loading: Loading
     };
     data = {
+      pageType:"",
       roomList: [],
       dataImgeList: []
     };
@@ -176,7 +183,7 @@
       util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
         console.log("员工二维码-------", res);
         if (res.errCode === 0) {
-
+          this.roomList = res.info.urls
         }
         this.$apply();
       })
@@ -184,24 +191,28 @@
     events = {};
     onLoad(e) {
       console.log("type------", e.type)
-      this._loadStaffQRcode()
-      this._loadRoomList(e.type);
+      this.pageType = e.type
       switch (e.type) {
         case "focusOn":
           wx.setNavigationBarTitle({
             title: "下载桌贴二维码（首页）"
           })
+          this._loadRoomList(e.type);
           break;
         case "friend":
           wx.setNavigationBarTitle({
             title: "下载桌贴二维码（交友）"
           })
+          this._loadRoomList(e.type);
           break;
         case "game":
           wx.setNavigationBarTitle({
             title: "下载桌贴二维码（游戏）"
           })
+          this._loadRoomList(e.type);
           break;
+          case "staff":
+          this._loadStaffQRcode()
         default:
           break;
       }

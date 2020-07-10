@@ -43,6 +43,13 @@
           </view>
           <image src='../../images/arrow_right.png'></image>
         </navigator>
+        <navigator url='/pages/mine/addCashier' class='item'>
+          <view class='name-box' style="display:flex">
+            <image class='icon' src='../../images/question.png' style='width:34rpx;height:34rpx;'></image>
+            <view class='settingName'>绑定我成为收银<text style="font-size:11px">(必须先登陆门店公众号，完善手机号)</text></view>
+          </view>
+          <image src='../../images/arrow_right.png'></image>
+        </navigator>
         <navigator url='/pages/mine/aboutUs/aboutUs' class='item'>
           <view class='name-box'>
             <image class='icon' src='../../images/about.png' style='width:34rpx;height:34rpx;'></image>
@@ -68,13 +75,6 @@
           </view>
           <image src='../../images/arrow_right.png'></image>
         </navigator>
-        <!-- <navigator url='/pages/mine/setting/account/account' class='item'>
-                        <view class='name-box'>
-                          <image class='icon' src='../../images/setting.png' style='width:34rpx;height:32rpx;'></image>
-                          <text class='settingName'>员工设置</text>
-                        </view>
-                        <image src='../../images/arrow_right.png'></image>
-                      </navigator> -->
         <navigator url='/pages/mine/room/bindRoomList?type=list' class='item'>
           <view class='name-box'>
             <image class='icon' src='../../images/setting.png' style='width:34rpx;height:32rpx;'></image>

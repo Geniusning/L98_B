@@ -22,7 +22,7 @@
       <view
         wx:if="{{staffChangeInfo.loginStore.length>0}}"
         class="title"
-      >增加门店管辖</view>
+      >增加管辖门店</view>
       <scroll-view
         wx:if="{{staffChangeInfo.loginStore.length>0}}"
         class="scroll"
@@ -52,11 +52,11 @@
         </radio-group>
       </scroll-view>
       <view
-        wx:if="{{loggerUserInfoRole.subStaffs.length>0}}"
+        wx:if="{{loggerUserInfoRole.subStaffs.length>1}}"
         class="title"
-      >增加下属管辖</view>
+      >增加管辖下属</view>
       <scroll-view
-        wx:if="{{loggerUserInfoRole.subStaffs.length>0}}"
+        wx:if="{{loggerUserInfoRole.subStaffs.length>1}}"
         class="scroll"
         style="height:250rpx"
         scroll-y
@@ -95,7 +95,7 @@
       <view
         wx:if="{{staffChangeInfo.targetStore.length>0}}"
         class="title"
-      >取消门店管辖</view>
+      >取消管辖门店</view>
       <scroll-view
         wx:if="{{staffChangeInfo.targetStore.length>0}}"
         class="scroll"
@@ -124,11 +124,11 @@
         </radio-group>
       </scroll-view>
       <view
-        wx:if="{{roleInfo.subStaffs.length>0}}"
+        wx:if="{{roleInfo.collStaffs.length>0}}"
         class="title"
-      >取消下属管辖</view>
+      >取消管辖下属</view>
       <scroll-view
-        wx:if="{{roleInfo.subStaffs.length>0}}"
+        wx:if="{{roleInfo.collStaffs.length>0}}"
         class="scroll"
         style="height:250rpx"
         scroll-y
@@ -136,7 +136,7 @@
       >
         <radio-group @change="cancleStaffAuthor">
           <repeat
-            for="{{roleInfo.subStaffs}}"
+            for="{{roleInfo.collStaffs}}"
             key="index"
             index="index"
             item="staff"
@@ -175,7 +175,7 @@
   const util = require('../../utils/utils.js');
   export default class modifyUser extends wepy.page {
     config = {
-      navigationBarTitleText: '修改员工岗位'
+      navigationBarTitleText: '更改员工管辖'
     };
     data = {
       staffChangeInfo: {},
@@ -328,7 +328,7 @@
           console.log('增加店员授权result------', res);
           if (res.errCode === 0) {
             wx.showToast({
-              title: `新增成功`,
+              title: `取消成功`,
               icon: 'success',
               duration: 2000
             });
