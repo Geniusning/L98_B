@@ -7,7 +7,7 @@
     </view>
     <!-- 第二步 -->
     <view class="stepOne-wrapper" style="margin-top:30rpx">
-      <view class="title">第二步：发布条件</view>
+      <view class="title">第二步：发布场景</view>
       <view class="select-channel">
         <picker @change="bindPickerCondition" range-key="{{'name'}}" range="{{dispatchConditionList}}">
           <view class="picker" style="background:#ccc;color:#fff;display:inline-block;padding:0 6rpx">当前选择：{{dispatchConditionList[conditionIndex].name}}</view>
@@ -93,11 +93,11 @@
       sexListIndex: 2,
       dispatchConditionList: [{
           id: 0,
-          name: "访问首页，人人有礼"
+          name: "关注有礼，访问首页"
         },
         {
           id: 1,
-          name: "扫核销码，核销有礼"
+          name: "交友有礼，找朋友页"
         }, {
           id: 2,
           name: "访问游戏大厅，参赛有礼"
@@ -121,27 +121,27 @@
         },
         {
           id: '2',
-          value: '低频',
+          value: '本月低频',
           checked: false
         },
         {
           id: '4',
-          value: '中频',
+          value: '本月中频',
           checked: false
         },
         {
           id: '8',
-          value: '高频',
+          value: '本月高频',
           checked: false
         },
         {
           id: '16',
-          value: '60天未到店',
+          value: '本月未到店',
           checked: false
         },
         {
           id: '0',
-          value: '未到店',
+          value: '从未到店',
           checked: false
         },
       ],
@@ -163,15 +163,17 @@
       endDate: "2022-01-21",
       isTrue: true,
       isFalse: false,
-      channel: 1, //发布模式,AI
+     
       selectedCouponIds: [],
       selectedAllStatus: false,
       userTypeNumList: [],
       userIDs: [],
       conditonType: "",
-      AItheme: ""
+      AItheme: "",
+      isAllChecked:false,
     };
     methods = {
+      //性别选择
       bindPickerSex(e) {
         console.log(e.detail.value)
         this.sexListIndex = Number(e.detail.value)
@@ -227,8 +229,6 @@
         console.log(e.detail.value)
       },
       selectAll(e) {
-        console.log("全选---", e)
-        this.userIDs = []
         this.isAllChecked = !this.isAllChecked
         console.log("this.isAllChecked---", this.isAllChecked)
         if (this.isAllChecked) {
@@ -260,83 +260,10 @@
             this.userIDs.push(Number(item.id))
           }
         })
+        console.log('count', count)
         console.log('this.userIDs', this.userIDs)
         this.$apply()
       },
-      // 选择客户
-      // bindCheckbox: function(e) { //这段代码因为前期数据设计的不合理，只能学成shi一样的逻辑
-      //   console.log(e)
-      //   var index = parseInt(e.currentTarget.dataset.index);
-      //   this.usersTypeList[index].checked = !this.usersTypeList[index].checked;
-      //   if (index == 6) { //全选
-      //     this.selectedAllStatus = !this.selectedAllStatus; //全选标识符
-      //     this.userIDs = [6];
-      //     if (this.selectedAllStatus == false) { //取消全选，数组制空
-      //       this.userIDs = [];
-      //     }
-      //     this.usersTypeList.forEach(item => { //如果全选了，其他选项ui未选中样式
-      //       item.checked = this.selectedAllStatus;
-      //     });
-      //     let userUrl = `${this.$parent.globalData.commonUrl}/api/loadSortUsers?tk=${this.$parent.globalData.tk}&sortType=${this.usersTypeList[index].id}`;
-      //     util.interface_get(userUrl, this.$parent.globalData.StoreId).then(res => {
-      //       console.log('选择用户类型返回--------', res);
-      //     })
-      //     return;
-      //   }
-      //   console.log(this.userIDs)
-      //   if (index === 7) { //全选
-      //     this.userIDs = [6];
-      //     this.selectedAllStatus = !this.selectedAllStatus; //全选标识符
-      //     if (this.selectedAllStatus == false) {
-      //       this.userIDs = [];
-      //     }
-      //     console.log('this.userIDs--------------', this.userIDs);
-      //     this.usersTypeList.forEach(item => { //如果全选了，其他选项ui未选中样式
-      //       item.checked = this.selectedAllStatus;
-      //     });
-      //     let userUrl = `${this.$parent.globalData.commonUrl}/api/loadSortUsers?tk=${this.$parent.globalData.tk}&sortType=${this.usersTypeList[index].id}`;
-      //     util.interface_get(userUrl, this.$parent.globalData.StoreId).then(res => {
-      //       console.log('选择用户类型返回--------', res);
-      //     })
-      //     return;
-      //   }
-      //   let userTypeCheckedList = this.usersTypeList.slice(0, this.usersTypeList.length - 1); //截取数组0到倒数第二个元素；
-      //   console.log('截取数组0到倒数第二个元素', userTypeCheckedList);
-      //   for (let i = 0; i < userTypeCheckedList.length; i++) {
-      //     if (userTypeCheckedList[i].checked) {
-      //       this.selectedAllStatus = true;
-      //     } else {
-      //       this.selectedAllStatus = false;
-      //       break;
-      //     }
-      //   }
-      //   //获取用户群
-      //   if (this.usersTypeList[index].checked) {
-      //     this.userIDs.push(parseInt(this.usersTypeList[index].id));
-      //     if (this.userIDs.length == 7) {
-      //       this.userIDs = [6];
-      //     }
-      //     console.log('this.userIDs-----------', this.userIDs)
-      //     if (this.selectedAllStatus) {
-      //       this.usersTypeList.forEach(item => {
-      //         item.checked = this.selectedAllStatus;
-      //       });
-      //     }
-      //     let userUrl = `${this.$parent.globalData.commonUrl}/api/loadSortUsers?tk=${this.$parent.globalData.tk}&sortType=${this.usersTypeList[index].id}`;
-      //     util.interface_get(userUrl, this.$parent.globalData.StoreId).then(res => {
-      //       console.log('选择用户类型返回--------', res);
-      //     })
-      //   } else {
-      //     this.userIDs.splice(this.userIDs.indexOf(parseInt(this.usersTypeList[index].id)), 1);
-      //     if (this.userIDs.indexOf(32) != -1) {
-      //       this.userIDs.splice(this.userIDs.indexOf(32), 1);
-      //     }
-      //     console.log('this.userIDs-----------', this.userIDs)
-      //     this.usersTypeList[6].checked = false;
-      //     this.selectedAllStatus = false;
-      //   }
-      //   console.log("用户群------", this.userIDs)
-      // },
       // 优惠券选择
       checkboxCoupon(e) {
         this.cardId = e.detail.value;
@@ -367,17 +294,6 @@
       this.startDate = util.nowDate();
       var channelType = Number(e.type);
       let _this = this;
-      if (channelType === 0) {
-        this.channel = 1;
-        wx.setNavigationBarTitle({
-          title: '自动发券'
-        });
-      } else if (channelType === 1) {
-        this.channel = 3;
-        wx.setNavigationBarTitle({
-          title: '精准推送'
-        });
-      }
       //拉取优惠券列表
       var cardListUrl = `${this.$parent.globalData.commonUrl}/api/loadCoupons?tk=${this.$parent.globalData.tk}`;
       util.interface_get(cardListUrl, this.$parent.globalData.StoreId).then(res => {
@@ -451,6 +367,7 @@
   .label_tag {
     display: flex;
     margin-bottom: 20rpx;
+    margin-right: 10rpx;
   }
   .step2Checkbox {
     padding-top: 50rpx;

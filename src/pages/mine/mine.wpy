@@ -96,6 +96,20 @@
           </view>
           <image src='../../images/arrow_right.png'></image>
         </navigator>
+        <navigator wx:if="{{isApplyAutoCheck}}" url='/pages/mine/autoCheck' class='item'>
+          <view class='name-box'>
+            <image class='icon' src='../../images/about.png' style='width:34rpx;height:34rpx;'></image>
+            <text class='settingName'>自助买单设置</text>
+          </view>
+          <image src='../../images/arrow_right.png'></image>
+        </navigator>
+        <navigator wx:if="{{isHandleAutoCheck}}" url='/pages/mine/waitForCheck' class='item'>
+          <view class='name-box'>
+            <image class='icon' src='../../images/about.png' style='width:34rpx;height:34rpx;'></image>
+            <text class='settingName'>自助买单待审核消息</text>
+          </view>
+          <image src='../../images/arrow_right.png'></image>
+        </navigator>
         <!-- url='/pages/mine/server/server' -->
         <navigator @tap='intoTable' class='item'>
           <view class='name-box'>
@@ -142,7 +156,9 @@
     data = {
       shopInfo: {},
       staff: {},
-      noAuth: true
+      noAuth: true,
+      isApplyAutoCheck:false,
+      isHandleAutoCheck:false,
     };
     onLoad() {
       this.shopInfo = this.$parent.globalData.shopInfo;
@@ -151,7 +167,14 @@
       if (this.$parent.globalData.lever == "low" ||this.$parent.globalData.userRoleInfo.permission===2) {
         this.noAuth = false
       }
-      console.log(this.noAuth)
+      console.log("this.staff.roleInfo.role",this.staff.roleInfo.role)
+      if(this.staff.roleInfo.role==="k98_operation_front"){
+        this.isApplyAutoCheck = true
+      }else if(this.staff.roleInfo.role==="k98_operation_middle"){
+        this.isHandleAutoCheck = true
+      }
+      console.log("this.isApplyAutoCheck---",this.isApplyAutoCheck)
+      this.$apply()
     }
     components = {
       Header: Header

@@ -2,7 +2,7 @@
  * @Author: liuning 
  * @Date: 2020-05-11 11:14:58 
  * @Last Modified by: liuning
- * @Last Modified time: 2020-07-09 16:00:18
+ * @Last Modified time: 2020-07-14 14:44:37
  */
 
 //获取当天日期
@@ -169,7 +169,7 @@ const returnDiscountType = (discountTypeNumber) => {
   }
 }
 const returnDiscountContent = (coupon) => {
-  console.log("coupon--------", coupon)
+  // console.log("coupon--------", coupon)
   if (parseInt(coupon.type) === 0) {
     return "现金券" + coupon.value + "元"
   } else if (parseInt(coupon.type) === 1) {

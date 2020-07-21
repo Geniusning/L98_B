@@ -14,7 +14,7 @@
     </view>
     <repeat for="{{cashierList}}" key="index" index="index" item="item">
      <view class="subServicer_title">
-      <text class="title">{{item.name}}-{{item.phone}}</text>
+      <text class="title">{{item.name}}</text>
       <text class="title">{{item.startTime}}</text>
       <text class="title">{{item.durationTime}}</text>
      </view>

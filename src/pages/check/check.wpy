@@ -20,8 +20,8 @@
         </view>
       </view>
       <view class='subTab-wrapper'>
-        <view class="subTab-item line {{currentTab==0?'active':''}}" data-current="0" @tap="swichNav(0)">申请核销</view>
-        <view class="subTab-item line {{currentTab==1?'active':''}}" data-current="1" @tap="swichNav(1)">记录统计</view>
+        <view class="subTab-item line {{currentTab==0?'active':''}}" data-current="0" @tap="swichNav(0)">待审核</view>
+        <view class="subTab-item line {{currentTab==1?'active':''}}" data-current="1" @tap="swichNav(1)">已审核</view>
       </view>
     </view>
     <swiper @change="changeSwiper" current="{{currentTab}}" duration="300" style="height:{{winHeight}}rpx">
@@ -139,7 +139,8 @@
                 </view>
                 <view class='apply_check_right'>
                   <text class='check_people'>核销人</text>
-                  <image class="check_people_avatar" src="../../images/avatar.jpg" lazy-load="true"></image>
+                  <text style="text-align:cener">李四</text>
+                  <!-- <image class="check_people_avatar" src="../../images/avatar.jpg" lazy-load="true"></image> -->
                 </view>
               </view>
             </repeat>
@@ -454,10 +455,12 @@
     .subTab-wrapper {
       display: flex;
       justify-content: space-around;
-      background-color: #ffba00;
+      background-color: #fff;
       height: 80rpx;
       box-sizing: border-box;
       border-bottom: 1px solid #f4f4f4;
+      border-top: 1px solid #f4f4f4;
+      color: #333;
       .tab-item {
         width: 50%;
         padding: 20rpx;
@@ -467,11 +470,12 @@
         }
       }
       .subTab-item {
-        width: 25%;
+        width: 50%;
         padding: 20rpx;
         text-align: center;
         &.active {
           color: #fff;
+          background-color: #ffba00
         }
       }
     }
@@ -749,8 +753,11 @@
         color: #FDDC69;
       }
     .apply_check_right {
-      padding: 6rpx 30rpx;
+      padding: 2rpx 10rpx;
       box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       width: 100rpx;
       .check_people {
         display: inline-block;

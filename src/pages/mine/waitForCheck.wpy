@@ -1,0 +1,276 @@
+<template>
+ <view class="autoCheck-wrapper">
+  <view class="autoCheck-headTitle">
+   <view class="left {{currentTab==0?'active':''}}" data-current="0" @tap="swichNav(0)">待审核</view>
+   <view class="right {{currentTab==1?'active':''}}" data-current="1" @tap="swichNav(1)">已审核</view>
+  </view>
+  <swiper @change="changeSwiper" current="{{currentTab}}" duration="300" style="height:{{winHeight}}rpx">
+   <swiper-item class="autoCheck-left-tab">
+    <scroll-view scroll-y scroll-with-animation @scroll="" style="height:{{winHeight}}rpx">
+     <view wx:if="{{waitForCheck.qrcodeurls.length}}" class="swiper-leftItem">
+      <repeat for="{{waitForCheck.qrcodeurls}}" key='index' item="item">
+       <view class='autoCheck-qrCode'>
+        <image src="{{item.url}}" class='qrCode' mode="aspectFit"></image>
+        <view class="qrCode-detail-wrapper">
+         <input class="qrCode-name" value="{{item.Name}}" maxlength="5" placeholder="请输入名称"></input>
+         <text class="publish-name">发布人：{{waitForCheck.applyName}}</text>
+         <text class="publish-name">时间：{{waitForCheck.applyTime}}</text>
+        </view>
+       </view>
+      </repeat>
+      <view class="autoCheck-left-btn">
+       <button class="left-btn" @tap="responeForCheck(false)">驳回</button>
+       <button class="center-btn" @tap="responeForCheck(true)">审核通过</button>
+      </view>
+     </view>
+     <view wx:else class="noData">暂无数据</view>
+    </scroll-view>
+    <canvas style="width: {{cw}}px; height: {{ch}}px;position: absolute; z-index: -1; left: -10000rpx;; top: -10000rpx;" canvas-id="firstCanvas"></canvas>
+   </swiper-item>
+   <swiper-item class="autoCheck-right-tab">
+    <view class="swiper-rightItem">
+     <scroll-view scroll-y scroll-with-animation @scroll="" style="height:{{winHeight}}rpx">
+      <view wx:if="{{alreadyCheck.length}}" class="swiper-leftItem">
+       <repeat for="{{alreadyCheck}}" key='index' item="checkItem">
+        <view class='autoCheck-qrCode'>
+         <view class="img-box">
+          <repeat for="{{checkItem.qrcodeurls}}" key="index" index="index" item="img">
+           <image src="{{img.url}}" class='small-codeImg' mode="aspectFit"></image>
+          </repeat>
+         </view>
+         <view class="qrCode-detail-wrapper">
+          <text class="publish-name">发布人：{{checkItem.applyName}}</text>
+          <text class="publish-name">时间：{{checkItem.applyTime}}</text>
+          <text class="publish-status">结果：{{checkItem.isagree?"已通过":"已驳回"}}</text>
+         </view>
+        </view>
+       </repeat>
+      </view>
+      <view wx:else class="noData">暂无数据</view>
+     </scroll-view>
+    </view>
+   </swiper-item>
+  </swiper>
+ </view>
+</template>
+
+<script>
+ import util from '../../utils/utils.js'
+ import wepy from 'wepy';
+ export default class waitForCheck extends wepy.page {
+  config = {
+   navigationBarTitleText: '自助买单设置'
+  };
+  data = {
+   currentTab: 0,
+   waitForCheck: null,
+   alreadyCheck: null,
+   isShow: true,
+   winHeight: 0,
+   cursor: 0,
+   count: 50,
+  };
+  methods = {
+   //回复申请自助买单二维码
+   responeForCheck(flag) {
+    let url = `${this.$parent.globalData.commonUrl}/api/respondSelfPayQRCode?tk=${this.$parent.globalData.tk}&isAgree=${flag}`
+    util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
+     console.log("审核结果---------", res)
+     if (res.errCode === 0) {
+      wx.showToast({
+       title: `ok`,
+       icon: 'success',
+       duration: 2000
+      })
+     } else {
+      wx.showToast({
+       title: `${res.errMsg}`,
+       icon: 'none',
+       duration: 2000
+      })
+     }
+     this.loadWaitReviewQRCode()
+     this.loadReviewLog()
+    })
+   },
+   changeSwiper(e) {
+    console.log("滑动触发--------", e.detail);
+    var that = this;
+    var index = e.detail.current
+    if (this.currentTab == index) {
+     return false;
+    } else {
+     this.currentTab = index;
+    }
+   },
+   swichNav(index) {
+    if (this.currentTab == index) {
+     return false;
+    } else {
+     this.currentTab = index;
+    }
+   },
+  };
+  loadWaitReviewQRCode() {
+   let url = `${this.$parent.globalData.commonUrl}/api/loadWaitReviewQRCode?tk=${this.$parent.globalData.tk}`
+   util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
+    if (res.errCode === 0) {
+     console.log("res-------", res)
+     if (res.info) {
+      this.waitForCheck = res.info
+      this.waitForCheck.applyTime = util.timestampToTime_line(this.waitForCheck.applyTime)
+     } else {
+      this.waitForCheck = []
+     }
+    } else {
+     wx.showToast({
+      title: `${res.errMsg}`,
+      icon: 'none',
+      duration: 2000
+     })
+    }
+    this.$apply()
+   })
+  };
+  loadReviewLog() {
+   let url = `${this.$parent.globalData.commonUrl}/api/loadReviewLog?tk=${this.$parent.globalData.tk}&cursor=${this.cursor}&count=${this.count}`
+   util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
+    if (res.errCode === 0) {
+     console.log("loadReviewLog-------", res)
+     this.alreadyCheck = res.info.details
+     this.alreadyCheck.forEach(item=>{
+      item["applyTime"] = util.timestampToTime_line(item.applyTime)
+     })
+     this.cursor = res.info.cursor
+     console.log("this.alreadyCheck----", this.alreadyCheck)
+    } else {
+     wx.showToast({
+      title: `${res.errMsg}`,
+      icon: 'none',
+      duration: 2000
+     })
+    }
+    this.$apply()
+   })
+  }
+  events = {};
+  onLoad() {
+   this.loadWaitReviewQRCode()
+   this.loadReviewLog()
+   this.winHeight = util.getScrollHeight(100)
+  }
+  // Other properties
+ }
+</script>
+
+<style lang="less">
+ .autoCheck-wrapper {
+  height: 100%;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  .autoCheck-headTitle {
+   height: 80rpx;
+   display: flex;
+   justify-content: space-around;
+   border-bottom: 1rpx solid #ccc;
+   .left,
+   .right {
+    color: #333;
+    text-align: center;
+    height: 80rpx;
+    line-height: 80rpx;
+   }
+   .active {
+    color: red;
+   }
+  }
+  .autoCheck-left-tab {
+   flex: 1;
+   .swiper-leftItem {
+    display: flex;
+    flex-direction: column;
+    .autoCheck-qrCode {
+     margin-bottom: 20rpx;
+     display: flex;
+     justify-content: space-around;
+     .qrCode {
+      width: 300rpx;
+      height: 300rpx;
+     }
+     .qrCode-detail-wrapper {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      .qrCode-name {
+       width: 250rpx;
+       height: 40rpx;
+       line-height: 40rpx;
+       text-indent: 8rpx;
+       margin-top: 60rpx;
+      }
+     }
+    }
+    .autoCheck-add {
+     display: flex;
+     justify-content: space-around;
+     .add-pic {
+      width: 200rpx;
+      height: 200rpx;
+     }
+     .input {
+      width: 250rpx;
+      height: 40rpx;
+      line-height: 40rpx;
+      text-indent: 8rpx;
+      margin-top: 60rpx;
+      border: 1px solid #ccc;
+     }
+    }
+   }
+   .autoCheck-left-btn {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 30rpx;
+   }
+  }
+  .autoCheck-right-tab {
+   .swiper-rightItem {
+    .autoCheck-qrCode {
+     display: flex;
+     margin-bottom: 20rpx;
+     background-color: #ccc;
+     .img-box {
+      width: 420rpx;
+      display: flex;
+      flex-wrap: wrap;
+      .small-codeImg {
+       width: 170rpx;
+       height: 200rpx;
+      }
+     }
+     .publish-status {
+      color: red;
+      width: 160rpx;
+     }
+      .qrCode-detail-wrapper {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      .qrCode-name {
+       width: 250rpx;
+       height: 40rpx;
+       line-height: 40rpx;
+       text-indent: 8rpx;
+       margin-top: 60rpx;
+       color: #fff;
+      }
+     }
+    }
+   }
+  }
+ }
+</style>
+<style lang="less" src="../../mixins/less/btn.less">
+
+</style>

@@ -242,16 +242,9 @@
       //发布群通知
       dispatchGroupN() {
         this._startNotice()
-        // wx.showToast({
-        //   title: '功能暂未开放',
-        //   icon: 'none',
-        //   duration: 2000
-        // })
       },
       selectAll(e) {
-        console.log("全选---", e)
         this.isAllChecked = !this.isAllChecked
-        console.log("this.isAllChecked---", this.isAllChecked)
         if (this.isAllChecked) {
           this.usersTypeList.forEach(item => {
             item.checked = true
@@ -284,6 +277,7 @@
             this.sortType.push(Number(item.id))
           }
         })
+        console.log("count---",count)
         this.filterCondition.sortType = this.sortType
         console.log('this.sortType', this.sortType)
         this.$apply()

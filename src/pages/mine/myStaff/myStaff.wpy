@@ -423,6 +423,9 @@
       this.arrayRole = this._handleArrayRole(this.$parent.globalData.userRoleInfo.role)
       // this.role = this.arrayRole[0].id
       this.newRoleInfo.role = this.arrayRole[0].id
+      if(this.newRoleInfo.role==="k98_store_manager"){
+          this.newRoleInfo.permission = 2
+      }
       this.loggerUserRoleInfo = this.$parent.globalData.userRoleInfo
       console.log("loggerUserRoleInfo----", this.loggerUserRoleInfo)
       if (this.loggerUserRoleInfo.role === "k98_operation_front") { //如果是运营前台新增账号，自动为员工添加所属门店

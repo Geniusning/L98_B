@@ -1,0 +1,461 @@
+<template>
+  <view class="autoCheck-wrapper">
+    <view class="autoCheck-headTitle">
+      <view class="left {{currentTab==0?'active':''}}" data-current="0" @tap="swichNav(0)">上传收款码</view>
+      <view class="right {{currentTab==1?'active':''}}" data-current="1" @tap="swichNav(1)">选择买单码</view>
+    </view>
+    <swiper @change="changeSwiper" current="{{currentTab}}" duration="300" style="height:{{winHeight}}rpx">
+      <swiper-item class="autoCheck-left-tab">
+        <view wx:if="{{uploadLength!=4}}">
+          <view class="swiper-leftItem">
+            <repeat for="{{qrCodeUrls}}" key='index' item="item">
+              <view class='autoCheck-qrCode'>
+                <image src="{{item.url}}" class='qrCode' mode="aspectFill"></image>
+                <input value="{{item.Name}}" class="qrCode-name" maxlength="5" placeholder="请输入名称"></input>
+                <!-- <image src='../../images/close.png' class='close' data-index='{{index}}' @tap.stop='close({{item}})'></image> -->
+              </view>
+            </repeat>
+            <view class="autoCheck-add">
+              <image wx:if="{{isShow}}" @tap.stop='chooseOnePic' src="../../images/add_pic.png" class='add-pic'></image>
+              <input wx:if="{{isShow}}" @blur="inputQrCodeName" value="{{qrCodeName}}" class="input" maxlength="5" placeholder="请输入名称"></input>
+            </view>
+          </view>
+          <view class="autoCheck-left-btn">
+            <button class="left-btn" @tap="cancelApply">取消</button>
+            <button class="center-btn" @tap="apply">申请审核</button>
+          </view>
+        </view>
+        <view wx:else class="noData">备选库已有4个收款码，无需再上传</view>
+      </swiper-item>
+      <swiper-item class="autoCheck-right-tab">
+        <scroll-view scroll-y scroll-with-animation style="height:750rpx">
+          <view class="swiper-rightItem">
+            <radio-group @change="checkboxQrCodeUrl">
+              <repeat for="{{alreadyCheckCodeUrls.qrcodes}}" key="index" index="index" item="item">
+                <label class="label_wrapper">
+                                <radio color="#FFBA00" value="{{item.id}}" checked="{{item.checked}}"  class="checkbox"/>
+                                <view class="list_item">
+                                  <image class="qrCodeUrl" src="{{item.url}}" mode="aspectFit" lazy-load="false"></image>
+                                  <view class="qrCode-desc-wrapper">
+                                    <text class="qrcode-name">{{item.Name}}</text>
+                                    <text wx:if="{{item.isPublish}}" class="qrcode-status">已上架</text>
+                                    <text class="publish-people">上架人：{{item.publisher?item.publisher:"暂无"}}</text>
+                                  </view>
+                                </view>
+                            </label>
+              </repeat>
+            </radio-group>
+          </view>
+        </scroll-view>
+        <view class="autoCheck-btn-wrapper">
+          <button class="left-btn" @tap="upQRCode">上架</button>
+          <button class="center-btn" @tap="downQRCode">下架</button>
+          <button class="right-btn" @tap="delPrepQRCode">删除</button>
+        </view>
+        <text class="tips">
+                  声明：软件商不参与支付活动，不参与支付收入分成，也不承担支付活动的任何责任。商家须自行把控风险。
+                </text>
+      </swiper-item>
+    </swiper>
+    <canvas style="width: {{cw}}px; height: {{ch}}px;position: absolute; z-index: -1; left: -10000rpx;; top: -10000rpx;" canvas-id="firstCanvas"></canvas>
+  </view>
+</template>
+
+<script>
+  import util from '../../utils/utils.js'
+  import wepy from 'wepy';
+  export default class autoCheck extends wepy.page {
+    config = {
+      navigationBarTitleText: '自助买单设置'
+    };
+    data = {
+      currentTab: 0,
+      uploadImgArr: [],
+      isShow: true,
+      winHeight: 0,
+      qrCodeUrls: [],
+      alreadyCheckCodeUrls: null,
+      paramsCheckCodeUrls: [],
+      qrCodeName: "",
+      paramsQrCodeURL: null,
+      uploadLength: 0,
+    };
+    methods = {
+      checkboxQrCodeUrl(e) {
+        var id = e.detail.value
+        this.paramsQrCodeURL = null
+        console.log("e.detail.value---", id)
+        this.paramsQrCodeURL = this.paramsCheckCodeUrls.filter(item => {
+          return id === item.id
+        })
+        console.log("this.paramsQrCodeURL----------", this.paramsQrCodeURL)
+      },
+      inputQrCodeName(e) {
+        this.qrCodeName = e.detail.value;
+      },
+      //取消申请
+      cancelApply() {
+        let url = `${this.$parent.globalData.commonUrl}/api/delUselessQRCode?tk=${this.$parent.globalData.tk}`
+        let data = {
+          urls: this.uploadImgArr
+        }
+        util.interface_post(url, data, this.$parent.globalData.StoreId).then(res => {
+          console.log("取消申请结果---------", res)
+          wx.navigateBack({
+            delta: 1
+          });
+        })
+      },
+      apply() {
+        let url = `${this.$parent.globalData.commonUrl}/api/reviewSelfPayQRCode?tk=${this.$parent.globalData.tk}`
+        let data = {
+          applyPhone: this.$parent.globalData.userInfo.phone,
+          applyName: this.$parent.globalData.userInfo.name,
+          qrcodeurls: this.qrCodeUrls,
+          applyTime: new Date().getTime()
+        }
+        util.interface_post(url, data, this.$parent.globalData.StoreId).then(res => {
+          console.log("申请结果---------", res)
+          if (res.errCode === 0) {
+            setTimeout(() => {
+              wx.showToast({
+                title: `申请成功`,
+                icon: 'success',
+                duration: 2000
+              })
+            }, 500);
+          } else if (res.errCode === 1051) {
+            setTimeout(() => {
+              wx.showToast({
+                title: `已有审核项目，待处理`,
+                icon: 'none',
+                duration: 2000
+              })
+            }, 500);
+          } else {
+            setTimeout(() => {
+              wx.showToast({
+                title: `${err.errMsg}`,
+                icon: 'none',
+                duration: 2000
+              })
+            }, 500);
+          }
+          this.qrCodeName = ""
+          this.$apply()
+        })
+      },
+      changeSwiper(e) {
+        console.log("滑动触发--------", e.detail);
+        var that = this;
+        var index = e.detail.current
+        if (this.currentTab == index) {
+          return false;
+        } else {
+          this.currentTab = index;
+        }
+      },
+      swichNav(index) {
+        if (this.currentTab == index) {
+          return false;
+        } else {
+          this.currentTab = index;
+        }
+      },
+      chooseOnePic: function() {
+        var _this = this;
+        wx.chooseImage({
+          count: 1, // 默认9
+          sizeType: ['compressed'], // 可以指定是原图还是压缩图，默认二者都有
+          sourceType: ['album', 'camera'], // 可以指定来源是相册还是相机，默认二者都有
+          success: function(res) {
+            // 返回选定照片的本地文件路径列表，tempFilePath可以作为img标签的src属性显示图片
+            var tempFilePaths = res.tempFilePaths;
+            console.log("图片文件大小-------", tempFilePaths)
+            _this.drawCanvas(tempFilePaths[0])
+          }
+        });
+      },
+    };
+    drawCanvas(imgInfo) {
+      var ctx = wx.createCanvasContext("firstCanvas")
+      console.log("ctx---", ctx)
+      let _this = this
+      wx.getImageInfo({
+        src: imgInfo,
+        success: (res) => {
+          console.log("图片信息-------", res)
+          if ((res.width >= 750 || res.height > 500) && res.type == "jpeg") {
+            //画出压缩图片
+            ctx.drawImage(imgInfo, 0, 0, 750, 280)
+            ctx.draw(false, setTimeout(() => {
+              wx.canvasToTempFilePath({
+                canvasId: "firstCanvas",
+                quality: 0.2,
+                success: (res => {
+                  console.log("ctx.draw后的图片资源-----", res)
+                  _this.uploadImgFile(res.tempFilePath)
+                })
+              })
+            }, 300))
+          } else {
+            _this.uploadImgFile(res.path)
+          }
+        }
+      })
+    };
+    uploadImgFile(filePath) {
+      let _this = this
+      if (!_this.qrCodeName) {
+        wx.showToast({
+          title: "请先填写图片名称",
+          icon: 'none',
+          duration: 2000
+        })
+        return
+      }
+      wx.uploadFile({
+        url: `${_this.$parent.globalData.commonUrl}/api/photoUpload?tk=${_this.$parent.globalData.tk}&storeId=${this.$parent.globalData.StoreId}`,
+        filePath: filePath,
+        name: "file",
+        header: {
+          'content-type': 'multipart/form-data'
+        },
+        success: res => {
+          if (res.statusCode == 200) {
+            var imgUrl = JSON.parse(res.data).photoURL;
+            _this.uploadImgArr.push(imgUrl)
+            _this.qrCodeUrls.push({
+              Name: _this.qrCodeName,
+              url: imgUrl
+            })
+            if (_this.uploadImgArr.length === (4 - _this.uploadLength)) {
+              _this.isShow = false
+            }
+            console.log("_this.qrCodeUrls----", _this.qrCodeUrls)
+            _this.qrCodeName = "" //重置二维码图片名称
+            _this.$apply()
+          }
+        }
+      })
+    };
+    //加载通过审核的二维码
+    loadApprovedQRCode() {
+      let url = `${this.$parent.globalData.commonUrl}/api/loadApprovedQRCode?tk=${this.$parent.globalData.tk}`
+      util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
+        console.log("加载通过审核的二维码---------", res)
+        if (res.errCode === 0) {
+          this.alreadyCheckCodeUrls = res.info
+          this.uploadLength = this.alreadyCheckCodeUrls.qrcodes.length
+          this.paramsCheckCodeUrls = this.alreadyCheckCodeUrls.qrcodes
+          this.alreadyCheckCodeUrls.qrcodes.forEach(item => {
+            if (this.alreadyCheckCodeUrls.upqrcode.id === item.id) {
+              item["isPublish"] = true
+              item["publisher"] = this.alreadyCheckCodeUrls.publisher
+            } else {
+              item["isPublish"] = false
+              item["publisher"] = "暂未上架"
+            }
+          })
+        } else {
+          wx.showToast({
+            title: `${res.errMsg}`,
+            icon: 'none',
+            duration: 2000
+          })
+        }
+        console.log("uploadLength---", this.uploadLength)
+        this.$apply()
+      })
+    }
+    //上架二维码
+    upQRCode() {
+      if (!this.paramsQrCodeURL) {
+        wx.showToast({
+          title: `请选择上架二维码`,
+          icon: 'none',
+          duration: 2000
+        })
+        return
+      }
+      let url = `${this.$parent.globalData.commonUrl}/api/upQRCode?tk=${this.$parent.globalData.tk}`
+      util.interface_post(url, this.paramsQrCodeURL[0], this.$parent.globalData.StoreId).then(res => {
+        console.log("上架二维码---------", res)
+        if (res.errorCode === 0) {
+          setTimeout(() => {
+            wx.showToast({
+              title: `上架成功`,
+              icon: 'none',
+              duration: 2000
+            })
+          }, 200);
+          this.loadApprovedQRCode()
+        }else if(res.errCode===1051){
+           setTimeout(() => {
+            wx.showToast({
+              title: `已有上架二维码`,
+              icon: 'none',
+              duration: 2000
+            })
+          }, 200);
+        }
+       
+      })
+    }
+    //下架二维码
+    downQRCode() {
+      if (!this.paramsQrCodeURL) {
+        wx.showToast({
+          title: `请选择下架二维码`,
+          icon: 'none',
+          duration: 2000
+        })
+        return
+      }
+      let url = `${this.$parent.globalData.commonUrl}/api/downQRCode?tk=${this.$parent.globalData.tk}`
+      util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
+        console.log("下架二维码---------", res)
+        if(res.errorCode===0){
+          this.loadApprovedQRCode()
+        }
+      })
+    }
+    //删除备选库二维码
+    delPrepQRCode() {
+      if (!this.paramsQrCodeURL) {
+        wx.showToast({
+          title: `请选择删除二维码`,
+          icon: 'none',
+          duration: 2000
+        })
+        return
+      }
+      let data = {
+        ids: [this.paramsQrCodeURL[0].id]
+      }
+      console.log("data---", data)
+      let url = `${this.$parent.globalData.commonUrl}/api/delPrepQRCode?tk=${this.$parent.globalData.tk}`
+      util.interface_post(url, data, this.$parent.globalData.StoreId).then(res => {
+        console.log("删除备选库二维码---------", res)
+        this.loadApprovedQRCode()
+      })
+    }
+    events = {};
+    onLoad() {
+      this.loadApprovedQRCode()
+      this.winHeight = util.getScrollHeight(100)
+    }
+    // Other properties
+  }
+</script>
+
+<style lang="less">
+  .autoCheck-wrapper {
+    height: 100%;
+    background-color: #fff;
+    .autoCheck-headTitle {
+      height: 100rpx;
+      display: flex;
+      justify-content: space-around;
+      border-bottom: 1rpx solid #ccc;
+      margin-bottom: 20rpx;
+      .left,
+      .right {
+        color: #333;
+        text-align: center;
+        height: 100rpx;
+        line-height: 100rpx;
+      }
+      .active {
+        color: red;
+      }
+    }
+    .autoCheck-left-tab {
+      .swiper-leftItem {
+        display: flex;
+        flex-direction: column;
+        .autoCheck-qrCode {
+          margin-bottom: 20rpx;
+          display: flex;
+          justify-content: space-around;
+          .qrCode {
+            width: 200rpx;
+            height: 200rpx;
+          }
+          .qrCode-name {
+            width: 250rpx;
+            height: 40rpx;
+            line-height: 40rpx;
+            text-indent: 8rpx;
+            margin-top: 60rpx;
+            border: 1px solid #ccc;
+          }
+        }
+        .autoCheck-add {
+          display: flex;
+          justify-content: space-around;
+          .add-pic {
+            width: 200rpx;
+            height: 200rpx;
+          }
+          .input {
+            width: 250rpx;
+            height: 40rpx;
+            line-height: 40rpx;
+            text-indent: 8rpx;
+            margin-top: 60rpx;
+            border: 1px solid #ccc;
+          }
+        }
+      }
+      .autoCheck-left-btn {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 30rpx;
+      }
+    }
+    .autoCheck-right-tab {
+      .swiper-rightItem {
+        .label_wrapper {
+          display: flex;
+          padding: 10rpx 20rpx;
+          .checkbox {
+            margin-top: 130rpx
+          }
+          .list_item {
+            display: flex;
+            flex: 1;
+            justify-content: space-around;
+            .qrCodeUrl {
+              width: 300rpx;
+              height: 300rpx;
+            }
+            .qrCode-desc-wrapper {
+              display: flex;
+              flex-direction: column;
+              justify-content: space-around;
+              .qrcode-name {}
+              .qrcode-status {
+                color: red;
+              }
+              .publish-people {}
+            }
+          }
+        }
+      }
+      .autoCheck-btn-wrapper {
+        display: flex;
+        margin-top: 60rpx;
+      }
+      .tips {
+        margin-top: 10rpx;
+        font-weight: 800;
+        margin: 10px;
+        display: inline-block;
+      }
+    }
+  }
+</style>
+<style lang="less" src="../../mixins/less/btn.less">
+
+</style>

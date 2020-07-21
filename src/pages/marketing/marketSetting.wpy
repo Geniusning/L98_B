@@ -43,7 +43,7 @@
         <navigator hover-class="none" url='/pages/marketing/inviteDiscount/inviteDiscount' class='setting'>设置</navigator>
       </view>
     </view>
-    <!-- 精准推送 -->
+    <!-- 员工送券 -->
     <view class='item'>
       <view class='item-left'>
         <image class='pic' src='../../images/game.png'></image>

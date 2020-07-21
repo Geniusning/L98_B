@@ -80,6 +80,8 @@
         'pages/mine/dutyPeople/dutyPeople',
         'pages/mine/addServicer',
         'pages/mine/addCashier',
+        'pages/mine/autoCheck',
+        'pages/mine/waitForCheck',
         'pages/mine/otherSetting'
       ],
       permission: {

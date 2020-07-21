@@ -8,14 +8,15 @@
                   <radio color="#FFBA00" value="{{item.id}}" checked="{{item.checked}}"  class="checkbox"/>
                   <view class="list_item">
                     <view class="list_item_top">
-                      <view class='isFinishTrue' wx:if="{{item.isPutAway}}">上架中</view>
+                      <view class='isFinishTrue isexpire' wx:if="{{item.isFinish}}">已过期</view>
+                      <view class='isFinishTrue' wx:elif="{{item.isPutAway}}">上架中</view>
                       <view class='isFinishFalse' wx:else>已下架</view>
                       <view class="theme">主题：{{item.theme}}</view>
                       <view class="clientTag">客户：新客、低频</view>
                     </view>
                     <view class="list_item_middle">
                       <view class="discount_content">{{item.couponInfo.content}}</view>
-                      <view class="conditon">条件：{{item.Condition}}</view>
+                      <view class="conditon">页面：{{item.Condition}}</view>
                     </view>
                     <view class="list_item_bottom">
                       <view class="time">
@@ -49,15 +50,16 @@
       winHeight: "",
       AIdiscountList: [],
       AIactivityId: "",
-      couponInfo: []
+      selectedCouponInfo: []
     };
     methods = {
       checkboxAICard(e) {
         this.AIactivityId = e.detail.value;
         this.AIIDs[0] = e.detail.value
-        this.couponInfo = this.AIdiscountList.filter(item => {
+        this.selectedCouponInfo = this.AIdiscountList.filter(item => {
           return item.id === this.AIactivityId
         })
+        console.log("this.selectedCouponInfo---",this.selectedCouponInfo)
         console.log(this.AIactivityId)
       },
       //上架
@@ -76,6 +78,14 @@
         //   })
         //   return
         // }
+        if(this.hasSameUpAct()){
+           wx.showToast({
+            title: '请先下架同类活动',
+            icon: 'none',
+            duration: 2000
+          })
+          return
+        }
         if (!this.AIactivityId) {
           wx.showToast({
             title: '请选择活动',
@@ -126,7 +136,7 @@
           })
           return
         }
-        if (this.couponInfo[0].isPutAway) {
+        if (this.selectedCouponInfo[0].isPutAway) {
           wx.showToast({
             title: '请下架后删除',
             icon: 'none',
@@ -148,6 +158,25 @@
           this.getAICardList()
         })
       }
+    };
+    //判断同类活动已有上架
+    hasSameUpAct(){
+      console.log("this.selectedCouponInfo--",this.selectedCouponInfo)
+      console.log("this.AIdiscountList--",this.AIdiscountList)
+      let result = null
+      for (let i = 0; i < this.AIdiscountList.length; i++) {
+        const element = this.AIdiscountList[i];
+        if(this.selectedCouponInfo[0].id===element.id){
+          continue
+        }
+        if((element.Condition === this.selectedCouponInfo[0].Condition) && (element.isPutAway===true)){
+          result =  true
+          break
+        }else{
+          result =  false
+        }
+      }
+      return result
     };
     getAICardList() {
       let url = `${this.$parent.globalData.commonUrl}/api/loadDispatchCouponList?tk=${this.$parent.globalData.tk}`
@@ -188,6 +217,9 @@
           break;
         case 4:
           conditionType = "非访问状态，系统通知(即用微信订单通知)"
+          break;
+        case 5:
+          conditionType = "访问好友页面"
           break;
         default:
           break;
@@ -236,12 +268,18 @@
               transform: rotate(-20deg);
               border: 1px solid red;
               color: red;
-            } // .isFinishTrue {
-            //   border: 1px solid #333;
-            // }
-            // .isFinishFalse {
-            //   border: 1px solid red;
-            // }
+            } 
+            .isFinishTrue {
+              border: 1px solid red;
+            }
+            .isFinishFalse {
+              border: 1px solid #333;
+              color: #333
+            }
+            .isexpire{
+               border: 1px solid green;
+               color: green;
+            }
             .theme {
               color: #333;
               font-size: 12px;
