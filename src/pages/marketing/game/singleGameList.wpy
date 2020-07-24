@@ -127,6 +127,7 @@
               });
               let gameListData = await _this.getGameList();
               _this.getHandledGameList(gameListData);
+              _this.scheduleGameInfo = await _this.loadArenaScheduleTask();
               _this.$apply()
             }else{
                 wx.showToast({

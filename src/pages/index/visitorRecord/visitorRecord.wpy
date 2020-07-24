@@ -24,10 +24,6 @@
         <text class='totalNum'>{{totalPeople}}</text>
       </view>
     </view>
-    <!-- 折线图 -->
-    <!-- <view class="container">
-                  <canvas canvas-id="lineCanvas" disable-scroll="true" class="canvas" @touchstart="touchHandler" @touchmove="moveHandler" @touchend="touchEndHandler"></canvas>
-                </view> -->
     <view class='date-box'>
       <view class='dateTitle-wrapper'>
         <text class='date'>日期</text>
