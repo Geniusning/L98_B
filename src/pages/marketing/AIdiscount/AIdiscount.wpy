@@ -14,26 +14,9 @@
         </picker>
       </view>
     </view>
-    <!-- 第三步 -->
-    <view class="stepOne-wrapper">
-      <view class="title">第三步：选择客户</view>
-      <view class="select-box">
-        <checkbox @tap="selectAll" color="#FFBA00" checked='{{isAllChecked}}' style="margin-bottom:10rpx" class="selectAll" />全选
-        <checkbox-group  class="radio-group">
-          <repeat for="{{usersTypeList}}" key="index" item="item">
-            <label class="label_tag" data-usersTypeId="{{item.checked}}" @tap="getUserTypeId({{index}})">
-                <view class="radio-circle">
-                    <checkbox color="#FFBA00"  checked="{{item.checked}}" value="{{item.id}}" data-usersTypeId="{{item.id}}"/>
-                </view>
-                <view class="radio-text">{{item.value}}</view>
-              </label>
-          </repeat>
-        </checkbox-group>
-      </view>
-    </view>
     <!-- 第二步 -->
     <view class="stepOne-wrapper" style="margin-top:30rpx">
-      <view class="title">第四步：选择性别</view>
+      <view class="title">第三步：选择性别</view>
       <view class="select-channel">
         <picker @change="bindPickerSex" range="{{sexList}}">
           <view class="picker" style="background:#ccc;color:#fff;display:inline-block;padding:0 6rpx">当前选择：{{sexList[sexListIndex]}}</view>
@@ -42,7 +25,7 @@
     </view>
     <!-- 第四步 -->
     <view class="stepTwo-wrapper">
-      <view class="title">第五步：选择优惠券</view>
+      <view class="title">第四步：选择优惠券</view>
       <scroll-view scroll-y class="scrollView">
         <radio-group @change="checkboxCoupon">
           <repeat for="{{cardList}}" key="index">
@@ -56,7 +39,7 @@
     </view>
     <!-- 第五步 -->
     <view class="stepFour-wrapper">
-      <view class="title">第六步：发布时间</view>
+      <view class="title">第五步：发布时间</view>
       <view class="customTime-box">
         <picker mode="date" value="{{date}}" start="2019-02-01" end="2030-09-01" @change="bindStartDateChange">
           <view class="picker">开始时间: {{startDate}}</view>
@@ -70,8 +53,6 @@
     </view>
     <!-- 按钮 -->
     <view class="btn-wrapper">
-      <!-- <button >保存</button>
-          <button >申请发布</button> -->
       <button @tap="dispatchDiscount" class="center-btn">发布</button>
     </view>
   </view>
@@ -89,88 +70,45 @@
       cardListCom: cardListCom
     };
     data = {
-      sexList: ["男", "女", "全部"],
-      sexListIndex: 2,
+      sexList: ["全部","男","女"],
+      sexListIndex: 0,
       dispatchConditionList: [{
           id: 0,
           name: "关注有礼，访问首页"
         },
         {
           id: 1,
-          name: "交友有礼，找朋友页"
+          name: "找朋友页面送券"
         }, {
           id: 2,
-          name: "访问游戏大厅，参赛有礼"
+          name: "邻桌局小结页送券"
         }, {
           id: 3,
-          name: "比赛完成页，参赛安慰奖"
+          name: "好友局局小结页送券"
         },
         {
           id: 4,
-          name: "系统通知(即用微信订单通知)"
+          name: "比赛局完成页送券"
         },
         {
           id: 5,
-          name: "访问好友、邻桌局小结页"
-        }
-      ],
-      usersTypeList: [{
-          id: '1',
-          value: '新客',
-          checked: false
+          name: "发起核销后送券"
         },
         {
-          id: '2',
-          value: '本月低频',
-          checked: false
+          id: 6,
+          name: "评价有礼"
         },
         {
-          id: '4',
-          value: '本月中频',
-          checked: false
-        },
-        {
-          id: '8',
-          value: '本月高频',
-          checked: false
-        },
-        {
-          id: '16',
-          value: '本月未到店',
-          checked: false
-        },
-        {
-          id: '0',
-          value: '从未到店',
-          checked: false
-        },
-      ],
-      modelList: [{
-          id: 'instant',
-          name: '即时',
-          checked: 'true'
-        },
-        {
-          id: 'custom',
-          name: '自定义'
+          id: 7,
+          name: "买单有礼"
         }
       ],
       cardList: [],
       cardId: "",
       conditionIndex: 0, //发布条件的索引
-      // timeModel:'instant',
       startDate: '2019-01-01',
-      endDate: "2022-01-21",
-      isTrue: true,
-      isFalse: false,
-     
-      selectedCouponIds: [],
-      selectedAllStatus: false,
-      userTypeNumList: [],
-      userIDs: [],
-      conditonType: "",
-      AItheme: "",
-      isAllChecked:false,
+      endDate: "2025-01-21",
+      AItheme: ""
     };
     methods = {
       //性别选择
@@ -181,16 +119,14 @@
       //发布优惠券
       dispatchDiscount() {
         let url = `${this.$parent.globalData.commonUrl}/api/dispatchCoupon?tk=${this.$parent.globalData.tk}`;
-        if (this.userIDs.length == 7) {
-          this.userIDs = [32];
-        }
+      
         var data = {
-          userGroupType: this.userIDs.length > 0 ? this.userIDs : [32],
           couponID: this.cardId,
           theme: this.AItheme,
-          Condition: Number(this.conditionIndex) || 0,
+          condition: Number(this.conditionIndex) || 0,
           startTime: this.startDate,
-          endTime: this.endDate
+          endTime: this.endDate,
+          sex:this.sexListIndex
         }
         console.log("data----------", data)
         for (var key in data) {
@@ -228,56 +164,15 @@
         this.AItheme = e.detail.value
         console.log(e.detail.value)
       },
-      selectAll(e) {
-        this.isAllChecked = !this.isAllChecked
-        console.log("this.isAllChecked---", this.isAllChecked)
-        if (this.isAllChecked) {
-          this.usersTypeList.forEach(item => {
-            item.checked = true
-            this.userIDs = [1, 2, 4, 8, 16,0]
-          })
-        } else {
-          this.usersTypeList.forEach(item => {
-            item.checked = false
-            this.userIDs = []
-          })
-        }
-      },
-      getUserTypeId(index, e) {
-        this.userIDs = []
-        this.usersTypeList[index].checked = !this.usersTypeList[index].checked
-        let count = 0
-        this.usersTypeList.forEach(item => {
-          if (!item.checked) {
-            this.isAllChecked = false
-          } else {
-            count++
-          }
-          if (count === 6) {
-            this.isAllChecked = true
-          }
-          if (item.checked) {
-            this.userIDs.push(Number(item.id))
-          }
-        })
-        console.log('count', count)
-        console.log('this.userIDs', this.userIDs)
-        this.$apply()
-      },
       // 优惠券选择
       checkboxCoupon(e) {
         this.cardId = e.detail.value;
-        console.log(this.cardId)
+        console.log("this.cardId---",this.cardId)
       },
       // 发放条件
       bindPickerCondition: function(e) {
         this.conditionIndex = e.detail.value
       },
-      // 发布模式
-      // radioModel(e) {
-      //   console.log('发布模式：', e.detail.value);
-      //   this.timeModel = e.detail.value;
-      // },
       // 时间选择
       bindStartDateChange: function(e) {
         console.log(e.detail.value)

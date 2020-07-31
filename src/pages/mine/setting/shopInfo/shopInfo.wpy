@@ -393,7 +393,7 @@
             _this.uploadImgUrl = tempFilePaths[0];
             _this.$apply();
             wx.uploadFile({
-              url: `${_this.$parent.globalData.commonUrl}/api/photoUpload?tk=${_this.$parent.globalData.tk}`,
+              url: `${_this.$parent.globalData.commonUrl}/api/photoUpload?tk=${_this.$parent.globalData.tk}&storeId=${_this.$parent.globalData.StoreId}`,
               filePath: _this.uploadImgUrl,
               name: "file",
               header: {

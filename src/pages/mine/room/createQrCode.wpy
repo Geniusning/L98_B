@@ -1,0 +1,237 @@
+<template>
+ <view class="roomList_wrapper">
+  <view class="top_handle">
+   <checkbox-group class="checkBox_group" @change="selectAll">
+    <label class="top_checkBox">
+ 							<checkbox class="top_checkbox_item" value="all"  color="orange"/>
+ 							<view class="allSelect">
+ 									全选
+ 							</view>
+ 					</label>
+   </checkbox-group>
+   <view class="createQrcode_box">
+    <picker @change="bindPickerChange" value="{{qrCodeIndex}}" range="{{qrCodeTypeList}}">
+     <view class="picker">
+      请选择二维码类型：{{qrCodeTypeList[qrCodeIndex]}}
+     </view>
+    </picker>
+   </view>
+  </view>
+  <scroll-view scroll-y style="height:{{winHeight}}rpx">
+   <checkbox-group class="radio-group" @change="changeDesk">
+    <view wx:if="{{roomShowList.length}}">
+     <repeat for="{{roomShowList}}" key="index" item="item">
+      <label class="radio" style="justify-content: flex-start	">
+ 									<checkbox  color="orange" value="{{item.id}}" checked="{{item.isSelect}}"/>
+ 									<view class="room_name">{{item.name}}-{{item.code}}</view>
+ 							</label>
+     </repeat>
+    </view>
+    <view @tap.stop="goToCreateRoom" class="noData" wx:else>暂无房间，请前往创建房间</view>
+   </checkbox-group>
+  </scroll-view>
+  <view wx:if="{{roomShowList.length}}" style="display:flex;justify-content:space-around">
+   <button class='btn center-btn' type="default" @tap='createQrCode'>创建</button>
+  </view>
+ </view>
+</template>
+
+<script>
+ import wepy from 'wepy';
+ const util = require('../../../utils/utils.js')
+ export default class createQrCode extends wepy.page {
+  config = {
+   navigationBarTitleText: '创建桌贴码'
+  };
+  data = {
+   winHeight: "",
+   roomList: [],
+   roomShowList: [],
+   deskIds: [],
+   qrCodeIndex: 0,
+   qrCodeTypeList: ["公众号的桌贴码", "首页的桌贴码", "游戏的桌贴码", "交友的桌贴码"],
+   typeOfImg: ["platformQRcodeURL", "homeImagesURL", "gameImagesURL", "friendImagesURL"]
+  };
+  methods = {
+   createQrCode() {
+    let data = {
+     type: this.qrCodeIndex,
+     deskIDs: this.deskIds
+    }
+    let url = `${this.$parent.globalData.commonUrl}/api/createDeskQRcode?tk=${this.$parent.globalData.tk}`;
+    util.interface_post(url, data, this.$parent.globalData.StoreId).then(res => {
+     console.log("res----", res)
+     if (res.errCode === 0) {
+      util.showModal(`创建成功`)
+     } else {
+      util.showModal(res.errMsg)
+     }
+    })
+   },
+   bindPickerChange(e) {
+    let index = Number(e.detail.value)
+    console.log("index---", index)
+    this.qrCodeIndex = index
+    let type = this.typeOfImg[this.qrCodeIndex]
+    this.roomShowList = this.roomList.filter(room => {
+     return room[type] === ""
+    })
+    console.log("this.roomList--------", this.roomShowList)
+   },
+   //全选
+   selectAll(e) {
+    this.dataImgeList = [];
+    let isAll = e.detail.value[0]
+    if (isAll === "all") {
+     this.roomList.forEach(room => {
+      room["isSelect"] = true;
+      this.deskIds.push(room.id)
+     })
+    } else {
+     this.roomList.forEach(room => {
+      room["isSelect"] = false;
+      this.deskIds = []
+     })
+    }
+    this.$apply()
+    console.log("this.roomList", this.roomList)
+   },
+   cancel() {
+    this.showRemarksModal = false;
+   },
+   //显示备注模态框
+   showRemarkShow(id) {
+    this.deskRemarkId = id
+    console.log("this.deskRemarkId----", this.deskRemarkId)
+    this.showRemarksModal = true;
+   },
+   changeDesk(e) {
+    console.log("绑定的房间id------------------", e.detail.value)
+    this.deskIds = e.detail.value;
+   },
+   goToCreateRoom() {
+    wx.redirectTo({
+     url: '/pages/mine/room/createRoom'
+    })
+   },
+  };
+  _loadRoomList() {
+   return new Promise((resolve,reject)=>{
+    let url = `${this.$parent.globalData.commonUrl}/api/loadDesks?tk=${this.$parent.globalData.tk}`;
+    util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
+     console.log("res----", res);
+     if (res.errCode === 0) {
+      this.roomList = res.desks
+      this.roomShowList = res.desks
+      resolve(this.roomShowList)
+     }
+     this.$apply();
+    })
+   })
+  }
+  events = {};
+  async onShow() {
+   let roomList = await this._loadRoomList();
+   this.roomShowList = roomList.filter(room => {
+     return room["platformQRcodeURL"] === ""
+    })
+    console.log("this.roomList--------", this.roomShowList)
+  }
+  onLoad(e) {
+   this.winHeight = util.getScrollHeight(230)
+  }
+  // Other properties
+ }
+</script>
+
+<style lang="less">
+ .roomList_wrapper {
+  padding: 10rpx;
+  .top_handle {
+   display: flex;
+   justify-content: space-between;
+   margin-bottom: 10rpx;
+   position: relative;
+   .createQrcode_box {
+    position: absolute;
+    top: 20rpx;
+    right: 330rpx;
+    width: 100rpx;
+    margin: 0;
+    padding: 0;
+    .picker {
+     width: 408rpx;
+     background-color: #ccc;
+     color: #fff;
+     padding: 10rpx;
+    }
+   }
+   .top_checkBox {
+    display: flex;
+    margin-top: 30rpx;
+    .allSelect {
+     padding: 8rpx;
+     box-sizing: border-box;
+    }
+   }
+  }
+  .radio-group {
+   .radio {
+    display: flex;
+    background-color: #fff;
+    margin-bottom: 10rpx;
+    padding: 50rpx 30rpx;
+    justify-content: space-between;
+    .remarks {
+     font-size: 26rpx;
+     color: red;
+     text-decoration: underline;
+     margin-top: 4rpx;
+    }
+   }
+   .room_name {
+    margin-left: 30rpx;
+    padding-top: 6rpx;
+   }
+  }
+  .btn {
+   margin-top: 10rpx;
+   width: 270rpx
+  }
+  .bindBox {
+   display: flex;
+   justify-content: space-around;
+  }
+  .modal,
+  .createRoomModal {
+   position: fixed;
+   left: 0;
+   right: 0;
+   top: 0;
+   bottom: 0;
+   z-index: 1;
+   .remarks_content {
+    width: 400rpx;
+    height: 178rpx;
+    background-color: #f1f1f1;
+    margin: 40% auto;
+    padding: 26rpx;
+    border-radius: 14rpx;
+    .inputArea {
+     margin-bottom: 26rpx;
+     border: 1px solid #ccc;
+    }
+    .btn_wrapper {
+     display: flex;
+     justify-content: space-around;
+    }
+    .btn {
+     width: 160rpx;
+    }
+   }
+  }
+ }
+</style>
+<style lang="less" src="../../../mixins/less/btn.less">
+
+</style>

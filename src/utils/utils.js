@@ -2,7 +2,7 @@
  * @Author: liuning 
  * @Date: 2020-05-11 11:14:58 
  * @Last Modified by: liuning
- * @Last Modified time: 2020-07-14 14:44:37
+ * @Last Modified time: 2020-07-30 17:43:21
  */
 
 //获取当天日期
@@ -202,6 +202,19 @@ const returnDiscountContentNoType = (coupon) => {
   } else if (parseInt(coupon.type) === 6) {
     return coupon.content
   }
+}
+const showModal = (text)=>{
+    setTimeout(() => {
+      wx.showToast({
+        title: text,
+        icon: 'none',
+        duration: 2000
+      });
+    }, 500);
+  // wx.showModal({
+  //   title: '提示',
+  //   content: text,
+  // })
 }
 var needLoadingRequestCount = 0
 const interface_post = (url, data, storeId) => {
@@ -501,5 +514,6 @@ module.exports = {
   getThisMonth1,
   returnDiscountContentNoType,
   delSameItem,
-  isExpired
+  isExpired,
+  showModal
 }

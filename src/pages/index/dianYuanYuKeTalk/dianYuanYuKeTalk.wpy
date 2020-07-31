@@ -64,11 +64,7 @@
     methods = {
       gotoMarketDetail(count, date) {
         if (count == 0) {
-          wx.showToast({
-            title: "暂无数据",
-            icon: 'none',
-            duration: 2000
-          })
+          util.showModal("暂无数据")
           return
         }
         wx.navigateTo({

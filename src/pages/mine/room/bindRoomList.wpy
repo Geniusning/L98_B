@@ -1,404 +1,411 @@
 <template>
-    <view class="roomList_wrapper">
-        <view wx:if="{{roomList.length}}" class="top_handle">
-            <checkbox-group class="checkBox_group" @change="selectAll">
-                <label class="top_checkBox">
-                            <checkbox class="top_checkbox_item" value="all"  color="orange"/>
-                            <view class="allSelect">
-                                全选
-                            </view>
-                        </label>
-            </checkbox-group>
-            <!-- <view class="downLoadBtn"></view> -->
-        </view>
-        <scroll-view scroll-y style="height:{{winHeight}}rpx">
-            <checkbox-group wx:if="{{listOrBindType=='bind'}}" class="radio-group" @change="changeDesk">
-                <view wx:if="{{roomList.length}}">
-                    <repeat for="{{roomList}}" key="index" item="item">
-                        <label class="radio" style="justify-content: flex-start	">
-                                    <checkbox  color="orange" value="{{item.id}}" checked="{{item.isSelect}}"/>
-                                    <view class="room_name">{{item.name}}-{{item.code}}</view>
-                                </label>
-                    </repeat>
-                </view>
-                <view @tap.stop="goToCreateRoom" class="noData" wx:else>暂无房间，请前往创建房间</view>
-            </checkbox-group>
-            <checkbox-group wx:else class="radio-group" @change="selectDeleteDesk">
-                <view wx:if="{{roomList.length}}">
-                    <repeat for="{{roomList}}" key="index" item="item">
-                        <label class="radio" @tap="tapLabel"> 
-                                <checkbox  color="orange" value="{{item.id}}" checked="{{item.isSelect}}"/>
-                                <!-- <view style="display:flex">  -->
-                                    <view class="room_name">{{item.name}}-{{item.code}}号桌</view>
-                                    <view class="remarks" @tap="showRemarkShow({{item.id}})">备注</view>
-                                <!-- </view>     -->
-                            </label>
-                    </repeat>
-                </view>
-                <view @tap.stop="goToCreateRoom" class="noData" wx:else>暂无房间，请前往创建房间</view>
-            </checkbox-group>
-        </scroll-view>
-        <view wx:if="{{roomList.length}}">
-            <view wx:if="{{listOrBindType=='bind'}}" class="bindBox">
-                <button class='btn' type="default" @tap='bindDeskId'>绑定</button>
-                <button class='btn' type="default" @tap='gotoBindedDeskList'>查看已绑定</button>
-            </view>
-            <view wx:else style="display:flex;justify-content:space-around">
-                <button class='btn' type="default" @tap='showCreateModal'>创建</button>
-                <button class='btn' type="default" @tap='bindDelete'>删除</button>
-            </view>
-        </view>
-        <view wx:if="{{!roomList.length && listOrBindType=='bind'}}">
-            <button class='btn' type="default" @tap='gotoBindedDeskList'>查看已绑定</button>
-        </view>
-        <!-- 备注弹框 -->
-        <view wx:if="{{showRemarksModal}}" class="modal">
-            <view class="remarks_content">
-                <input class="inputArea" type="text" placeholder="请输入备注房名" maxlength="10" @input="setRemark">
-                </input>
-                <view class="btn_wrapper">
-                    <button @tap.stop="cancel" class="btn" size="defult" type="defult">取消</button>
-                    <button @tap.stop="addRemarks" class="btn" size="defult" type="defult">确定</button>
-                </view>
-            </view>
-        </view>
-        <!-- 新建房间弹框 -->
-        <view wx:if="{{showCreateRoomModal}}" class="createRoomModal">
-            <view class="remarks_content">
-                <input @input="inputRoomNumber" class="inputArea" type="number" placeholder="请输入创建房间数量" maxlength="5" @blur="">
-                </input>
-                <view class="btn_wrapper">
-                    <button @tap.stop="cancelCreateRoom" class="btn" size="defult" type="defult">取消</button>
-                    <button @tap.stop="createRoom" class="btn" size="defult" type="defult">确定</button>
-                </view>
-            </view>
-        </view>
-    </view>
+	<view class="roomList_wrapper">
+		<view wx:if="{{roomList.length}}" class="top_handle">
+			<checkbox-group class="checkBox_group" @change="selectAll">
+				<label class="top_checkBox">
+							<checkbox class="top_checkbox_item" value="all"  color="orange"/>
+							<view class="allSelect">
+									全选
+							</view>
+					</label>
+			</checkbox-group>
+			<view class="createQrcode_box" @tap="goToCreateQrCode">前往创建桌贴码</view>
+		</view>
+		<scroll-view scroll-y style="height:{{winHeight}}rpx">
+			<checkbox-group wx:if="{{listOrBindType=='bind'}}" class="radio-group" @change="changeDesk">
+				<view wx:if="{{roomList.length}}">
+					<repeat for="{{roomList}}" key="index" item="item">
+						<label class="radio" style="justify-content: flex-start	">
+									<checkbox  color="orange" value="{{item.id}}" checked="{{item.isSelect}}"/>
+									<view class="room_name">{{item.name}}-{{item.code}}</view>
+							</label>
+					</repeat>
+				</view>
+				<view @tap.stop="goToCreateRoom" class="noData" wx:else>暂无房间，请前往创建房间</view>
+			</checkbox-group>
+			<checkbox-group wx:else class="radio-group" @change="selectDeleteDesk">
+				<view wx:if="{{roomList.length}}">
+					<repeat for="{{roomList}}" key="index" item="item">
+						<label class="radio" > 
+									<checkbox  color="orange" value="{{item.id}}" checked="{{item.isSelect}}"/>
+									<!-- <view style="display:flex">  -->
+											<view class="room_name">{{item.name}}-{{item.code}}号桌</view>
+											<view class="remarks" @tap="showRemarkShow({{item.id}})">备注</view>
+									<!-- </view>     -->
+							</label>
+					</repeat>
+				</view>
+				<view @tap.stop="goToCreateRoom" class="noData" wx:else>暂无房间，请前往创建房间</view>
+			</checkbox-group>
+		</scroll-view>
+		<view wx:if="{{roomList.length}}">
+			<view wx:if="{{listOrBindType=='bind'}}" class="bindBox">
+				<button class='btn' type="default" @tap='bindDeskId'>绑定</button>
+				<button class='btn' type="default" @tap='gotoBindedDeskList'>查看已绑定</button>
+			</view>
+			<view wx:else style="display:flex;justify-content:space-around">
+				<button class='btn' type="default" @tap='showCreateModal'>创建</button>
+				<button class='btn' type="default" @tap='bindDelete'>删除</button>
+			</view>
+		</view>
+		<view wx:if="{{!roomList.length && listOrBindType=='bind'}}">
+			<button class='btn' type="default" @tap='gotoBindedDeskList'>查看已绑定</button>
+		</view>
+		<!-- 备注弹框 -->
+		<view wx:if="{{showRemarksModal}}" class="modal">
+			<view class="remarks_content">
+				<input class="inputArea" type="text" placeholder="请输入备注房名" maxlength="10" @input="setRemark">
+				</input>
+				<view class="btn_wrapper">
+					<button @tap.stop="cancel" class="btn" size="defult" type="defult">取消</button>
+					<button @tap.stop="addRemarks" class="btn" size="defult" type="defult">确定</button>
+				</view>
+			</view>
+		</view>
+		<!-- 新建房间弹框 -->
+		<view wx:if="{{showCreateRoomModal}}" class="createRoomModal">
+			<view class="remarks_content">
+				<input @input="inputRoomNumber" class="inputArea" type="number" placeholder="请输入创建房间数量" maxlength="5" @blur="">
+				</input>
+				<view class="btn_wrapper">
+					<button @tap.stop="cancelCreateRoom" class="btn" size="defult" type="defult">取消</button>
+					<button @tap.stop="createRoom" class="btn" size="defult" type="defult">确定</button>
+				</view>
+			</view>
+		</view>
+	</view>
 </template>
 
 <script>
-    import wepy from 'wepy';
-    const util = require('../../../utils/utils.js')
-    export default class bindRoomList extends wepy.page {
-        config = {
-            navigationBarTitleText: '绑定房间'
-        };
-        data = {
-            showRemarksModal: false,
-            showCreateRoomModal: false,
-            winHeight: "",
-            roomList: [],
-            deskIds: [],
-            listOrBindType: "",
-            roomCounts: 1,
-            deskRemarkId: "",
-            remark: "",
-            // loadFlag:true
-        };
-        methods = {
-            tapLabel() {
-                console.log("tap log label")
-            },
-            //全选
-            selectAll(e) {
-                this.dataImgeList = [];
-                let isAll = e.detail.value[0]
-                console.log("isAll----------", isAll)
-                if (isAll === "all") {
-                    this.roomList.forEach(room => {
-                        room["isSelect"] = true;
-                        this.deskIds.push(room.id)
-                    })
-                } else {
-                    this.roomList.forEach(room => {
-                        room["isSelect"] = false;
-                        this.deskIds = []
-                    })
-                }
-                this.$apply()
-                console.log("this.roomList", this.roomList)
-            },
-            addRemarks() {
-                if (this.remark == "") {
-                    wx.showToast({
-                        title: '请输入备注',
-                        icon: 'none',
-                        duration: 2000
-                    })
-                }
-                let url = `${this.$parent.globalData.commonUrl}/api/setDeskRemark?tk=${this.$parent.globalData.tk}&deskID=${this.deskRemarkId}&remark=${this.remark}`;
-                util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
-                    console.log(res)
-                    if (res.errCode == 0) {
-                        this.showRemarksModal = false
-                        this._loadRoomList();
-                    } else {
-                        wx.showToast({
-                            title: '网络繁忙，请稍等',
-                            icon: 'none',
-                            duration: 2000
-                        })
-                    }
-                })
-            },
-            cancel() {
-                this.showRemarksModal = false;
-            },
-            //显示备注模态框
-            showRemarkShow(id) {
-                this.deskRemarkId = id
-                console.log("this.deskRemarkId----", this.deskRemarkId)
-                this.showRemarksModal = true;
-            },
-            changeDesk(e) {
-                console.log("绑定的房间id------------------", e.detail.value)
-                this.deskIds = e.detail.value;
-            },
-            // 选择删除的房间
-            selectDeleteDesk(e) {
-                console.log("选择删除的房间------------", e.detail.value)
-                this.deskIds = e.detail.value
-            },
-            setRemark(e) {
-                this.remark = e.detail.value
-                console.log(this.remark)
-            },
-            //删除房间
-            bindDelete() {
-                if (!this.deskIds) {
-                    wx.showToast({
-                        title: '请选定房间号',
-                        icon: 'none',
-                        duration: 2000
-                    })
-                    return false;
-                }
-                let url = `${this.$parent.globalData.commonUrl}/api/deleteDesks?tk=${this.$parent.globalData.tk}`;
-                let deskIdObj = {
-                    phone: this.$parent.globalData.userInfo.phone,
-                    deskIDs: {
-                        id: this.deskIds
-                    }
-                }
-                console.log("删除房间参数----------", deskIdObj)
-                util.interface_post(url, deskIdObj,this.$parent.globalData.StoreId).then(res => {
-                    console.log(res);
-                    if (res.errCode === 0) {
-                        wx.showToast({
-                            title: '删除成功',
-                            icon: 'none',
-                            duration: 2000
-                        })
-                        this._loadNoBindRoomList()
-                    }
-                })
-            },
-            //创建房间
-            createRoom() {
-                // if(this.loadFlag){
-                // this.loadFlag = !this.loadFlag
-                // }
-                let url = `${this.$parent.globalData.commonUrl}/api/createDesk?tk=${this.$parent.globalData.tk}&count=${this.roomCounts}&phone=${this.$parent.globalData.userInfo.phone}`;
-                util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
-                    console.log(res);
-                    if (res.errCode === 0) {
-                        // this.loadFlag = !this.loadFlag
-                        wx.showToast({
-                            title: '创建房间成功',
-                            icon: 'none',
-                            duration: 1000
-                        })
-                        this.roomCounts = ""
-                        setTimeout(() => {
-                            this._loadRoomList();
-                        }, 100);
-                    }
-                })
-            },
-            //输入创建房间数量
-            inputRoomNumber(e) {
-                console.log(e.detail.value);
-                this.roomCounts = Number(e.detail.value);
-            },
-            //隐藏创建房间弹框
-            cancelCreateRoom() {
-                this.showCreateRoomModal = false
-            },
-            //显示创建房间弹框
-            showCreateModal() {
-                this.showCreateRoomModal = true
-            },
-            bindDeskId() {
-                if (!this.deskIds) {
-                    wx.showToast({
-                        title: '请选定房间号',
-                        icon: 'none',
-                        duration: 2000
-                    })
-                    return false;
-                }
-                let url = `${this.$parent.globalData.commonUrl}/api/setDeskHolder?tk=${this.$parent.globalData.tk}`;
-                let deskIdObj = {
-                    phone: this.$parent.globalData.userInfo.phone,
-                    deskIDs: {
-                        id: this.deskIds
-                    }
-                }
-                console.log("绑定参数----------", deskIdObj)
-                util.interface_post(url, deskIdObj,this.$parent.globalData.StoreId).then(res => {
-                    console.log(res);
-                    if (res.errCode === 0) {
-                        wx.showToast({
-                            title: '绑定成功',
-                            icon: 'none',
-                            duration: 2000
-                        })
-                        this._loadRoomList()
-                    }
-                })
-            },
-            gotoBindedDeskList() {
-                wx.navigateTo({
-                    url: '/pages/mine/room/bindedRoomList'
-                })
-            },
-            goToCreateRoom() {
-                wx.redirectTo({
-                    url: '/pages/mine/room/createRoom'
-                })
-            },
-        };
-        _loadRoomList() {
-            let url = `${this.$parent.globalData.commonUrl}/api/loadDesks?tk=${this.$parent.globalData.tk}`;
-            util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
-                console.log(res);
-                if (res.errCode === 0) {
-                    this.roomList = res.desks.filter(room => {
-                        if (!room.holderID) {
-                            return room
-                        }
-                    });
-                }
-                this.$apply();
-            })
-        }
-        _loadNoBindRoomList() {
-            let url = `${this.$parent.globalData.commonUrl}/api/loadDesks?tk=${this.$parent.globalData.tk}`;
-            util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
-                console.log(res);
-                if (res.errCode === 0) {
-                    this.roomList = res.desks.filter(room => {
-                        if (!room.holderID) {
-                            return room
-                        }
-                    });
-                }
-                this.$apply();
-            })
-        }
-        events = {};
-        onShow() {
-            this._loadRoomList();
-        }
-        onLoad(e) {
-            this.listOrBindType = e.type
-            switch (this.listOrBindType) {
-                case "list":
-                    wx.setNavigationBarTitle({
-                        title: "台/房号设置"
-                    })
-                    this._loadNoBindRoomList()
-                    break;
-                case "bind":
-                    wx.setNavigationBarTitle({
-                        title: "绑定房间"
-                    })
-                    break;
-                default:
-                    break;
-            }
-            console.log(this.listOrBindType)
-            this.winHeight = util.getScrollHeight(230)
-        }
-        // Other properties
-    }
+	import wepy from 'wepy';
+	const util = require('../../../utils/utils.js')
+	export default class bindRoomList extends wepy.page {
+		config = {
+			navigationBarTitleText: '绑定房间'
+		};
+		data = {
+			showRemarksModal: false,
+			showCreateRoomModal: false,
+			winHeight: "",
+			roomList: [],
+			deskIds: [],
+			listOrBindType: "",
+			roomCounts: 1,
+			deskRemarkId: "",
+			remark: "",
+			// loadFlag:true
+		};
+		methods = {
+			//全选
+			selectAll(e) {
+				this.dataImgeList = [];
+				let isAll = e.detail.value[0]
+				if (isAll === "all") {
+					this.roomList.forEach(room => {
+						room["isSelect"] = true;
+						this.deskIds.push(room.id)
+					})
+				} else {
+					this.roomList.forEach(room => {
+						room["isSelect"] = false;
+						this.deskIds = []
+					})
+				}
+				this.$apply()
+				console.log("this.roomList", this.roomList)
+			},
+			addRemarks() {
+				if (this.remark == "") {
+					wx.showToast({
+						title: '请输入备注',
+						icon: 'none',
+						duration: 2000
+					})
+				}
+				let url = `${this.$parent.globalData.commonUrl}/api/setDeskRemark?tk=${this.$parent.globalData.tk}&deskID=${this.deskRemarkId}&remark=${this.remark}`;
+				util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
+					console.log(res)
+					if (res.errCode == 0) {
+						this.showRemarksModal = false
+						this._loadRoomList();
+					} else {
+						wx.showToast({
+							title: '网络繁忙，请稍等',
+							icon: 'none',
+							duration: 2000
+						})
+					}
+				})
+			},
+			cancel() {
+				this.showRemarksModal = false;
+			},
+			//显示备注模态框
+			showRemarkShow(id) {
+				this.deskRemarkId = id
+				console.log("this.deskRemarkId----", this.deskRemarkId)
+				this.showRemarksModal = true;
+			},
+			changeDesk(e) {
+				console.log("绑定的房间id------------------", e.detail.value)
+				this.deskIds = e.detail.value;
+			},
+			// 选择删除的房间
+			selectDeleteDesk(e) {
+				console.log("选择删除的房间------------", e.detail.value)
+				this.deskIds = e.detail.value
+			},
+			setRemark(e) {
+				this.remark = e.detail.value
+				console.log(this.remark)
+			},
+			//删除房间
+			bindDelete() {
+				if (!this.deskIds) {
+					wx.showToast({
+						title: '请选定房间号',
+						icon: 'none',
+						duration: 2000
+					})
+					return false;
+				}
+				let url = `${this.$parent.globalData.commonUrl}/api/deleteDesks?tk=${this.$parent.globalData.tk}`;
+				let deskIdObj = {
+					phone: this.$parent.globalData.userInfo.phone,
+					deskIDs: {
+						id: this.deskIds
+					}
+				}
+				console.log("删除房间参数----------", deskIdObj)
+				util.interface_post(url, deskIdObj, this.$parent.globalData.StoreId).then(res => {
+					console.log(res);
+					if (res.errCode === 0) {
+						wx.showToast({
+							title: '删除成功',
+							icon: 'none',
+							duration: 2000
+						})
+						this._loadNoBindRoomList()
+					}
+				})
+			},
+			//创建房间
+			createRoom() {
+				// if(this.loadFlag){
+				// this.loadFlag = !this.loadFlag
+				// }
+				let url = `${this.$parent.globalData.commonUrl}/api/createDesk?tk=${this.$parent.globalData.tk}&count=${this.roomCounts}&phone=${this.$parent.globalData.userInfo.phone}`;
+				util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
+					console.log(res);
+					if (res.errCode === 0) {
+						// this.loadFlag = !this.loadFlag
+						wx.showToast({
+							title: '创建房间成功',
+							icon: 'none',
+							duration: 1000
+						})
+						this.roomCounts = ""
+						setTimeout(() => {
+							this._loadRoomList();
+						}, 100);
+					}
+				})
+			},
+			//输入创建房间数量
+			inputRoomNumber(e) {
+				console.log(e.detail.value);
+				this.roomCounts = Number(e.detail.value);
+			},
+			//隐藏创建房间弹框
+			cancelCreateRoom() {
+				this.showCreateRoomModal = false
+			},
+			//显示创建房间弹框
+			showCreateModal() {
+				this.showCreateRoomModal = true
+			},
+			bindDeskId() {
+				if (!this.deskIds) {
+					wx.showToast({
+						title: '请选定房间号',
+						icon: 'none',
+						duration: 2000
+					})
+					return false;
+				}
+				let url = `${this.$parent.globalData.commonUrl}/api/setDeskHolder?tk=${this.$parent.globalData.tk}`;
+				let deskIdObj = {
+					phone: this.$parent.globalData.userInfo.phone,
+					deskIDs: {
+						id: this.deskIds
+					}
+				}
+				console.log("绑定参数----------", deskIdObj)
+				util.interface_post(url, deskIdObj, this.$parent.globalData.StoreId).then(res => {
+					console.log(res);
+					if (res.errCode === 0) {
+						wx.showToast({
+							title: '绑定成功',
+							icon: 'none',
+							duration: 2000
+						})
+						this._loadRoomList()
+					}
+				})
+			},
+			gotoBindedDeskList() {
+				wx.navigateTo({
+					url: '/pages/mine/room/bindedRoomList'
+				})
+			},
+			goToCreateRoom() {
+				wx.redirectTo({
+					url: '/pages/mine/room/createRoom'
+				})
+			},
+			goToCreateQrCode() {
+				wx.navigateTo({
+					url: '/pages/mine/room/createQrCode',
+				})
+			},
+		};
+		_loadRoomList() {
+			let url = `${this.$parent.globalData.commonUrl}/api/loadDesks?tk=${this.$parent.globalData.tk}`;
+			util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
+				console.log(res);
+				if (res.errCode === 0) {
+					this.roomList = res.desks.filter(room => {
+						if (!room.holderID) {
+							return room
+						}
+					});
+				}
+				this.$apply();
+			})
+		}
+		_loadNoBindRoomList() {
+			let url = `${this.$parent.globalData.commonUrl}/api/loadDesks?tk=${this.$parent.globalData.tk}`;
+			util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
+				console.log(res);
+				if (res.errCode === 0) {
+					this.roomList = res.desks.filter(room => {
+						if (!room.holderID) {
+							return room
+						}
+					});
+				}
+				this.$apply();
+			})
+		}
+		events = {};
+		onShow() {
+			this._loadRoomList();
+		}
+		onLoad(e) {
+			this.listOrBindType = e.type
+			switch (this.listOrBindType) {
+				case "list":
+					wx.setNavigationBarTitle({
+						title: "台/房号设置"
+					})
+					this._loadNoBindRoomList()
+					break;
+				case "bind":
+					wx.setNavigationBarTitle({
+						title: "绑定房间"
+					})
+					break;
+				default:
+					break;
+			}
+			console.log(this.listOrBindType)
+			this.winHeight = util.getScrollHeight(230)
+		}
+		// Other properties
+	}
 </script>
 
 <style lang="less">
-    .roomList_wrapper {
-        padding: 10rpx;
-        .top_handle {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10rpx;
-            .downLoadBtn {
-                width: 100rpx;
-                margin: 0;
-                padding: 0;
-            }
-            .top_checkBox {
-                display: flex;
-                margin-top: 30rpx;
-                .allSelect {
-                    padding: 8rpx;
-                    box-sizing: border-box;
-                }
-            }
-        }
-        .radio-group {
-            .radio {
-                display: flex;
-                background-color: #fff;
-                margin-bottom: 10rpx;
-                padding: 50rpx 30rpx;
-                justify-content: space-between;
-                .remarks {
-                    font-size: 26rpx;
-                    color: red;
-                    text-decoration: underline;
-                    margin-top: 4rpx;
-                }
-            }
-            .room_name {
-                margin-left: 30rpx;
-                padding-top: 6rpx;
-            }
-        }
-        .btn {
-            margin-top: 10rpx;
-            width: 270rpx
-        }
-        .bindBox {
-            display: flex;
-            justify-content: space-around;
-        }
-        .modal,
-        .createRoomModal {
-            position: fixed;
-            left: 0;
-            right: 0;
-            top: 0;
-            bottom: 0;
-            z-index: 1;
-            .remarks_content {
-                width: 400rpx;
-                height: 178rpx;
-                background-color: #f1f1f1;
-                margin: 40% auto;
-                padding: 26rpx;
-                border-radius: 14rpx;
-                .inputArea {
-                    margin-bottom: 26rpx;
-                    border: 1px solid #ccc;
-                }
-                .btn_wrapper {
-                    display: flex;
-                    justify-content: space-around;
-                }
-                .btn {
-                    width: 160rpx;
-                }
-            }
-        }
-    }
+	.roomList_wrapper {
+		padding: 10rpx;
+		.top_handle {
+			display: flex;
+			justify-content: space-between;
+			margin-bottom: 10rpx;
+			position: relative;
+			.createQrcode_box {
+				position: absolute;
+				top: 20rpx;
+				right: 8rpx;
+				width: 180rpx;
+				margin: 0;
+				padding: 0;
+				text-decoration: underline;
+				color: red;
+			}
+			.top_checkBox {
+				display: flex;
+				margin-top: 30rpx;
+				.allSelect {
+					padding: 8rpx;
+					box-sizing: border-box;
+				}
+			}
+		}
+		.radio-group {
+			.radio {
+				display: flex;
+				background-color: #fff;
+				margin-bottom: 10rpx;
+				padding: 50rpx 30rpx;
+				justify-content: space-between;
+				.remarks {
+					font-size: 26rpx;
+					color: red;
+					text-decoration: underline;
+					margin-top: 4rpx;
+				}
+			}
+			.room_name {
+				margin-left: 30rpx;
+				padding-top: 6rpx;
+			}
+		}
+		.btn {
+			margin-top: 10rpx;
+			width: 270rpx
+		}
+		.bindBox {
+			display: flex;
+			justify-content: space-around;
+		}
+		.modal,
+		.createRoomModal {
+			position: fixed;
+			left: 0;
+			right: 0;
+			top: 0;
+			bottom: 0;
+			z-index: 1;
+			.remarks_content {
+				width: 400rpx;
+				height: 178rpx;
+				background-color: #f1f1f1;
+				margin: 40% auto;
+				padding: 26rpx;
+				border-radius: 14rpx;
+				.inputArea {
+					margin-bottom: 26rpx;
+					border: 1px solid #ccc;
+				}
+				.btn_wrapper {
+					display: flex;
+					justify-content: space-around;
+				}
+				.btn {
+					width: 160rpx;
+				}
+			}
+		}
+	}
 </style>

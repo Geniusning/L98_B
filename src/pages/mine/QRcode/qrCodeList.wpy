@@ -1,7 +1,10 @@
 <template>
     <view class='qrCodeSetting_wrapper'>
+        <navigator url='/pages/mine/QRcode/deskQrCode?type=wechat' hover-class="none" class='qrCodeBtn'>
+            公众号带桌贴二维码<text style="font-size:11px">(适用引导用户关注)</text>
+        </navigator>
         <navigator url='/pages/mine/QRcode/deskQrCode?type=focusOn' hover-class="none" class='qrCodeBtn'>
-            桌贴二维码<text style="font-size:11px">(适用开通关注有礼)</text>
+            首页桌贴二维码<text style="font-size:11px">(适用开通关注有礼)</text>
         </navigator>
         <navigator url='/pages/mine/QRcode/deskQrCode?type=friend' hover-class="none" class='qrCodeBtn'>
             交友桌贴二维码<text style="font-size:11px">(适用偏重交友场景)</text>

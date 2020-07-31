@@ -16,7 +16,7 @@
                     </view>
                     <view class="list_item_middle">
                       <view class="discount_content">{{item.couponInfo.content}}</view>
-                      <view class="conditon">页面：{{item.Condition}}</view>
+                      <view class="conditon">页面：{{item.condition}}</view>
                     </view>
                     <view class="list_item_bottom">
                       <view class="time">
@@ -169,7 +169,7 @@
         if(this.selectedCouponInfo[0].id===element.id){
           continue
         }
-        if((element.Condition === this.selectedCouponInfo[0].Condition) && (element.isPutAway===true)){
+        if((element.condition === this.selectedCouponInfo[0].condition) && (element.isPutAway===true)){
           result =  true
           break
         }else{
@@ -192,7 +192,7 @@
             item['isFinish'] = false;
           }
           item["checked"] = false
-          item.Condition = this.judgeCondition(item.Condition);
+          item.condition = this.judgeCondition(item.condition);
           item.couponInfo.content = util.returnDiscountContent(item.couponInfo);
         })
         console.log("ai优惠券列表---------", this.AIdiscountList)
@@ -204,22 +204,28 @@
       let conditionType = ""
       switch (type) {
         case 0:
-          conditionType = "访问首页，人人有礼"
+          conditionType = "关注有礼，访问首页"
           break;
         case 1:
-          conditionType = "扫核销码，核销有礼"
+          conditionType = "找朋友页面送券"
           break;
         case 2:
-          conditionType = "访问游戏大厅，参赛有礼"
+          conditionType = "邻桌局小结页送券"
           break;
         case 3:
-          conditionType = "比赛完成页，参赛安慰奖"
+          conditionType = "好友局局小结页送券"
           break;
         case 4:
-          conditionType = "非访问状态，系统通知(即用微信订单通知)"
+          conditionType = "比赛局完成页送券"
           break;
         case 5:
-          conditionType = "访问好友页面"
+          conditionType = "发起核销后送券"
+          break;
+        case 6:
+          conditionType = "评价有礼"
+          break;
+        case 7:
+          conditionType = "买单有礼"
           break;
         default:
           break;

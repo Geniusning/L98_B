@@ -209,17 +209,11 @@
           toRoleID: this.roleInfo.roleID,
           storeID: e.detail.value
         };
-        let url = `${this.$parent.globalData.commonUrl}/api/authorizedStore?tk=${
-          this.$parent.globalData.tk
-          }`;
+        let url = `${this.$parent.globalData.commonUrl}/api/authorizedStore?tk=${this.$parent.globalData.tk}`;
         util.interface_post(url, data, '').then(async res => {
           console.log('增加门店授权result------', res);
           if (res.errCode === 0) {
-            wx.showToast({
-              title: `新增成功`,
-              icon: 'success',
-              duration: 2000
-            });
+            util.showModal("新增成功")
             this.roleInfo = await this._loadRoleByPhone(this.staffPhone);
             this.staffChangeInfo = await this._loadStaffChangeInfo(
               this.staffPhone
@@ -231,11 +225,7 @@
             //   item["checked"] = false
             // })
           } else {
-            wx.showToast({
-              title: `${res.errMsg}`,
-              icon: 'none',
-              duration: 2000
-            });
+            util.showModal(res.errMsg)
           }
           this.$apply();
         });
@@ -252,11 +242,7 @@
         util.interface_post(url, data, '').then(async res => {
           console.log('增加店员授权result------', res);
           if (res.errCode === 0) {
-            wx.showToast({
-              title: `新增成功`,
-              icon: 'success',
-              duration: 2000
-            });
+            util.showModal("新增成功")
             this.roleInfo = await this._loadRoleByPhone(this.staffPhone);
             this.staffChangeInfo = await this._loadStaffChangeInfo(
               this.staffPhone
@@ -268,11 +254,8 @@
             //   item["checked"] = false
             // })
           } else {
-            wx.showToast({
-              title: `${res.errMsg}`,
-              icon: 'none',
-              duration: 2000
-            });
+            util.showModal(res.errMsg)
+           
           }
           this.$apply();
         });
@@ -290,11 +273,7 @@
         util.interface_post(url, data, '').then(async res => {
           console.log('取消运营------', res);
           if (res.errCode === 0) {
-            wx.showToast({
-              title: `取消成功`,
-              icon: 'success',
-              duration: 2000
-            });
+            util.showModal("取消成功")
             this.roleInfo = await this._loadRoleByPhone(this.staffPhone);
             this.staffChangeInfo = await this._loadStaffChangeInfo(
               this.staffPhone
@@ -306,11 +285,7 @@
             //   item["checked"] = false
             // })
           } else {
-            wx.showToast({
-              title: `${res.errMsg}`,
-              icon: 'none',
-              duration: 2000
-            });
+            util.showModal(res.errMsg)
           }
           this.$apply();
         });
@@ -327,11 +302,7 @@
         util.interface_post(url, data, '').then(async res => {
           console.log('增加店员授权result------', res);
           if (res.errCode === 0) {
-            wx.showToast({
-              title: `取消成功`,
-              icon: 'success',
-              duration: 2000
-            });
+            util.showModal("取消成功")
             this.roleInfo = await this._loadRoleByPhone(this.staffPhone);
             this.staffChangeInfo = await this._loadStaffChangeInfo(
               this.staffPhone
@@ -343,22 +314,14 @@
             //   item["checked"] = false
             // })
           } else {
-            wx.showToast({
-              title: `${res.errMsg}`,
-              icon: 'none',
-              duration: 2000
-            });
+            util.showModal(res.errMsg)
           }
           this.$apply();
         });
       },
       //保存用户资料
       saveStaff() {
-        wx.showToast({
-          title: `保存成功`,
-          icon: 'success',
-          duration: 2000
-        });
+        util.showModal("保存成功")
         setTimeout(() => {
           wx.navigateBack({
             delta: 1
@@ -403,18 +366,10 @@
         util.interface_post(url, data, '').then(async res => {
           console.log('取消运营------', res);
           if (res.errCode === 0) {
-            wx.showToast({
-              title: `取消成功`,
-              icon: 'success',
-              duration: 2000
-            });
+            util.showModal("取消成功")
             this.roleInfo = await this._loadRoleByPhone(this.staffPhone);
           } else {
-            wx.showToast({
-              title: `${res.errMsg}`,
-              icon: 'none',
-              duration: 2000
-            });
+            util.showModal(res.errMsg)
           }
           this.$apply();
         });
@@ -431,18 +386,10 @@
         util.interface_post(url, data, '').then(async res => {
           console.log('取消查看门店------', res);
           if (res.errCode === 0) {
-            wx.showToast({
-              title: `取消成功`,
-              icon: 'success',
-              duration: 2000
-            });
+            util.showModal("取消成功")
             this.roleInfo = await this._loadRoleByPhone(this.staffPhone);
           } else {
-            wx.showToast({
-              title: `${res.errMsg}`,
-              icon: 'none',
-              duration: 2000
-            });
+            util.showModal(res.errMsg)
           }
           this.$apply();
         });
@@ -459,18 +406,10 @@
         util.interface_post(url, data, '').then(async res => {
           console.log('取消查看门店------', res);
           if (res.errCode === 0) {
-            wx.showToast({
-              title: `取消成功`,
-              icon: 'success',
-              duration: 2000
-            });
+            util.showModal("取消成功")
             this.roleInfo = await this._loadRoleByPhone(this.staffPhone);
           } else {
-            wx.showToast({
-              title: `${res.errMsg}`,
-              icon: 'none',
-              duration: 2000
-            });
+            util.showModal(res.errMsg)
           }
           this.$apply();
         });
@@ -490,11 +429,7 @@
             // })
             resolve(res.info);
           } else {
-            wx.showToast({
-              title: `${res.errMsg}`,
-              icon: 'none',
-              duration: 2000
-            });
+            util.showModal(res.errMsg)
           }
         });
       });
@@ -515,11 +450,7 @@
             // })
             resolve(res.info);
           } else {
-            wx.showToast({
-              title: `${res.errMsg}`,
-              icon: 'none',
-              duration: 2000
-            });
+            util.showModal(res.errMsg)
           }
         });
       });

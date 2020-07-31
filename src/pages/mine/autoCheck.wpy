@@ -456,6 +456,4 @@
     }
   }
 </style>
-<style lang="less" src="../../mixins/less/btn.less">
-
-</style>
+<style lang="less" src="../../mixins/less/btn.less"></style>

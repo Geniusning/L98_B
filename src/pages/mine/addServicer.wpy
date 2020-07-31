@@ -41,31 +41,13 @@
         util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
           console.log(res);
           if (res.errCode === 0) {
-            wx.showToast({
-              title: '绑定客服成功',
-              icon: 'none',
-              duration: 1000
-            })
+            util.showModal('绑定客服成功')
           } else if (res.errCode === 1038) {
-            setTimeout(() => {
-              wx.showToast({
-                title: '该账号已经绑定过客服',
-                icon: 'none',
-                duration: 2000
-              })
-            }, 500);
+            util.showModal('该账号已经绑定过客服')
           } else if (res.errCode === 1037) {
-            wx.showToast({
-              title: '该账号未在公众号验证管理员身份',
-              icon: 'none',
-              duration: 2000
-            })
-          } else {
-            wx.showToast({
-              title: res.errCode + res.errMsg,
-              icon: 'none',
-              duration: 1000
-            })
+            util.showModal('该账号未在公众号验证员工身份')
+          } else if (res.errCode === 1094) {
+            util.showModal('收银员和客服不能同时绑定，请更换账号')
           }
           this.$apply();
           this._loadClientServiceLog();
@@ -76,17 +58,9 @@
         util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
           console.log(res);
           if (res.errCode === 0) {
-            wx.showToast({
-              title: '解绑客服成功',
-              icon: 'none',
-              duration: 1000
-            })
+            util.showModal('解绑客服成功')
           } else {
-            wx.showToast({
-              title: res.errCode + res.errMsg,
-              icon: 'none',
-              duration: 1000
-            })
+            util.showModal(res.errMsg)
           }
           this.$apply();
           this._loadClientServiceLog();
@@ -103,11 +77,7 @@
           this._formatClientData(this.servicerList)
           this.$apply();
         } else {
-          wx.showToast({
-            title: res.errCode + res.errMsg,
-            icon: 'none',
-            duration: 1000
-          })
+          util.showModal(res.errMsg)
         }
       })
     }

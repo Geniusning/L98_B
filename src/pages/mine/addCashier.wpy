@@ -41,28 +41,19 @@
     util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
      console.log(res);
      if (res.errCode === 0) {
-      wx.showToast({
-       title: '绑定收银员成功',
-       icon: 'none',
-       duration: 1000
-      })
-     } else if (res.errCode === 1038) {
-      wx.showToast({
-       title: '该账号已经绑定过收银员',
-       icon: 'none',
-       duration: 2000
+      wx.showModal({
+       title: '提示',
+       content: '绑定收银员成功',
       })
      } else if (res.errCode === 1037) {
-      wx.showToast({
-       title: '该账号未在公众号验证管理员身份',
-       icon: 'none',
-       duration: 2000
+      wx.showModal({
+       title: '提示',
+       content: '该账号未在公众号验证员工身份',
       })
-     } else {
-      wx.showToast({
-       title: res.errCode + res.errMsg,
-       icon: 'none',
-       duration: 1000
+     } else if (res.errCode === 1094) {
+      wx.showModal({
+       title: '提示',
+       content: '该账号已经绑定过收银员',
       })
      }
      this.$apply();
@@ -74,16 +65,14 @@
     util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
      console.log(res);
      if (res.errCode === 0) {
-      wx.showToast({
-       title: '解绑收银员成功',
-       icon: 'none',
-       duration: 1000
+      wx.showModal({
+       title: '提示',
+       content: '解绑收银员成功',
       })
      } else {
-      wx.showToast({
-       title: res.errCode + res.errMsg,
-       icon: 'none',
-       duration: 1000
+        wx.showModal({
+       title: '提示',
+       content: `${res.errMsg}`,
       })
      }
      this.$apply();

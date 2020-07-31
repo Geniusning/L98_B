@@ -1,8 +1,8 @@
 <template>
-  <view class='mine-container'>
+  <view class="mine-container {{isScroll?'hidden':''}}">
     <!-- 顶部信息 -->
     <view class='shopInfo-container'>
-      <Header :sonShopInfo.sync="shopInfo" :superior.sync="staff"></Header>
+      <Header :sonShopInfo.sync="shopInfo" :superior.sync="staff" :isScroll.sync="isScroll"></Header>
     </view>
     <!-- 列表 -->
     <view class='setting-container'>
@@ -58,8 +58,8 @@
           <image src='../../images/arrow_right.png'></image>
         </navigator>
       </view>
-      <!-- 管理员模块 -->
-      <view class='mine_admin_module' wx:if="{{noAuth}}">
+      <!-- 管理员模块  -->
+      <view class='mine_admin_module' wx:if="{{noAuth}}" >
         <navigator wx:if="{{isApplyAutoCheck}}" url='/pages/mine/autoCheck' class='item'>
           <view class='name-box'>
             <image class='icon' src='../../images/about.png' style='width:34rpx;height:34rpx;'></image>
@@ -157,6 +157,7 @@
       shopInfo: {},
       staff: {},
       noAuth: true,
+      isScroll:false,
       isApplyAutoCheck: false,
       isHandleAutoCheck: false,
     };
@@ -217,6 +218,10 @@
     display: flex;
     flex-direction: column;
     background: #efeef3;
+    
+  }
+  .hidden{
+  overflow: hidden;
   }
   .shopInfo-container {
     width: 100%;

@@ -174,9 +174,7 @@
           toRoleID: this.staffRoleInfo.roleID, //现在运营门店的岗位id
           storeID: this.authorStoreId //门店id
         };
-        let url = `${
-                      this.$parent.globalData.commonUrl
-                    }/api/authorizedOperation?tk=${this.$parent.globalData.tk}`;
+        let url = `${this.$parent.globalData.commonUrl}/api/authorizedOperation?tk=${this.$parent.globalData.tk}`;
         util.interface_post(url, data, '').then(res => {
           if (res.errCode === 0) {
             setTimeout(() => {

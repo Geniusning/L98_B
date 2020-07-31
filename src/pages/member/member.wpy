@@ -1,9 +1,9 @@
 <template>
   <!-- wx:if='{{show}}' -->
-  <view class="member-container">
+  <view class="member-container {{isScroll?'hidden':''}}">
     <!-- 搜索栏 -->
     <view class="shopInfo-wrapper1">
-      <Header :sonShopInfo.sync="shopInfo" :superior.sync="staff"></Header>
+      <Header :sonShopInfo.sync="shopInfo" :superior.sync="staff" :isScroll.sync="isScroll"></Header>
     </view>
     <view class='main'>
       <view class='selectCustom_panel' wx:if="{{selectCustomFlag}}">
@@ -127,6 +127,7 @@
       Header: Header
     };
     data = {
+      isScroll:false,
       shopInfo: {},
       tagsList: ['低频', '新客'],
       customTypeIndex: null,
@@ -441,6 +442,9 @@
     display: flex;
     flex-direction: column;
     height: 100%;
+  }
+  .hidden{
+    overflow: hidden;
   }
   .main {
     flex: 1;

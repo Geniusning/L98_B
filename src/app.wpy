@@ -70,6 +70,7 @@
         'pages/mine/room/room',
         'pages/mine/room/createRoom',
         'pages/mine/room/bindRoomList',
+        'pages/mine/room/createQrCode',
         'pages/mine/room/bindedRoomList',
         'pages/mine/myStaff/myStaff',
         'pages/mine/server/server',
@@ -166,6 +167,8 @@
     }
     onLaunch() {
       console.log("测试分支")
+      const version = wx.getSystemInfoSync().SDKVersion
+      console.log("version---",version)
       var _this = this;
       wx.login({
         success: function (res) {
@@ -175,8 +178,8 @@
             wx.request({
               url: `${_this.globalData.commonUrl}/wechatAppLogin`,
               data: {
-                phone: '33333333333',
-                password: '333333'
+                phone: '8888',
+                password: '8888'
               },
               header: {
                 'content-type': 'application/json'

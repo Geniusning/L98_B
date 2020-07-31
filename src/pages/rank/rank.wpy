@@ -121,6 +121,19 @@
           </repeat>
         </scroll-view>
       </view>
+      <!-- 点赞 -->
+      <view wx:elif="{{typeIndex==6}}" class="rank_scrollView">
+        <TitleList :titleList.sync="titleList"></TitleList>
+        <scroll-view scroll-y class="rank_scroll_list">
+          <repeat for="{{sharetList}}" key="index" index="index" item="item">
+            <view class="scroll_item">
+              <text class="staffInfo timeLine">{{index+1}}</text>
+              <text class="staffInfo timeLine">{{item.clerkInfo.name}}</text>
+              <text class="staffInfo timeLine">{{item.firstLineNum}}</text>
+            </view>
+          </repeat>
+        </scroll-view>
+      </view>
     </view>
   </view>
 </template>
@@ -147,7 +160,7 @@
       endDay: "",
       tuoKeClientList: [],
       sharetList: [],
-      typeRank: ["拓客", "分享", "销卡", "对话", "游戏","送券"]
+      typeRank: ["拓客", "分享", "销卡", "对话", "游戏","送券","点赞"]
     };
     //拓客
     _getTuoKeRankList() {
@@ -160,11 +173,11 @@
         this.$apply();
       })
     };
-    //分享  loadClerkOtherRank
+    //其他排名  loadClerkOtherRank
     _getShareRankList() {
       let url = `${this.$parent.globalData.commonUrl}/api/loadClerkOtherRank?tk=${this.$parent.globalData.tk}&startDate=${this.startDay}&endDate=${this.endDay}&dataType=${this.pageType}`;
       util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
-        console.log("-------", res);
+        console.log("loadClerkOtherRank-------", res);
         if (res.errCode === 0) {
           this.sharetList = this._handleTuoKeClientList(res.interface)
         }
@@ -262,7 +275,11 @@
             this.titleList = ['排名', '昵称', '送券给客张数']
             this.$apply()
             break;
-
+          case '6':
+            this.pageType = "thumb" //员工送券
+            this.titleList = ['排名', '昵称', '点赞次数']
+            this.$apply()
+            break;
           default:
             break;
         }
@@ -308,7 +325,6 @@
     };
     events = {};
     onLoad(e) {
-
       this.shopInfo = this.$parent.globalData.shopInfo;
       this.startDay = util.someDayLater(util.nowDate(), -1, '-');
       this.endDay = util.someDayLater(util.nowDate(), -1, '-');

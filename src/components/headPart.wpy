@@ -14,6 +14,9 @@
             </view>
         </view>
         <view class="bg {{showPersonQrCode?'':'hide'}}" @tap="close">
+            <image src="../images/close2.png" mode="scaleToFill"
+              lazy-load="false" class="close">
+            </image>
             <view class="shopInfo">
                 <image src="{{globalData.shopInfo.image}}" class="logo"></image>
                 <text class="shopName">{{globalData.shopInfo.name}}</text>
@@ -49,15 +52,22 @@
             superior: {
                 type: Object,
                 default: ""
+            },
+            isScroll:{
+                type:Boolean,
+                default:false,
+                twoWay: true,
             }
         };
         methods = {
             close() {
                 this.showPersonQrCode = false
+                this.isScroll = false
                 console.log("this.showPersonQrCode--", this.showPersonQrCode)
             },
             showQrCode() {
                 this.showPersonQrCode = true
+                this.isScroll = true
                 console.log("this.showPersonQrCode--", this.showPersonQrCode)
                 this.draw()
                 
@@ -68,7 +78,8 @@
                 width: 210,
                 height: 210,
                 canvasId: 'myQrcode',
-                text: `${this.url}/k98/comment?phone=${this.globalData.userInfo.phone}`,
+                text: `${this.url}/k98/comment/${this.globalData.userInfo.phone}?phone=${this.globalData.userInfo.phone}`,
+                // text: `${this.url}/k98/comment/10100000000`,
             })
         }
         onLoad() {
@@ -140,30 +151,42 @@
             bottom: 0;
             background-color: #FE5154;
             color: #fff;
-            z-index: 100;
+            z-index: 99;
+            overflow: hidden;
+            .close{
+                position: fixed;
+                z-index: 100;
+                width: 80rpx;
+                height: 80rpx;
+                right: 30rpx;
+                top: 30rpx;
+            }
             .shopInfo{
                 display: flex;
                 margin-top: 60rpx;
                 margin-left: 60rpx;
                 .logo{
-                    width: 140rpx;
-                    height: 140rpx;
+                    width: 110rpx;
+                    height: 110rpx;
+                    border-radius: 6rpx;
                 }
                 .shopName{
-                    margin-top: 60rpx;
+                    margin-top: 26rpx;
                     margin-left: 30rpx;
-                    font-size: 16px;
+                    font-size: 22px;
                 }
             }
             .qrCodeInfo{
                 display: flex;
                 flex-direction: column;
-                margin-top: 50rpx;
+                margin-top: 120rpx;
                 .up-text,.down-text{
                     font-size: 18px;
                     text-align: center;
                 }
-            
+                .up-text{
+                    font-size: 24px
+                }
                 .qrCanvas {
                     width: 400rpx;
                     height: 420rpx;

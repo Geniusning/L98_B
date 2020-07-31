@@ -4,11 +4,11 @@
       <view class="top_handle">
         <checkbox-group class="checkBox_group" @change="selectAll">
           <label class="top_checkBox">
-                    <checkbox class="top_checkbox_item" value="all"  color="orange"/>
-                    <view class="allSelect">
-                        全选
-                    </view>
-                </label>
+                        <checkbox class="top_checkbox_item" value="all"  color="orange"/>
+                        <view class="allSelect">
+                            全选
+                        </view>
+                    </label>
         </checkbox-group>
         <button class="downLoadBtn" @tap='savePic'>下载</button>
       </view>
@@ -16,17 +16,17 @@
         <checkbox-group wx:if="{{roomList.length}}" class="checkBox_group" @change="changeDesk">
           <repeat for="{{roomList}}" key="index" item="item">
             <label class="checkBox" wx:if="{{pageType !='staff'}}">
-                <checkbox class="checkbox_item"  color="orange" value="{{item.imagesURL}}" checked="{{item.isSelect}}" />
-                <view class="room_image">
-                    <image class='qrcode_pic' src='{{item.imagesURL}}'></image>
-                </view>
-            </label>
+                    <checkbox class="checkbox_item"  color="orange" value="{{item.imagesURL}}" checked="{{item.isSelect}}" />
+                    <view class="room_image">
+                        <image class='qrcode_pic' src='{{item.imagesURL}}'></image>
+                    </view>
+                </label>
             <label class="checkBox" wx:else>
-                <checkbox class="checkbox_item"  color="orange" value="{{item}}"  />
-                <view class="room_image">
-                    <image class='qrcode_pic' src='{{item}}'></image>
-                </view>
-            </label>
+                    <checkbox class="checkbox_item"  color="orange" value="{{item}}"  />
+                    <view class="room_image">
+                        <image class='qrcode_pic' src='{{item}}'></image>
+                    </view>
+                </label>
           </repeat>
         </checkbox-group>
       </view>
@@ -47,7 +47,7 @@
       Loading: Loading
     };
     data = {
-      pageType:"",
+      pageType: "",
       roomList: [],
       dataImgeList: []
     };
@@ -132,24 +132,65 @@
     }
     download(url) { //下载
       return new Promise((resolve, reject) => {
-        wx.downloadFile({
-          url: url,
-          success: function(res) {
-            var temp = res.tempFilePath
-            wx.saveImageToPhotosAlbum({
-              filePath: temp,
-              success: function(res) {
-                resolve(res)
-              },
-              fail: function(err) {
-                reject(res)
-              }
-            })
-          },
-          fail: function(err) {
-            reject(err)
-          }
-        })
+        if (this.pageType != "wechat") {
+          wx.downloadFile({
+            url: url,
+            success: function(res) {
+              var temp = res.tempFilePath
+              wx.saveImageToPhotosAlbum({
+                filePath: temp,
+                success: function(res) {
+                  resolve(res)
+                },
+                fail: function(err) {
+                  reject(res)
+                }
+              })
+            },
+            fail: function(err) {
+              reject(err)
+            }
+          })
+        } else {
+          wx.downloadFile({
+            url: url,
+            success: function(res) {
+              console.log("downloadFile---", res)
+              var temp = res.tempFilePath
+              wx.getImageInfo({
+                src: temp,
+                success: function(res) {
+                  console.log("getImageInfo---", res)
+                  var canvas = wx.createCanvasContext("myQrcode", this)
+                  canvas.drawImage(res.path, 0, 0, 300, 300)
+                  setTimeout(() => {
+                    canvas.draw(true, function() {
+                      wx.canvasToTempFilePath({
+                        canvasId: "myQrcode",
+                        fileType: "jpg",
+                        success: function(res) {
+                          console.log("wxCanvasToTempFilePath----", res)
+                          wx.saveImageToPhotosAlbum({
+                            filePath: res.tempFilePath,
+                            success: function(res) {
+                              resolve(res)
+                            },
+                            fail: function(err) {
+                              reject(res)
+                            }
+                          })
+                        }
+                      })
+                    })
+                  }, 1000);
+                }
+              })
+            },
+            fail: function(err) {
+              reject(err)
+            }
+          })
+        }
       })
     }
     _loadRoomList(type) {
@@ -171,15 +212,16 @@
               room["imagesURL"] = room.friendImagesURL
             } else if (type === "game") {
               room["imagesURL"] = room.gameImagesURL
-
+            } else if (type === "wechat") {
+              room["imagesURL"] = room.platformQRcodeURL
             }
           })
         }
         this.$apply();
       })
     }
-    _loadStaffQRcode(){
-       let url = `${this.$parent.globalData.commonUrl}/api/loadStaffQRcodeForStore?tk=${this.$parent.globalData.tk}&targetPhone=15014063033`;
+    _loadStaffQRcode() {
+      let url = `${this.$parent.globalData.commonUrl}/api/loadStaffQRcodeForStore?tk=${this.$parent.globalData.tk}&targetPhone=15014063033`;
       util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
         console.log("员工二维码-------", res);
         if (res.errCode === 0) {
@@ -211,7 +253,13 @@
           })
           this._loadRoomList(e.type);
           break;
-          case "staff":
+        case "wechat":
+          wx.setNavigationBarTitle({
+            title: "下载公众号带桌号二维码"
+          })
+          this._loadRoomList(e.type);
+          break;
+        case "staff":
           this._loadStaffQRcode()
         default:
           break;

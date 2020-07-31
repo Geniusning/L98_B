@@ -58,21 +58,13 @@
 		};
 		methods = {
 			stop() {
-				wx.showToast({
-					title: '今日无数据',
-					icon: 'none',
-					duration: 2000
-				});
+				util.showModal("今日无数据")
 			},
 			bindStartDateChange(e) {
 				this.startDate = e.detail.value;
 				let flag = util.compareDate(this.startDate, this.endDate);
 				if (!flag) {
-					wx.showToast({
-						title: '不能大于结束日期',
-						icon: 'none',
-						duration: 2000
-					});
+					util.showModal("不能大于结束日期")
 					this.startDate = util.someDayLater(util.nowDate(), -30, '-');
 				}
 			},
@@ -80,11 +72,7 @@
 				this.endDate = e.detail.value;
 				let flag = util.compareDate(this.startDate, this.endDate);
 				if (!flag) {
-					wx.showToast({
-						title: '不能小于开始日期',
-						icon: 'none',
-						duration: 2000
-					});
+					util.showModal("不能小于开始日期")
 					this.endDate = util.nowDate();
 				}
 			},

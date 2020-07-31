@@ -63,11 +63,7 @@
     methods = {
       gotoMarketDetail(count, date) {
         if (count == 0) {
-          wx.showToast({
-            title: "暂无数据",
-            icon: 'none',
-            duration: 2000
-          })
+          util.showModal("暂无数据")
           return
         }
         wx.navigateTo({
@@ -84,11 +80,7 @@
         this.endDate = e.detail.value;
         let flag = util.compareDate(this.startDate, this.endDate)
         if (!flag) {
-          wx.showToast({
-            title: "不能小于开始日期",
-            icon: 'none',
-            duration: 2000
-          })
+          util.showModal("不能小于开始日期")
           this.endDate = util.nowDate();
         }
       },
