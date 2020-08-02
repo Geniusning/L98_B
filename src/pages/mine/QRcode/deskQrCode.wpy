@@ -1,32 +1,37 @@
 <template>
-  <view class='qrcode-container'>
+  <view class="qrcode-container">
     <view wx:if="{{roomList.length}}">
       <view class="top_handle">
         <checkbox-group class="checkBox_group" @change="selectAll">
           <label class="top_checkBox">
-                        <checkbox class="top_checkbox_item" value="all"  color="orange"/>
-                        <view class="allSelect">
-                            全选
-                        </view>
-                    </label>
+              <checkbox class="top_checkbox_item" value="all" color="orange"/>
+              <view class="allSelect">全选</view>
+            </label>
         </checkbox-group>
-        <button class="downLoadBtn" @tap='savePic'>下载</button>
+        <button class="downLoadBtn" @tap="savePic">下载</button>
       </view>
       <view class="bottom_wrapper">
+        <canvas style="width:300px;height:300px" canvas-id="myQrcode" class="mycanvas"></canvas>
         <checkbox-group wx:if="{{roomList.length}}" class="checkBox_group" @change="changeDesk">
           <repeat for="{{roomList}}" key="index" item="item">
             <label class="checkBox" wx:if="{{pageType !='staff'}}">
-                    <checkbox class="checkbox_item"  color="orange" value="{{item.imagesURL}}" checked="{{item.isSelect}}" />
-                    <view class="room_image">
-                        <image class='qrcode_pic' src='{{item.imagesURL}}'></image>
-                    </view>
-                </label>
+                <checkbox
+                  wx:if="{{item.imagesURL}}"
+                  class="checkbox_item"
+                  color="orange"
+                  value="{{item.imagesURL}}"
+                  checked="{{item.isSelect}}"
+                />
+                <view class="room_image"  wx:if="{{item.imagesURL}}">
+                  <image class="qrcode_pic" src="{{item.imagesURL}}">
+                </view>
+              </label>
             <label class="checkBox" wx:else>
-                    <checkbox class="checkbox_item"  color="orange" value="{{item}}"  />
-                    <view class="room_image">
-                        <image class='qrcode_pic' src='{{item}}'></image>
-                    </view>
-                </label>
+                <checkbox class="checkbox_item" color="orange" value="{{item}}"/>
+                <view class="room_image">
+                  <image class="qrcode_pic" src="{{item}}">
+                </view>
+              </label>
           </repeat>
         </checkbox-group>
       </view>
@@ -272,6 +277,11 @@
 <style lang="less">
   .qrcode-container {
     padding: 10rpx 40rpx;
+    .mycanvas {
+      position: fixed;
+      left: 1000px;
+      top: -500px;
+    }
     .top_handle {
       display: flex;
       justify-content: space-between;

@@ -1,6 +1,6 @@
 <template>
   <view class="checkQrCode_wrapper">
-    <image src="{{qrUrl}}" class="canvas" style="width: 200px; height: 200px;"></image>
+    <image src="{{qrUrl}}" class="canvas" style="width: 200px; height: 200px;">
     <canvas style="width:300px;height:300px" canvas-id="myQrcode" class="mycanvas"></canvas>
     <button @tap="savePic">下载到本机相册</button>
   </view>
@@ -52,28 +52,28 @@
       return new Promise((resolve, reject) => {
         wx.downloadFile({
           url: url,
-          success: function(res) {
+          success: function (res) {
             console.log("downloadFile---", res)
             var temp = res.tempFilePath
             wx.getImageInfo({
               src: temp,
-              success: function(res) {
+              success: function (res) {
                 console.log("getImageInfo---", res)
                 var canvas = wx.createCanvasContext("myQrcode", this)
                 canvas.drawImage(res.path, 0, 0, 300, 300)
                 setTimeout(() => {
-                  canvas.draw(true,function(){
+                  canvas.draw(true, function () {
                     wx.canvasToTempFilePath({
                       canvasId: "myQrcode",
                       fileType: "jpg",
-                      success: function(res) {
+                      success: function (res) {
                         console.log("wxCanvasToTempFilePath----", res)
                         wx.saveImageToPhotosAlbum({
                           filePath: res.tempFilePath,
-                          success: function(res) {
+                          success: function (res) {
                             resolve(res)
                           },
-                          fail: function(err) {
+                          fail: function (err) {
                             reject(res)
                           }
                         })
@@ -84,7 +84,7 @@
               }
             })
           },
-          fail: function(err) {
+          fail: function (err) {
             reject(err)
           }
         })

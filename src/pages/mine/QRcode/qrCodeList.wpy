@@ -1,55 +1,116 @@
 <template>
-    <view class='qrCodeSetting_wrapper'>
-        <navigator url='/pages/mine/QRcode/deskQrCode?type=wechat' hover-class="none" class='qrCodeBtn'>
-            公众号带桌贴二维码<text style="font-size:11px">(适用引导用户关注)</text>
-        </navigator>
-        <navigator url='/pages/mine/QRcode/deskQrCode?type=focusOn' hover-class="none" class='qrCodeBtn'>
-            首页桌贴二维码<text style="font-size:11px">(适用开通关注有礼)</text>
-        </navigator>
-        <navigator url='/pages/mine/QRcode/deskQrCode?type=friend' hover-class="none" class='qrCodeBtn'>
-            交友桌贴二维码<text style="font-size:11px">(适用偏重交友场景)</text>
-        </navigator>
-        <navigator url='/pages/mine/QRcode/deskQrCode?type=game' hover-class="none" class='qrCodeBtn'>
-            游戏桌贴二维码<text style="font-size:11px">(适用开通无噪音骰子，喝酒场景)</text>
-        </navigator>
-        <navigator url='/pages/mine/QRcode/deskQrCode?type=staff' hover-class="none" class='qrCodeBtn'>
-            员工工号二维码<text style="font-size:11px"></text>
-        </navigator>
-        <navigator url='/pages/mine/QRcode/checkQrCode' hover-class="none" class='qrCodeBtn'>
-            核销二维码<text style="font-size:11px">(适用收银台快捷核销)</text>
-        </navigator>
-        <navigator url='/pages/mine/QRcode/weChatQrCode' hover-class="none" class='qrCodeBtn'>
-            公众号二维码<text style="font-size:11px">(用于宣扬推广，印名片)</text>
-        </navigator>
-    </view>
+  <view class="qrCodeSetting_wrapper">
+    <navigator
+      url="/pages/mine/QRcode/deskQrCode?type=wechat"
+      hover-class="none"
+      class="qrCodeBtn"
+    >公众号带桌贴二维码
+      <text style="font-size:11px">(适用引导用户关注)</text>
+      <text style="font-size:11px;margin-left:20rpx;color:red">{{isPlatformQRcodeURL?"已生成":"未生成"}}</text>
+    </navigator>
+    <navigator
+      url="/pages/mine/QRcode/deskQrCode?type=focusOn"
+      hover-class="none"
+      class="qrCodeBtn"
+    >首页桌贴二维码
+      <text style="font-size:11px">(适用开通关注有礼)</text>
+      <text style="font-size:11px;margin-left:20rpx;color:red">{{isHomeImagesURL?"已生成":"未生成"}}</text>
+    </navigator>
+    <navigator
+      url="/pages/mine/QRcode/deskQrCode?type=friend"
+      hover-class="none"
+      class="qrCodeBtn"
+    >交友桌贴二维码
+      <text style="font-size:11px">(适用偏重交友场景)</text>
+      <text style="font-size:11px;margin-left:20rpx;color:red">{{isFriendImagesURL?"已生成":"未生成"}}</text>
+    </navigator>
+    <navigator
+      url="/pages/mine/QRcode/deskQrCode?type=game"
+      hover-class="none"
+      class="qrCodeBtn"
+    >游戏桌贴二维码
+      <text style="font-size:11px">(适用开通无噪音骰子，喝酒场景)</text>
+      <text style="font-size:11px;margin-left:20rpx;color:red">{{isGameImagesURL?"已生成":"未生成"}}</text>
+    </navigator>
+    <navigator
+      url="/pages/mine/QRcode/deskQrCode?type=staff"
+      hover-class="none"
+      class="qrCodeBtn"
+    >员工工号二维码
+      <text style="font-size:11px"></text>
+    </navigator>
+    <navigator url="/pages/mine/QRcode/checkQrCode" hover-class="none" class="qrCodeBtn">核销二维码
+      <text style="font-size:11px">(适用收银台快捷核销)</text>
+    </navigator>
+    <navigator url="/pages/mine/QRcode/weChatQrCode" hover-class="none" class="qrCodeBtn">公众号二维码
+      <text style="font-size:11px">(用于宣扬推广，印名片)</text>
+    </navigator>
+  </view>
 </template>
 
 <script>
-    import wepy from 'wepy';
-    export default class qrCodeList extends wepy.page {
-        config = {
-            navigationBarTitleText: '二维码种类列表'
-        };
-        data = {};
-        methods = {};
-        events = {};
-        onLoad() {}
-        // Other properties
+  import wepy from 'wepy';
+  const util = require('../../../utils/utils.js')
+  export default class qrCodeList extends wepy.page {
+    config = {
+      navigationBarTitleText: '二维码种类列表'
+    };
+    data = {
+      roomList: [],
+      isPlatformQRcodeURL: false,
+      isFriendImagesURL: false,
+      isGameImagesURL: false,
+      isHomeImagesURL: false,
+    };
+    methods = {};
+    _loadRoomList() {
+      return new Promise((resolve, reject) => {
+        let url = `${this.$parent.globalData.commonUrl}/api/loadDesks?tk=${this.$parent.globalData.tk}`;
+        util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
+          console.log("res----", res);
+          if (res.errCode === 0) {
+            resolve(res.desks)
+          }
+        })
+      })
     }
+    events = {};
+    hasCreateQrcode(room) {
+      if (room.friendImagesURL) {
+        this.isFriendImagesURL = true
+      }
+      if (room.gameImagesURL) {
+        this.isGameImagesURL = true
+      }
+      if (room.homeImagesURL) {
+        this.isHomeImagesURL = true
+      } if (room.platformQRcodeURL) {
+        this.isPlatformQRcodeURL = true
+      }
+    }
+    async onLoad() {
+      this.roomList = await this._loadRoomList()
+      this.roomList.forEach(room => {
+        this.hasCreateQrcode(room)
+      })
+      this.$apply()
+    }
+    // Other properties
+  }
 </script>
 
 <style lang="less">
-.qrCodeSetting_wrapper{
+  .qrCodeSetting_wrapper {
     height: 100%;
     padding: 10rpx 20rpx;
-    .qrCodeBtn{
-        width: 100%;
-        height: 80rpx;
-        line-height: 80rpx;
-        text-align: center;
-        border-radius: 10rpx;
-        background-color: #fff;
-        margin-bottom: 20rpx;
+    .qrCodeBtn {
+      width: 100%;
+      height: 80rpx;
+      line-height: 80rpx;
+      text-align: center;
+      border-radius: 10rpx;
+      background-color: #fff;
+      margin-bottom: 20rpx;
     }
-}
+  }
 </style>
