@@ -139,6 +139,7 @@
             this.dateList = res.giftConvertStats.map(item => {
               item.date = util.timestampToTime(item.date).slice(0, 10);
               item.totalData = item.dayAmount;
+              this.totalPeople += item.totalData
               return item
             }).reverse();
           } else if (res.vipCardDateTimes) {
@@ -146,6 +147,7 @@
             this.dateList = res.vipCardDateTimes.map(item => {
               item.date = util.timestampToTime(item.date).slice(0, 10);
               item.totalData = item.vipCardTimes;
+              this.totalPeople += item.totalData
               return item
             }).reverse();
           }

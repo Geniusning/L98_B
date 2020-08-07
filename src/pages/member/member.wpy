@@ -45,7 +45,7 @@
                       <text class="tag">{{item.soreType}}</text>
                       <text class="tag tag1">{{item.deskCode!=0?"店内"+item.deskCode+"号":"店外"}}</text>
                     </view>
-                    <text class='content' space="ensp" decode="{{true}}">来源:{{item.visitType}} 拓客:{{item.waiter?item.waiter:"自来客"}}</text>
+                    <text  class='content' space="ensp" decode="{{true}}">来源:{{item.visitType}} 拓客:{{item.waiter?item.waiter:"自来客"}}</text>
                   </view>
                   <view class='contactInfo_times'>
                     <text class='times' space="ensp" decode="{{true}}">到店:{{item.visitInsideStore}}  网店:{{item.visitOutsideStore}}</text>
@@ -560,6 +560,11 @@
         position: relative;
         width: 55%;
         padding-left: 6rpx;
+        .content{
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
         .userInfo {
           display: flex;
           .name {

@@ -97,7 +97,7 @@
         </view>
         <scroll-view wx:if="{{unassignedStoreList.length&&!isShopStaff}}" class="scroll" style="height:340rpx" scroll-y scroll-with-animation>
           <view class="title">授权门店</view>
-          <checkbox-group wx:if="{{loggerUserRoleInfo.role !='k98_operation_front'}}" @change="checkboxShopAuthor">
+          <checkbox-group wx:if="{{loggerUserRoleInfo.role !='k98_operation_middle'}}" @change="checkboxShopAuthor">
             <repeat for="{{unassignedStoreList}}" key="index" index="index" item="store">
               <label class="checkbox" class="label_wrapper">
                     <checkbox
@@ -117,7 +117,7 @@
                   </label>
             </repeat>
           </checkbox-group>
-          <radio-group wx:else @change="checkboxShopAuthor">
+          <radio-group wx:else @change="radioShopAuthor">
             <repeat for="{{unassignedStoreList}}" key="index" index="index" item="store">
               <label class="checkbox" class="label_wrapper">
                     <radio
@@ -223,6 +223,9 @@
       checkboxShopAuthor(e) {
         console.log("授权门店---,", e.detail.value)
         this.newRoleInfo.manageStoreIDs = e.detail.value
+      },
+      radioShopAuthor(e){
+        this.newRoleInfo.manageStoreIDs = [e.detail.value]
       },
       switchPosOld() {
         this.isCreatePos = false

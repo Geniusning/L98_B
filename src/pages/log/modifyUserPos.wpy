@@ -20,11 +20,9 @@
     </view>
     <view class="stores-list">
       <view
-        wx:if="{{staffChangeInfo.loginStore.length>0}}"
         class="title"
       >增加管辖门店</view>
       <scroll-view
-        wx:if="{{staffChangeInfo.loginStore.length>0}}"
         class="scroll"
         style="height:250rpx"
         scroll-y
@@ -52,11 +50,9 @@
         </radio-group>
       </scroll-view>
       <view
-        wx:if="{{loggerUserInfoRole.subStaffs.length>1}}"
         class="title"
       >增加管辖下属</view>
       <scroll-view
-        wx:if="{{loggerUserInfoRole.subStaffs.length>1}}"
         class="scroll"
         style="height:250rpx"
         scroll-y
@@ -93,11 +89,9 @@
     </view>
     <view class="stores-list">
       <view
-        wx:if="{{staffChangeInfo.targetStore.length>0}}"
         class="title"
       >取消管辖门店</view>
       <scroll-view
-        wx:if="{{staffChangeInfo.targetStore.length>0}}"
         class="scroll"
         style="height:250rpx"
         scroll-y
@@ -124,11 +118,10 @@
         </radio-group>
       </scroll-view>
       <view
-        wx:if="{{roleInfo.collStaffs.length>0}}"
+       
         class="title"
       >取消管辖下属</view>
       <scroll-view
-        wx:if="{{roleInfo.collStaffs.length>0}}"
         class="scroll"
         style="height:250rpx"
         scroll-y

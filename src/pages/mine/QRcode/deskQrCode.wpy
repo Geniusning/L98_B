@@ -15,23 +15,23 @@
         <checkbox-group wx:if="{{roomList.length}}" class="checkBox_group" @change="changeDesk">
           <repeat for="{{roomList}}" key="index" item="item">
             <label class="checkBox" wx:if="{{pageType !='staff'}}">
-                <checkbox
-                  wx:if="{{item.imagesURL}}"
-                  class="checkbox_item"
-                  color="orange"
-                  value="{{item.imagesURL}}"
-                  checked="{{item.isSelect}}"
-                />
-                <view class="room_image"  wx:if="{{item.imagesURL}}">
-                  <image class="qrcode_pic" src="{{item.imagesURL}}">
-                </view>
-              </label>
+                  <checkbox
+                    wx:if="{{item.imagesURL}}"
+                    class="checkbox_item"
+                    color="orange"
+                    value="{{item.imagesURL}}"
+                    checked="{{item.isSelect}}"
+                  />
+                  <view class="room_image"  wx:if="{{item.imagesURL}}">
+                    <image class="qrcode_pic" src="{{item.imagesURL}}"></image>
+                  </view>
+                </label>
             <label class="checkBox" wx:else>
-                <checkbox class="checkbox_item" color="orange" value="{{item}}"/>
-                <view class="room_image">
-                  <image class="qrcode_pic" src="{{item}}">
-                </view>
-              </label>
+                      <checkbox class="checkbox_item" color="orange" value="{{item}}"/>
+                      <view class="room_image">
+                        <image class="qrcode_pic" src="{{item}}"></image>
+                      </view>
+                    </label>
           </repeat>
         </checkbox-group>
       </view>
@@ -52,6 +52,7 @@
       Loading: Loading
     };
     data = {
+      downLoadUrls: [],
       pageType: "",
       roomList: [],
       dataImgeList: []
@@ -157,58 +158,35 @@
             }
           })
         } else {
-          wx.downloadFile({
-            url: url,
+          wx.saveImageToPhotosAlbum({
+            filePath: url,
             success: function(res) {
-              console.log("downloadFile---", res)
-              var temp = res.tempFilePath
-              wx.getImageInfo({
-                src: temp,
-                success: function(res) {
-                  console.log("getImageInfo---", res)
-                  var canvas = wx.createCanvasContext("myQrcode", this)
-                  canvas.drawImage(res.path, 0, 0, 300, 300)
-                  setTimeout(() => {
-                    canvas.draw(true, function() {
-                      wx.canvasToTempFilePath({
-                        canvasId: "myQrcode",
-                        fileType: "jpg",
-                        success: function(res) {
-                          console.log("wxCanvasToTempFilePath----", res)
-                          wx.saveImageToPhotosAlbum({
-                            filePath: res.tempFilePath,
-                            success: function(res) {
-                              resolve(res)
-                            },
-                            fail: function(err) {
-                              reject(res)
-                            }
-                          })
-                        }
-                      })
-                    })
-                  }, 1000);
-                }
-              })
+              resolve(res)
             },
             fail: function(err) {
-              reject(err)
+              reject(res)
             }
           })
         }
       })
     }
+    getUrlsQueue(urls) {
+      let promise = Promise.resolve()
+      urls.forEach(room => {
+        var text = room.name + "-" + room.code + (room.remark ? "(" + room.remark + ")" : "号桌")
+        promise = promise.then(() => {
+          return this.getImageInfo(room.platformQRcodeURL, text)
+        })
+      })
+      return promise
+    }
     _loadRoomList(type) {
       let url = `${this.$parent.globalData.commonUrl}/api/loadDesks?tk=${this.$parent.globalData.tk}`;
       util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
         console.log("loadDesks-------", res);
-        wx.showLoading({
-          title: '加载中',
-          mask: true
-        })
         if (res.errCode === 0) {
-          wx.hideLoading()
           this.roomList = res.desks;
+          var tempList = []
           this.roomList.forEach(room => {
             if (type === "focusOn") {
               console.log("focus")
@@ -218,11 +196,63 @@
             } else if (type === "game") {
               room["imagesURL"] = room.gameImagesURL
             } else if (type === "wechat") {
-              room["imagesURL"] = room.platformQRcodeURL
+              tempList.push(room)
             }
           })
+          console.log("tempList---", tempList)
+          wx.showLoading({
+            title: '加载中',
+            mask: true
+          })
+          this.getUrlsQueue(tempList).then(() => {
+            wx.hideLoading()
+          })
+          this.$apply()
         }
-        this.$apply();
+      })
+    }
+    getImageInfo(url, text) {
+      let _this = this
+      return new Promise((resolve, reject) => {
+        wx.getImageInfo({
+          src: url,
+          success: function(res) {
+            console.log("getImageInfo---", res)
+            var canvas = wx.createCanvasContext("myQrcode")
+            canvas.setFillStyle('#fff')
+            // canvas.fillRect(0, 0, 300, 300)
+            canvas.drawImage(res.path, 0, 0, 300, 250)
+            canvas.rect(5,5,290,290)
+            canvas.stroke()
+            canvas.setFontSize(24);
+            canvas.setTextAlign('center');
+            canvas.setFillStyle('#333');
+            canvas.fillText(text, 150, 280)
+            canvas.draw(false, setTimeout(() => {
+              wx.canvasToTempFilePath({
+                canvasId: "myQrcode",
+                fileType: "jpg",
+                success: function(res) {
+                  console.log("wxCanvasToTempFilePath----", res)
+                  if (res.errMsg === "canvasToTempFilePath:ok") {
+                    resolve(res.tempFilePath)
+                    _this.roomList.push({
+                      imagesURL: res.tempFilePath
+                    })
+                  } else {
+                    reject(res)
+                  }
+                  console.log("_this.roomList--", _this.roomList)
+                  _this.$apply()
+                }
+              })
+            }, 1000));
+          }
+        })
+        // },
+        // fail: function(err) {
+        //   reject(err)
+        // }
       })
     }
     _loadStaffQRcode() {
@@ -236,7 +266,7 @@
       })
     }
     events = {};
-    onLoad(e) {
+    async onLoad(e) {
       console.log("type------", e.type)
       this.pageType = e.type
       switch (e.type) {
@@ -265,7 +295,11 @@
           this._loadRoomList(e.type);
           break;
         case "staff":
+          wx.setNavigationBarTitle({
+            title: "下载员工二维码"
+          })
           this._loadStaffQRcode()
+          break;
         default:
           break;
       }

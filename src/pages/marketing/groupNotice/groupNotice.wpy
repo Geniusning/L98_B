@@ -295,8 +295,8 @@
       // }) 
       let data = {
         type: this.noticeType,
-        conformUsers:['oqWlD1h6Zurgr6YZVTYAqe5JL9oM','oqWlD1pcdc0dyrxMn7cH_oKTNfFU'],
-        subscribeUsers:['oqWlD1h6Zurgr6YZVTYAqe5JL9oM','oqWlD1pcdc0dyrxMn7cH_oKTNfFU']
+        conformUsers:this.cusAndSub.conformUsers,
+        subscribeUsers:this.cusAndSub.subscribeUsers
       }
       let url = `${this.$parent.globalData.commonUrl}/api/startNotice?tk=${this.$parent.globalData.tk}`
       util.interface_post(url, data, this.$parent.globalData.StoreId).then(res => {

@@ -9,7 +9,7 @@
 							</view>
 					</label>
 			</checkbox-group>
-			<view class="createQrcode_box" @tap="goToCreateQrCode">前往创建桌贴码</view>
+			<view wx:if="{{listOrBindType==='list'}}" class="createQrcode_box" @tap="goToCreateQrCode">前往创建桌贴码</view>
 		</view>
 		<scroll-view scroll-y style="height:{{winHeight}}rpx">
 			<checkbox-group wx:if="{{listOrBindType=='bind'}}" class="radio-group" @change="changeDesk">
@@ -17,7 +17,7 @@
 					<repeat for="{{roomList}}" key="index" item="item">
 						<label class="radio" style="justify-content: flex-start	">
 									<checkbox  color="orange" value="{{item.id}}" checked="{{item.isSelect}}"/>
-									<view class="room_name">{{item.name}}-{{item.code}}</view>
+									<view class="room_name">{{item.name}}</view>
 							</label>
 					</repeat>
 				</view>
@@ -29,7 +29,7 @@
 						<label class="radio" > 
 									<checkbox  color="orange" value="{{item.id}}" checked="{{item.isSelect}}"/>
 									<!-- <view style="display:flex">  -->
-											<view class="room_name">{{item.name}}-{{item.code}}号桌</view>
+											<view class="room_name">{{item.name}}</view>
 											<view class="remarks" @tap="showRemarkShow({{item.id}})">备注</view>
 									<!-- </view>     -->
 							</label>
@@ -54,7 +54,7 @@
 		<!-- 备注弹框 -->
 		<view wx:if="{{showRemarksModal}}" class="modal">
 			<view class="remarks_content">
-				<input class="inputArea" type="text" placeholder="请输入备注房名" maxlength="10" @input="setRemark">
+				<input class="inputArea" type="text" placeholder="请输入备注房名" maxlength="4" @input="setRemark">
 				</input>
 				<view class="btn_wrapper">
 					<button @tap.stop="cancel" class="btn" size="defult" type="defult">取消</button>
@@ -185,7 +185,7 @@
 							icon: 'none',
 							duration: 2000
 						})
-						this._loadNoBindRoomList()
+						this._loadRoomList()
 					}
 				})
 			},
@@ -275,6 +275,11 @@
 				console.log(res);
 				if (res.errCode === 0) {
 					this.roomList = res.desks.filter(room => {
+						if(room.remark){
+							room["name"] = `${room.name}--${room.code}(${room.remark})`
+						}else{
+							room["name"] = `${room.name}--${room.code}号桌`
+						}
 						if (!room.holderID) {
 							return room
 						}
@@ -308,7 +313,8 @@
 					wx.setNavigationBarTitle({
 						title: "台/房号设置"
 					})
-					this._loadNoBindRoomList()
+					// this._loadNoBindRoomList()
+					this._loadRoomList()
 					break;
 				case "bind":
 					wx.setNavigationBarTitle({
