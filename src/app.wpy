@@ -178,7 +178,7 @@
               url: `${_this.globalData.commonUrl}/wechatAppLogin`,
               data: {
                 phone: '19876733603',
-                password: '733603'
+                password: '000000'
               },
               header: {
                 'content-type': 'application/json'

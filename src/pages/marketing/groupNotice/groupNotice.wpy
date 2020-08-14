@@ -297,6 +297,8 @@
         type: this.noticeType,
         conformUsers:this.cusAndSub.conformUsers,
         subscribeUsers:this.cusAndSub.subscribeUsers
+        // conformUsers:["oqWlD1h6Zurgr6YZVTYAqe5JL9oM","oqWlD1iTX0P3uquB-0vfP3oOJiTM"],
+        // subscribeUsers:["oqWlD1h6Zurgr6YZVTYAqe5JL9oM","oqWlD1iTX0P3uquB-0vfP3oOJiTM"]
       }
       let url = `${this.$parent.globalData.commonUrl}/api/startNotice?tk=${this.$parent.globalData.tk}`
       util.interface_post(url, data, this.$parent.globalData.StoreId).then(res => {

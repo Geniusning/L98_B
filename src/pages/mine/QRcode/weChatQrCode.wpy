@@ -90,14 +90,14 @@
         })
       })
     }
-    draw() {
-      drawQrcode({
-        width: 200,
-        height: 200,
-        canvasId: 'myQrcode',
-        text: res.urls[0],
-      })
-    }
+    // draw() {
+    //   drawQrcode({
+    //     width: 200,
+    //     height: 200,
+    //     canvasId: 'myQrcode',
+    //     text: res.urls[0],
+    //   })
+    // }
     onLoad() {
       var _this = this
       let url = `${this.$parent.globalData.commonUrl}/api/loadAllQrcode?tk=${this.$parent.globalData.tk}`
