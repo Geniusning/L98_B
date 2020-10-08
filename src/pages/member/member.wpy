@@ -26,10 +26,10 @@
         </view>
       </view>
       <!-- <view class='search_box' wx:if="{{searchFlag}}">
-                                        <image src='../../images/search.png' class='searchIcon'></image>
-                                        <input value="" type="text" placeholder="手机号/姓名" maxlength="20" class='search_area' />
-                                        <image src='../../images/shaixuan.png' class='selectIcon' @tap='showSelectCustomPanel'></image>
-                                      </view> -->
+                                            <image src='../../images/search.png' class='searchIcon'></image>
+                                            <input value="" type="text" placeholder="手机号/姓名" maxlength="20" class='search_area' />
+                                            <image src='../../images/shaixuan.png' class='selectIcon' @tap='showSelectCustomPanel'></image>
+                                          </view> -->
       <swiper class="tab-content" current="{{currentTab}}" duration="300" style="height:{{winHeight}}rpx" @change="changeSwiper">
         <!-- 最近访客 -->
         <swiper-item>
@@ -71,8 +71,8 @@
                     </view>
                     <text class='content' space="ensp" decode="{{true}}">来源:{{item.visitType}} 拓客:{{item.waiter?item.waiter:"自来客"}}</text>
                     <!-- <view class='tags_list'>
-                                    <text class="tag_item">{{item.soreType}}</text>
-                                  </view> -->
+                                        <text class="tag_item">{{item.soreType}}</text>
+                                      </view> -->
                   </view>
                   <view class='contactInfo_times'>
                     <text space="ensp" decode="{{true}}" class='times'>到店:{{item.visitInsideStore}}  网店:{{item.visitOutsideStore}}</text>
@@ -111,8 +111,8 @@
     </view>
   </view>
   <!-- <view wx:else class='noPermission'>
-                                                                          <text class='text'>暂无权限</text>
-                                                                        </view> -->
+                                                                              <text class='text'>暂无权限</text>
+                                                                            </view> -->
 </template>
 
 <script>
@@ -127,7 +127,7 @@
       Header: Header
     };
     data = {
-      isScroll:false,
+      isScroll: false,
       shopInfo: {},
       tagsList: ['低频', '新客'],
       customTypeIndex: null,
@@ -184,6 +184,10 @@
         }
       ]
     };
+    onload() {
+
+      this.loadStoreSetting()
+    };
     onShow() {
       //  高度自适应
       this.winHeight = util.getScrollHeight(300)
@@ -198,13 +202,10 @@
       this._getMemberList(this.recentUsersCursor); //拉取成员数据
       // this.show = !!(this.$parent.globalData.userInfo.permission & 4);
     };
-    onload() {
-      this.loadStoreSetting()
-    };
     methods = {
       loadStoreSetting() {
         let shopUrl = `${this.$parent.globalData.commonUrl}/api/loadStoreSetting?tk=${this.$parent.globalData.tk}`;
-        util.interface_get(shopUrl,this.$parent.globalData.StoreId).then(res => {
+        util.interface_get(shopUrl, this.$parent.globalData.StoreId).then(res => {
           console.log(res)
           this.$parent.globalData.shopInfo = res;
           this.$apply()
@@ -259,7 +260,7 @@
         var url = `${this.$parent.globalData.commonUrl}/api/loadUsers?tk=${this.$parent.globalData.tk}&userCount=${userCount}&startCursor=${startCursor}&loadType=${this.loadType}`;
       }
       console.log("url--------", url)
-      util.interface_get(url,this.$parent.globalData.StoreId).then(res => {
+      util.interface_get(url, this.$parent.globalData.StoreId).then(res => {
         console.log('返回用户数-----------------', res)
         var usersArr = res.Users;
         if (!usersArr) {
@@ -272,7 +273,7 @@
         }
         usersArr.forEach(element => {
           element.visitTime = util.timestampToTime(element.visitTime);
-          if(element.visitType===10){
+          if (element.visitType === 10) {
             element.waiter = decodeURI(element.waiter)
           }
           this._judgeVisitType(element) //判断访问类型
@@ -443,7 +444,7 @@
     flex-direction: column;
     height: 100%;
   }
-  .hidden{
+  .hidden {
     overflow: hidden;
   }
   .main {
@@ -560,6 +561,11 @@
         position: relative;
         width: 55%;
         padding-left: 6rpx;
+        .content {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
         .userInfo {
           display: flex;
           .name {

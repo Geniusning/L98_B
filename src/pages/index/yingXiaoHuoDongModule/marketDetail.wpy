@@ -15,7 +15,7 @@
       <scroll-view scroll-y scroll-with-animation style="height:{{winHeight}}rpx">
         <view class="list">
           <view class="item">发生时间</view>
-          <view class="item">头像</view>
+          <view class="item">顾客名称</view>
           <view class="item" wx:if="{{pageType!='activity'}}">名称</view>
           <view class="item">类型</view>
         </view>
@@ -23,7 +23,8 @@
           <view class="list">
             <view class="item">{{item.milliTime}}</view>
             <view class="item">
-              <image class="avatarIcon" src="{{item.headUrl}}" mode="scaleToFill" lazy-load="false"></image>
+            <view>{{item.nickName}}</view>
+              <!-- <image class="avatarIcon" src="{{item.headUrl}}" mode="scaleToFill" lazy-load="false"></image> -->
             </view>
             <view class="item" wx:if="{{pageType!='activity'}}">{{item.couponName}}</view>
             <view class="item">{{item.name}}</view>
@@ -169,6 +170,7 @@
         item["name"] = util.returnDiscountType(item.UserCoupon.coupon.type)
         item["couponTypeInt"] = item.UserCoupon.coupon.type
         item["headUrl"] = item.CouponUser.userHeadURI
+        item["nickName"] = item.CouponUser.userNick
         item["couponName"] = util.returnDiscountContentNoType(item.UserCoupon.coupon)
         this.detailData.push(item)
         tempPickArray.push({
@@ -180,6 +182,7 @@
         item["name"] = util.returnDiscountType(item.couponTypeInt)
         item["couponTypeInt"] = item.couponTypeInt
         item["headUrl"] = item.userInfo.headImgUrl
+        item["nickName"] = item.userInfo.nickName
         // debugger
         item["couponName"] = util.returnDiscountContentNoType(item.coupon)
         this.detailData.push(item)
@@ -191,6 +194,7 @@
         item["milliTime"] = util.timestampToTime(item.milliTime).slice(10)
         item["headUrl"] = item.userInfo.headImgUrl
         item["name"] = item.ActivityName
+         item["nickName"] = item.userInfo.nickName
         this.detailData.push(item)
         tempPickArray.push({
           name: item.ActivityName,

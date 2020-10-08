@@ -127,9 +127,10 @@
         <scroll-view scroll-y class="rank_scroll_list">
           <repeat for="{{sharetList}}" key="index" index="index" item="item">
             <view class="scroll_item">
-              <text class="staffInfo timeLine">{{index+1}}</text>
-              <text class="staffInfo timeLine">{{item.clerkInfo.name}}</text>
-              <text class="staffInfo timeLine">{{item.firstLineNum}}</text>
+              <text class="staffInfo  fourColumn">{{index+1}}</text>
+              <text class="staffInfo  fourColumn">{{item.clerkInfo.name}}</text>
+              <text class="staffInfo  fourColumn">{{item.firstLineNum}}</text>
+              <text class="staffInfo fourColumn">{{item.secondLineNum}}</text>
             </view>
           </repeat>
         </scroll-view>
@@ -206,7 +207,7 @@
         if (this.currentTab == "0") { //昨天
           this.startDay = util.someDayLater(util.nowDate(), -1, '-');
           this.endDay = util.someDayLater(util.nowDate(), -1, '-');
-          if (this.typeIndex === 0) { //拓客
+          if (this.typeIndex == 0) { //拓客
             this._getTuoKeRankList()
           } else { //分享
             this._getShareRankList()
@@ -214,7 +215,7 @@
         } else if (this.currentTab == "1") { //今天
           this.startDay = util.nowDate();
           this.endDay = util.nowDate();
-          if (this.typeIndex === 0) { //拓客
+          if (this.typeIndex == 0) { //拓客
             this._getTuoKeRankList()
           } else { //分享
             this._getShareRankList()
@@ -222,7 +223,7 @@
         } else if (this.currentTab == "2") { //本周
           this.startDay = util.getLastSundayTimeStamp();
           this.endDay = util.nowDate();
-          if (this.typeIndex === 0) { //拓客
+          if (this.typeIndex == 0) { //拓客
             this._getTuoKeRankList()
           } else { //分享
             this._getShareRankList()
@@ -230,7 +231,7 @@
         } else if (this.currentTab == "3") { //本月
           this.startDay = util.getThisMonth1();
           this.endDay = util.nowDate();
-          if (this.typeIndex === 0) { //拓客
+          if (this.typeIndex == 0) { //拓客
             this._getTuoKeRankList()
           } else { //分享
             this._getShareRankList()
@@ -277,7 +278,7 @@
             break;
           case '6':
             this.pageType = "thumb" //员工送券
-            this.titleList = ['排名', '昵称', '点赞次数']
+            this.titleList = ['排名', '昵称', '点赞次数',"鄙视次数"]
             this.$apply()
             break;
           default:
@@ -285,7 +286,7 @@
         }
         console.log(typeof (this.typeIndex))
         console.log(this.typeIndex)
-        if (this.typeIndex == '0') { //拓客
+        if (this.typeIndex == 0) { //拓客
           this._getTuoKeRankList()
         } else { //分享
           this._getShareRankList(this.pageType)
@@ -316,7 +317,7 @@
         }
       },
       selectRankData() {
-        if (this.typeIndex == '0') {
+        if (this.typeIndex == 0) {
           this._getTuoKeRankList();
         } else {
           this._getShareRankList()
@@ -482,6 +483,10 @@
           }
           .timeLine {
             width: 33.333%;
+            text-align: center;
+          }
+          .fourColumn{
+            width: 25%;
             text-align: center;
           }
         }

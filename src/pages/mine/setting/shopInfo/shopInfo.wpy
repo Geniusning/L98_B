@@ -6,7 +6,7 @@
     </view>
     <view class='group '>
       <text class='name '>商家简称：</text>
-      <input class='account' maxlength="6" @blur='selectShopShopName' value='{{aliasName}}' placeholder='请输入6位商家简称'></input>
+      <input class='account' maxlength="5" @blur='selectShopShopName' value='{{aliasName}}' placeholder='请输入5位商家简称'></input>
     </view>
     <view class='group'>
       <text class='name'>商家地址：</text>

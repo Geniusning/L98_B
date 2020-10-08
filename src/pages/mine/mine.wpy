@@ -7,12 +7,12 @@
     <!-- 列表 -->
     <view class='setting-container'>
       <!-- <navigator url='/pages/mine/dutyPeople/dutyPeople' class='item'>
-                                        <view class='name-box'>
-                                          <image class='icon' src='../../images/account.png' style='width:32rpx;height:28rpx;'></image>
-                                          <text class='settingName'>社群运营专员</text>
-                                        </view>
-                                        <image src='../../images/arrow_right.png'></image>
-                                      </navigator> -->
+                                          <view class='name-box'>
+                                            <image class='icon' src='../../images/account.png' style='width:32rpx;height:28rpx;'></image>
+                                            <text class='settingName'>社群运营专员</text>
+                                          </view>
+                                          <image src='../../images/arrow_right.png'></image>
+                                        </navigator> -->
       <!-- 通用模块 -->
       <view class='mine_common_module'>
         <navigator class='item' hover-class="none" url='/pages/mine/setting/passwordUpdate/passwordUpdate'>
@@ -22,13 +22,13 @@
           </view>
           <image src='../../images/arrow_right.png'></image>
         </navigator>
-        <navigator url='/pages/mine/feedBack/feedBack' class='item'>
-          <view class='name-box'>
-            <image class='icon' src='../../images/question.png' style='width:34rpx;height:34rpx;'></image>
-            <text class='settingName'>问题反馈</text>
-          </view>
-          <image src='../../images/arrow_right.png'></image>
-        </navigator>
+        <!-- <navigator url='/pages/mine/feedBack/feedBack' class='item'>
+            <view class='name-box'>
+              <image class='icon' src='../../images/question.png' style='width:34rpx;height:34rpx;'></image>
+              <text class='settingName'>问题反馈</text>
+            </view>
+            <image src='../../images/arrow_right.png'></image>
+          </navigator> -->
         <navigator url='/pages/mine/room/bindRoomList?type=bind' class='item'>
           <view class='name-box'>
             <image class='icon' src='../../images/question.png' style='width:34rpx;height:34rpx;'></image>
@@ -59,7 +59,7 @@
         </navigator>
       </view>
       <!-- 管理员模块  -->
-      <view class='mine_admin_module' wx:if="{{noAuth}}" >
+      <view class='mine_admin_module' wx:if="{{noAuth}}">
         <navigator wx:if="{{isApplyAutoCheck}}" url='/pages/mine/autoCheck' class='item'>
           <view class='name-box'>
             <image class='icon' src='../../images/about.png' style='width:34rpx;height:34rpx;'></image>
@@ -111,20 +111,20 @@
           <image src='../../images/arrow_right.png'></image>
         </navigator>
         <!-- url='/pages/mine/server/server' -->
-        <navigator @tap='intoTable' class='item'>
-          <view class='name-box'>
-            <image class='icon' src='../../images/about.png' style='width:34rpx;height:34rpx;'></image>
-            <text class='settingName'>服务套餐</text>
-          </view>
-          <image src='../../images/arrow_right.png'></image>
-        </navigator>
-        <navigator class='item' @tap='intoTable'>
-          <view class='name-box'>
-            <image class='icon' src='../../images/shop1.png' style='width:34rpx;height:32rpx;'></image>
-            <text class='settingName'>运营周报</text>
-          </view>
-          <image src='../../images/arrow_right.png'></image>
-        </navigator>
+        <!-- <navigator @tap='intoTable' class='item'>
+            <view class='name-box'>
+              <image class='icon' src='../../images/about.png' style='width:34rpx;height:34rpx;'></image>
+              <text class='settingName'>服务套餐</text>
+            </view>
+            <image src='../../images/arrow_right.png'></image>
+          </navigator>
+          <navigator class='item' @tap='intoTable'>
+            <view class='name-box'>
+              <image class='icon' src='../../images/shop1.png' style='width:34rpx;height:32rpx;'></image>
+              <text class='settingName'>运营周报</text>
+            </view>
+            <image src='../../images/arrow_right.png'></image>
+          </navigator> -->
       </view>
       <view class="mine_common_module" style="margin-top:0">
         <view wx:if="{{noAuth}}" class='item' @tap='goBackShopList'>
@@ -157,7 +157,7 @@
       shopInfo: {},
       staff: {},
       noAuth: true,
-      isScroll:false,
+      isScroll: false,
       isApplyAutoCheck: false,
       isHandleAutoCheck: false,
     };
@@ -174,7 +174,23 @@
       } else if (this.staff.roleInfo.role === "k98_operation_middle") {
         this.isHandleAutoCheck = true
       }
-      console.log("this.isApplyAutoCheck---", this.isApplyAutoCheck)
+      // console.log("this.isApplyAutoCheck---", this.isApplyAutoCheck)
+      // console.log("password---", this.$parent.globalData.userInfo.phone.slice(5))
+      // if (this.$parent.globalData.userInfo.phone.slice(5) === this.$parent.globalData.userInfo.password) {
+      //   wx.showModal({
+      //     title: '提示',
+      //     content: '使用手机号后6位做密码极不安全，请重新设置密码。',
+      //     success(res) {
+      //       if (res.confirm) {
+      //         wx.navigateTo({
+      //           url: "/pages/mine/setting/passwordUpdate/passwordUpdate"
+      //         })
+      //       } else if (res.cancel) {
+      //         console.log('用户点击取消')
+      //       }
+      //     }
+      //   })
+      // }
       this.$apply()
     }
     components = {
@@ -218,10 +234,9 @@
     display: flex;
     flex-direction: column;
     background: #efeef3;
-    
   }
-  .hidden{
-  overflow: hidden;
+  .hidden {
+    overflow: hidden;
   }
   .shopInfo-container {
     width: 100%;

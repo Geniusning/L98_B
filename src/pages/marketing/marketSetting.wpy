@@ -34,7 +34,7 @@
       <view class='item-left'>
         <image class='pic' src='../../images/game.png'></image>
         <view class='desc-box'>
-          <text class='name'>邀请有礼</text>
+          <text class='name'>邀新有礼</text>
         </view>
       </view>
       <view class='item-right'>
@@ -167,7 +167,7 @@
       </view>
     </view>
     <!-- 短信营销 -->
-    <view class='item'>
+    <!-- <view class='item'>
       <view class='item-left'>
         <image class='pic' src='../../images/game.png'></image>
         <view class='desc-box'>
@@ -176,9 +176,9 @@
       </view>
       <view class='item-right' @tap="intoTable">
         <navigator hover-class="none" url='/pages/marketing/shortMessage/shortMessage' class='setting'>设置</navigator>
-        <!-- <image class='arrow' src='../../images/arrow_right.png'></image> -->
+        <image class='arrow' src='../../images/arrow_right.png'></image>
       </view>
-    </view>
+    </view> -->
   </view>
   <!-- <view wx:else class='noPermission'>
         <text class='text'>暂无权限</text>

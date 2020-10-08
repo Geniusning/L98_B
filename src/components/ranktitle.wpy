@@ -19,11 +19,14 @@
             titleList(newValue, oldValue) {
                 if (newValue.length === 3) {
                     this.myWidth = "width:33.3333%"
-                    this.$apply()
+                    
+                }else if(newValue.length === 4){
+                    this.myWidth = "width:25%"
+                    
                 } else {
                     this.myWidth = "width:20%"
-                    this.$apply()
                 }
+                this.$apply()
             }
         }
         props = {

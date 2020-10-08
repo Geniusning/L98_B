@@ -3,9 +3,9 @@
     <view class="top_handle">
       <checkbox-group class="checkBox_group" @change="selectAll">
         <label class="top_checkBox">
-          <checkbox class="top_checkbox_item" value="all" color="orange"/>
-          <view class="allSelect">全选</view>
-        </label>
+            <checkbox class="top_checkbox_item" value="all" color="orange"/>
+            <view class="allSelect">全选</view>
+          </label>
       </checkbox-group>
       <view class="createQrcode_box">
         <picker @change="bindPickerChange" value="{{qrCodeIndex}}" range="{{qrCodeTypeList}}">
@@ -18,9 +18,9 @@
         <view wx:if="{{roomShowList.length}}">
           <repeat for="{{roomShowList}}" key="index" item="item">
             <label class="radio" style="justify-content: flex-start	">
-              <checkbox color="orange" value="{{item.id}}" checked="{{item.isSelect}}"/>
-              <view class="room_name">{{item.name}}-{{item.code}}</view>
-            </label>
+                <checkbox color="orange" value="{{item.id}}" checked="{{item.isSelect}}"/>
+                <view class="room_name">{{item.name}}-{{item.code}}</view>
+              </label>
           </repeat>
         </view>
         <view @tap.stop="goToCreateRoom" class="noData" wx:else>暂无房间，请前往创建房间</view>
@@ -54,23 +54,35 @@
           type: this.qrCodeIndex,
           deskIDs: this.deskIds
         }
+        if (data.deskIDs.length === 0) {
+          util.showModal(`请选择创建的房号`)
+          return
+        }
         let url = `${this.$parent.globalData.commonUrl}/api/createDeskQRcode?tk=${this.$parent.globalData.tk}`;
-        util.interface_post(url, data, this.$parent.globalData.StoreId).then(res => {
+        util.interface_post(url, data, this.$parent.globalData.StoreId).then(async res => {
           console.log("res----", res)
           if (res.errCode === 0) {
             util.showModal(`创建成功`)
+            let roomList = await this._loadRoomList();
+            this.roomShowList = roomList.filter(room => {
+              return room[this.type] === ""
+            })
           } else {
             util.showModal(res.errMsg)
           }
+          this.roomList.forEach(room => {
+            room["isSelect"] = false;
+          })
+          this.deskIds.length = 0
         })
       },
       bindPickerChange(e) {
         let index = Number(e.detail.value)
         console.log("index---", index)
         this.qrCodeIndex = index
-        let type = this.typeOfImg[this.qrCodeIndex]
+        this.type = this.typeOfImg[this.qrCodeIndex]
         this.roomShowList = this.roomList.filter(room => {
-          return room[type] === ""
+          return room[this.type] === ""
         })
         console.log("this.roomList--------", this.roomShowList)
       },
@@ -86,8 +98,8 @@
         } else {
           this.roomList.forEach(room => {
             room["isSelect"] = false;
-            this.deskIds = []
           })
+          this.deskIds.length = 0
         }
         this.$apply()
         console.log("this.roomList", this.roomList)
@@ -229,5 +241,7 @@
     }
   }
 </style>
+
 <style lang="less" src="../../../mixins/less/btn.less">
+
 </style>

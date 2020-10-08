@@ -201,9 +201,7 @@
           fromRoleID: this.$parent.globalData.userRoleInfo.roleID, //授权人职位
           toRoleID: this.staffRoleInfo.roleID //被授权人职位
         };
-        let url = `${
-                      this.$parent.globalData.commonUrl
-                    }/api/authorizedViewStore?tk=${this.$parent.globalData.tk}`;
+        let url = `${this.$parent.globalData.commonUrl}/api/authorizedViewStore?tk=${this.$parent.globalData.tk}`;
         util.interface_post(url, data, '').then(res => {
           if (res.errCode === 0) {
             setTimeout(() => {
@@ -232,9 +230,7 @@
           fromRoleID: this.$parent.globalData.userRoleInfo.roleID, //授权人职位
           toRoleID: this.staffRoleInfo.roleID //被授权人职位
         };
-        let url = `${
-                      this.$parent.globalData.commonUrl
-                    }/api/authorizedViewRole?tk=${this.$parent.globalData.tk}`;
+        let url = `${this.$parent.globalData.commonUrl}/api/authorizedViewRole?tk=${this.$parent.globalData.tk}`;
         util.interface_post(url, data, '').then(res => {
           if (res.errCode === 0) {
             setTimeout(() => {
